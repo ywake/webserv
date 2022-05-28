@@ -1,0 +1,19 @@
+*
+!.clang-format
+!.editorconfig
+!.github
+!.github/
+!.github/**
+!.gitignore
+!.gitkeep
+!Makefile
+!README.md
+!**/
+!*.cpp
+!*.hpp
+
+
+# tests
+destructor.c
+!auto_test.sh
+.google_test
