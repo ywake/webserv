@@ -42,8 +42,10 @@ typedef struct sockaddr			t_sa;
 typedef struct sockaddr_storage t_sa_storage;
 typedef struct addrinfo			t_addrinfo;
 
+# define GREEN "\x1b[32;1m"
+# define RESET "\x1b[39;0m"
 
-#define STR "aiueo"
+#define STR GREEN"\nConnection Success!!\n\n"RESET
 #define OK 0
 
 void serve_content(int connfd)
