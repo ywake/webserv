@@ -11,6 +11,9 @@
 !**/
 !*.cpp
 !*.hpp
+!*.c
+!*.h
+test*.c
 
 
 # tests
