@@ -1,6 +1,6 @@
 {
   BasedOnStyle: LLVM,
-  UseTab: ForIndentation,
+  UseTab: Always,
   IndentWidth: 4,
   TabWidth: 4,
   BreakBeforeBraces: Linux,
