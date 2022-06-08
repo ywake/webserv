@@ -1,22 +1,15 @@
 #############
-# Functions #
-#############
-
-uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
-
-#############
 # Variables #
 #############
 
 # TODO: fill in here
 NAME	:= program_name
-SRCS	:=
+SRCS	:= main.cpp
+SRCDIRS := srcs/
 TEST_CPP:=
 
 CXX		:= c++
-CXXFLAGS:= -g -Wall -Werror -Wextra -std=c++98
-
-SRCDIRS	:= $(call uniq, $(dir $(SRCS)))
+CXXFLAGS:= -g -Wall -Werror -Wextra -std=c++98 -pedantic
 
 OBJDIR	:= build/
 OBJDIRS	:= $(addprefix $(OBJDIR), $(SRCDIRS))
@@ -55,7 +48,8 @@ norm: FORCE
 $(OBJDIRS):
 	mkdir -p $@
 
-$(OBJDIR)%.o: %.cpp
+$(OBJDIR)%.o: $(SRCDIRS)/%.cpp
+	@mkdir -p $(OBJDIR)/$(*D)
 	@printf "$(THIN)$(ITALIC)"
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 	@printf "$(END)"

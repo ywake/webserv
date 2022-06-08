@@ -1,11 +1,12 @@
 {
   BasedOnStyle: LLVM,
-  UseTab: Never,
-  IndentWidth: 2,
+  UseTab: ForIndentation,
+  IndentWidth: 4,
   BreakBeforeBraces: Linux,
-  AllowShortFunctionsOnASingleLine: All,
+  AllowShortFunctionsOnASingleLine: Empty,
   IndentCaseLabels: false,
   NamespaceIndentation: All,
   BreakConstructorInitializers: AfterColon,
   AlwaysBreakTemplateDeclarations: Yes,
+  SpacesInAngles: true,
 }
