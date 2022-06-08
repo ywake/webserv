@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <sys/select.h>
 
 #define PORT 80
 #define LISTENQ 1024
@@ -47,10 +48,25 @@ typedef struct addrinfo			t_addrinfo;
 
 #define STR GREEN"\nConnection Success!!\n\n"RESET
 #define OK 0
-
+#define SIZE 1024
 void serve_content(int connfd)
 {
-	send(connfd, STR, sizeof(STR), 0);
+	char buf[SIZE] = {};
+
+	int ret = recv(connfd, buf, SIZE, 0);
+	send(connfd, buf, ret, 0);
+	// send(connfd, STR, sizeof(STR), 0);
+}
+
+
+void echo_stdin()
+{
+	char *res = NULL;
+	size_t size = 0;
+
+	getline(&res, &size, stdin);
+	printf("%s", res);
+	free(res);
 }
 
 void run_event_loop(int listen_fd)
@@ -58,13 +74,24 @@ void run_event_loop(int listen_fd)
 	int				connfd;
 	t_sa_storage	client_addr;
 	socklen_t		client_len = sizeof(t_sa_storage);
+	fd_set			read_set;
+	fd_set			ready_set;
 
+	FD_ZERO(&read_set);
+	FD_SET(STDIN_FILENO, &read_set);
+	FD_SET(listen_fd, &read_set);
 	while (true)
 	{
-		// select();
-		connfd = accept(listen_fd, (t_sa *)&client_addr, &client_len);
-		serve_content(connfd);
-		close(connfd);
+		ready_set = read_set;
+		select(listen_fd + 1, &ready_set, NULL, NULL, NULL);
+		if (FD_ISSET(STDIN_FILENO, &ready_set))
+			echo_stdin();
+		if (FD_ISSET(listen_fd, &ready_set))
+		{
+			connfd = accept(listen_fd, (t_sa *)&client_addr, &client_len);
+			serve_content(connfd);
+			close(connfd);
+		}
 	}
 }
 
