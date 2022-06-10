@@ -13,9 +13,9 @@ class ServerSocket : public Socket
 	Result< void > CreateSocket();
 
   public:
+	ServerSocket();
 	ServerSocket(char *host, char *port);
 	Result< int > TryBindSocket(t_addrinfo *lst);
-	Result< void > Listen();
 	Result< void > Listen();
 	~ServerSocket();
 };

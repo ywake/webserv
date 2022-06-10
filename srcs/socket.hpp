@@ -6,7 +6,8 @@
 
 class Socket
 {
-	typedef std::pair< std::string, std::string > HostPort;
+  public:
+	typedef std::pair< char *, char * > HostPort;
 
   private:
 	virtual Result< void > CreateSocket() = 0;
@@ -20,11 +21,15 @@ class Socket
 	int fd_;
 
   public:
+	Socket();
 	Socket(char *host, char *port);
 	Socket(const Socket &sock);
 	Socket &operator=(const Socket &sock);
-	virtual Result< void > CreateSocketOnce();
+	Result< void > CreateSocketOnce();
 	virtual ~Socket();
+
+	// tmp
+	int getFd();
 };
 
 #endif

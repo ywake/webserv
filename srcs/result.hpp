@@ -10,9 +10,10 @@ class Result
 
   public:
 	Error err;
-	Result();
+	Result() :
+		val(), err(){};
 	Result(T v) :
-		val(v), err();
+		val(v), err(){};
 	Result(T v, Error e) :
 		val(v), err(e){};
 	Result(Error e) :
@@ -39,7 +40,8 @@ class Result< void >
 {
   public:
 	Error err;
-	Result();
+	Result() :
+		err(){};
 	Result(Error e) :
 		err(e){};
 	bool IsOk()

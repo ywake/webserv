@@ -3,8 +3,8 @@
 #############
 
 # TODO: fill in here
-NAME	:= program_name
-SRCS	:= main.cpp
+NAME	:= webserv
+SRCS	:= $(shell find . -name "*.cpp" -type f)
 SRCDIRS := srcs/
 TEST_CPP:=
 
@@ -12,8 +12,7 @@ CXX		:= c++
 CXXFLAGS:= -g -Wall -Werror -Wextra -std=c++98 -pedantic
 
 OBJDIR	:= build/
-OBJDIRS	:= $(addprefix $(OBJDIR), $(SRCDIRS))
-OBJS	:= $(addprefix $(OBJDIR), $(SRCS:%.cpp=%.o))
+OBJS	:= $(patsubst $(OBJDIR)%,$(SRCDIRS)%,$(SRCS:%.cpp=%.o))
 
 DEPS	:= $(addprefix $(OBJDIR), $(SRCS:%.cpp=%.d))
 
@@ -48,8 +47,8 @@ norm: FORCE
 $(OBJDIRS):
 	mkdir -p $@
 
-$(OBJDIR)%.o: $(SRCDIRS)/%.cpp
-	@mkdir -p $(OBJDIR)/$(*D)
+$(OBJDIR)%.o: $(SRCDIRS)%.cpp
+	@mkdir -p $(OBJDIR)$(*D)
 	@printf "$(THIN)$(ITALIC)"
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
 	@printf "$(END)"
