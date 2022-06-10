@@ -10,17 +10,11 @@ class Error
 	std::string err_msg_;
 
   public:
-	Error() : is_err_(false) {}
-	Error(int errn) : is_err_(true), err_msg_(strerror(errn)) {}
-	Error(const char *msg) : is_err_(true), err_msg_(msg) {}
-	bool IsErr()
-	{
-		return is_err_;
-	}
-	std::string Err()
-	{
-		return err_msg_;
-	}
+	Error();
+	Error(int errn);
+	Error(const char *msg);
+	bool IsErr();
+	std::string Err();
 };
 
 #endif

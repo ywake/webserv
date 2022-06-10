@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-ServerSocket::ServerSocket(const char *host, const char *port) :
+ServerSocket::ServerSocket(char *host, char *port) :
 	Socket(host, port) {}
 
 ServerSocket::~ServerSocket() {}
@@ -26,13 +26,14 @@ Result< void > ServerSocket::CreateSocket()
 {
 	t_addrinfo *lst;
 	t_addrinfo hints = {
-		.ai_socktype = SOCK_STREAM,
 		.ai_flags = AI_PASSIVE | AI_ADDRCONFIG | AI_NUMERICSERV,
+		.ai_socktype = SOCK_STREAM,
 	};
 
 	int err = getaddrinfo(host_, port_, &hints, &lst);
-	if (err != 0)
+	if (err != 0) {
 		return Result< void >{Error(gai_strerror(err))};
+	}
 	Result< int > res = TryBindSocket(lst);
 	fd_ = res.Val();
 	freeaddrinfo(lst);

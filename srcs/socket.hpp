@@ -13,30 +13,18 @@ class Socket
 
   protected:
 	static std::map< HostPort, std::size_t > fd_count_;
-	const char *host_;
-	const char *port_;
+	static const int kNofd = -2;
+	char *host_;
+	char *port_;
 	HostPort hostport_;
 	int fd_;
 
   public:
-	Socket(const char *host, const char *port) :
-		host_(host), port_(port), hostport_(host, port), fd_(-1)
-	{
-		fd_count_[hostport_]++;
-	};
-	virtual Result< void > CreateSocketOnce()
-	{
-		if (fd_ != -1) {
-			return Result< void >{};
-		}
-		return CreateSocket();
-	};
-	virtual ~Socket()
-	{
-		if (--fd_count_[hostport_] == 0 && fd_ != -1) {
-			close(fd_);
-		}
-	};
+	Socket(char *host, char *port);
+	Socket(const Socket &sock);
+	Socket &operator=(const Socket &sock);
+	virtual Result< void > CreateSocketOnce();
+	virtual ~Socket();
 };
 
 #endif

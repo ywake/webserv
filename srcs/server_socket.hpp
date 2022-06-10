@@ -13,7 +13,7 @@ class ServerSocket : public Socket
 	Result< void > CreateSocket();
 
   public:
-	ServerSocket(const char *host, const char *port);
+	ServerSocket(char *host, char *port);
 	Result< int > TryBindSocket(t_addrinfo *lst);
 	Result< void > Listen();
 	Result< void > Listen();
