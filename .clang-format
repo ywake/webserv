@@ -10,4 +10,5 @@
   BreakConstructorInitializers: AfterColon,
   AlwaysBreakTemplateDeclarations: Yes,
   SpacesInAngles: true,
+  ColumnLimit: 0,
 }
