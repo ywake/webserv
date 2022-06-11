@@ -1,21 +1,28 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "server_socket.hpp"
+#include "fd.hpp"
+#include "result.hpp"
 
 class Server
 {
+	typedef struct sockaddr t_sa;
+	typedef struct sockaddr_storage t_sa_storage;
+	typedef struct addrinfo t_addrinfo;
+
   private:
-	ServerSocket listen_sock_;
-	Server();
+	static const int kListenq = 1024;
+	std::string port_;
+	Fd listen_fd_;
+	Result< void > CreateListenSocket();
+	Result< int > TryBindSocket(t_addrinfo *lst);
 
   public:
-	Server(ServerSocket &socket);
-	// Server(const Server &server);
-	// Server &operator=(const Server &server);
+	Server(std::string port = "80");
+	Server(const Server &server);
+	Server &operator=(const Server &server);
 	~Server();
-	Result< void > Run();
-	int getFd(); //[TODO]　後で消す！
+	Result< void > Listen();
 	// Result< void > Accept();
 	// Result< void > Serve();
 	// Result< void > Close();
