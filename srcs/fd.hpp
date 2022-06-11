@@ -3,8 +3,6 @@
 #include <map>
 #include <utility>
 
-#include "result.hpp"
-
 class Fd
 {
   protected:
