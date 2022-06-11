@@ -2,19 +2,17 @@
 # Variables #
 #############
 
-# TODO: fill in here
 NAME	:= webserv
-SRCS	:= $(shell find . -name "*.cpp" -type f)
-SRCDIRS := srcs/
+SRCDIR := srcs/
+SRCS	:= $(shell find $(SRCDIR:%/=%) -name "*.cpp" -type f)
 TEST_CPP:=
 
 CXX		:= c++
 CXXFLAGS:= -g -Wall -Werror -Wextra -std=c++98 -pedantic
 
 OBJDIR	:= build/
-OBJS	:= $(patsubst $(OBJDIR)%,$(SRCDIRS)%,$(SRCS:%.cpp=%.o))
-
-DEPS	:= $(addprefix $(OBJDIR), $(SRCS:%.cpp=%.d))
+OBJS	:= $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCS:%.cpp=%.o))
+DEPS	:= $(OBJS:%.o=%.d)
 
 DSTRCTR	:= ./destructor.c
 
@@ -47,7 +45,7 @@ norm: FORCE
 $(OBJDIRS):
 	mkdir -p $@
 
-$(OBJDIR)%.o: $(SRCDIRS)%.cpp
+$(OBJDIR)%.o: $(SRCDIR)%.cpp
 	@mkdir -p $(OBJDIR)$(*D)
 	@printf "$(THIN)$(ITALIC)"
 	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
