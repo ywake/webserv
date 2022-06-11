@@ -7,7 +7,7 @@
   AllowShortFunctionsOnASingleLine: Empty,
   IndentCaseLabels: false,
   NamespaceIndentation: All,
-  BreakConstructorInitializers: AfterColon,
+  BreakConstructorInitializers: BeforeColon,
   AlwaysBreakTemplateDeclarations: Yes,
   SpacesInAngles: true,
   ColumnLimit: 0,

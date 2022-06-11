@@ -1,10 +1,10 @@
 #include "server.hpp"
 
-Server::Server() :
-	listen_sock_() {}
+Server::Server()
+	: listen_sock_() {}
 
-Server::Server(ServerSocket &listen_sock) :
-	listen_sock_(listen_sock) {}
+Server::Server(ServerSocket &listen_sock)
+	: listen_sock_(listen_sock) {}
 
 // Server::Server(const Server &server) {}
 // Server &Server::operator=(const Server &server) {}

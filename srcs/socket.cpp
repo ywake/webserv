@@ -5,11 +5,11 @@
  */
 Socket::Socket() {}
 
-Socket::Socket(char *host, char *port) :
-	Fd(), host_(host), port_(port) {}
+Socket::Socket(char *host, char *port)
+	: Fd(), host_(host), port_(port) {}
 
-Socket::Socket(Socket const &copy) :
-	Fd(copy), host_(copy.host_), port_(copy.port_) {}
+Socket::Socket(Socket const &copy)
+	: Fd(copy), host_(copy.host_), port_(copy.port_) {}
 
 Socket::~Socket() {}
 

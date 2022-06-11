@@ -6,11 +6,11 @@
 
 #include "server_socket.hpp"
 
-ServerSocket::ServerSocket() :
-	Socket() {}
+ServerSocket::ServerSocket()
+	: Socket() {}
 
-ServerSocket::ServerSocket(char *host, char *port) :
-	Socket(host, port) {}
+ServerSocket::ServerSocket(char *host, char *port)
+	: Socket(host, port) {}
 
 ServerSocket::~ServerSocket() {}
 

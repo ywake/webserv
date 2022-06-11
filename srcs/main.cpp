@@ -5,8 +5,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-
-
 #include <iostream>
 #include <unistd.h>
 
@@ -38,8 +36,6 @@ void run_event_loop(Server &server)
 		close(connfd);
 	}
 }
-
-
 
 int main(void)
 {

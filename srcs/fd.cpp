@@ -4,17 +4,17 @@
 
 std::map< int, std::size_t > Fd::fd_count_ = std::map< int, std::size_t >();
 
-Fd::Fd() :
-	fd_(kNofd) {}
+Fd::Fd()
+	: fd_(kNofd) {}
 
-Fd::Fd(int fd) :
-	fd_(fd)
+Fd::Fd(int fd)
+	: fd_(fd)
 {
 	fd_count_[fd_]++;
 }
 
-Fd::Fd(const Fd &copy) :
-	fd_(copy.fd_)
+Fd::Fd(const Fd &copy)
+	: fd_(copy.fd_)
 {
 	fd_count_[fd_]++;
 }
