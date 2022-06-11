@@ -28,7 +28,7 @@ class Server
 
 	Result< void > Listen();
 	Result< void > Accept();
-	// Result< void > Serve();
+	Result< void > Serve();
 	// Result< void > Close();
 };
 

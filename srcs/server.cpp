@@ -89,4 +89,17 @@ Result< void > Server::Accept()
 	return Result< void >();
 }
 
+Result< void > Server::Serve()
+{
+	Result< ssize_t > res_recv = connected_socket_.Recv();
+	if (res_recv.IsErr()) {
+		return Result< void >(Error(errno));
+	}
+	Result< ssize_t > res_send = connected_socket_.Send();
+	if (res_recv.IsErr()) {
+		return Result< void >(Error(errno));
+	}
+	connected_socket_.~ConnectedSocket();
+	return Result< void >();
+}
 // Result< void > Close();

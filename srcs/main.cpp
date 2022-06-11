@@ -8,32 +8,15 @@
 #include <iostream>
 #include <unistd.h>
 
-void serve_content(int connfd)
-{
-	char buf[1024] = {};
-
-	int ret = recv(connfd, buf, 1024, 0);
-	send(connfd, buf, ret, 0);
-}
-
 typedef struct sockaddr t_sa;
 typedef struct sockaddr_storage t_sa_storage;
 typedef struct addrinfo t_addrinfo;
 
 void run_event_loop(Server &server)
 {
-	int connfd;
-	t_sa_storage client_addr;
-	socklen_t client_len = sizeof(t_sa_storage);
-	fd_set read_set;
-
-	FD_ZERO(&read_set);
-	FD_SET(server.getFd(), &read_set);
 	while (true) {
-		connfd = accept(server.getFd(), (t_sa *)&client_addr, &client_len);
-		std::cout << server.getFd() << std::endl;
-		serve_content(connfd);
-		close(connfd);
+		server.Accept();
+		server.Serve();
 	}
 }
 

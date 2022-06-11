@@ -6,6 +6,10 @@
 
 class ConnectedSocket : public Fd
 {
+  private:
+	char buf_[1024];
+	ssize_t read_bytes_;
+
   public:
 	ConnectedSocket(int fd = kNofd);
 	~ConnectedSocket();
