@@ -16,6 +16,9 @@ Fd::Fd(int fd)
 Fd::Fd(const Fd &copy)
 	: fd_(copy.fd_)
 {
+	if (fd_ == kNofd) {
+		return;
+	}
 	fd_count_[fd_]++;
 }
 
@@ -25,30 +28,21 @@ Fd &Fd::operator=(const Fd &other)
 		return *this;
 	}
 	fd_ = other.fd_;
-	fd_count_[fd_]++;
-	return *this;
-}
-
-Result< void > Fd::CreateOnce()
-{
 	if (fd_ != kNofd) {
-		return Result< void >();
-	}
-	Result< void > res = Create();
-	if (res.IsOk()) {
 		fd_count_[fd_]++;
 	}
-	return res;
+	return *this;
 }
 
 Fd::~Fd()
 {
-	if (--fd_count_[fd_] == 0 && fd_ != kNofd) {
+	fd_count_[fd_]--;
+	if (fd_count_[fd_] == 0 && fd_ != kNofd) {
 		close(fd_);
 	}
 }
 
-int Fd::getFd()
+int Fd::GetFd() const
 {
 	return fd_;
 }
