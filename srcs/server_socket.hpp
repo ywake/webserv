@@ -10,7 +10,7 @@ class ServerSocket : public Socket
 
   private:
 	static const int kListenq = 1024;
-	Result< void > CreateSocket();
+	Result< void > Create();
 
   public:
 	ServerSocket();
@@ -21,5 +21,3 @@ class ServerSocket : public Socket
 };
 
 #endif
-
-// server.CreateSocket()

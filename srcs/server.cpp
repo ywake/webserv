@@ -12,7 +12,7 @@ Server::~Server() {}
 
 Result< void > Server::Run()
 {
-	Result< void > res = listen_sock_.CreateSocketOnce();
+	Result< void > res = listen_sock_.CreateOnce();
 	if (res.IsErr()) {
 		return res;
 	}

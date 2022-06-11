@@ -1,9 +1,10 @@
-#include "server_socket.hpp"
-#include <errno.h>
+#include <cerrno>
+#include <iostream>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <iostream>
+
+#include "server_socket.hpp"
 
 ServerSocket::ServerSocket() :
 	Socket() {}
@@ -22,7 +23,7 @@ Result< void > ServerSocket::Listen()
 	return Result< void >();
 }
 
-Result< void > ServerSocket::CreateSocket()
+Result< void > ServerSocket::Create()
 {
 	t_addrinfo *lst;
 	t_addrinfo hints = {
