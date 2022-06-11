@@ -43,9 +43,8 @@ int main(void)
 
 	// Vector< Server > servers = init(confs); // socket, bind, listen
 
-	ServerSocket sock = ServerSocket(NULL, (char *)"80");
-	Server server(sock);
-	Result< void > res = server.Run();
+	Server server;
+	Result< void > res = server.Listen();
 	if (res.IsErr()) {
 		std::cout << res.Err() << std::endl;
 	}

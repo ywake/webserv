@@ -14,8 +14,8 @@ Server::~Server() {}
 
 Result< void > Server::CreateListenSocket()
 {
-	t_addrinfo *lst;
-	t_addrinfo hints = {
+	AddrInfo *lst;
+	AddrInfo hints = {
 		.ai_flags = AI_PASSIVE | AI_ADDRCONFIG | AI_NUMERICSERV,
 		.ai_socktype = SOCK_STREAM,
 	};
@@ -32,7 +32,7 @@ Result< void > Server::CreateListenSocket()
 	return Result< void >(res.err);
 }
 
-Result< int > Server::TryBindSocket(t_addrinfo *lst)
+Result< int > Server::TryBindSocket(AddrInfo *lst)
 {
 	int optval = 1;
 
@@ -72,6 +72,14 @@ Result< void > Server::Listen()
 	return Result< void >();
 }
 
-// Result< void > Accept();
-// Result< void > Serve();
+Result< void > Server::Accept()
+{
+	int connfd = accept(listen_fd_.GetFd(), NULL, NULL);
+	if (connfd < 0) {
+		return Result< void >(Error(errno));
+	}
+	connected_socket_ = ConnectedSocket(connfd);
+	return Result< void >();
+}
+
 // Result< void > Close();
