@@ -5,11 +5,18 @@
 
 #include "server.hpp"
 
-Server::Server(std::string port = "80")
+Server::Server(std::string port)
 	: port_(port), listen_fd_() {}
 
-Server::Server(const Server &server) {}
-Server &Server::operator=(const Server &server) {}
+Server::Server(const Server &server)
+{
+	(void)server;
+}
+Server &Server::operator=(const Server &server)
+{
+	(void)server;
+	return *this;
+}
 Server::~Server() {}
 
 Result< void > Server::CreateListenSocket()

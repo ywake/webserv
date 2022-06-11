@@ -1,6 +1,6 @@
-#include <unistd.h>
-
 #include "fd.hpp"
+
+#include <unistd.h>
 
 std::map< int, std::size_t > Fd::fd_count_ = std::map< int, std::size_t >();
 
