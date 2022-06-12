@@ -1,6 +1,8 @@
 #include "connected_socket.hpp"
 
+#include <cerrno>
 #include <sys/socket.h>
+#include <unistd.h>
 
 ConnectedSocket::ConnectedSocket(int fd)
 	: Fd(fd), buf_(), read_bytes_(0) {}

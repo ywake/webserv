@@ -22,11 +22,10 @@ Server::~Server() {}
 Result< void > Server::CreateListenSocket()
 {
 	AddrInfo *lst;
-	AddrInfo hints = {
-		.ai_flags = AI_PASSIVE | AI_ADDRCONFIG | AI_NUMERICSERV,
-		.ai_socktype = SOCK_STREAM,
-	};
+	AddrInfo hints = {};
 
+	hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG | AI_NUMERICSERV;
+	hints.ai_socktype = SOCK_STREAM;
 	int err = getaddrinfo(NULL, port_.c_str(), &hints, &lst);
 	if (err != 0) {
 		return Result< void >(Error(gai_strerror(err)));

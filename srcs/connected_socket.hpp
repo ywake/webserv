@@ -3,6 +3,7 @@
 
 #include "fd.hpp"
 #include "result.hpp"
+#include <unistd.h>
 
 class ConnectedSocket : public Fd
 {

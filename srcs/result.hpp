@@ -10,14 +10,14 @@ class Result
 
   public:
 	Error err;
-	Result() :
-		val(), err(){};
-	Result(T v) :
-		val(v), err(){};
-	Result(T v, Error e) :
-		val(v), err(e){};
-	Result(Error e) :
-		err(e){};
+	Result()
+		: val(), err(){};
+	Result(T v)
+		: val(v), err(){};
+	Result(T v, Error e)
+		: val(v), err(e){};
+	Result(Error e)
+		: err(e){};
 	bool IsOk()
 	{
 		return !err.IsErr();
@@ -40,10 +40,10 @@ class Result< void >
 {
   public:
 	Error err;
-	Result() :
-		err(){};
-	Result(Error e) :
-		err(e){};
+	Result()
+		: err(){};
+	Result(Error e)
+		: err(e){};
 	bool IsOk()
 	{
 		return !err.IsErr();
