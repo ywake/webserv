@@ -9,6 +9,6 @@
   NamespaceIndentation: All,
   BreakConstructorInitializers: BeforeColon,
   AlwaysBreakTemplateDeclarations: Yes,
-  SpacesInAngles: true,
+  SpacesInAngles: Leave,
   ColumnLimit: 0,
 }
