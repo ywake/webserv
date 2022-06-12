@@ -19,7 +19,7 @@ Server &Server::operator=(const Server &server)
 }
 Server::~Server() {}
 
-Result< void > Server::CreateListenSocket()
+Result<void> Server::CreateListenSocket()
 {
 	AddrInfo *lst;
 	AddrInfo hints = {};
@@ -28,17 +28,17 @@ Result< void > Server::CreateListenSocket()
 	hints.ai_socktype = SOCK_STREAM;
 	int err = getaddrinfo(NULL, port_.c_str(), &hints, &lst);
 	if (err != 0) {
-		return Result< void >(Error(gai_strerror(err)));
+		return Result<void>(Error(gai_strerror(err)));
 	}
-	Result< int > res = TryBindSocket(lst);
+	Result<int> res = TryBindSocket(lst);
 	if (res.IsOk()) {
 		listen_fd_ = Fd(res.Val());
 	}
 	freeaddrinfo(lst);
-	return Result< void >(res.err);
+	return Result<void>(res.err);
 }
 
-Result< int > Server::TryBindSocket(AddrInfo *lst)
+Result<int> Server::TryBindSocket(AddrInfo *lst)
 {
 	int optval = 1;
 
@@ -49,56 +49,56 @@ Result< int > Server::TryBindSocket(AddrInfo *lst)
 			continue;
 		}
 		if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0) {
-			return Result< int >(-1, Error(errno));
+			return Result<int>(-1, Error(errno));
 		}
 		if (bind(sock_fd, lst->ai_addr, lst->ai_addrlen) == 0) {
-			return Result< int >(sock_fd);
+			return Result<int>(sock_fd);
 		}
 		if (close(sock_fd) < 0) {
-			return Result< int >(-1, Error(errno));
+			return Result<int>(-1, Error(errno));
 		}
 	}
-	return Result< int >(-1, Error("bind fail"));
+	return Result<int>(-1, Error("bind fail"));
 }
 
-Result< void > Server::Listen()
+Result<void> Server::Listen()
 {
 	if (listen_fd_.GetFd() != Fd::kNofd) {
-		return Result< void >();
+		return Result<void>();
 	}
 
-	Result< void > res = CreateListenSocket();
+	Result<void> res = CreateListenSocket();
 	if (res.IsErr()) {
 		return res;
 	}
 
 	if (listen(listen_fd_.GetFd(), kListenq) < 0) {
-		return Result< void >(Error(errno));
+		return Result<void>(Error(errno));
 	}
-	return Result< void >();
+	return Result<void>();
 }
 
-Result< void > Server::Accept()
+Result<void> Server::Accept()
 {
 	int connfd = accept(listen_fd_.GetFd(), NULL, NULL);
 	if (connfd < 0) {
-		return Result< void >(Error(errno));
+		return Result<void>(Error(errno));
 	}
 	connected_socket_ = ConnectedSocket(connfd);
-	return Result< void >();
+	return Result<void>();
 }
 
-Result< void > Server::Serve()
+Result<void> Server::Serve()
 {
-	Result< ssize_t > res_recv = connected_socket_.Recv();
+	Result<ssize_t> res_recv = connected_socket_.Recv();
 	if (res_recv.IsErr()) {
-		return Result< void >(Error(errno));
+		return Result<void>(Error(errno));
 	}
-	Result< ssize_t > res_send = connected_socket_.Send();
+	Result<ssize_t> res_send = connected_socket_.Send();
 	if (res_recv.IsErr()) {
-		return Result< void >(Error(errno));
+		return Result<void>(Error(errno));
 	}
 	connected_socket_.~ConnectedSocket();
-	return Result< void >();
+	return Result<void>();
 }
 // Result< void > Close();

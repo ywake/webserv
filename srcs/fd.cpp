@@ -2,7 +2,7 @@
 
 #include <unistd.h>
 
-std::map< int, std::size_t > Fd::fd_count_ = std::map< int, std::size_t >();
+std::map<int, std::size_t> Fd::fd_count_ = std::map<int, std::size_t>();
 
 Fd::Fd()
 	: fd_(kNofd) {}

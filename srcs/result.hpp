@@ -2,7 +2,7 @@
 #define RESULT_HPP
 #include "error.hpp"
 
-template < typename T >
+template <typename T>
 class Result
 {
   private:
@@ -36,7 +36,7 @@ class Result
 	}
 };
 template <>
-class Result< void >
+class Result<void>
 {
   public:
 	Error err;

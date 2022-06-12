@@ -16,7 +16,7 @@ class ConnectedSocket : public Fd
 	~ConnectedSocket();
 	ConnectedSocket(ConnectedSocket const &other);
 	ConnectedSocket &operator=(ConnectedSocket const &other);
-	Result< ssize_t > Recv();
-	Result< ssize_t > Send();
+	Result<ssize_t> Recv();
+	Result<ssize_t> Send();
 };
 #endif

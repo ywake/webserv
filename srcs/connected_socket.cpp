@@ -21,20 +21,20 @@ ConnectedSocket &ConnectedSocket::operator=(ConnectedSocket const &other)
 	return *this;
 }
 
-Result< ssize_t > ConnectedSocket::Recv()
+Result<ssize_t> ConnectedSocket::Recv()
 {
 	read_bytes_ = recv(fd_, buf_, 1024, 0);
 	if (read_bytes_ < 0) {
-		return Result< ssize_t >(Error(errno));
+		return Result<ssize_t>(Error(errno));
 	}
-	return Result< ssize_t >(read_bytes_);
+	return Result<ssize_t>(read_bytes_);
 }
 
-Result< ssize_t > ConnectedSocket::Send()
+Result<ssize_t> ConnectedSocket::Send()
 {
 	ssize_t res = send(fd_, buf_, read_bytes_, 0);
 	if (res < 0) {
-		return Result< ssize_t >(Error(errno));
+		return Result<ssize_t>(Error(errno));
 	}
-	return Result< ssize_t >(res);
+	return Result<ssize_t>(res);
 }

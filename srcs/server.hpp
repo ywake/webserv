@@ -17,8 +17,8 @@ class Server
 	Fd listen_fd_;
 	ConnectedSocket connected_socket_;
 
-	Result< void > CreateListenSocket();
-	Result< int > TryBindSocket(AddrInfo *lst);
+	Result<void> CreateListenSocket();
+	Result<int> TryBindSocket(AddrInfo *lst);
 
   public:
 	Server(std::string port = "80");
@@ -26,9 +26,9 @@ class Server
 	Server &operator=(const Server &server);
 	~Server();
 
-	Result< void > Listen();
-	Result< void > Accept();
-	Result< void > Serve();
+	Result<void> Listen();
+	Result<void> Accept();
+	Result<void> Serve();
 	// Result< void > Close();
 };
 

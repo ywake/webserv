@@ -9,7 +9,7 @@ class Fd
 	static const int kNofd = -2;
 
   protected:
-	static std::map< int, std::size_t > fd_count_;
+	static std::map<int, std::size_t> fd_count_;
 	int fd_;
 
   public:

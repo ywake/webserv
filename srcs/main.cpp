@@ -27,7 +27,7 @@ int main(void)
 	// Vector< Server > servers = init(confs); // socket, bind, listen
 
 	Server server;
-	Result< void > res = server.Listen();
+	Result<void> res = server.Listen();
 	if (res.IsErr()) {
 		std::cout << res.Err() << std::endl;
 	}
