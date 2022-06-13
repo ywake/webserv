@@ -8,9 +8,10 @@ void ServersInit(EventPool &pool, std::vector<Server> &servers)
 {
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it) {
 		Server *s = &(*it);
-		pool.AddEvent(Event(s->listen_fd_, s, OnAccept));
+		pool.UpdateEvent(Event(s->listen_fd_, s, OnAccept));
 	}
 }
+
 #include <fcntl.h>
 int main()
 {
@@ -21,14 +22,14 @@ int main()
 	servers.push_back(Server("8880"));
 
 	ServersInit(pool, servers);
-	SelectFds set;
+
 	while (true) {
-		pool.CollectFds(&set);
-		int ret = select(set.nfds, &set.read_set, NULL, NULL, NULL);
-		log("select", ret);
-		if (ret <= 0) {
+		std::vector<int> ready;
+		Result<void> ret = pool.MonitorFds(ready);
+		if (ret.IsErr()) {
+			log("monitor", ret.Err());
 			continue;
 		}
-		pool.EventsTrigger(set);
+		pool.TriggerEvents(ready);
 	}
 }

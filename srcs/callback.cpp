@@ -12,6 +12,7 @@ Event OnAccept(int fd, Server *s)
 {
 	log(s->listen_fd_, ": OnAccept()");
 	int conn_fd = accept(fd, NULL, NULL);
+	log(s->listen_fd_, ": After OnAccept()");
 	return Event(conn_fd, s, OnServe);
 }
 

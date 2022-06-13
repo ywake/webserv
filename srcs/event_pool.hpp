@@ -8,6 +8,7 @@
 
 #include "debug.hpp"
 #include "event.hpp"
+#include "result.hpp"
 
 typedef struct {
 	int nfds;
@@ -18,45 +19,68 @@ typedef struct {
 
 class EventPool
 {
-	typedef std::map<int, Event>::iterator iterator;
-
   private:
 	std::map<int, Event> pool_;
+	std::vector<int> ready_fds_;
 
   public:
 	EventPool()
 		: pool_(){};
 	~EventPool(){};
-	void AddEvent(Event e)
+	void UpdateEvent(Event e)
 	{
-		log(e.fd_, "event add");
-		pool_[e.fd_] = e;
+		switch (e.state_) {
+		case Event::RUNNING:
+			pool_[e.fd_] = e;
+			log(e.fd_, "event add");
+			break;
+		case Event::STOPPED:
+			pool_.erase(e.fd_);
+			close(e.fd_);
+			log(e.fd_, "event stop");
+			break;
+		}
 	}
 
-	void CollectFds(SelectFds *set)
+	// push_back ready_fds in vector
+	Result<void> MonitorFds(std::vector<int> &ready)
 	{
-		FD_ZERO(&set->read_set);
+		typedef std::map<int, Event>::iterator iterator;
+
+		SelectFds set;
+		FD_ZERO(&set.read_set);
 		for (iterator it = pool_.begin(); it != pool_.end(); ++it) {
 			int fd = (*it).first;
-			FD_SET(fd, &set->read_set);
+			FD_SET(fd, &set.read_set);
 		}
 		int max_fd = pool_.rbegin()->first;
-		set->nfds = max_fd + 1;
-	}
+		set.nfds = max_fd + 1;
 
-	void EventsTrigger(SelectFds &set)
-	{
+		if (select(set.nfds, &set.read_set, NULL, NULL, NULL) <= 0) {
+			return Result<void >(Error(errno));
+		}
+
 		for (iterator it = pool_.begin(); it != pool_.end(); it++) {
 			int fd = (*it).first;
-			Event event = (*it).second;
-
 			if (FD_ISSET(fd, &set.read_set)) {
-				Event res = event.Run();
-				AddEvent(res);
+				ready.push_back(fd);
 			}
 			// if (FD_ISSET(fd, &set->write_set)) {
 			// 	event.Run();
 			// }
+		}
+
+		return Result<void>();
+	}
+
+	void TriggerEvents(std::vector<int> &ready)
+	{
+		typedef std::vector<int>::iterator iterator;
+
+		for (iterator it = ready.begin(); it != ready.end(); it++) {
+			Event event = pool_[*it];
+			Event res = event.Run();
+			UpdateEvent(res);
 		}
 	}
 };
