@@ -1,9 +1,11 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "connected_socket.hpp"
-#include "fd.hpp"
-#include "result.hpp"
+#include <netdb.h>
+#include <string>
+#include <sys/socket.h>
+
+#include "debug.hpp"
 
 class Server
 {
@@ -12,24 +14,34 @@ class Server
 	typedef struct addrinfo AddrInfo;
 
   private:
-	static const int kListenq = 1024;
-	std::string port_;
-	Fd listen_fd_;
-	ConnectedSocket connected_socket_;
-
-	Result<void> CreateListenSocket();
-	Result<int> TryBindSocket(AddrInfo *lst);
-
   public:
-	Server(std::string port = "80");
-	Server(const Server &server);
-	Server &operator=(const Server &server);
-	~Server();
+	std::string port_;
+	int listen_fd_;
+	Server(std::string port = "80")
+		: port_(port)
+	{
+		log("server start", port);
+		AddrInfo *lst;
+		AddrInfo hints = {};
 
-	Result<void> Listen();
-	Result<void> Accept();
-	Result<void> Serve();
-	// Result< void > Close();
+		hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG | AI_NUMERICSERV;
+		hints.ai_socktype = SOCK_STREAM;
+		getaddrinfo(NULL, port_.c_str(), &hints, &lst);
+
+		// try bind socket
+		int optval = 1;
+		for (; lst; lst = lst->ai_next) {
+			listen_fd_ = socket(lst->ai_family, lst->ai_socktype, lst->ai_protocol);
+			log("listen_fd", listen_fd_);
+			setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int));
+			if (bind(listen_fd_, lst->ai_addr, lst->ai_addrlen) == 0) {
+				break;
+			}
+		}
+		freeaddrinfo(lst);
+		listen(listen_fd_, 1024);
+	};
+	~Server(){};
 };
 
-#endif // SERVER_HPP
+#endif

@@ -1,35 +1,35 @@
-#include <map>
 #include <vector>
 
+#include "callback.hpp"
+#include "event_pool.hpp"
 #include "server.hpp"
-#include <sys/socket.h>
-#include <sys/types.h>
 
-#include <iostream>
-#include <unistd.h>
-
-typedef struct sockaddr t_sa;
-typedef struct sockaddr_storage t_sa_storage;
-typedef struct addrinfo t_addrinfo;
-
-void run_event_loop(Server &server)
+void ServersInit(EventPool &pool, std::vector<Server> &servers)
 {
-	while (true) {
-		server.Accept();
-		server.Serve();
+	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it) {
+		Server *s = &(*it);
+		pool.AddEvent(Event(s->listen_fd_, s, OnAccept));
 	}
 }
-
-int main(void)
+#include <fcntl.h>
+int main()
 {
-	// t_conf confs = Conf(filepath);
+	EventPool pool;
 
-	// Vector< Server > servers = init(confs); // socket, bind, listen
+	std::vector<Server> servers;
+	servers.push_back(Server("8080"));
+	servers.push_back(Server("8880"));
 
-	Server server;
-	Result<void> res = server.Listen();
-	if (res.IsErr()) {
-		std::cout << res.Err() << std::endl;
+	ServersInit(pool, servers);
+	SelectFds set;
+	while (true) {
+		pool.CollectFds(&set);
+
+		int ret = select(set.nfds, &set.read_set, NULL, NULL, NULL);
+		log("select", ret);
+		if (ret <= 0) {
+			continue;
+		}
+		pool.EventsTrigger(set);
 	}
-	run_event_loop(server); // select, accept, recv, send
 }

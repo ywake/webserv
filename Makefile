@@ -8,7 +8,7 @@ SRCS	:= $(shell find $(SRCDIR:%/=%) -name "*.cpp" -type f)
 TEST_CPP:=
 
 CXX		:= c++
-CXXFLAGS:= -g -Wall -Werror -Wextra -std=c++98 -pedantic
+CXXFLAGS:= -g -Wall -Werror -Wextra -std=c++98 -pedantic -fsanitize=address
 
 OBJDIR	:= build/
 OBJS	:= $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCS:%.cpp=%.o))
