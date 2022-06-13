@@ -24,7 +24,6 @@ int main()
 	SelectFds set;
 	while (true) {
 		pool.CollectFds(&set);
-
 		int ret = select(set.nfds, &set.read_set, NULL, NULL, NULL);
 		log("select", ret);
 		if (ret <= 0) {

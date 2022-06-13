@@ -36,36 +36,24 @@ class EventPool
 	void CollectFds(SelectFds *set)
 	{
 		FD_ZERO(&set->read_set);
-		set->nfds = 0;
 		for (iterator it = pool_.begin(); it != pool_.end(); ++it) {
 			int fd = (*it).first;
-
 			FD_SET(fd, &set->read_set);
-			set->nfds = std::max(set->nfds, fd + 1);
 		}
+		int max_fd = pool_.rbegin()->first;
+		set->nfds = max_fd + 1;
 	}
 
 	void EventsTrigger(SelectFds &set)
 	{
-		for (iterator it = pool_.begin(); it != pool_.end();) {
+		for (iterator it = pool_.begin(); it != pool_.end(); it++) {
 			int fd = (*it).first;
 			Event event = (*it).second;
 
 			if (FD_ISSET(fd, &set.read_set)) {
-				std::vector<Event> res = event.Run();
-				iterator tmp = it;
-				++tmp;
-				log(fd, "drop event");
-				pool_.erase(fd);
-				it = tmp;
-				for (std::vector<Event>::iterator it = res.begin(); it != res.end(); ++it) {
-					Event e = *it;
-					AddEvent(e);
-				}
-			} else {
-				++it;
+				Event res = event.Run();
+				AddEvent(res);
 			}
-
 			// if (FD_ISSET(fd, &set->write_set)) {
 			// 	event.Run();
 			// }
