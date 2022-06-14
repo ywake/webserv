@@ -27,7 +27,7 @@ Result<void> Select::Import(iterator begin, iterator end)
 {
 	FD_ZERO(&read_set_);
 	for (iterator it = begin; it != end; ++it) {
-		int fd = (*it).first;
+		int fd = it->first.GetFd();
 		FD_SET(fd, &read_set_);
 		nfds_ = std::max(nfds_, fd + 1);
 	}

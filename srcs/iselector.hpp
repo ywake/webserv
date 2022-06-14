@@ -3,13 +3,14 @@
 
 #include <map>
 
-#include "event.hpp"
+#include "fd.hpp"
 #include "result.hpp"
+#include "state.hpp"
 
 class ISelector
 {
   protected:
-	typedef std::map<int, Event>::iterator iterator;
+	typedef std::map<Fd, State::FdState>::iterator iterator;
 
   public:
 	virtual Result<void> Import(iterator begin, iterator end) = 0;
