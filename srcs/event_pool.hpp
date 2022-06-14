@@ -2,85 +2,71 @@
 #define EVENT_POOL_HPP
 
 #include <algorithm>
+#include <cerrno>
 #include <map>
 #include <sys/select.h>
 #include <unistd.h>
 
+#include "callback.hpp"
 #include "debug.hpp"
-#include "event.hpp"
+#include "fd.hpp"
+#include "iselector.hpp"
 #include "result.hpp"
-
-typedef struct {
-	int nfds;
-	fd_set read_set;
-	// int nb_read_set;
-	// fd_set write_set;
-} SelectFds;
-
+#include "state.hpp"
 class EventPool
 {
   private:
-	std::map<int, Event> pool_;
-	std::vector<int> ready_fds_;
+	std::map<Fd, State::FdState> state_map_;
+	std::map<State::State, Callback::Callback> event_map_;
+
+  private:
+	Callback::FdInfo RunEvent(int fd)
+	{
+		State::FdState state = state_map_[fd];
+		Callback::Callback event = event_map_[state.state_];
+		return event(fd, state.server_);
+	}
 
   public:
 	EventPool()
-		: pool_(){};
+		: state_map_()
+	{
+		event_map_[State::LISTEN] = Callback::Accept;
+		event_map_[State::RECV] = Callback::Serve;
+		event_map_[State::SEND] = Callback::Serve;
+	};
 	~EventPool(){};
-	void UpdateEvent(Event e)
+	void UpdateState(const Fd &fd, const State::FdState &state)
 	{
-		switch (e.state_) {
-		case Event::RUNNING:
-			pool_[e.fd_] = e;
-			log(e.fd_, "event add");
+		switch (state.state_) {
+		case State::END:
+			state_map_.erase(fd);
+			log(fd, "event stop");
 			break;
-		case Event::STOPPED:
-			pool_.erase(e.fd_);
-			close(e.fd_);
-			log(e.fd_, "event stop");
+		default:
+			state_map_[fd] = state;
+			log(fd, "event add");
 			break;
 		}
 	}
 
-	// push_back ready_fds in vector
-	Result<void> MonitorFds(std::vector<int> &ready)
+	Result<std::vector<int> > MonitorFds(ISelector *selector)
 	{
-		typedef std::map<int, Event>::iterator iterator;
-
-		SelectFds set;
-		FD_ZERO(&set.read_set);
-		for (iterator it = pool_.begin(); it != pool_.end(); ++it) {
-			int fd = (*it).first;
-			FD_SET(fd, &set.read_set);
+		selector->Import(state_map_.begin(), state_map_.end()); //[TODO] allocate失敗
+		Result<void> res = selector->Run();
+		if (res.IsErr()) {
+			return Result<std::vector<int> >(res.err);
 		}
-		int max_fd = pool_.rbegin()->first;
-		set.nfds = max_fd + 1;
-
-		if (select(set.nfds, &set.read_set, NULL, NULL, NULL) <= 0) {
-			return Result<void >(Error(errno));
-		}
-
-		for (iterator it = pool_.begin(); it != pool_.end(); it++) {
-			int fd = (*it).first;
-			if (FD_ISSET(fd, &set.read_set)) {
-				ready.push_back(fd);
-			}
-			// if (FD_ISSET(fd, &set->write_set)) {
-			// 	event.Run();
-			// }
-		}
-
-		return Result<void>();
+		return selector->Export();
 	}
 
-	void TriggerEvents(std::vector<int> &ready)
+	void TriggerEvents(const std::vector<int> &ready)
 	{
-		typedef std::vector<int>::iterator iterator;
+		typedef std::vector<int>::const_iterator iterator;
 
 		for (iterator it = ready.begin(); it != ready.end(); it++) {
-			Event event = pool_[*it];
-			Event res = event.Run();
-			UpdateEvent(res);
+			Callback::FdInfo fdinfo = RunEvent(*it);
+			UpdateState(fdinfo.fd_, fdinfo.state_);
 		}
 	}
 };
