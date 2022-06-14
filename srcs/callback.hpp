@@ -5,7 +5,8 @@
 #include "server.hpp"
 #include <vector>
 
-Event OnAccept(int fd, Server *s);
-Event OnServe(int fd, Server *s);
+std::vector<Event> OnAccept(int fd, Server *s);
+std::vector<Event> OnServe(int fd, Server *s);
+std::vector<Event> Close(int fd, Server *s);
 
 #endif

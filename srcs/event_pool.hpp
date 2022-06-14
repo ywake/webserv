@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cerrno>
 #include <map>
+#include <queue>
 #include <sys/select.h>
 #include <unistd.h>
 
@@ -14,8 +15,11 @@
 
 class EventPool
 {
+  public:
+	typedef std::queue<Event> Events;
+
   private:
-	std::map<int, Event> pool_;
+	std::map<int, Events> pool_;
 
   public:
 	EventPool()
@@ -23,17 +27,18 @@ class EventPool
 	~EventPool(){};
 	void UpdateEvent(Event e)
 	{
-		switch (e.state_) {
-		case Event::RUNNING:
-			pool_[e.fd_] = e;
-			log(e.fd_, "event add");
-			break;
-		case Event::STOPPED:
-			pool_.erase(e.fd_);
-			close(e.fd_);
-			log(e.fd_, "event stop");
-			break;
-		}
+		pool_[e.fd_].push(e);
+		// switch (e.state_) {
+		// case Event::RUNNING:
+		// 	pool_[e.fd_] = e;
+		// 	log(e.fd_, "event add");
+		// 	break;
+		// case Event::STOPPED:
+		// 	pool_.erase(e.fd_);
+		// 	close(e.fd_);
+		// 	log(e.fd_, "event stop");
+		// 	break;
+		// }
 	}
 
 	Result<void> MonitorFds(ISelector *selector, std::vector<int> &ready)
@@ -51,10 +56,19 @@ class EventPool
 	{
 		typedef std::vector<int>::const_iterator iterator;
 
-		for (iterator it = ready.begin(); it != ready.end(); it++) {
-			Event event = pool_[*it];
-			Event res = event.Run();
-			UpdateEvent(res);
+		for (iterator it = ready.begin(); it != ready.end(); ++it) {
+			int fd = *it;
+
+			Event event = pool_[fd].front();
+			pool_[fd].pop();
+			std::vector<Event> res = event.Run();
+			for (std::vector<Event>::iterator it = res.begin(); it != res.end(); ++it) {
+				UpdateEvent(*it);
+			}
+			if (pool_[fd].empty()) {
+				pool_.erase(fd);
+				close(fd);
+			}
 		}
 	}
 };

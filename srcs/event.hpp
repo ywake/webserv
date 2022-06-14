@@ -7,7 +7,8 @@
 
 class Event
 {
-	typedef Event (*Callback)(int fd, Server *s);
+	typedef std::vector<Event> CallbackReturn;
+	typedef CallbackReturn (*Callback)(int fd, Server *s);
 
   public:
 	typedef enum {
@@ -27,7 +28,7 @@ class Event
 	Event(const Event &copy)
 		: fd_(copy.fd_), server_(copy.server_), func_(copy.func_), state_(copy.state_){};
 	~Event(){};
-	Event Run()
+	std::vector<Event> Run()
 	{
 		log(fd_, "event run");
 		return func_(fd_, server_);

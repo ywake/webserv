@@ -13,8 +13,6 @@ void ServersInit(EventPool &pool, std::vector<Server> &servers)
 	}
 }
 
-#include <fcntl.h>
-
 #define SELECT
 #ifdef SELECT
 typedef Select Selector; //これインターフェースとやってること同じじゃね？
