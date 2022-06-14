@@ -7,38 +7,44 @@
 #include <sys/select.h>
 #include <unistd.h>
 
+#include "callback.hpp"
 #include "debug.hpp"
-#include "event.hpp"
+#include "fd.hpp"
 #include "iselector.hpp"
 #include "result.hpp"
-
+#include "state.hpp"
 class EventPool
 {
   private:
-	std::map<int, Event> pool_;
+	std::map<Fd, State::FdState> state_map_;
+	std::map<State::State, Callback::Callback> event_map_;
 
   public:
 	EventPool()
-		: pool_(){};
-	~EventPool(){};
-	void UpdateEvent(Event e)
+		: state_map_()
 	{
-		switch (e.state_) {
-		case Event::RUNNING:
-			pool_[e.fd_] = e;
-			log(e.fd_, "event add");
+		event_map_[State::LISTEN] = Callback::Accept;
+		event_map_[State::RECV] = Callback::Serve;
+		event_map_[State::SEND] = Callback::Serve;
+	};
+	~EventPool(){};
+	void UpdateState(const State::FdState &state)
+	{
+		switch (state.state_) {
+		case State::END:
+			state_map_.erase(state.fd_);
+			log(state.fd_, "event stop");
 			break;
-		case Event::STOPPED:
-			pool_.erase(e.fd_);
-			close(e.fd_);
-			log(e.fd_, "event stop");
+		default:
+			state_map_[state.fd_] = state;
+			log(state.fd_, "event add");
 			break;
 		}
 	}
 
 	Result<std::vector<int> > MonitorFds(ISelector *selector)
 	{
-		selector->Import(pool_.begin(), pool_.end()); //[TODO] allocate失敗
+		selector->Import(state_map_.begin(), state_map_.end()); //[TODO] allocate失敗
 		Result<void> res = selector->Run();
 		if (res.IsErr()) {
 			return Result<std::vector<int> >(res.err);
@@ -51,9 +57,11 @@ class EventPool
 		typedef std::vector<int>::const_iterator iterator;
 
 		for (iterator it = ready.begin(); it != ready.end(); it++) {
-			Event event = pool_[*it];
-			Event res = event.Run();
-			UpdateEvent(res);
+			int fd = *it;
+			State::FdState state = state_map_[fd];
+			Callback::Callback event = event_map_[state.state_];
+			State::FdState new_state = event(fd, state.server_);
+			UpdateState(new_state);
 		}
 	}
 };

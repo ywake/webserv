@@ -4,12 +4,13 @@
 #include "event_pool.hpp"
 #include "select.hpp"
 #include "server.hpp"
+#include "state.hpp"
 
 void ServersInit(EventPool &pool, std::vector<Server> &servers)
 {
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it) {
 		Server *s = &(*it);
-		pool.UpdateEvent(Event(s->listen_fd_, s, OnAccept));
+		pool.UpdateState(State::FdState(s->listen_fd_, State::LISTEN, s));
 	}
 }
 
