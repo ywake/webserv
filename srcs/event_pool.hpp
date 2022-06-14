@@ -20,7 +20,7 @@ class EventPool
 	std::map<State::State, Callback::Callback> event_map_;
 
   private:
-	State::FdInfo RunEvent(int fd)
+	Callback::FdInfo RunEvent(int fd)
 	{
 		State::FdState state = state_map_[fd];
 		Callback::Callback event = event_map_[state.state_];
@@ -65,7 +65,7 @@ class EventPool
 		typedef std::vector<int>::const_iterator iterator;
 
 		for (iterator it = ready.begin(); it != ready.end(); it++) {
-			State::FdInfo fdinfo = RunEvent(*it);
+			Callback::FdInfo fdinfo = RunEvent(*it);
 			UpdateState(fdinfo.fd_, fdinfo.state_);
 		}
 	}

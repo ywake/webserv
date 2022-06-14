@@ -8,9 +8,15 @@
 
 namespace Callback
 {
-	typedef State::FdInfo (*Callback)(int fd, Server *s);
+	typedef struct FdInfo {
+		Fd fd_;
+		State::FdState state_;
+		FdInfo(int fd, State::FdState state)
+			: fd_(fd), state_(state) {}
+	} FdInfo;
+	typedef FdInfo (*Callback)(int fd, Server *s);
 
-	State::FdInfo Accept(int fd, Server *s);
-	State::FdInfo Serve(int fd, Server *s);
+	FdInfo Accept(int fd, Server *s);
+	FdInfo Serve(int fd, Server *s);
 } // namespace Callback
 #endif
