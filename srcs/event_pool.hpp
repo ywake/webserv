@@ -28,16 +28,16 @@ class EventPool
 		event_map_[State::SEND] = Callback::Serve;
 	};
 	~EventPool(){};
-	void UpdateState(const State::FdState &state)
+	void UpdateState(const Fd &fd, const State::FdState &state)
 	{
 		switch (state.state_) {
 		case State::END:
-			state_map_.erase(state.fd_);
-			log(state.fd_, "event stop");
+			state_map_.erase(fd);
+			log(fd, "event stop");
 			break;
 		default:
-			state_map_[state.fd_] = state;
-			log(state.fd_, "event add");
+			state_map_[fd] = state;
+			log(fd, "event add");
 			break;
 		}
 	}
@@ -60,8 +60,10 @@ class EventPool
 			int fd = *it;
 			State::FdState state = state_map_[fd];
 			Callback::Callback event = event_map_[state.state_];
-			State::FdState new_state = event(fd, state.server_);
-			UpdateState(new_state);
+			State::FdInfo fdinfo = event(fd, state.server_);
+			Fd target = fdinfo.first;
+			State::FdState new_state = fdinfo.second;
+			UpdateState(target, new_state);
 		}
 	}
 };

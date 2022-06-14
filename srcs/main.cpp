@@ -10,7 +10,7 @@ void ServersInit(EventPool &pool, std::vector<Server> &servers)
 {
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it) {
 		Server *s = &(*it);
-		pool.UpdateState(State::FdState(s->listen_fd_, State::LISTEN, s));
+		pool.UpdateState(s->listen_fd_, State::FdState(State::LISTEN, s));
 	}
 }
 

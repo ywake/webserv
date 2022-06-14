@@ -1,6 +1,8 @@
 #ifndef STATE_HPP
 #define STATE_HPP
 
+#include <utility>
+
 #include "fd.hpp"
 #include "server.hpp"
 
@@ -13,11 +15,11 @@ namespace State
 		END
 	} State;
 	typedef struct FdState {
-		Fd fd_;
 		State state_;
 		Server *server_;
-		FdState(int fd = -1, State state = END, Server *server = NULL)
-			: fd_(fd), state_(state), server_(server) {}
+		FdState(State state = END, Server *server = NULL)
+			: state_(state), server_(server) {}
 	} FdState;
+	typedef std::pair<Fd, FdState> FdInfo;
 } // namespace State
 #endif

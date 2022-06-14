@@ -8,9 +8,9 @@
 
 namespace Callback
 {
-	typedef State::FdState (*Callback)(int fd, Server *s);
+	typedef State::FdInfo (*Callback)(int fd, Server *s);
 
-	State::FdState Accept(int fd, Server *s);
-	State::FdState Serve(int fd, Server *s);
+	State::FdInfo Accept(int fd, Server *s);
+	State::FdInfo Serve(int fd, Server *s);
 } // namespace Callback
 #endif
