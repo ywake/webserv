@@ -4,13 +4,13 @@
 #include <map>
 #include <vector>
 
-#include "event.hpp"
+#include "event_pool.hpp"
 #include "result.hpp"
 
 class ISelector
 {
   protected:
-	typedef std::map<int, Event>::iterator iterator;
+	typedef std::map<int, std::queue<Event> >::iterator iterator;
 
   public:
 	virtual Result<void> Import(iterator begin, iterator end) = 0;

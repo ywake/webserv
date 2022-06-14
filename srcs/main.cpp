@@ -13,11 +13,9 @@ void ServersInit(EventPool &pool, std::vector<Server> &servers)
 	}
 }
 
-#include <fcntl.h>
-
 #define SELECT
 #ifdef SELECT
-typedef Select Selector; //これインターフェースとやってること同じじゃね？
+typedef Select<std::map<int, EventPool::Events> > Selector; //これインターフェースとやってること同じじゃね？
 #endif
 
 int main()
