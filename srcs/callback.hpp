@@ -1,11 +1,16 @@
 #ifndef CALLBACK_HPP
 #define CALLBACK_HPP
 
-#include "event.hpp"
-#include "server.hpp"
 #include <vector>
 
-Event OnAccept(int fd, Server *s);
-Event OnServe(int fd, Server *s);
+#include "server.hpp"
+#include "state.hpp"
 
+namespace Callback
+{
+	typedef State::FdState (*Callback)(int fd, Server *s);
+
+	State::FdState Accept(int fd, Server *s);
+	State::FdState Serve(int fd, Server *s);
+} // namespace Callback
 #endif
