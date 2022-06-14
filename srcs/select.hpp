@@ -14,17 +14,13 @@ class Select : public ISelector
 	fd_set ready_set_;
 
   public:
-	std::vector<int>
-		ready_;
-
-  public:
 	Select();
 	~Select();
 	Select(Select const &copy);
 	Select &operator=(Select const &other);
 	Result<void> Import(iterator begin, iterator end);
 	Result<void> Run();
-	const std::vector<int> &Export();
+	void Export(std::vector<int> &ready);
 };
 
 #endif

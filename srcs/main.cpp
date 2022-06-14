@@ -30,11 +30,12 @@ int main()
 	ServersInit(pool, servers);
 	while (true) {
 		Selector selector;
-		Result<std::vector<int> > ret = pool.MonitorFds(&selector);
+		std::vector<int> ready;
+		Result<void> ret = pool.MonitorFds(&selector, ready);
 		if (ret.IsErr()) {
 			log("monitor", ret.Err());
 			continue;
 		}
-		pool.TriggerEvents(ret.Val());
+		pool.TriggerEvents(ready);
 	}
 }

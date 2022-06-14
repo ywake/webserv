@@ -2,6 +2,7 @@
 #define ISELECTOR_HPP
 
 #include <map>
+#include <vector>
 
 #include "event.hpp"
 #include "result.hpp"
@@ -14,7 +15,7 @@ class ISelector
   public:
 	virtual Result<void> Import(iterator begin, iterator end) = 0;
 	virtual Result<void> Run() = 0;
-	virtual const std::vector<int> &Export() = 0;
+	virtual void Export(std::vector<int> &ready) = 0;
 };
 
 #endif

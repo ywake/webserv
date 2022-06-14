@@ -11,7 +11,7 @@ Select::Select()
 Select::~Select() {}
 
 Select::Select(Select const &copy)
-	: nfds_(copy.nfds_), read_set_(copy.read_set_), ready_(copy.ready_) {}
+	: nfds_(copy.nfds_), read_set_(copy.read_set_) {}
 
 //[TODO]
 Select &Select::operator=(Select const &other)
@@ -43,15 +43,14 @@ Result<void> Select::Run()
 	return Result<void>();
 }
 
-const std::vector<int> &Select::Export()
+void Select::Export(std::vector<int> &ready)
 {
 	for (int i = 0; i < nfds_; i++) {
 		if (FD_ISSET(i, &ready_set_)) {
-			ready_.push_back(i);
+			ready.push_back(i);
 		}
 		// if (FD_ISSET(fd, &set->write_set)) {
 		// 	event.Run();
 		// }
 	}
-	return ready_;
 }

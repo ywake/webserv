@@ -36,14 +36,15 @@ class EventPool
 		}
 	}
 
-	Result<std::vector<int> > MonitorFds(ISelector *selector)
+	Result<void> MonitorFds(ISelector *selector, std::vector<int> &ready)
 	{
 		selector->Import(pool_.begin(), pool_.end()); //[TODO] allocate失敗
 		Result<void> res = selector->Run();
 		if (res.IsErr()) {
-			return Result<std::vector<int> >(res.err);
+			return res;
 		}
-		return selector->Export();
+		selector->Export(ready);
+		return Result<void>();
 	}
 
 	void TriggerEvents(const std::vector<int> &ready)
