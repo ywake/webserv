@@ -14,8 +14,7 @@ class Select : public ISelector
 	fd_set ready_set_;
 
   public:
-	std::vector<int>
-		ready_;
+	std::vector<int> ready_;
 
   public:
 	Select();
