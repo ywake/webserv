@@ -1,6 +1,7 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
+#include "fd.hpp"
 #include <iostream>
 
 #define DEBUG true
