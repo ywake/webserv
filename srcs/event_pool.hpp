@@ -19,6 +19,14 @@ class EventPool
 	std::map<Fd, State::FdState> state_map_;
 	std::map<State::State, Callback::Callback> event_map_;
 
+  private:
+	State::FdInfo RunEvent(int fd)
+	{
+		State::FdState state = state_map_[fd];
+		Callback::Callback event = event_map_[state.state_];
+		return event(fd, state.server_);
+	}
+
   public:
 	EventPool()
 		: state_map_()
@@ -57,13 +65,8 @@ class EventPool
 		typedef std::vector<int>::const_iterator iterator;
 
 		for (iterator it = ready.begin(); it != ready.end(); it++) {
-			int fd = *it;
-			State::FdState state = state_map_[fd];
-			Callback::Callback event = event_map_[state.state_];
-			State::FdInfo fdinfo = event(fd, state.server_);
-			Fd target = fdinfo.first;
-			State::FdState new_state = fdinfo.second;
-			UpdateState(target, new_state);
+			State::FdInfo fdinfo = RunEvent(*it);
+			UpdateState(fdinfo.fd_, fdinfo.state_);
 		}
 	}
 };
