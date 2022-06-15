@@ -19,7 +19,9 @@ Select &Select::operator=(Select const &other)
 	if (this == &other) {
 		return *this;
 	}
-	// other.ready_ = ready_;
+	read_set_ = other.read_set_;
+	ready_set_ = other.ready_set_;
+	nfds_ = other.nfds_;
 	return *this;
 }
 
@@ -27,7 +29,7 @@ Result<void> Select::Import(iterator begin, iterator end)
 {
 	FD_ZERO(&read_set_);
 	for (iterator it = begin; it != end; ++it) {
-		int fd = (*it).first;
+		int fd = it->fd_;
 		FD_SET(fd, &read_set_);
 		nfds_ = std::max(nfds_, fd + 1);
 	}
@@ -43,14 +45,16 @@ Result<void> Select::Run()
 	return Result<void>();
 }
 
-void Select::Export(std::vector<int> &ready)
+void Select::Export(fd_set *ready)
 {
-	for (int i = 0; i < nfds_; i++) {
-		if (FD_ISSET(i, &ready_set_)) {
-			ready.push_back(i);
-		}
-		// if (FD_ISSET(fd, &set->write_set)) {
-		// 	event.Run();
-		// }
-	}
+	// for (int i = 0; i < nfds_; i++) {
+	// 	printf("%d\n", FD_ISSET(i, ready));
+	// }
+	// printf("\n");
+	*ready = ready_set_;
+	//memcpy(ready, &read_set_, sizeof(fd_set));
+	// for (int i = 0; i < nfds_; i++) {
+	// 	printf("%d\n", FD_ISSET(i, ready));
+	// }
+	// printf("\n");
 }

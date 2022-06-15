@@ -9,7 +9,7 @@ void ServersInit(EventPool &pool, std::vector<Server> &servers)
 {
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it) {
 		Server *s = &(*it);
-		pool.UpdateEvent(Event(s->listen_fd_, s, OnAccept));
+		pool.Push(Event(s->listen_fd_, s));
 	}
 }
 
@@ -30,12 +30,11 @@ int main()
 	ServersInit(pool, servers);
 	while (true) {
 		Selector selector;
-		std::vector<int> ready;
-		Result<void> ret = pool.MonitorFds(&selector, ready);
+		Result<void> ret = pool.MonitorFds(&selector);
 		if (ret.IsErr()) {
 			log("monitor", ret.Err());
 			continue;
 		}
-		pool.TriggerEvents(ready);
+		pool.FlowPool();
 	}
 }

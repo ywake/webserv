@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include <deque>
 
 #include "event.hpp"
 #include "result.hpp"
@@ -10,12 +11,12 @@
 class ISelector
 {
   protected:
-	typedef std::map<int, Event>::iterator iterator;
+	typedef std::deque<Event>::iterator iterator;
 
   public:
 	virtual Result<void> Import(iterator begin, iterator end) = 0;
 	virtual Result<void> Run() = 0;
-	virtual void Export(std::vector<int> &ready) = 0;
+	virtual void Export(fd_set* ready) = 0;
 };
 
 #endif

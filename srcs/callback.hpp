@@ -7,5 +7,6 @@
 
 Event OnAccept(int fd, Server *s);
 Event OnServe(int fd, Server *s);
+Event OnClose(int fd, Server *s);
 
 #endif

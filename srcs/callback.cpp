@@ -10,10 +10,10 @@
 
 Event OnAccept(int fd, Server *s)
 {
-	log(s->listen_fd_, ": OnAccept()");
+	log(fd, ": OnAccept()");
 	int conn_fd = accept(fd, NULL, NULL);
-	log(s->listen_fd_, ": After OnAccept()");
-	return Event(conn_fd, s, OnServe);
+	log(fd, ": After OnAccept()");
+	return Event(conn_fd, s, A);
 }
 
 Event OnServe(int fd, Server *s)
@@ -23,5 +23,11 @@ Event OnServe(int fd, Server *s)
 	send(fd, s->port_.c_str(), s->port_.length() + 1, 0);
 	// close(fd);
 
-	return Event(fd, s, OnServe, Event::STOPPED);
+	return Event(fd, s, B);
+}
+
+Event OnClose(int fd, Server *s) {
+	log(s->listen_fd_, ": OnClose()");
+	close(fd);
+	return Event(fd, s, C);
 }

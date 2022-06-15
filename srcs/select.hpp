@@ -20,7 +20,7 @@ class Select : public ISelector
 	Select &operator=(Select const &other);
 	Result<void> Import(iterator begin, iterator end);
 	Result<void> Run();
-	void Export(std::vector<int> &ready);
+	void Export(fd_set* ready);
 };
 
 #endif
