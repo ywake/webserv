@@ -23,9 +23,9 @@ class EventPool
 	  public:
 		void Push(const Event &event)
 		{
-			if (event.state_ == END) {
-				return;
-			}
+			// if (event.state_ == END) {
+			// 	return;
+			// }
 			push_back(event);
 		}
 
@@ -66,11 +66,6 @@ class EventPool
 	// 	}
 	// }
 
-	void Push(const Event &event)
-	{
-		wait_pool_.Push(event);
-	}
-
 	Result<void> MonitorFds(ISelector *selector)
 	{
 		selector->Import(wait_pool_.begin(), wait_pool_.end()); //[TODO] allocate失敗
@@ -88,7 +83,6 @@ class EventPool
 		for (size_t i = 0; i < size; i++) {
 			Event event = wait_pool_.Pop();
 			log("fd", event.fd_);
-			log("state", event.state_);
 			if (FD_ISSET(event.fd_, &ready)) {
 				ready_pool_.Push(event);
 			} else {
@@ -100,8 +94,11 @@ class EventPool
 	void AddEvent(const EventResult &res)
 	{
 		State next = state_chain_[res.state_];
+		if (next == END) {
+			return;
+		}
 		Callback func = callback_[next];
-		wait_pool_.Push(Event(res.fd_, res.server_, func, next));
+		wait_pool_.Push(Event(res.fd_, res.server_, func));
 	}
 
 	void AddEvent(const Event &event)
@@ -114,7 +111,7 @@ class EventPool
 		while (!ready_pool_.empty()) {
 			Event event = ready_pool_.Pop();
 			EventResult res = event.Run();
-			if (event.state_ == ACCEPT) {
+			if (res.state_ == ACCEPT) {
 				AddEvent(event);
 			}
 			AddEvent(res);
