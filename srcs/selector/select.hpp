@@ -19,7 +19,7 @@ class Select : public ISelector
 	Select &operator=(Select const &other);
 	Result<void> Import(iterator begin, iterator end);
 	Result<void> Run();
-	void Export(fd_set *ready);
+	void Export(FdSet &ready);
 };
 
 #endif

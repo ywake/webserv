@@ -8,6 +8,7 @@
 #include "debug.hpp"
 #include "event.hpp"
 #include "event_result.hpp"
+#include "fdset.hpp"
 #include "iselector.hpp"
 #include "result.hpp"
 #include "state.hpp"
@@ -35,7 +36,7 @@ class EventPool
 	Pool ready_pool_;
 	std::map<State, State> state_chain_;
 	std::map<State, Callback> callback_;
-	fd_set ready;
+	FdSet ready;
 
   public:
 	EventPool()
@@ -53,12 +54,15 @@ class EventPool
 
 	Result<void> MonitorFds(ISelector *selector)
 	{
+		log("monitor in", "");
+		ready.Reset();
 		selector->Import(wait_pool_.begin(), wait_pool_.end()); //[TODO] allocate失敗
 		Result<void> res = selector->Run();
 		if (res.IsErr()) {
 			return res;
 		}
-		selector->Export(&ready);
+		selector->Export(ready);
+		log("monitor out", "");
 		return Result<void>();
 	}
 
@@ -67,8 +71,8 @@ class EventPool
 		size_t size = wait_pool_.size();
 		for (size_t i = 0; i < size; i++) {
 			Event event = wait_pool_.Pop();
-			log("fd", event.fd_);
-			if (FD_ISSET(event.fd_, &ready)) {
+			log("trans fd", event.fd_);
+			if (ready.IsReady(event.fd_)) {
 				ready_pool_.Push(event);
 			} else {
 				wait_pool_.Push(event);
@@ -96,10 +100,10 @@ class EventPool
 		while (!ready_pool_.empty()) {
 			Event event = ready_pool_.Pop();
 			EventResult res = event.Run();
+			AddEvent(res);
 			if (res.state_ == ACCEPT) {
 				AddEvent(event);
 			}
-			AddEvent(res);
 		}
 	}
 };

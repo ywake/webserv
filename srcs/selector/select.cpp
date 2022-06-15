@@ -39,22 +39,29 @@ Result<void> Select::Import(iterator begin, iterator end)
 Result<void> Select::Run()
 {
 	ready_set_ = read_set_;
+	log("connect fd", FD_ISSET(5, &ready_set_));
+	log("listen  fd", FD_ISSET(3, &ready_set_));
 	if (select(nfds_, &ready_set_, NULL, NULL, NULL) < 0) {
 		return Result<void>(Error(errno));
 	}
 	return Result<void>();
 }
 
-void Select::Export(fd_set *ready)
+void Select::Export(FdSet &ready)
 {
 	// for (int i = 0; i < nfds_; i++) {
 	// 	printf("%d\n", FD_ISSET(i, ready));
 	// }
 	// printf("\n");
-	*ready = ready_set_;
-	//memcpy(ready, &read_set_, sizeof(fd_set));
-	// for (int i = 0; i < nfds_; i++) {
-	// 	printf("%d\n", FD_ISSET(i, ready));
-	// }
-	// printf("\n");
+	for (int i = 0; i < nfds_; i++) {
+		if (FD_ISSET(i, &ready_set_)) {
+			log("FD_ISSET", i);
+			ready.SetFd(i);
+		}
+	}
+	// memcpy(ready, &read_set_, sizeof(fd_set));
+	//  for (int i = 0; i < nfds_; i++) {
+	//  	printf("%d\n", FD_ISSET(i, ready));
+	//  }
+	//  printf("\n");
 }
