@@ -4,7 +4,6 @@
 #include "debug.hpp"
 #include "server.hpp"
 #include "state.hpp"
-#include <vector>
 
 class EventResult
 {

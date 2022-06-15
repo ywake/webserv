@@ -3,10 +3,8 @@
 #include <iostream>
 
 #include "debug.hpp"
-#include "event.hpp"
 #include "server.hpp"
 #include <unistd.h>
-#include <vector>
 
 EventResult OnAccept(int fd, Server *s)
 {

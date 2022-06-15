@@ -1,12 +1,9 @@
 #ifndef EVENT_POOL_HPP
 #define EVENT_POOL_HPP
 
-#include <algorithm>
 #include <cerrno>
 #include <deque>
 #include <map>
-#include <sys/select.h>
-#include <unistd.h>
 
 #include "debug.hpp"
 #include "event.hpp"
