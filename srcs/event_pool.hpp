@@ -23,9 +23,6 @@ class EventPool
 	  public:
 		void Push(const Event &event)
 		{
-			// if (event.state_ == END) {
-			// 	return;
-			// }
 			push_back(event);
 		}
 
@@ -56,15 +53,6 @@ class EventPool
 		callback_[CLOSE] = OnClose;
 	};
 	~EventPool(){};
-
-	// void Print()
-	// {
-	// 	for (iterator it = pool_.begin(); it != pool_.end(); it++) {
-	// 		Event event = *it;
-	// 		log("fd", event.fd_);
-	// 		log("state", event.state_);
-	// 	}
-	// }
 
 	Result<void> MonitorFds(ISelector *selector)
 	{
