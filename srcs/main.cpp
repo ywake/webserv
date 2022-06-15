@@ -35,6 +35,7 @@ int main()
 			log("monitor", ret.Err());
 			continue;
 		}
-		pool.FlowPool();
+		pool.TransitionEvents();
+		pool.RunReadyEvents();
 	}
 }

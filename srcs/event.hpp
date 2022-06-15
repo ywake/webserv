@@ -13,7 +13,7 @@ class Event
 	Server *server_;
 	State state_;
 	Event();
-	Event(int fd, Server *server, State state = A);
+	Event(int fd, Server *server, State state = ACCEPT);
 	Event(const Event &copy);
 	~Event();
 };

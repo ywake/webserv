@@ -5,9 +5,9 @@
 #include "event.hpp"
 
 typedef enum {
-	A = 0,
-	B,
-	C,
+	ACCEPT = 0,
+	SERVE,
+	CLOSE,
 	END
 } State;
 
