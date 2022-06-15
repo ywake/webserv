@@ -22,7 +22,6 @@ Event OnServe(int fd, Server *s)
 
 	send(fd, s->port_.c_str(), s->port_.length() + 1, 0);
 	// close(fd);
-
 	return Event(fd, s, SERVE);
 }
 

@@ -20,8 +20,26 @@ class EventPool
 	typedef std::deque<Event>::iterator iterator;
 
   private:
-	std::deque<Event> wait_pool_;
-	std::deque<Event> ready_pool_;
+	class Pool : public std::deque<Event>
+	{
+	  public:
+		void Push(const Event &event)
+		{
+			if (event.state_ == END) {
+				return;
+			}
+			push_back(event);
+		}
+
+		Event Pop()
+		{
+			Event ret = front();
+			pop_front();
+			return ret;
+		}
+	};
+	Pool wait_pool_;
+	Pool ready_pool_;
 	std::map<State, State> state_chain_;
 	std::map<State, Callback> callback_;
 	fd_set ready;
@@ -51,10 +69,7 @@ class EventPool
 
 	void Push(const Event &event)
 	{
-		if (event.state_ == END) {
-			return;
-		}
-		wait_pool_.push_back(event);
+		wait_pool_.Push(event);
 	}
 
 	Result<void> MonitorFds(ISelector *selector)
@@ -76,12 +91,15 @@ class EventPool
 
 	void TransitionEvents()
 	{
-		for (size_t i = 0; i < wait_pool_.size(); i++) {
-			Event event = WaitPop();
+		size_t size = wait_pool_.size();
+		for (size_t i = 0; i < size; i++) {
+			Event event = wait_pool_.Pop();
+			log("fd", event.fd_);
+			log("state", event.state_);
 			if (FD_ISSET(event.fd_, &ready)) {
-				ready_pool_.push_back(event);
+				ready_pool_.Push(event);
 			} else {
-				Push(event);
+				wait_pool_.Push(event);
 			}
 		}
 	}
@@ -89,29 +107,14 @@ class EventPool
 	void RunReadyEvents()
 	{
 		while (!ready_pool_.empty()) {
-			Event event = ReadyPop();
+			Event event = ready_pool_.Pop();
 			Event res = RunEvent(event);
 			State next = state_chain_[res.state_];
 			if (event.state_ == ACCEPT) {
-				Push(event);
+				wait_pool_.Push(event);
 			}
-			Push(Event(res.fd_, res.server_, next));
+			wait_pool_.Push(Event(res.fd_, res.server_, next));
 		}
-	}
-
-  private:
-	Event WaitPop()
-	{
-		Event front = wait_pool_.front();
-		wait_pool_.pop_front();
-		return front;
-	}
-
-	Event ReadyPop()
-	{
-		Event front = ready_pool_.front();
-		ready_pool_.pop_front();
-		return front;
 	}
 };
 
