@@ -1,4 +1,5 @@
 #include "fdset.hpp"
+#include "debug.hpp"
 
 FdSet::FdSet()
 	: ready_fds_(1024) {}
@@ -16,18 +17,28 @@ FdSet::~FdSet() {}
 
 void FdSet::SetFd(int fd)
 {
-	std::size_t index = fd / sizeof(uint64_t);
+	std::size_t index = fd / kBits;
 	if (index >= ready_fds_.capacity()) {
 		ready_fds_.reserve(index * 2);
 	}
-	ready_fds_[index] |= 1 << (fd % sizeof(uint64_t));
+	log("set index", index);
+	log("set bit", fd % kBits);
+	ready_fds_[index] |= 1 << (fd % kBits);
 }
 
 bool FdSet::IsReady(int fd)
 {
-	std::size_t index = fd / sizeof(uint64_t);
+	std::size_t index = fd / kBits;
 	if (index >= ready_fds_.capacity()) {
 		return false;
 	}
-	return ready_fds_[index] & (1 << (fd % sizeof(uint64_t)));
+	log("ready index", index);
+	log("ready bit", fd % kBits);
+	log("is ready", (bool)(ready_fds_[index] & (1 << (fd % kBits))));
+	return ready_fds_[index] & (1 << (fd % kBits));
+}
+
+void FdSet::Reset()
+{
+	ready_fds_ = std::vector<uint64_t>(ready_fds_.size(), 0);
 }
