@@ -10,15 +10,13 @@
 
 #include "debug.hpp"
 #include "event.hpp"
+#include "event_result.hpp"
 #include "iselector.hpp"
 #include "result.hpp"
 #include "state.hpp"
 
 class EventPool
 {
-	typedef Event (*Callback)(int fd, Server *s);
-	typedef std::deque<Event>::iterator iterator;
-
   private:
 	class Pool : public std::deque<Event>
 	{
@@ -38,6 +36,7 @@ class EventPool
 			return ret;
 		}
 	};
+	typedef Pool::iterator iterator;
 	Pool wait_pool_;
 	Pool ready_pool_;
 	std::map<State, State> state_chain_;
@@ -83,12 +82,6 @@ class EventPool
 		return Result<void>();
 	}
 
-	Event RunEvent(Event &event)
-	{
-		Callback func = callback_[event.state_];
-		return func(event.fd_, event.server_);
-	}
-
 	void TransitionEvents()
 	{
 		size_t size = wait_pool_.size();
@@ -104,16 +97,27 @@ class EventPool
 		}
 	}
 
+	void AddEvent(const EventResult &res)
+	{
+		State next = state_chain_[res.state_];
+		Callback func = callback_[next];
+		wait_pool_.Push(Event(res.fd_, res.server_, func, next));
+	}
+
+	void AddEvent(const Event &event)
+	{
+		wait_pool_.Push(event);
+	}
+
 	void RunReadyEvents()
 	{
 		while (!ready_pool_.empty()) {
 			Event event = ready_pool_.Pop();
-			Event res = RunEvent(event);
-			State next = state_chain_[res.state_];
+			EventResult res = event.Run();
 			if (event.state_ == ACCEPT) {
-				wait_pool_.Push(event);
+				AddEvent(event);
 			}
-			wait_pool_.Push(Event(res.fd_, res.server_, next));
+			AddEvent(res);
 		}
 	}
 };

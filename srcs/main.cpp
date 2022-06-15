@@ -9,7 +9,7 @@ void ServersInit(EventPool &pool, std::vector<Server> &servers)
 {
 	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it) {
 		Server *s = &(*it);
-		pool.Push(Event(s->listen_fd_, s));
+		pool.AddEvent(Event(s->listen_fd_, s, OnAccept));
 	}
 }
 
