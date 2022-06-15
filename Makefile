@@ -5,6 +5,8 @@
 NAME	:= webserv
 SRCDIR := srcs/
 SRCS	:= $(shell find $(SRCDIR:%/=%) -name "*.cpp" -type f)
+VAR :=
+INCLUDES = $(addprefix -I,$(shell find $(SRCDIR:%/=%) -type d))
 TEST_CPP:=
 
 CXX		:= c++
@@ -48,7 +50,7 @@ $(OBJDIRS):
 $(OBJDIR)%.o: $(SRCDIR)%.cpp
 	@mkdir -p $(OBJDIR)$(*D)
 	@printf "$(THIN)$(ITALIC)"
-	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
 	@printf "$(END)"
 
 -include $(DEPS)
