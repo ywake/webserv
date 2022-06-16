@@ -11,7 +11,7 @@ EventResult OnAccept(int fd, Server *s)
 	log(fd, ": OnAccept()");
 	int conn_fd = accept(fd, NULL, NULL);
 	log(fd, ": After OnAccept()");
-	return EventResult(conn_fd, s, ACCEPT);
+	return EventResult(conn_fd, s, ACCEPT, true);
 }
 
 EventResult OnServe(int fd, Server *s)
