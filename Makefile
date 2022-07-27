@@ -106,13 +106,12 @@ tester: $(gTest) $(OBJDIRS) $(TEST_OBJS)
 # test: tester
 # 	./tester
 
-test : FORCE
-	make -C test
-
 test_fclean: FORCE
 	$(RM) -r tester tester.dSYM
 
 test_re: test_fclean test
+
+-include ./test/Makefile
 
 ##########
 # Colors #
