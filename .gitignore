@@ -17,3 +17,6 @@
 destructor.c
 !auto_test.sh
 .google_test
+!docker-compose.yml
+!test.sh
+!hello_world.html
