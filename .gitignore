@@ -20,3 +20,6 @@ destructor.c
 !docker-compose.yml
 !test.sh
 !hello_world.html
+!test/
+!test/volume
+!test/volume/*.html
