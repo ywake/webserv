@@ -103,8 +103,11 @@ tester: $(gTest) $(OBJDIRS) $(TEST_OBJS)
 		$(gTestDir)/gtest/gtest-all.cc \
 		-I$(gTestDir) $(INCLUDE) $(LIBS) -lpthread -o tester
 
-test: tester
-	./tester
+# test: tester
+# 	./tester
+
+test : FORCE
+	make -C test
 
 test_fclean: FORCE
 	$(RM) -r tester tester.dSYM
