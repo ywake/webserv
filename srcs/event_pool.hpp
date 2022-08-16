@@ -101,7 +101,7 @@ class EventPool
 			Event event = ready_pool_.Pop();
 			EventResult res = event.Run();
 			AddEvent(res);
-			if (res.state_ == ACCEPT) {
+			if (res.is_persistence_) {
 				AddEvent(event);
 			}
 		}
