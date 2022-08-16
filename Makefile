@@ -89,7 +89,7 @@ $(GTESTLIB)	:
 	$(MAKE) -C $(TESTDIR)
 
 $(TESTER)	: $(GTESTLIB) $(TESTCASES)
-	clang++ -I$(GTESTDIR)/gtest $(IOPTIONS) $(GTESTLIB) $(TESTCASES) $(TESTOBJS) $(TESTLIBS) -o $@
+	clang++ -std=c++11 -I$(GTESTDIR)/gtest $(IOPTIONS) $(GTESTLIB) $(TESTCASES) $(TESTOBJS) $(TESTLIBS) -o $@
 
 gtest    : $(TESTER)
 	./$<
