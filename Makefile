@@ -78,38 +78,21 @@ leak: $(shell uname)_leak
 ##############
 # Test rules #
 ##############
+TESTDIR		= gtest
+GTESTDIR	= $(TESTDIR)/googletest
+GTESTLIB	= $(GTESTDIR)/gtest.a
+TESTCASES	= $(wildcard $(TESTDIR)/$(F)*test.cpp)
+TESTLIBS	= -lpthread
+TESTER		= tester
 
-gTestFlag	:= -std=c++11 -DDEBUG -g -fsanitize=integer -fsanitize=address -Wno-writable-strings
-gTestDir	:= ./.google_test
-gVersion	:= release-1.11.0
-gTestVer	:= googletest-$(gVersion)
-gTest		:= $(gTestDir)/gtest $(gTestDir)/$(gTestVer)
+$(GTESTLIB)	:
+	$(MAKE) -C $(TESTDIR)
 
-TEST_SRCS	:= $(filter-out main.cpp, $(SRCS))
-TEST_OBJS	:= $(addprefix $(OBJDIR), $(TEST_SRCS:%.cpp=%.o))
+$(TESTER)	: $(GTESTLIB) $(TESTCASES)
+	clang++ -I$(GTESTDIR)/gtest $(IOPTIONS) $(GTESTLIB) $(TESTCASES) $(TESTOBJS) $(TESTLIBS) -o $@
 
-$(gTest):
-	mkdir -p $(gTestDir)
-	curl -OL https://github.com/google/googletest/archive/refs/tags/$(gVersion).tar.gz
-	tar -xvzf $(gVersion).tar.gz $(gTestVer)
-	$(RM) $(gVersion).tar.gz
-	python $(gTestVer)/googletest/scripts/fuse_gtest_files.py $(gTestDir)
-	mv $(gTestVer) $(gTestDir)
-
-tester: $(gTest) $(OBJDIRS) $(TEST_OBJS)
-	$(CXX) $(gTestFlag) \
-		$(TEST_OBJS) $(TEST_CPP) \
-		$(gTestDir)/$(gTestVer)/googletest/src/gtest_main.cc \
-		$(gTestDir)/gtest/gtest-all.cc \
-		-I$(gTestDir) $(INCLUDE) $(LIBS) -lpthread -o tester
-
-# test: tester
-# 	./tester
-
-test_fclean: FORCE
-	$(RM) -r tester tester.dSYM
-
-test_re: test_fclean test
+gtest    : $(TESTER)
+	./$<
 
 -include ./test/Makefile
 
