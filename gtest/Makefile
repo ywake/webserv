@@ -7,6 +7,7 @@ OBJS	= $(notdir $(SRCS:.cc=.o))
 SRCDIR	:= $(DIR)/gtest
 LIBDIR	:= $(DIR)/googletest-release-1.11.0
 
+.PHONY: all
 all		: $(NAME)
 
 $(NAME)	: $(OBJS)
@@ -14,13 +15,20 @@ $(NAME)	: $(OBJS)
 	$(RM) $(OBJS)
 
 $(LIBDIR):
-	@if [ ! -d $(DIR) ];then mkdir $(DIR); fi
+	mkdir -p $(DIR)
 	wget https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
-	tar  --remove-file -xvzf release-1.11.0.tar.gz -C $(DIR)
+	tar -xvzf release-1.11.0.tar.gz -C $(DIR)
 	rm  release-1.11.0.tar.gz
 
+.PHONY: clean
+clean:
+	$(RM) $(NAME)
+
+fclean: clean
+	$(RM) -r $(DIR)
+
 $(SRCDIR): $(LIBDIR)
-	python $(LIBDIR)/googletest/scripts/fuse_gtest_files.py $(DIR)
+	python3 $(LIBDIR)/googletest/scripts/fuse_gtest_files.py $(DIR)
 
 $(OBJS)	: $(SRCDIR)
 	clang++ -c -std=c++11 $(LIBDIR)/googletest/src/gtest_main.cc $(SRCDIR)/gtest-all.cc -I$(DIR)

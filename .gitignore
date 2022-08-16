@@ -23,3 +23,6 @@ destructor.c
 !test/
 !test/volume
 !test/volume/*.html
+
+## google test
+gtest/googletest
