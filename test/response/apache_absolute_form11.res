@@ -2,13 +2,12 @@ Trying 127.0.0.1...
 Connected to localhost.
 Escape character is '^]'.
 HTTP/1.1 200 OK
-Server: nginx/1.23.1
-Date: Wed, 17 Aug 2022 10:00:47 GMT
-Content-Type: text/html
-Content-Length: 12
+Date: Wed, 17 Aug 2022 10:10:56 GMT
+Server: Apache/2.4.54 (Unix)
 Last-Modified: Wed, 17 Aug 2022 08:44:18 GMT
-Connection: keep-alive
-ETag: "62fcaa62-c"
+ETag: "c-5e66bdee1a6e5"
 Accept-Ranges: bytes
+Content-Length: 12
+Content-Type: text/html
 
 hello world!
