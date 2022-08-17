@@ -2,9 +2,10 @@
 
 NGINX=localhost:8081
 APACHE=localhost:8082
+RESDIR=response
 
-curl -is http://$NGINX/$1 > nginx.res
-curl -is http://$APACHE/$1 > apache.res
+curl -is http://$NGINX/$1 > $RESDIR/nginx.res
+curl -is http://$APACHE/$1 > $RESDIR/apache.res
 
 
 echo "\n==== NGINX ====\n"

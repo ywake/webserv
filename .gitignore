@@ -19,10 +19,14 @@ destructor.c
 .google_test
 !docker-compose.yml
 !test.sh
+!telnet.sh
+!lazy_file_printer.py
 !hello_world.html
 !test/
 !test/volume
 !test/volume/*.html
+!test/request/*
+!test/response/*
 
 ## google test
 gtest/googletest
