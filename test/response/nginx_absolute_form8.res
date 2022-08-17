@@ -3,7 +3,7 @@ Connected to localhost.
 Escape character is '^]'.
 HTTP/1.1 400 Bad Request
 Server: nginx/1.23.1
-Date: Wed, 17 Aug 2022 10:06:59 GMT
+Date: Wed, 17 Aug 2022 10:39:43 GMT
 Content-Type: text/html
 Content-Length: 157
 Connection: close
