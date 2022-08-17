@@ -2,7 +2,7 @@ Trying 127.0.0.1...
 Connected to localhost.
 Escape character is '^]'.
 HTTP/1.1 400 Bad Request
-Date: Wed, 17 Aug 2022 10:45:51 GMT
+Date: Wed, 17 Aug 2022 10:47:54 GMT
 Server: Apache/2.4.54 (Unix)
 Content-Length: 226
 Connection: close
