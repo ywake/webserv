@@ -1,16 +1,18 @@
 Trying 127.0.0.1...
 Connected to localhost.
 Escape character is '^]'.
-HTTP/1.1 404 Not Found
-Date: Thu, 18 Aug 2022 08:08:47 GMT
+HTTP/1.1 400 Bad Request
+Date: Thu, 18 Aug 2022 08:14:41 GMT
 Server: Apache/2.4.54 (Unix)
-Content-Length: 196
+Content-Length: 226
+Connection: close
 Content-Type: text/html; charset=iso-8859-1
 
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html><head>
-<title>404 Not Found</title>
+<title>400 Bad Request</title>
 </head><body>
-<h1>Not Found</h1>
-<p>The requested URL was not found on this server.</p>
+<h1>Bad Request</h1>
+<p>Your browser sent a request that this server could not understand.<br />
+</p>
 </body></html>
