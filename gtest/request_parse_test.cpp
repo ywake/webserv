@@ -39,18 +39,27 @@ class RequestLine
   public:
 	Methods method_;
 	RequestTarget request_target_;
-	int http_version_;
+	std::string http_version_;
 };
 
-// class StatusLine
-// {
-// };
+class StatusLine
+{
+  public:
+	std::string http_version_;
+	std::string status_code_;
+	//std::string reason_phrase_;
+
+	// std::string Str()
+	// {
+		// return http_version_ + SP + status_code_ + SP + reason_phrase_;
+	// }
+};
 
 class StartLine
 {
   public:
 	RequestLine request_line_;
-	//StatusLine status_line_;
+	StatusLine status_line_;
 };
 
 class FieldLines
