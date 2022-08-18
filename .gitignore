@@ -26,7 +26,6 @@ destructor.c
 !test/volume
 !test/volume/*.html
 !test/request/*
-!test/response/*
 !test/request/MUST/*
 !test/request/SHOULD/*
 
