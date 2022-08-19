@@ -19,6 +19,18 @@ class URI
 	std::string path_;
 	std::string query_;
 	std::string fragment_;
+
+	URI(std::string &scheme,
+		std::string &userinfo,
+		std::string &host,
+		unsigned int &port,
+		std::string &path,
+		std::string &query,
+		std::string &fragment)
+		: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path),
+		  query_(query), fragment_(fragment)
+	{
+	}
 };
 
 class RequestTarget
@@ -26,6 +38,13 @@ class RequestTarget
   public:
 	RequestForm form_type_;
 	URI request_target_;
+
+	RequestTarget() : form_type_(), request_target_() {}
+
+	RequestTarget(RequestForm form_type, URI &request_target)
+		: form_type_(form_type), request_target_(request_target)
+	{
+	}
 };
 
 enum Methods {
@@ -40,6 +59,13 @@ class RequestLine
 	Methods method_;
 	RequestTarget request_target_;
 	std::string http_version_;
+
+	RequestLine() : method_(), request_target_(), http_version_() {}
+
+	RequestLine(Methods method, RequestTarget request_target, std::string http_version)
+		: method_(method), request_target_(request_target), http_version_(http_version)
+	{
+	}
 };
 
 class StatusLine
@@ -47,19 +73,13 @@ class StatusLine
   public:
 	std::string http_version_;
 	std::string status_code_;
-	//std::string reason_phrase_;
+	// std::string reason_phrase_;
 
 	// std::string Str()
 	// {
-		// return http_version_ + SP + status_code_ + SP + reason_phrase_;
+	// return http_version_ + SP + status_code_ +
+	// SP + reason_phrase_;
 	// }
-};
-
-class StartLine
-{
-  public:
-	RequestLine request_line_;
-	StatusLine status_line_;
 };
 
 class FieldLines
@@ -68,10 +88,7 @@ class FieldLines
 	std::map<const std::string, std::string> field_lines_;
 
   public:
-	FieldLines()
-		: field_lines_()
-	{
-	}
+	FieldLines() : field_lines_() {}
 
 	std::string &operator[](std::string field_name)
 	{
@@ -104,25 +121,21 @@ TEST(request_parse, field_line)
 class HTTPMessage
 {
   public:
-	std::string start_line_;
 	FieldLines field_lines_;
 	std::string message_body_;
 
-	HTTPMessage(std::string start_line, FieldLines field_lines, std::string message_body)
-		: start_line_(start_line), field_lines_(field_lines), message_body_(message_body)
+	HTTPMessage(FieldLines field_lines, std::string message_body)
+		: field_lines_(field_lines), message_body_(message_body)
 	{
 	}
 
 	HTTPMessage(std::string request)
 	{
-		// TODO: parserは後で別関数に実装
+		// TODO : parserは後で別関数に実装
 	}
 
 	bool operator==(const HTTPMessage &rhs) const
 	{
-		if (this->start_line_ != rhs.start_line_) {
-			return false;
-		}
 		if (this->field_lines_ != rhs.field_lines_) {
 			return false;
 		}
@@ -133,22 +146,51 @@ class HTTPMessage
 	}
 };
 
-// TEST(request_parse, get)
-// {
-// std::string input = "GET / HTTP/1.1\r\n\r\n";
-//
-// ASSERT_EQ(
-// actualy
-// HTTPMessage(input),
-// expect
-// HTTPMessage(
-// "GET / HTTP/1.1",
-// std::map<std::string, std::string>(),
-// ""));
-// }
+class RequestMessage : public HTTPMessage
+{
+  public:
+	RequestLine request_line_;
+
+	RequestMessage(const std::string &str) : HTTPMessage(str)
+	{
+		// parse
+	}
+
+	RequestMessage(RequestLine &request_line, FieldLines &field_lines, std::string &message_body)
+		: HTTPMessage(field_lines, message_body), request_line_(request_line)
+	{
+	}
+};
+
+class ResponseMessage : public HTTPMessage
+{
+  public:
+	StatusLine status_line_;
+
+	// ResponseMessage(StatusLine &status_line, FieldLines &field_lines, std::string &message_body)
+	// : HTTPMessage(field_lines, message_body), status_line_(status_line)
+	// {
+	// }
+}
+
+TEST(request_parse, get)
+{
+	std::string input = "GET / HTTP/1.1\r\n\r\n";
+
+	URI uri("", "", "", "", "/", "", "");
+	RequestTarget target(ORIGIN, uri);
+	RequestLine line(GET, target, "1.1");
+	RequestMessage exp(line, FieldLines(), "");
+	RequestMessage act(input);
+
+	RequestMessage msg("GET / HTTP/1.1\r\n\r\n");
+
+	ASSERT_EQ(exp, act);
+}
 
 // TEST(request_parse, post_with_no_field_line) {
-// 	std::string input = "POST / HTTP/1.1\r\n\r\nHelloWorld!";
+// 	std::string input = "POST /
+// HTTP/1.1\r\n\r\nHelloWorld!";
 
 // 	ASSERT_EQ(
 // 		// actualy
@@ -161,8 +203,10 @@ class HTTPMessage
 // 	);
 // }
 
-// TEST(request_parse, post_with_single_field_line) {
-// 	std::string input = "POST / HTTP/1.1\r\nContent-Length: 11\r\nHelloWorld!";
+// TEST(request_parse,
+// post_with_single_field_line) { 	std::string
+// input = "POST / HTTP/1.1\r\nContent-Length:
+// 11\r\nHelloWorld!";
 
 // 	ASSERT_EQ(
 // 		// actualy
@@ -170,13 +214,16 @@ class HTTPMessage
 // 		// expect
 // 		HTTPMessage(
 // 			"POST / HTTP/1.1",
-// 			std::vector<std::string>{"Content-Length: 11"},
-// 			"HelloWorld!")
+// 			std::vector<std::string>{"Content-Length:
+// 11"}, 			"HelloWorld!")
 // 	);
 // }
 
-// TEST(request_parse, post_with_multi_field_lines) {
-// 	std::string input = "POST / HTTP/1.1\r\nConnection: keep-alive\r\nContent-Length: 11\r\nHelloWorld!";
+// TEST(request_parse,
+// post_with_multi_field_lines) { 	std::string
+// input = "POST / HTTP/1.1\r\nConnection:
+// keep-alive\r\nContent-Length:
+// 11\r\nHelloWorld!";
 
 // 	ASSERT_EQ(
 // 		// actualy
