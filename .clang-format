@@ -10,5 +10,8 @@
   BreakConstructorInitializers: BeforeColon,
   AlwaysBreakTemplateDeclarations: Yes,
   SpacesInAngles: Leave,
-  ColumnLimit: 0,
+  ColumnLimit: 100,
+  AlignAfterOpenBracket: BlockIndent,
+  BinPackArguments: false,
+  BinPackParameters: false,
 }
