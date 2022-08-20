@@ -5,12 +5,7 @@
 class RequestTarget
 {
   public:
-	enum RequestForm {
-		ORIGIN,
-		ABSOLUTE,
-		AUTHORITY,
-		ASTERISK,
-	};
+	enum RequestForm { ORIGIN, ABSOLUTE, AUTHORITY, ASTERISK };
 	RequestForm form_type_;
 	URI request_target_; // TODO: variable name
 

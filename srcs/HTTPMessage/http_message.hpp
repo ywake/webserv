@@ -16,6 +16,7 @@ class HTTPMessage
 
 	HTTPMessage(std::string request)
 	{
+		(void)request;
 		// TODO : parserは後で別関数に実装
 	}
 
