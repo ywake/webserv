@@ -1,4 +1,5 @@
-#include "HTTPMessage.hpp"
+#include "http_message_headers.hpp"
+
 #include "gtest.h"
 #include <algorithm>
 #include <cctype>
@@ -10,8 +11,8 @@ TEST(start_line, get)
 	RequestMessage act;
 	RequestMessage exp(
 		RequestLine(
-			Methods::GET,
-			RequestTarget(RequestForm::ORIGIN, URI("", "", "", "", "/", "", "")),
+			RequestLine::GET,
+			RequestTarget(RequestTarget::ORIGIN, URI("", "", "", "", "/", "", "")),
 			"1.1"
 		),
 		FieldLines(),

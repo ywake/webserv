@@ -89,7 +89,7 @@ TESTER		= tester
 $(GTESTLIB)	:
 	$(MAKE) -C $(TESTDIR)
 
-$(TESTER)	: $(GTESTLIB) $(TESTCASES)
+$(TESTER)	: $(GTESTLIB) $(TESTCASES) $(NAME)
 	clang++ -std=c++11 -I$(GTESTDIR)/gtest $(INCLUDES) $(GTESTLIB) $(TESTCASES) $(TESTOBJS) $(TESTLIBS) -o $@
 
 gtest    : $(TESTER) FORCE

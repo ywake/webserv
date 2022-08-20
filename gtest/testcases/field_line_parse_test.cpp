@@ -1,5 +1,5 @@
-#include "HTTPMessage.hpp"
 #include "gtest.h"
+#include "http_message_headers.hpp"
 #include <algorithm>
 #include <cctype>
 
@@ -20,8 +20,8 @@ TEST(field_line, post_with_no_field_line)
 
 	RequestMessage exp(
 		RequestLine(
-			Methods::POST,
-			RequestTarget(RequestForm::ORIGIN, URI("", "", "", "", "/", "", "")),
+			RequestLine::POST,
+			RequestTarget(RequestTarget::ORIGIN, URI("", "", "", "", "/", "", "")),
 			"1.1"
 		),
 		FieldLines(),
@@ -41,8 +41,8 @@ TEST(field_line, post_with_single_field_line)
 	field_lines["Content-Length"] = "11";
 	RequestMessage exp(
 		RequestLine(
-			Methods::POST,
-			RequestTarget(RequestForm::ORIGIN, URI("", "", "", "", "/", "", "")),
+			RequestLine::POST,
+			RequestTarget(RequestTarget::ORIGIN, URI("", "", "", "", "/", "", "")),
 			"1.1"
 		),
 		field_lines,
@@ -64,8 +64,8 @@ TEST(field_line, post_with_multi_field_lines)
 	field_lines["Content-Length"] = "11";
 	RequestMessage exp(
 		RequestLine(
-			Methods::POST,
-			RequestTarget(RequestForm::ORIGIN, URI("", "", "", "", "/", "", "")),
+			RequestLine::POST,
+			RequestTarget(RequestTarget::ORIGIN, URI("", "", "", "", "/", "", "")),
 			"1.1"
 		),
 		field_lines,
