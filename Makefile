@@ -81,7 +81,8 @@ leak: $(shell uname)_leak
 TESTDIR		= gtest
 GTESTDIR	= $(TESTDIR)/googletest
 GTESTLIB	= $(GTESTDIR)/gtest.a
-TESTCASES	= $(wildcard $(TESTDIR)/$(F)*test.cpp)
+TESTCASE_DIR = $(TESTDIR)/testcases
+TESTCASES	= $(wildcard $(TESTCASE_DIR)/$(F)*test.cpp)
 TESTLIBS	= -lpthread
 TESTER		= tester
 
@@ -89,9 +90,9 @@ $(GTESTLIB)	:
 	$(MAKE) -C $(TESTDIR)
 
 $(TESTER)	: $(GTESTLIB) $(TESTCASES)
-	clang++ -std=c++11 -I$(GTESTDIR)/gtest $(IOPTIONS) $(GTESTLIB) $(TESTCASES) $(TESTOBJS) $(TESTLIBS) -o $@
+	clang++ -std=c++11 -I$(GTESTDIR)/gtest $(INCLUDES) $(GTESTLIB) $(TESTCASES) $(TESTOBJS) $(TESTLIBS) -o $@
 
-gtest    : $(TESTER)
+gtest    : $(TESTER) FORCE
 	./$<
 
 -include ./test/Makefile
