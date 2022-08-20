@@ -10,7 +10,7 @@ INCLUDES = $(addprefix -I,$(shell find $(SRCDIR:%/=%) -type d))
 TEST_CPP:=
 
 CXX		:= c++
-CXXFLAGS:= -g -Wall -Werror -Wextra -std=c++98 -pedantic -fsanitize=address
+CXXFLAGS:= -g -Wall -Werror -Wextra -std=c++98 -pedantic #-fsanitize=address
 
 OBJDIR	:= build/
 OBJS	:= $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCS:%.cpp=%.o))
@@ -83,6 +83,7 @@ GTESTDIR	= $(TESTDIR)/googletest
 GTESTLIB	= $(GTESTDIR)/gtest.a
 TESTCASE_DIR = $(TESTDIR)/testcases
 TESTCASES	= $(wildcard $(TESTCASE_DIR)/*test.cpp)
+TESTOBJS	= $(filter-out %main.o, $(OBJS))
 TESTLIBS	= -lpthread
 TESTER		= tester
 

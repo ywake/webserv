@@ -16,6 +16,7 @@ class RequestLine
 	std::string http_version_;
 
 	RequestLine() : method_(), request_target_(), http_version_() {}
+	RequestLine(const std::string &request_line) : method_(), request_target_(), http_version_() {}
 
 	RequestLine(Methods method, RequestTarget request_target, std::string http_version)
 		: method_(method), request_target_(request_target), http_version_(http_version)
