@@ -82,7 +82,7 @@ TESTDIR		= gtest
 GTESTDIR	= $(TESTDIR)/googletest
 GTESTLIB	= $(GTESTDIR)/gtest.a
 TESTCASE_DIR = $(TESTDIR)/testcases
-TESTCASES	= $(wildcard $(TESTCASE_DIR)/$(F)*test.cpp)
+TESTCASES	= $(wildcard $(TESTCASE_DIR)/*test.cpp)
 TESTLIBS	= -lpthread
 TESTER		= tester
 
