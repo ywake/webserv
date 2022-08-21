@@ -11,7 +11,8 @@
 !**/
 !*.cpp
 !*.hpp
-
+!*.go
+!client.c
 
 # tests
 destructor.c
