@@ -3,18 +3,19 @@
 #############
 
 NAME	:= webserv
-SRCDIR := srcs/
-SRCS	:= $(shell find $(SRCDIR:%/=%) -name "*.cpp" -type f)
-VAR :=
-INCLUDES = $(addprefix -I,$(shell find $(SRCDIR:%/=%) -type d))
-TEST_CPP:=
+SRCDIR  := srcs/
+SRCDIRS := $(shell find $(SRCDIR) -type d)
+SRCS	:= $(shell find $(SRCDIR) -name "*.cpp" -type f)
+INCLUDES := $(addprefix -I,$(SRCDIRS))
 
 CXX		:= c++
-CXXFLAGS:= -g -Wall -Werror -Wextra -std=c++98 -pedantic #-fsanitize=address
+CXXFLAGS:= -g -Wall -Werror -Wextra -std=c++98 -pedantic
 
-OBJDIR	:= build/
-OBJS	:= $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SRCS:%.cpp=%.o))
-DEPS	:= $(OBJS:%.o=%.d)
+BUILDDIR:= build/
+OBJDIR	:= $(BUILDDIR)release/
+OBJDIRS := $(SRCDIRS:$(SRCDIR)%=$(OBJDIR)%)
+OBJS	:= $(SRCS:$(SRCDIR)%.cpp=$(OBJDIR)%.o)
+DEPS	:= $(SRCS:$(SRCDIR)%.cpp=$(OBJDIR)%.d)
 
 DSTRCTR	:= ./destructor.c
 
@@ -25,10 +26,10 @@ DSTRCTR	:= ./destructor.c
 all: $(NAME)
 
 $(NAME): $(OBJDIRS) $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME) $(LIBS)
+	$(CXX) $(CXXFLAGS) $(OBJS) -o $@ $(LIBS)
 
 clean: FORCE
-	$(RM) $(OBJS) $(DEPS)
+	$(RM) -rf $(BUILDDIR)
 
 fclean: clean
 	$(RM) $(NAME)
@@ -45,10 +46,9 @@ norm: FORCE
 	|| printf "$(GREEN)%s\n$(END)" "Norm OK!"
 
 $(OBJDIRS):
-	mkdir -p $@
+	@mkdir -p $@
 
 $(OBJDIR)%.o: $(SRCDIR)%.cpp
-	@mkdir -p $(OBJDIR)$(*D)
 	@printf "$(THIN)$(ITALIC)"
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
 	@printf "$(END)"
@@ -62,11 +62,27 @@ FORCE:
 # Debug rules #
 ###############
 
+SAN_OBJDIR	:= $(BUILDDIR)debug/
+SAN_OBJDIRS := $(SRCDIRS:$(SRCDIR)%=$(SAN_OBJDIR)%)
+SAN_OBJS	:= $(SRCS:$(SRCDIR)%.cpp=$(SAN_OBJDIR)%.o)
+SAN_DEPS	:= $(SRCS:$(SRCDIR)%.cpp=$(SAN_OBJDIR)%.d)
+
+-include $(SAN_DEPS)
+
+$(SAN_OBJDIR)%.o: $(SRCDIR)%.cpp
+	@printf "$(CYAN)$(ITALIC)"
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
+	@printf "$(END)"
+
+sani: CXXFLAGS += -fsanitize=address
+sani: $(SAN_OBJDIRS) $(SAN_OBJS)
+	$(CXX) $(CXXFLAGS)  $(SAN_OBJS) -o $(NAME) $(LIBS)
+
+$(SAN_OBJDIRS):
+	@mkdir -p $@
+
 $(DSTRCTR):
 	curl https://gist.githubusercontent.com/ywake/793a72da8cdae02f093c02fc4d5dc874/raw/destructor.c > $(DSTRCTR)
-
-sani: $(OBJDIRS) $(OBJS)
-	$(CXX) $(CXXFLAGS) -fsanitize=address $(OBJS) -o $(NAME) $(LIBS)
 
 Darwin_leak: $(DSTRCTR) $(OBJDIRS) $(OBJS)
 	$(CXX) -g -std=c++98 $(OBJS) $(DSTRCTR) -o $(NAME) $(LIBS)
@@ -78,6 +94,7 @@ leak: $(shell uname)_leak
 ##############
 # Test rules #
 ##############
+
 TESTDIR		= gtest
 GTESTDIR	= $(TESTDIR)/googletest
 GTESTLIB	= $(GTESTDIR)/gtest.a
