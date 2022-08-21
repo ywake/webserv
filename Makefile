@@ -95,23 +95,32 @@ leak: $(shell uname)_leak
 # Test rules #
 ##############
 
-TESTDIR		= gtest
-GTESTDIR	= $(TESTDIR)/googletest
-GTESTLIB	= $(GTESTDIR)/gtest.a
-TESTCASE_DIR = $(TESTDIR)/testcases
-TESTCASES	= $(shell find $(TESTCASE_DIR) -name '*test.cpp')
-TESTOBJS	= $(filter-out %main.o, $(OBJS))
-TESTLIBS	= -lpthread -lasan
-TESTER		= tester
+TESTER		:= tester
+TESTDIR		:= gtest
+GTESTDIR	:= $(TESTDIR)/googletest
+GTESTLIB	:= $(GTESTDIR)/gtest.a
+TESTCASE_DIR := $(TESTDIR)/testcases
+TESTCASES	 = $(shell find $(TESTCASE_DIR) -name '*test.cpp')
+TESTOBJS_DIR = $(shell python3 print_newer.py $(OBJDIR) $(SAN_OBJDIR))
+TESTOBJS	 = $(SRCS:$(SRCDIR)%.cpp=$(TESTOBJS_DIR)%.o)
+TEST_TARGET := webserv.a
+TESTLIBS	:= -lpthread
+
+p:
+	echo $(TESTOBJS)
 
 $(GTESTLIB)	:
 	$(MAKE) -C $(TESTDIR)
 
-$(TESTER)	: $(GTESTLIB) $(TESTCASES) $(NAME)
-	clang++ -std=c++11 -I$(GTESTDIR)/gtest $(INCLUDES) $(GTESTLIB) $(TESTCASES) $(TESTOBJS) $(TESTLIBS) -o $@
+$(TEST_TARGET): $(TESTOBJS)
+	@ar -rcs $@ $^
+
+$(TESTER)	: $(GTESTLIB) $(TESTCASES) $(TEST_TARGET)
+	clang++ -fsanitize=address -std=c++11 -I$(GTESTDIR)/gtest $(INCLUDES) $(GTESTLIB) $(TESTCASES) $(TEST_TARGET) $(TESTLIBS) -o $@
 
 gtest    : $(TESTER) FORCE
 	./$<
+	@rm $(TEST_TARGET)
 
 -include ./test/Makefile
 
