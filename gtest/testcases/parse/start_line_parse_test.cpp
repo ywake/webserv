@@ -9,7 +9,7 @@ TEST(start_line, get)
 {
 	std::string input = "GET / HTTP/1.1";
 
-	RequestLine act;
+	RequestLine act(input);
 	RequestLine exp(
 		RequestLine::GET,
 		RequestTarget(RequestTarget::ORIGIN, URI("", "", "", "", "/", "", "")),

@@ -2,7 +2,7 @@
 #define REQUEST_TARGET_HPP
 #include "uri.hpp"
 
-class RequestTarget
+class RequestTarget // TODO: Abstruct説
 {
   public:
 	enum RequestForm { ORIGIN, ABSOLUTE, AUTHORITY, ASTERISK };
