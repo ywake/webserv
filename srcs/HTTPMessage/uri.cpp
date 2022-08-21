@@ -5,6 +5,7 @@ URI::URI() : scheme_(), userinfo_(), host_(), port_(), path_(), query_(), fragme
 
 URI::URI(std::string uri) : scheme_(), userinfo_(), host_(), port_(), path_(), query_(), fragment_()
 {
+	(void)uri;
 }
 
 URI::URI(
