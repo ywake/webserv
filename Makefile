@@ -95,16 +95,17 @@ leak: $(shell uname)_leak
 # Test rules #
 ##############
 
-TESTER		:= tester
-TESTDIR		:= gtest
-GTESTDIR	:= $(TESTDIR)/googletest
-GTESTLIB	:= $(GTESTDIR)/gtest.a
+TESTER		 := tester
+TESTDIR		 := gtest
+GTESTDIR	 := $(TESTDIR)/googletest
+GTESTLIB	 := $(GTESTDIR)/gtest.a
 TESTCASE_DIR := $(TESTDIR)/testcases
-TESTCASES	 = $(shell find $(TESTCASE_DIR) -name '*test.cpp')
-TESTOBJS_DIR = $(shell python3 print_newer.py $(OBJDIR) $(SAN_OBJDIR))
-TESTOBJS	 = $(SRCS:$(SRCDIR)%.cpp=$(TESTOBJS_DIR)%.o)
-TEST_TARGET := webserv.a
-TESTLIBS	:= -lpthread
+TESTCASES	  = $(shell find $(TESTCASE_DIR) -name '*test.cpp')
+TESTOBJS_DIR  = $(shell python3 print_newer.py $(OBJDIR) $(SAN_OBJDIR))
+TESTOBJS_DIRS = $(SRCDIRS:$(SRCDIR)%=$(TESTOBJS_DIR)%)
+TESTOBJS	  = $(SRCS:$(SRCDIR)%.cpp=$(TESTOBJS_DIR)%.o)
+TEST_TARGET  := webserv.a
+TESTLIBS	 := -lpthread
 
 p:
 	echo $(TESTOBJS)
@@ -112,8 +113,8 @@ p:
 $(GTESTLIB)	:
 	$(MAKE) -C $(TESTDIR)
 
-$(TEST_TARGET): $(TESTOBJS)
-	@ar -rcs $@ $^
+$(TEST_TARGET): $(TESTOBJS_DIRS) $(TESTOBJS)
+	@ar -rcs $@ $(TESTOBJS)
 
 $(TESTER)	: $(GTESTLIB) $(TESTCASES) $(TEST_TARGET)
 	clang++ -fsanitize=address -std=c++11 -I$(GTESTDIR)/gtest $(INCLUDES) $(GTESTLIB) $(TESTCASES) $(TEST_TARGET) $(TESTLIBS) -o $@
