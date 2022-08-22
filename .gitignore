@@ -13,6 +13,7 @@
 !*.hpp
 !*.go
 !client.c
+!print_newer.py
 
 # tests
 destructor.c
