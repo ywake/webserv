@@ -107,9 +107,6 @@ TESTOBJS	  = $(SRCS:$(SRCDIR)%.cpp=$(TESTOBJS_DIR)%.o)
 TEST_TARGET  := webserv.a
 TESTLIBS	 := -lpthread
 
-p:
-	echo $(TESTOBJS)
-
 $(GTESTLIB)	:
 	$(MAKE) -C $(TESTDIR)
 
