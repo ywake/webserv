@@ -1,12 +1,6 @@
 #include "uri.hpp"
-#include "error.hpp"
 
 URI::URI() : scheme_(), userinfo_(), host_(), port_(), path_(), query_(), fragment_() {}
-
-URI::URI(std::string uri) : scheme_(), userinfo_(), host_(), port_(), path_(), query_(), fragment_()
-{
-	(void)uri;
-}
 
 URI::URI(
 	std::string &scheme,
@@ -41,4 +35,16 @@ bool URI::operator==(const URI &rhs) const
 	return scheme_ == rhs.scheme_ && userinfo_ == rhs.userinfo_ && host_ == rhs.host_ &&
 		   port_ == rhs.port_ && path_ == rhs.path_ && query_ == rhs.query_ &&
 		   fragment_ == rhs.fragment_;
+}
+
+std::ostream &operator<<(std::ostream &os, const URI &uri)
+{
+	os << "scheme   : " << uri.scheme_ << std::endl;
+	os << "userinfo : " << uri.userinfo_ << std::endl;
+	os << "host     : " << uri.host_ << std::endl;
+	os << "port     : " << uri.port_ << std::endl;
+	os << "path     : " << uri.path_ << std::endl;
+	os << "query    : " << uri.query_ << std::endl;
+	os << "fragment : " << uri.fragment_ << std::endl;
+	return os;
 }

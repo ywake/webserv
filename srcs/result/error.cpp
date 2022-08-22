@@ -6,12 +6,12 @@ Error::Error(int errn) : is_err_(true), err_msg_(strerror(errn)) {}
 
 Error::Error(const char *msg) : is_err_(true), err_msg_(msg) {}
 
-bool Error::IsErr()
+bool Error::IsErr() const
 {
 	return is_err_;
 }
 
-std::string Error::Err()
+std::string Error::Err() const
 {
 	return err_msg_;
 }

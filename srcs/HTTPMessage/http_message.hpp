@@ -2,11 +2,12 @@
 #define HTTP_MESSAGE_HPP
 #include "field_lines.hpp"
 #include <string>
+#include <vector>
 
 class HTTPMessage
 {
   public:
-	FieldLines field_lines_;
+	public : FieldLines field_lines_;
 	std::string message_body_;
 
 	HTTPMessage(FieldLines field_lines, std::string message_body)

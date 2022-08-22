@@ -1,33 +1,108 @@
 #include "error.hpp"
 #include "gtest.h"
+#include "request_target.hpp"
 #include "result.hpp"
 #include "uri.hpp"
 
-static Result<URI> test_actualy(std::string input)
+static Result<RequestTarget> test_actualy(std::string input)
 {
-	URI act;
+	RequestTarget act;
 	Error err;
 	try {
-		act = URI(input);
+		act = RequestTarget(input);
 	} catch (const Error &e) {
 		err = e;
 	}
-	return Result<URI>(act, err);
+	return Result<RequestTarget>(act, err);
 }
 
 TEST(uri_parse, empty)
 {
-	Result<URI> act = test_actualy("");
+	Result<RequestTarget> act = test_actualy("");
 	ASSERT_EQ(act.err, Error("400"));
+}
+
+TEST(uri_parse, specify_form)
+{
+	{
+		std::string input = "/where?q=now";
+		RequestTarget req;
+		req.SpecifyForm(input);
+		ASSERT_EQ(req.form_type_, RequestTarget::ORIGIN);
+	}
+
+	{
+		std::string input = "http://www.example.org/pub/WWW/TheProject.html";
+		RequestTarget req;
+		req.SpecifyForm(input);
+		ASSERT_EQ(req.form_type_, RequestTarget::ABSOLUTE);
+	}
+
+	{
+		std::string input = "www.example.com:80";
+		RequestTarget req;
+		req.SpecifyForm(input);
+		ASSERT_EQ(req.form_type_, RequestTarget::AUTHORITY);
+	}
+
+	{
+		std::string input = "*";
+		RequestTarget req;
+		req.SpecifyForm(input);
+		ASSERT_EQ(req.form_type_, RequestTarget::ASTERISK);
+	}
+}
+
+#include <iostream>
+
+void test_parse_origin_form(const std::string &input, const URI &uri, const Error &err = Error())
+{
+	RequestTarget exp(RequestTarget::ORIGIN, uri);
+	Result<RequestTarget> act = test_actualy(input);
+	if (act.Val() != exp) {
+		std::cout << "***Expect***" << std::endl;
+		std::cout << exp.request_target_ << std::endl;
+		std::cout << "***Actual***" << std::endl;
+		std::cout << act.Val().request_target_ << std::endl;
+	}
+	if (act.err != err) {
+		std::cout << "***Error***" << std::endl;
+		std::cout << act.Err() << " : " << err.Err() << std::endl;
+	}
+	EXPECT_EQ(act.Val(), exp);
+	EXPECT_EQ(act.err, err);
+}
+
+TEST(uri_parse, parse_origin_form)
+{
+	test_parse_origin_form("/", URI("", "", "", "", "/"));
+	test_parse_origin_form("/?", URI("", "", "", "", "/", "?"));
+	test_parse_origin_form("/where", URI("", "", "", "", "/where"));
+	test_parse_origin_form("/where?q=now", URI("", "", "", "", "/where", "?q=now"));
+	test_parse_origin_form("/where/is/this?q=now", URI("", "", "", "", "/where/is/this", "?q=now"));
+	test_parse_origin_form(
+		"/where/is/this?q=now???", URI("", "", "", "", "/where/is/this", "?q=now???")
+	);
+
+	// Error Case
+	test_parse_origin_form("", URI(), Error("400"));
+	test_parse_origin_form("//", URI(), Error("400"));
+	test_parse_origin_form("/a//", URI(), Error("400"));
+	test_parse_origin_form("///", URI(), Error("400"));
+	test_parse_origin_form("/a///", URI(), Error("400"));
+	test_parse_origin_form("/where/is/this>", URI(), Error("400"));
+	test_parse_origin_form("/where/is/this///", URI(), Error("400"));
+	test_parse_origin_form("/where?#", URI(), Error("400"));
+	test_parse_origin_form("/where???#", URI(), Error("400"));
 }
 
 // TODO:
 TEST(uri_parse, minimum_absolute_target)
 {
-	Result<URI> act = test_actualy("a://");
-	URI exp("a", "", "", "", "", "", "");
-
-	ASSERT_EQ(act.Val(), exp);
+	// Result<RequestTarget> act = test_actualy("a://");
+	// URI exp("a", "", "", "", "", "", "");
+	//
+	// ASSERT_EQ(act.Val(), exp);
 }
 
 // a://

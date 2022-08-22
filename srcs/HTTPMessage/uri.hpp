@@ -1,6 +1,6 @@
 #ifndef URI_HPP
 #define URI_HPP
-#include "http_message.hpp"
+#include <iostream>
 #include <string>
 
 class URI
@@ -15,7 +15,6 @@ class URI
 	std::string fragment_;
 
 	URI();
-	URI(std::string uri); // parse
 	URI(std::string &scheme,
 		std::string &userinfo,
 		std::string &host,
@@ -24,14 +23,16 @@ class URI
 		std::string &query,
 		std::string &fragment);
 	URI(const char *scheme,
-		const char *userinfo,
-		const char *host,
-		const char *port,
-		const char *path,
-		const char *query,
-		const char *fragment);
+		const char *userinfo = "",
+		const char *host = "",
+		const char *port = "",
+		const char *path = "",
+		const char *query = "",
+		const char *fragment = "");
 
 	bool operator==(const URI &rhs) const;
 };
+
+std::ostream &operator<<(std::ostream &os, const URI &uri);
 
 #endif
