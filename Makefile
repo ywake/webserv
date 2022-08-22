@@ -101,7 +101,7 @@ GTESTLIB	= $(GTESTDIR)/gtest.a
 TESTCASE_DIR = $(TESTDIR)/testcases
 TESTCASES	= $(shell find $(TESTCASE_DIR) -name '*test.cpp')
 TESTOBJS	= $(filter-out %main.o, $(OBJS))
-TESTLIBS	= -lpthread -lasan
+TESTLIBS	= -lpthread
 TESTER		= tester
 
 $(GTESTLIB)	:
