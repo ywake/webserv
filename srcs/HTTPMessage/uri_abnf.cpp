@@ -11,6 +11,7 @@ namespace ABNF
 	static const char *kSubDelimsUniqSet = "!$&'()*+,;=";
 	static const size_t kPctEncodingSize = 3;
 
+	//[FIX]
 	StringAry Split(const std::string &str, const std::string delim)
 	{
 		StringAry split;
@@ -36,7 +37,7 @@ namespace ABNF
 	//	 = 1*( "/" segment )
 	bool IsPathAbsolute(const std::string &str)
 	{
-		if (str.find("//") != std::string::npos) {
+		if (str.empty() || str.at(0) != '/') {
 			return false;
 		}
 		StringAry segments = Split(str, "/");

@@ -83,15 +83,15 @@ TEST(uri_parse, parse_origin_form)
 	test_parse_origin_form(
 		"/where/is/this?q=now???", URI("", "", "", "", "/where/is/this", "?q=now???")
 	);
+	test_parse_origin_form("//", URI("", "", "", "", "//"));
+	test_parse_origin_form("/a//", URI("", "", "", "", "/a//"));
+	test_parse_origin_form("///", URI("", "", "", "", "///"));
+	test_parse_origin_form("/a///", URI("", "", "", "", "/a///"));
+	test_parse_origin_form("/where/is/this///", URI("", "", "", "", "/where/is/this///"));
 
 	// Error Case
 	test_parse_origin_form("", URI(), Error("400"));
-	test_parse_origin_form("//", URI(), Error("400"));
-	test_parse_origin_form("/a//", URI(), Error("400"));
-	test_parse_origin_form("///", URI(), Error("400"));
-	test_parse_origin_form("/a///", URI(), Error("400"));
 	test_parse_origin_form("/where/is/this>", URI(), Error("400"));
-	test_parse_origin_form("/where/is/this///", URI(), Error("400"));
 	test_parse_origin_form("/where?#", URI(), Error("400"));
 	test_parse_origin_form("/where???#", URI(), Error("400"));
 }
