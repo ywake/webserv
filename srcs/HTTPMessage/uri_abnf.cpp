@@ -79,14 +79,10 @@ namespace ABNF
 	{
 		StringAry token;
 		for (std::string::const_iterator itr = str.begin(); itr != str.end();) {
-			std::size_t start = itr - str.begin();
-			if (*itr == '%') {
-				token.push_back(str.substr(start, kPctEncodingSize));
-				itr += kPctEncodingSize;
-			} else {
-				token.push_back(str.substr(start, sizeof(char)));
-				itr += sizeof(char);
-			}
+			std::size_t token_start = itr - str.begin();
+			std::size_t token_len = *itr == '%' ? kPctEncodingSize : sizeof(char);
+			token.push_back(str.substr(token_start, token_len));
+			itr += token.back().size();
 		}
 		return token;
 	}
