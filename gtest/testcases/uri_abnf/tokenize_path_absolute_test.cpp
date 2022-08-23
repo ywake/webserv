@@ -4,7 +4,7 @@
 TEST(uri_abnf, tokenize_path_absolute_basic)
 {
 	ABNF::StringAry act = ABNF::TokenizePathAbsolute("aaa/bbb");
-	ABNF::StringAry exp = ABNF::StringAry({"aaa", "bbb"});
+	ABNF::StringAry exp = ABNF::StringAry({"aaa", "/", "bbb"});
 
 	EXPECT_EQ(act, exp);
 }
@@ -12,7 +12,7 @@ TEST(uri_abnf, tokenize_path_absolute_basic)
 TEST(uri_abnf, tokenize_path_absolute_serial_delims)
 {
 	ABNF::StringAry act = ABNF::TokenizePathAbsolute("aaa///bbb");
-	ABNF::StringAry exp = ABNF::StringAry({"aaa", "bbb"});
+	ABNF::StringAry exp = ABNF::StringAry({"aaa", "/", "/", "/", "bbb"});
 
 	EXPECT_EQ(act, exp);
 }
@@ -20,7 +20,7 @@ TEST(uri_abnf, tokenize_path_absolute_serial_delims)
 TEST(uri_abnf, tokenize_path_absolute_head)
 {
 	ABNF::StringAry act = ABNF::TokenizePathAbsolute("/aaa/bbb");
-	ABNF::StringAry exp = ABNF::StringAry({"aaa", "bbb"});
+	ABNF::StringAry exp = ABNF::StringAry({"/", "aaa", "/", "bbb"});
 
 	EXPECT_EQ(act, exp);
 }
@@ -28,7 +28,7 @@ TEST(uri_abnf, tokenize_path_absolute_head)
 TEST(uri_abnf, tokenize_path_absolute_tail)
 {
 	ABNF::StringAry act = ABNF::TokenizePathAbsolute("aaa/bbb/");
-	ABNF::StringAry exp = ABNF::StringAry({"aaa", "bbb"});
+	ABNF::StringAry exp = ABNF::StringAry({"aaa", "/", "bbb", "/"});
 
 	EXPECT_EQ(act, exp);
 }
@@ -36,7 +36,7 @@ TEST(uri_abnf, tokenize_path_absolute_tail)
 TEST(uri_abnf, tokenize_path_absolute_all_of_string_is_delim)
 {
 	ABNF::StringAry act = ABNF::TokenizePathAbsolute("////");
-	ABNF::StringAry exp = ABNF::StringAry({"/"});
+	ABNF::StringAry exp = ABNF::StringAry({"/", "/", "/", "/"});
 
 	EXPECT_EQ(act, exp);
 }
