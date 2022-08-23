@@ -17,6 +17,7 @@ namespace ABNF
 	bool IsSubDelims(const char c);
 	bool IsHexDigit(const char c);
 	std::vector<std::string> TokenizePchar(const std::string &str);
+	StringAry TokenizePathAbsolute(const std::string &str);
 } // namespace ABNF
 
 #endif // URI_ABNF_HPP
