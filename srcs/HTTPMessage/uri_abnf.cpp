@@ -77,14 +77,14 @@ namespace ABNF
 	// a, b, c, d, %88, a, b, %99, a
 	StringAry TokenizePchar(const std::string &str)
 	{
-		StringAry token;
+		StringAry tokens;
 		for (std::string::const_iterator itr = str.begin(); itr != str.end();) {
 			std::size_t token_start = itr - str.begin();
 			std::size_t token_len = *itr == '%' ? kPctEncodingSize : sizeof(char);
-			token.push_back(str.substr(token_start, token_len));
-			itr += token.back().size();
+			tokens.push_back(str.substr(token_start, token_len));
+			itr += tokens.back().size();
 		}
-		return token;
+		return tokens;
 	}
 
 	// pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
