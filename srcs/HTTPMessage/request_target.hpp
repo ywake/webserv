@@ -73,9 +73,6 @@ class RequestTarget // TODO: Abstruct説
 	void ParseOriginForm(std::string uri)
 	{
 		std::size_t pos = uri.find("?");
-		if (pos == std::string::npos) {
-			pos = uri.size();
-		}
 		std::string absolute_path = uri.substr(0, pos);
 		std::string query = uri.substr(pos);
 
