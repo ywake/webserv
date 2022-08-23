@@ -3,7 +3,7 @@
 #include "uri_abnf.hpp"
 
 // "%" HEXDIG HEXDIG
-TEST(uri_abnf, IsSubDelims_true)
+TEST(uri_abnf, IsHexDigit_true)
 {
 	ASSERT_TRUE(ABNF::IsHexDigit('0'));
 	ASSERT_TRUE(ABNF::IsHexDigit('1'));
@@ -31,6 +31,14 @@ TEST(uri_abnf, IsSubDelims_true)
 	ASSERT_TRUE(ABNF::IsHexDigit('g'));
 }
 
-TEST(uri_abnf, IsSubDelims_false)
+TEST(uri_abnf, IsHexDigit_false)
 {
+	ASSERT_FALSE(ABNF::IsHexDigit(' '));
+	ASSERT_FALSE(ABNF::IsHexDigit('/'));
+	ASSERT_FALSE(ABNF::IsHexDigit(':'));
+	ASSERT_FALSE(ABNF::IsHexDigit('@'));
+	ASSERT_FALSE(ABNF::IsHexDigit('G'));
+	ASSERT_FALSE(ABNF::IsHexDigit('['));
+	ASSERT_FALSE(ABNF::IsHexDigit('z'));
+	ASSERT_FALSE(ABNF::IsHexDigit('}'));
 }
