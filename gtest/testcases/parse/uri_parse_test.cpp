@@ -111,7 +111,7 @@ TEST(uri_parse, minimum_absolute_target)
 
 // scheme        = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
 
-// hier-part     = "//" authority path-abempty
+// hier-part     = ("//" authority path-abempty)
 //              / path-absolute
 //              / path-rootless
 //              / path-empty

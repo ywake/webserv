@@ -8,7 +8,7 @@ namespace ABNF
 	static const char *kQueryUniqSet = "/?";
 	static const char *kPcharUniqSet = ":@";
 	static const char *kUnreservedUniqSet = "-._~";
-	static const char *kSubDelimsUniqSet = "!$&'\\()*+,;=";
+	static const char *kSubDelimsUniqSet = "!$&'()*+,;=";
 	static const size_t kPctEncodingSize = 3;
 
 	StringAry Split(const std::string &str, const std::string delim)
