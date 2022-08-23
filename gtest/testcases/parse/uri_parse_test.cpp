@@ -22,38 +22,27 @@ TEST(uri_parse, empty)
 	ASSERT_EQ(act.err, Error("400"));
 }
 
-TEST(uri_parse, specify_form)
+void test_specify_form(const std::string& request_line, RequestTarget::RequestForm form)
 {
-	{
-		std::string input = "/where?q=now";
-		RequestTarget req;
-		req.SpecifyForm(input);
-		ASSERT_EQ(req.form_type_, RequestTarget::ORIGIN);
-	}
-
-	{
-		std::string input = "http://www.example.org/pub/WWW/TheProject.html";
-		RequestTarget req;
-		req.SpecifyForm(input);
-		ASSERT_EQ(req.form_type_, RequestTarget::ABSOLUTE);
-	}
-
-	{
-		std::string input = "www.example.com:80";
-		RequestTarget req;
-		req.SpecifyForm(input);
-		ASSERT_EQ(req.form_type_, RequestTarget::AUTHORITY);
-	}
-
-	{
-		std::string input = "*";
-		RequestTarget req;
-		req.SpecifyForm(input);
-		ASSERT_EQ(req.form_type_, RequestTarget::ASTERISK);
-	}
+	RequestTarget req;
+	req.SpecifyForm(request_line);
+	ASSERT_EQ(req.form_type_, form);
 }
 
-void test_divide_str(const std::string &str, const std::string &delim, const std::string &first, const std::string &second)
+TEST(uri_parse, specify_form)
+{
+	test_specify_form("/where?q=now", RequestTarget::ORIGIN);
+	test_specify_form("http://www.example.org/pub/WWW/TheProject.html", RequestTarget::ABSOLUTE);
+	test_specify_form("www.example.com:80", RequestTarget::AUTHORITY);
+	test_specify_form("*", RequestTarget::ASTERISK);
+}
+
+void test_divide_str(
+	const std::string &str,
+	const std::string &delim,
+	const std::string &first,
+	const std::string &second
+)
 {
 	RequestTarget req;
 	RequestTarget::StrPair act = req.DivideStr(str, delim);
@@ -61,7 +50,8 @@ void test_divide_str(const std::string &str, const std::string &delim, const std
 	EXPECT_EQ(act.second, second);
 }
 
-TEST(uri_parse, divide_str) {
+TEST(uri_parse, divide_str)
+{
 	test_divide_str("a?b", "?", "a", "b");
 	test_divide_str("ab?", "?", "ab", "");
 	test_divide_str("?ab", "?", "", "ab");
