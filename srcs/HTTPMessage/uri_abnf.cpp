@@ -33,6 +33,32 @@ namespace ABNF
 		return split;
 	}
 
+	std::size_t get_len_until(const std::string &src, const std::string &delim, std::size_t start)
+	{
+		if (start >= src.size()) {
+			return 0;
+		}
+		std::size_t pos = src.find(delim, start);
+		return pos == std::string::npos ? src.size() - start : pos - start;
+	}
+
+	StringAry TokenizePathAbsolute(const std::string &str)
+	{
+		StringAry tokens;
+		for (std::string::const_iterator itr = str.begin(); itr != str.end();) {
+			std::size_t token_len;
+			std::size_t token_start = itr - str.begin();
+			if (*itr == '/') {
+				token_len = sizeof(char);
+			} else {
+				token_len = get_len_until(str, "/", token_start);
+			}
+			tokens.push_back(str.substr(token_start, token_len));
+			itr += token_len;
+		}
+		return tokens;
+	}
+
 	// absolute-path
 	//	 = 1*( "/" segment )
 	bool IsPathAbsolute(const std::string &str)
@@ -40,8 +66,11 @@ namespace ABNF
 		if (str.empty() || str.at(0) != '/') {
 			return false;
 		}
-		StringAry segments = Split(str, "/");
-		for (StringAry::const_iterator itr = segments.begin(); itr != segments.end(); itr++) {
+		StringAry tokens = TokenizePathAbsolute(str);
+		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
+			if (*itr == "/") {
+				continue;
+			}
 			if (!IsSegment(*itr)) {
 				return false;
 			}
