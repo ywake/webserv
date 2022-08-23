@@ -99,22 +99,37 @@ TESTER		 := tester
 TESTDIR		 := gtest
 GTESTDIR	 := $(TESTDIR)/googletest
 GTESTLIB	 := $(GTESTDIR)/gtest.a
-TESTCASE_DIR := $(TESTDIR)/testcases
-TESTCASES	  = $(shell find $(TESTCASE_DIR) -name '*test.cpp')
+GTEST_INCLDS := -I$(GTESTDIR)/gtest $(INCLUDES)
+GTEST_FLAGS	 := -fsanitize=address -std=c++11
+
 TESTOBJS_DIR  = $(shell python3 print_newer.py $(OBJDIR) $(SAN_OBJDIR))
 TESTOBJS_DIRS = $(SRCDIRS:$(SRCDIR)%=$(TESTOBJS_DIR)%)
 TESTOBJS	  = $(SRCS:$(SRCDIR)%.cpp=$(TESTOBJS_DIR)%.o)
 TEST_TARGET  := webserv.a
 TESTLIBS	 := -lpthread
 
+TESTCASE_DIR := $(TESTDIR)/testcases
+TESTCASES	  = $(shell find $(TESTCASE_DIR) -name '*test.cpp')
+TESTCASE_DIRS = $(shell find $(TESTCASE_DIR) -type d)
+TESTCASE_OBJS = $(TESTCASES:%.cpp=$(BUILDDIR)%.o)
+TESTCASE_OBJDIRS = $(TESTCASE_DIRS:%=$(BUILDDIR)%)
+
 $(GTESTLIB)	:
 	$(MAKE) -C $(TESTDIR)
+
+$(TESTCASE_OBJDIRS):
+	@mkdir -p $@
+
+$(BUILDDIR)gtest/%.o: gtest/%.cpp
+	@printf "$(PURPLE)$(ITALIC)"
+	$(CXX) $(GTEST_FLAGS) $(GTEST_INCLDS) -MMD -MP -c $< -o $@
+	@printf "$(END)"
 
 $(TEST_TARGET): $(TESTOBJS_DIRS) $(TESTOBJS)
 	@ar -rcs $@ $(TESTOBJS)
 
-$(TESTER)	: $(GTESTLIB) $(TESTCASES) $(TEST_TARGET)
-	clang++ -fsanitize=address -std=c++11 -I$(GTESTDIR)/gtest $(INCLUDES) $(GTESTLIB) $(TESTCASES) $(TEST_TARGET) $(TESTLIBS) -o $@
+$(TESTER)	: $(GTESTLIB) $(TEST_TARGET) $(TESTCASE_OBJDIRS) $(TESTCASE_OBJS)
+	clang++ $(GTEST_FLAGS) $(GTEST_INCLDS) $(GTESTLIB) $(TESTCASE_OBJS) $(TEST_TARGET) $(TESTLIBS) -o $@
 
 gtest    : $(TESTER) FORCE
 	./$<
