@@ -27,9 +27,7 @@ destructor.c
 !test/
 !test/volume
 !test/volume/*.html
-!test/request/*
-!test/request/MUST/*
-!test/request/SHOULD/*
+!test/request/**
 
 ## google test
 gtest/googletest

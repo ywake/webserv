@@ -1,0 +1,2 @@
+DELETE /where?q=now HTTP/1.1
+Host:localhost

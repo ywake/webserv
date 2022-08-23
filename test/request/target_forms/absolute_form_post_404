@@ -1,0 +1,2 @@
+POST http://www.example.org/pub/WWW/TheProject.html HTTP/1.1
+Host:localhost
