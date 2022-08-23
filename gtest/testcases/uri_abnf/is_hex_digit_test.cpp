@@ -21,14 +21,12 @@ TEST(uri_abnf, IsHexDigit_true)
 	ASSERT_TRUE(ABNF::IsHexDigit('D'));
 	ASSERT_TRUE(ABNF::IsHexDigit('E'));
 	ASSERT_TRUE(ABNF::IsHexDigit('F'));
-	ASSERT_TRUE(ABNF::IsHexDigit('G'));
 	ASSERT_TRUE(ABNF::IsHexDigit('a'));
 	ASSERT_TRUE(ABNF::IsHexDigit('b'));
 	ASSERT_TRUE(ABNF::IsHexDigit('c'));
 	ASSERT_TRUE(ABNF::IsHexDigit('d'));
 	ASSERT_TRUE(ABNF::IsHexDigit('e'));
 	ASSERT_TRUE(ABNF::IsHexDigit('f'));
-	ASSERT_TRUE(ABNF::IsHexDigit('g'));
 }
 
 TEST(uri_abnf, IsHexDigit_false)
