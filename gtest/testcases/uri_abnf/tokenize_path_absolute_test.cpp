@@ -44,7 +44,7 @@ TEST(uri_abnf, tokenize_path_absolute_all_of_string_is_delim)
 TEST(uri_abnf, tokenize_path_absolute_empty_x_empty)
 {
 	ABNF::StringAry act = ABNF::TokenizePathAbsolute("");
-	ABNF::StringAry exp = ABNF::StringAry({""});
+	ABNF::StringAry exp = ABNF::StringAry({});
 
 	EXPECT_EQ(act, exp);
 }
