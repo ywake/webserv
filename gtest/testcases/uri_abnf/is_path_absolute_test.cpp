@@ -7,20 +7,20 @@
 
 TEST(uri_abnf, is_path_absolute_true_case)
 {
-	ASSERT_TRUE("/");
-	ASSERT_TRUE("/aaa");
-	ASSERT_TRUE("/aaa/");
-	ASSERT_TRUE("/aaa/ZZZ");
-	ASSERT_TRUE("/aaa/ZZZ/");
-	ASSERT_TRUE("/aaa/ZZZ/?bbb=%00");
+	EXPECT_TRUE(ABNF::IsPathAbsolute("/"));
+	EXPECT_TRUE(ABNF::IsPathAbsolute("/aaa"));
+	EXPECT_TRUE(ABNF::IsPathAbsolute("/aaa/"));
+	EXPECT_TRUE(ABNF::IsPathAbsolute("/aaa/ZZZ"));
+	EXPECT_TRUE(ABNF::IsPathAbsolute("/aaa/ZZZ/"));
+	EXPECT_TRUE(ABNF::IsPathAbsolute("/aaa/ZZZ/?bbb=%00"));
 }
 
 TEST(uri_abnf, is_path_absolute_false_case)
 {
-	ASSERT_FALSE("");
-	ASSERT_FALSE("aaa");
-	ASSERT_FALSE("aaa/");
-	ASSERT_FALSE("aaa/ZZZ");
-	ASSERT_FALSE("aaa/ZZZ/");
-	ASSERT_FALSE("aaa/ZZZ/?bbb=%00");
+	EXPECT_FALSE(ABNF::IsPathAbsolute(""));
+	EXPECT_FALSE(ABNF::IsPathAbsolute("aaa"));
+	EXPECT_FALSE(ABNF::IsPathAbsolute("aaa/"));
+	EXPECT_FALSE(ABNF::IsPathAbsolute("aaa/ZZZ"));
+	EXPECT_FALSE(ABNF::IsPathAbsolute("aaa/ZZZ/"));
+	EXPECT_FALSE(ABNF::IsPathAbsolute("aaa/ZZZ/?bbb=%00"));
 }
