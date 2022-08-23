@@ -67,23 +67,34 @@ class RequestTarget // TODO: Abstruct説
 		}
 	}
 
-	//[FIX] queryに?を含めないようにする。良い実装考える
+	typedef std::pair<std::string, std::string> StrPair;
+	StrPair DivideStr(const std::string &str, std::string delim)
+	{
+		StrPair no_divide(str, "");
+		if (delim.empty()) {
+			return no_divide;
+		}
+		std::size_t div_pos = str.find(delim);
+		if (div_pos == std::string::npos) {
+			return no_divide;
+		}
+		StrPair p;
+		p.first = str.substr(0, div_pos);
+		p.second = str.substr(div_pos + delim.size());
+		return p;
+	}
+
 	// origin-form
 	// = absolute-path [ "?" query ]
 	void ParseOriginForm(std::string uri)
 	{
-		std::size_t pos = uri.find("?");
-		if (pos == std::string::npos) {
-			pos = uri.size();
-		}
-		std::string absolute_path = uri.substr(0, pos);
-		std::string query = uri.substr(pos);
+		StrPair path_query = DivideStr(uri, "?");
 
-		if (!ABNF::IsPathAbsolute(absolute_path) || !ABNF::IsQuery(query)) {
+		if (!ABNF::IsPathAbsolute(path_query.first) || !ABNF::IsQuery(path_query.second)) {
 			throw Error("400");
 		}
-		request_target_.path_ = absolute_path;
-		request_target_.query_ = query;
+		request_target_.path_ = path_query.first;
+		request_target_.query_ = path_query.second;
 	}
 };
 #endif

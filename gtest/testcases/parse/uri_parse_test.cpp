@@ -53,7 +53,28 @@ TEST(uri_parse, specify_form)
 	}
 }
 
-#include <iostream>
+void test_divide_str(const std::string &str, const std::string &delim, const std::string &first, const std::string &second)
+{
+	RequestTarget req;
+	RequestTarget::StrPair act = req.DivideStr(str, delim);
+	EXPECT_EQ(act.first, first);
+	EXPECT_EQ(act.second, second);
+}
+
+TEST(uri_parse, divide_str) {
+	test_divide_str("a?b", "?", "a", "b");
+	test_divide_str("ab?", "?", "ab", "");
+	test_divide_str("?ab", "?", "", "ab");
+	test_divide_str("ab", "?", "ab", "");
+	test_divide_str("ab", "", "ab", "");
+	test_divide_str("ab", "?/", "ab", "");
+	test_divide_str("a?b", "??", "a?b", "");
+	test_divide_str("a?b?c", "?", "a", "b?c");
+	test_divide_str("a?b?c", "??", "a?b?c", "");
+	test_divide_str("a?b??c", "??", "a?b", "c");
+	test_divide_str("a??b?c", "??", "a", "b?c");
+	test_divide_str("a??b?c", "?", "a", "?b?c");
+}
 
 void test_parse_origin_form(const std::string &input, const URI &uri, const Error &err = Error())
 {
@@ -76,12 +97,12 @@ void test_parse_origin_form(const std::string &input, const URI &uri, const Erro
 TEST(uri_parse, parse_origin_form)
 {
 	test_parse_origin_form("/", URI("", "", "", "", "/"));
-	test_parse_origin_form("/?", URI("", "", "", "", "/", "?"));
+	test_parse_origin_form("/?", URI("", "", "", "", "/", ""));
 	test_parse_origin_form("/where", URI("", "", "", "", "/where"));
-	test_parse_origin_form("/where?q=now", URI("", "", "", "", "/where", "?q=now"));
-	test_parse_origin_form("/where/is/this?q=now", URI("", "", "", "", "/where/is/this", "?q=now"));
+	test_parse_origin_form("/where?q=now", URI("", "", "", "", "/where", "q=now"));
+	test_parse_origin_form("/where/is/this?q=now", URI("", "", "", "", "/where/is/this", "q=now"));
 	test_parse_origin_form(
-		"/where/is/this?q=now???", URI("", "", "", "", "/where/is/this", "?q=now???")
+		"/where/is/this?q=now???", URI("", "", "", "", "/where/is/this", "q=now???")
 	);
 	test_parse_origin_form("//", URI("", "", "", "", "//"));
 	test_parse_origin_form("/a//", URI("", "", "", "", "/a//"));
