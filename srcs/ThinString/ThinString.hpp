@@ -12,6 +12,9 @@ class ThinString
   private:
 	typedef std::map<const std::string, std::size_t> ReferenceCount;
 
+  public:
+	typedef std::string::const_iterator const_iterator;
+
   private:
 	static ReferenceCount reference_count_;
 	const std::string *content_;
@@ -31,12 +34,13 @@ class ThinString
 	void init(const std::string &str);
 
   public:
+	const_iterator begin() const;
+	const_iterator end() const;
 	std::size_t len() const;
 	std::string ToString() const;
 	// std::pair<ThinString, ThinString> DivideBy(const std::string &delim) const;
 	// std::size_t MeasureUntil(const std::string &delim) const;
 
-  public:
 	ThinString &operator=(const ThinString &rhs);
 	// ThinString &operator+=(const ThinString &rhs);
 	// ThinString operator+(const ThinString &rhs);
