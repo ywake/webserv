@@ -1,25 +1,25 @@
 ##############
 # Test rules #
 ##############
-TESTER		 := tester
-TESTDIR		 := gtest
-GTESTDIR	 := $(TESTDIR)/googletest
-GTESTLIB	 := $(GTESTDIR)/gtest.a
-GTEST_INCLUDES := -I$(GTESTDIR)/gtest $(INCLUDES)
-GTEST_FLAGS	 := -fsanitize=address -std=c++11
+TESTER			 := tester
+TESTDIR			 := gtest
+GTESTDIR		 := $(TESTDIR)/googletest
+GTESTLIB		 := $(GTESTDIR)/gtest.a
+GTEST_INCLUDES	 := -I$(GTESTDIR)/gtest $(INCLUDES)
+GTEST_FLAGS		 := -fsanitize=address -std=c++11
+GTEST_LIBS		 := -lpthread
 
-TESTOBJS_DIR  = $(shell python3 print_newer.py $(OBJDIR) $(SAN_OBJDIR))
-TESTOBJS_DIRS = $(SRCDIRS:$(SRCDIR)%=$(TESTOBJS_DIR)%)
-TESTOBJS	  = $(SRCS:$(SRCDIR)%.cpp=$(TESTOBJS_DIR)%.o)
-TEST_TARGET	 := webserv.a
-TESTLIBS	 :=
+TARGET_OBJDIR	  = $(shell python3 print_newer.py $(OBJDIR) $(SAN_OBJDIR))
+TARGET_OBJDIRS	  = $(SRCDIRS:$(SRCDIR)%=$(TARGET_OBJDIR)%)
+TARGET_OBJS		  = $(SRCS:$(SRCDIR)%.cpp=$(TARGET_OBJDIR)%.o)
+TEST_TARGET		 := webserv.a
 
-TESTCASE_DIR := $(TESTDIR)/testcases
-TESTCASES	  = $(shell find $(TESTCASE_DIR) -name '*test.cpp')
-TESTCASE_DIRS = $(shell find $(TESTCASE_DIR) -type d)
-TESTCASE_OBJS = $(TESTCASES:%.cpp=$(BUILDDIR)%.o)
-TESTCASE_OBJDIRS = $(TESTCASE_DIRS:%=$(BUILDDIR)%)
-TESTCASE_DEPS = $(TESTCASES:%.cpp=$(BUILDDIR)%.d)
+TESTCASE_DIR	 := $(TESTDIR)/testcases
+TESTCASE_DIRS	  = $(shell find $(TESTCASE_DIR) -type d)
+TESTCASE_SRCS	  = $(shell find $(TESTCASE_DIR) -name '*test.cpp')
+TESTCASE_OBJS	  = $(TESTCASE_SRCS:%.cpp=$(BUILDDIR)%.o)
+TESTCASE_OBJDIRS  = $(TESTCASE_DIRS:%=$(BUILDDIR)%)
+TESTCASE_DEPS	  = $(TESTCASE_SRCS:%.cpp=$(BUILDDIR)%.d)
 
 $(GTESTLIB)	:
 	$(MAKE) -C $(TESTDIR)
@@ -32,11 +32,11 @@ $(BUILDDIR)gtest/%.o: gtest/%.cpp
 	$(CXX) $(GTEST_FLAGS) $(GTEST_INCLUDES) -MMD -MP -c $< -o $@
 	@printf "$(END)"
 
-$(TEST_TARGET): $(TESTOBJS_DIRS) $(TESTOBJS)
-	ar -rcs $@ $(TESTOBJS)
+$(TEST_TARGET): $(TARGET_OBJDIRS) $(TARGET_OBJS	)
+	ar -rcs $@ $(TARGET_OBJS)
 
 $(TESTER)	: $(GTESTLIB) $(TEST_TARGET) $(TESTCASE_OBJDIRS) $(TESTCASE_OBJS)
-	clang++ $(GTEST_FLAGS) $(GTEST_INCLUDES) $(GTESTLIB) $(TESTCASE_OBJS) $(TEST_TARGET) $(TESTLIBS) -o $@
+	clang++ $(GTEST_FLAGS) $(GTEST_INCLUDES) $(GTESTLIB) $(TESTCASE_OBJS) $(TEST_TARGET) $(GTEST_LIBS) -o $@
 
 gtest    : $(TESTER) FORCE
 ifdef FILTER
