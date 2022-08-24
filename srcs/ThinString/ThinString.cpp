@@ -51,7 +51,7 @@ std::size_t ThinString::len() const
 
 std::string ThinString::ToString() const
 {
-	return (*content_).substr(start_, end_);
+	return content_->substr(start_, end_);
 }
 
 ThinString::const_iterator ThinString::begin() const
