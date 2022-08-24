@@ -113,6 +113,7 @@ TESTCASES	  = $(shell find $(TESTCASE_DIR) -name '*test.cpp')
 TESTCASE_DIRS = $(shell find $(TESTCASE_DIR) -type d)
 TESTCASE_OBJS = $(TESTCASES:%.cpp=$(BUILDDIR)%.o)
 TESTCASE_OBJDIRS = $(TESTCASE_DIRS:%=$(BUILDDIR)%)
+TESTCASE_DEPS = $(TESTCASES:%.cpp=$(BUILDDIR)%.d)
 
 $(GTESTLIB)	:
 	$(MAKE) -C $(TESTDIR)
@@ -136,6 +137,7 @@ gtest    : $(TESTER) FORCE
 	@rm $(TEST_TARGET)
 
 -include ./test/Makefile
+-include $(TESTCASE_DEPS)
 
 ##########
 # Colors #
