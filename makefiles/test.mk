@@ -39,7 +39,11 @@ $(TESTER)	: $(GTESTLIB) $(TEST_TARGET) $(TESTCASE_OBJDIRS) $(TESTCASE_OBJS)
 	clang++ $(GTEST_FLAGS) $(GTEST_INCLUDES) $(GTESTLIB) $(TESTCASE_OBJS) $(TEST_TARGET) $(TESTLIBS) -o $@
 
 gtest    : $(TESTER) FORCE
+ifdef FILTER
+	./$< --gtest_filter=$(FILTER)
+else
 	./$<
+endif
 	@rm $(TEST_TARGET)
 
 -include $(TESTCASE_DEPS)
