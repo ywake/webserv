@@ -20,6 +20,7 @@ TESTCASE_SRCS	  = $(shell find $(TESTCASE_DIR) -name '*test.cpp')
 TESTCASE_OBJS	  = $(TESTCASE_SRCS:%.cpp=$(BUILDDIR)%.o)
 TESTCASE_OBJDIRS  = $(TESTCASE_DIRS:%=$(BUILDDIR)%)
 TESTCASE_DEPS	  = $(TESTCASE_SRCS:%.cpp=$(BUILDDIR)%.d)
+.PHONY: $(TESTCASE_DEPS)
 
 $(GTESTLIB)	:
 	$(MAKE) -C $(TESTDIR)
@@ -38,12 +39,11 @@ $(TEST_TARGET): $(TARGET_OBJDIRS) $(TARGET_OBJS	)
 $(TESTER)	: $(GTESTLIB) $(TEST_TARGET) $(TESTCASE_OBJDIRS) $(TESTCASE_OBJS)
 	clang++ $(GTEST_FLAGS) $(GTEST_INCLUDES) $(GTESTLIB) $(TESTCASE_OBJS) $(TEST_TARGET) $(GTEST_LIBS) -o $@
 
-gtest    : $(TESTER) FORCE
-ifdef FILTER
-	./$< --gtest_filter=$(FILTER)
-else
-	./$<
-endif
+GTEST_OPT	:= $(subst $() ,*:*,$(filter-out gtest,$(MAKECMDGOALS)))
+gtest		: $(TESTER) FORCE
+	./$< --gtest_filter='*$(GTEST_OPT)*'
 	@rm $(TEST_TARGET)
+
+%:;@:
 
 -include $(TESTCASE_DEPS)

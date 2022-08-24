@@ -19,6 +19,7 @@ OBJDIR	:= $(BUILDDIR)release/
 OBJDIRS := $(SRCDIRS:$(SRCDIR)%=$(OBJDIR)%)
 OBJS	:= $(SRCS:$(SRCDIR)%.cpp=$(OBJDIR)%.o)
 DEPS	:= $(SRCS:$(SRCDIR)%.cpp=$(OBJDIR)%.d)
+.PHONY: $(DEPS)
 
 DSTRCTR	:= ./destructor.c
 
@@ -26,6 +27,7 @@ DSTRCTR	:= ./destructor.c
 # General rules #
 #################
 
+.PHONY: all
 all: $(NAME)
 
 $(NAME): $(OBJDIRS) $(OBJS)
@@ -38,15 +40,11 @@ fclean: clean
 	$(RM) $(NAME)
 	$(RM) -r $(NAME).dSYM
 
+.PHONY: re
 re: fclean all
 
 run: $(NAME)
 	./$(NAME)
-
-norm: FORCE
-	@printf "$(RED)"; norminette | grep -v ": OK!" \
-	&& exit 1 \
-	|| printf "$(GREEN)%s\n$(END)" "Norm OK!"
 
 $(OBJDIRS):
 	@mkdir -p $@

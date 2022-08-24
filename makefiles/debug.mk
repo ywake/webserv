@@ -6,6 +6,7 @@ SAN_OBJDIR	:= $(BUILDDIR)debug/
 SAN_OBJDIRS := $(SRCDIRS:$(SRCDIR)%=$(SAN_OBJDIR)%)
 SAN_OBJS	:= $(SRCS:$(SRCDIR)%.cpp=$(SAN_OBJDIR)%.o)
 SAN_DEPS	:= $(SRCS:$(SRCDIR)%.cpp=$(SAN_OBJDIR)%.d)
+.PHONY: $(SAN_DEPS)
 
 -include $(SAN_DEPS)
 
@@ -27,6 +28,8 @@ $(DSTRCTR):
 Darwin_leak: $(DSTRCTR) $(OBJDIRS) $(OBJS)
 	$(CXX) -g -std=c++98 $(OBJS) $(DSTRCTR) -o $(NAME) $(LIBS)
 
+.PHONY: Linux_leak
 Linux_leak: sani
 
+.PHONY: leak
 leak: $(shell uname)_leak
