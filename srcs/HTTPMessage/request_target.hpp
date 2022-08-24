@@ -3,6 +3,7 @@
 #include "result.hpp"
 #include "uri.hpp"
 #include "uri_abnf.hpp"
+#include <cstdlib>
 #include <vector>
 
 class RequestTarget // TODO: Abstruct説
@@ -68,20 +69,16 @@ class RequestTarget // TODO: Abstruct説
 	}
 
 	typedef std::pair<std::string, std::string> StrPair;
-	StrPair DivideStr(const std::string &str, std::string delim)
+	StrPair DivideStr(const std::string &str, const std::string &delim)
 	{
-		StrPair no_divide(str, "");
-		if (delim.empty()) {
-			return no_divide;
+		std::size_t boundary = str.find(delim);
+		bool has_no_second = delim.empty() || boundary == std::string::npos;
+		if (has_no_second) {
+			return StrPair(str, "");
 		}
-		std::size_t div_pos = str.find(delim);
-		if (div_pos == std::string::npos) {
-			return no_divide;
-		}
-		StrPair p;
-		p.first = str.substr(0, div_pos);
-		p.second = str.substr(div_pos + delim.size());
-		return p;
+		std::string left = str.substr(0, boundary);
+		std::string right = str.substr(boundary + delim.size());
+		return StrPair(left, right);
 	}
 
 	// origin-form

@@ -126,7 +126,7 @@ $(BUILDDIR)gtest/%.o: gtest/%.cpp
 	@printf "$(END)"
 
 $(TEST_TARGET): $(TESTOBJS_DIRS) $(TESTOBJS)
-	@ar -rcs $@ $(TESTOBJS)
+	ar -rcs $@ $(TESTOBJS)
 
 $(TESTER)	: $(GTESTLIB) $(TEST_TARGET) $(TESTCASE_OBJDIRS) $(TESTCASE_OBJS)
 	clang++ $(GTEST_FLAGS) $(GTEST_INCLDS) $(GTESTLIB) $(TESTCASE_OBJS) $(TEST_TARGET) $(TESTLIBS) -o $@

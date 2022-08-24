@@ -18,6 +18,7 @@ namespace ABNF
 	bool IsHexDigit(const char c);
 	std::vector<std::string> TokenizePchar(const std::string &str);
 	StringAry TokenizePathAbsolute(const std::string &str);
+	std::size_t get_len_until(const std::string &src, const std::string &delim, std::size_t start);
 } // namespace ABNF
 
 #endif // URI_ABNF_HPP
