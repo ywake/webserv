@@ -54,6 +54,16 @@ std::string ThinString::ToString() const
 	return (*content_).substr(start_, end_);
 }
 
+ThinString::const_iterator ThinString::begin() const
+{
+	return content_->begin() + start_;
+}
+
+ThinString::const_iterator ThinString::end() const
+{
+	return content_->begin() + end_;
+}
+
 ThinString &ThinString::operator=(const ThinString &rhs)
 {
 	if (this == &rhs) {
