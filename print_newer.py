@@ -20,6 +20,8 @@ def print_newer_modified_path(path1, path2):
         print(path1)
 
 if __name__ == '__main__':
+    if len(sys.argv) < 3 :
+        exit(1)
     path1 = sys.argv[1]
     path2 = sys.argv[2]
     print_newer_modified_path(path1, path2)
