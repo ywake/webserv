@@ -1,25 +1,35 @@
 #include "ThinString.hpp"
 
+std::size_t CapNumberAt(std::size_t num, std::size_t limit)
+{
+	if (num > limit) {
+		num = limit;
+	}
+	return num;
+}
+
 ThinString::ReferenceCount ThinString::reference_count_ = ThinString::ReferenceCount();
 
 ThinString::ThinString() : content_(), start_(), end_() {}
 
 ThinString::ThinString(const std::string &str, std::size_t start, std::size_t end)
-	: start_(start), end_(end)
 {
 	init(str);
+	start_ = CapNumberAt(start, content_->size());
+	end_ = CapNumberAt(end, content_->size());
 }
 
 ThinString::ThinString(const char *str, std::size_t start, std::size_t end)
-	: start_(start), end_(end)
 {
 	std::string s = str;
 	init(s);
+	start_ = CapNumberAt(start, content_->size());
+	end_ = CapNumberAt(end, content_->size());
 }
 
-ThinString::ThinString(const ThinString &other)
+ThinString::ThinString(const ThinString &other, std::size_t start, std::size_t end)
 {
-	*this = other;
+	*this = other.Substr(start, end);
 }
 
 ThinString::~ThinString()
@@ -34,12 +44,6 @@ ThinString::~ThinString()
 
 void ThinString::init(const std::string &str)
 {
-	if (start_ > str.size()) {
-		start_ = str.size();
-	}
-	if (end_ > str.size()) {
-		end_ = str.size();
-	}
 	reference_count_[str]++;
 	content_ = &reference_count_.find(str)->first;
 }
@@ -47,6 +51,17 @@ void ThinString::init(const std::string &str)
 std::size_t ThinString::len() const
 {
 	return end_ - start_;
+}
+
+ThinString ThinString::Substr(std::size_t pos, std::size_t size) const
+{
+	if (pos > std::string::npos - start_) {
+		pos = 0;
+	}
+	std::size_t sub_start = CapNumberAt(start_ + pos, this->len());
+	size = CapNumberAt(size, end_ - sub_start);
+	std::size_t sub_end = sub_start + size;
+	return ThinString(*content_, sub_start, sub_end);
 }
 
 std::string ThinString::ToString() const
