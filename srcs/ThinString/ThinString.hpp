@@ -1,5 +1,6 @@
 #ifndef THINSTRING_HPP
 #define THINSTRING_HPP
+#include <algorithm>
 #include <iostream>
 #include <map>
 #include <string>
@@ -18,7 +19,7 @@ class ThinString
 
   private:
 	static ReferenceCount reference_count_;
-	const std::string *content_;
+	const std::string *base_;
 	std::size_t start_;
 	std::size_t length_;
 
@@ -38,7 +39,6 @@ class ThinString
 	std::size_t len() const;
 	std::size_t size() const;
 	std::size_t find(const std::string &str, std::size_t pos = 0) const;
-	std::size_t find(const char *s, std::size_t pos = 0, std::size_t count = 0) const;
 	std::size_t find(const char *s, std::size_t pos = 0) const;
 	std::size_t find(char ch, std::size_t pos = 0) const;
 
