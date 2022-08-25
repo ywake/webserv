@@ -27,7 +27,7 @@ ThinString::ThinString(const char *str, std::size_t start, std::size_t end)
 
 ThinString::ThinString(const ThinString &other, std::size_t start, std::size_t end)
 {
-	*this = other.Substr(start, end);
+	*this = other.substr(start, end);
 }
 
 ThinString::~ThinString()
@@ -53,7 +53,7 @@ std::size_t ThinString::len() const
 	return end_ - start_;
 }
 
-ThinString ThinString::Substr(std::size_t pos, std::size_t size) const
+ThinString ThinString::substr(std::size_t pos, std::size_t size) const
 {
 	if (pos > std::string::npos - start_) {
 		pos = 0;
