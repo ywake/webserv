@@ -16,6 +16,7 @@ class ThinString
 
   public:
 	typedef std::string::const_iterator const_iterator;
+	typedef std::pair<ThinString, ThinString> ThinStrPair;
 
   private:
 	static ReferenceCount reference_count_;
@@ -42,14 +43,18 @@ class ThinString
 
 	ThinString substr(std::size_t pos = 0, std::size_t size = -1) const;
 	std::string ToString() const;
-	// std::pair<ThinString, ThinString> DivideBy(const std::string &delim) const;
-	// std::size_t MeasureUntil(const std::string &delim) const;
+	ThinStrPair DivideBy(const std::string &delim) const;
+	std::size_t MeasureUntil(const std::string &delim) const;
 	const_iterator begin() const;
 	const_iterator end() const;
 
 	ThinString &operator=(const ThinString &rhs);
 	// ThinString &operator+=(const ThinString &rhs);
 	// ThinString operator+(const ThinString &rhs);
+
+	bool operator==(const ThinString &rhs) const;
+	bool operator==(const std::string &rhs) const;
+	bool operator==(const char *rhs) const;
 };
 
 std::ostream &operator<<(std::ostream &os, const ThinString &thin_str);
