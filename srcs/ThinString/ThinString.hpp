@@ -23,10 +23,8 @@ class ThinString
 	std::size_t start_;
 	std::size_t length_;
 
-  private:
-	ThinString();
-
   public:
+	ThinString();
 	ThinString(const ThinString &other, std::size_t start = 0, std::size_t length = -1);
 	ThinString(const std::string &str, std::size_t start = 0, std::size_t length = -1);
 	ThinString(const char *str, std::size_t start = 0, std::size_t length = -1);
