@@ -53,6 +53,11 @@ std::size_t ThinString::len() const
 	return end_ - start_;
 }
 
+std::size_t ThinString::size() const
+{
+	return end_ - start_;
+}
+
 ThinString ThinString::substr(std::size_t pos, std::size_t size) const
 {
 	if (pos > std::string::npos - start_) {

@@ -35,6 +35,7 @@ class ThinString
 
   public:
 	std::size_t len() const;
+	std::size_t size() const;
 	ThinString substr(std::size_t pos = 0, std::size_t size = -1) const;
 	std::string ToString() const;
 	// std::pair<ThinString, ThinString> DivideBy(const std::string &delim) const;
