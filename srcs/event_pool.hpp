@@ -1,17 +1,17 @@
 #ifndef EVENT_POOL_HPP
 #define EVENT_POOL_HPP
 
-#include <algorithm>
 #include <cerrno>
+#include <deque>
 #include <map>
-#include <queue>
-#include <sys/select.h>
-#include <unistd.h>
 
 #include "debug.hpp"
 #include "event.hpp"
+#include "event_result.hpp"
+#include "fdset.hpp"
 #include "iselector.hpp"
 #include "result.hpp"
+#include "state.hpp"
 
 class EventPool
 {
@@ -19,55 +19,92 @@ class EventPool
 	typedef std::queue<Event> Events;
 
   private:
-	std::map<int, Events> pool_;
+	class Pool : public std::deque<Event>
+	{
+	  public:
+		void Push(const Event &event)
+		{
+			push_back(event);
+		}
+
+		Event Pop()
+		{
+			Event ret = front();
+			pop_front();
+			return ret;
+		}
+	};
+	typedef Pool::iterator iterator;
+	Pool wait_pool_;
+	Pool ready_pool_;
+	std::map<State, State> state_chain_;
+	std::map<State, Callback> callback_;
+	FdSet ready;
 
   public:
-	EventPool()
-		: pool_(){};
-	~EventPool(){};
-	void UpdateEvent(Event e)
+	EventPool() : wait_pool_(), ready_pool_(), state_chain_(), callback_(), ready()
 	{
-		pool_[e.fd_].push(e);
-		// switch (e.state_) {
-		// case Event::RUNNING:
-		// 	pool_[e.fd_] = e;
-		// 	log(e.fd_, "event add");
-		// 	break;
-		// case Event::STOPPED:
-		// 	pool_.erase(e.fd_);
-		// 	close(e.fd_);
-		// 	log(e.fd_, "event stop");
-		// 	break;
-		// }
-	}
+		state_chain_[ACCEPT] = SERVE;
+		state_chain_[SERVE] = CLOSE;
+		state_chain_[CLOSE] = END;
 
-	Result<void> MonitorFds(ISelector *selector, std::vector<int> &ready)
+		callback_[ACCEPT] = OnAccept;
+		callback_[SERVE] = OnServe;
+		callback_[CLOSE] = OnClose;
+	};
+	~EventPool(){};
+
+	Result<void> MonitorFds(ISelector *selector)
 	{
-		selector->Import(pool_.begin(), pool_.end()); //[TODO] allocate失敗
+		log("monitor in", "");
+		ready.Reset();
+		selector->Import(wait_pool_.begin(), wait_pool_.end()); //[TODO] allocate失敗
 		Result<void> res = selector->Run();
 		if (res.IsErr()) {
 			return res;
 		}
 		selector->Export(ready);
+		log("monitor out", "");
 		return Result<void>();
 	}
 
-	void TriggerEvents(const std::vector<int> &ready)
+	void TransitionEvents()
 	{
-		typedef std::vector<int>::const_iterator iterator;
-
-		for (iterator it = ready.begin(); it != ready.end(); ++it) {
-			int fd = *it;
-
-			Event event = pool_[fd].front();
-			pool_[fd].pop();
-			std::vector<Event> res = event.Run();
-			for (std::vector<Event>::iterator it = res.begin(); it != res.end(); ++it) {
-				UpdateEvent(*it);
+		size_t size = wait_pool_.size();
+		for (size_t i = 0; i < size; i++) {
+			Event event = wait_pool_.Pop();
+			log("trans fd", event.fd_);
+			if (ready.IsReady(event.fd_)) {
+				ready_pool_.Push(event);
+			} else {
+				wait_pool_.Push(event);
 			}
-			if (pool_[fd].empty()) {
-				pool_.erase(fd);
-				close(fd);
+		}
+	}
+
+	void AddEvent(const EventResult &res)
+	{
+		State next = state_chain_[res.state_];
+		if (next == END) {
+			return;
+		}
+		Callback func = callback_[next];
+		wait_pool_.Push(Event(res.fd_, res.server_, func));
+	}
+
+	void AddEvent(const Event &event)
+	{
+		wait_pool_.Push(event);
+	}
+
+	void RunReadyEvents()
+	{
+		while (!ready_pool_.empty()) {
+			Event event = ready_pool_.Pop();
+			EventResult res = event.Run();
+			AddEvent(res);
+			if (res.is_persistence_) {
+				AddEvent(event);
 			}
 		}
 	}

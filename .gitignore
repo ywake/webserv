@@ -7,13 +7,28 @@
 !.gitignore
 !.gitkeep
 !Makefile
+!*.mk
 !README.md
 !**/
 !*.cpp
 !*.hpp
-
+!*.go
+!client.c
+!print_newer.py
 
 # tests
 destructor.c
 !auto_test.sh
 .google_test
+!docker-compose.yml
+!test.sh
+!telnet.sh
+!lazy_file_printer.py
+!hello_world.html
+!test/
+!test/volume
+!test/volume/*.html
+!test/request/**
+
+## google test
+gtest/googletest

@@ -13,8 +13,12 @@ class Error
 	Error();
 	Error(int errn);
 	Error(const char *msg);
-	bool IsErr();
-	std::string Err();
+	bool IsErr() const;
+	std::string Err() const;
+
+	Error &operator=(const Error &rhs);
+	bool operator==(const Error &rhs) const;
+	bool operator!=(const Error &rhs) const;
 };
 
 #endif

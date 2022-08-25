@@ -1,12 +1,14 @@
 #ifndef CALLBACK_HPP
 #define CALLBACK_HPP
 
-#include "event.hpp"
+#include "event_result.hpp"
 #include "server.hpp"
 #include <vector>
 
-std::vector<Event> OnAccept(int fd, Server *s);
-std::vector<Event> OnServe(int fd, Server *s);
-std::vector<Event> Close(int fd, Server *s);
+typedef EventResult (*Callback)(int fd, Server *s);
+
+EventResult OnAccept(int fd, Server *s);
+EventResult OnServe(int fd, Server *s);
+EventResult OnClose(int fd, Server *s);
 
 #endif

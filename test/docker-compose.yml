@@ -1,0 +1,17 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "8081:80"
+    volumes:
+      - "./volume:/usr/share/nginx/html/"
+
+  apache:
+    image: httpd:alpine
+    container_name: apache
+    ports:
+      - "8082:80"
+    volumes:
+      - "./volume:/usr/local/apache2/htdocs/"
