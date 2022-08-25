@@ -82,9 +82,9 @@ std::size_t ThinString::find(char ch, std::size_t pos) const
 
 ThinString ThinString::substr(std::size_t pos, std::size_t size) const
 {
-	std::size_t sub_start = std::min(pos, length_);
-	std::size_t sub_length = std::min(size, length_ - sub_start);
-	return ThinString(*content_, sub_start, sub_length);
+	std::size_t offset = std::min(pos, length_);
+	std::size_t sub_length = std::min(size, length_ - offset);
+	return ThinString(*content_, start_ + offset, sub_length);
 }
 
 std::string ThinString::ToString() const
