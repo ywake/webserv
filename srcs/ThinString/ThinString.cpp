@@ -32,7 +32,7 @@ ThinString::ThinString(const char *str, std::size_t start, std::size_t end)
 
 ThinString::ThinString(const ThinString &other, std::size_t start, std::size_t end)
 {
-	*this = other.substr(start, end);
+	*this = other.substr(start, end - start);
 }
 
 ThinString::~ThinString()
