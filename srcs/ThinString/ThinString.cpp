@@ -13,18 +13,16 @@ ThinString::ReferenceCount ThinString::reference_count_ = ThinString::ReferenceC
 ThinString::ThinString() : content_(), start_(), end_() {}
 
 ThinString::ThinString(const std::string &str, std::size_t start, std::size_t end)
+	: start_(start), end_(end)
 {
 	init(str);
-	start_ = CapNumberAt(start, content_->size());
-	end_ = CapNumberAt(end, content_->size());
 }
 
 ThinString::ThinString(const char *str, std::size_t start, std::size_t end)
+	: start_(start), end_(end)
 {
 	std::string s = str;
 	init(s);
-	start_ = CapNumberAt(start, content_->size());
-	end_ = CapNumberAt(end, content_->size());
 }
 
 ThinString::ThinString(const ThinString &other, std::size_t start, std::size_t end)
@@ -46,6 +44,8 @@ void ThinString::init(const std::string &str)
 {
 	reference_count_[str]++;
 	content_ = &reference_count_.find(str)->first;
+	start_ = CapNumberAt(start_, content_->size());
+	end_ = CapNumberAt(end_, content_->size());
 }
 
 std::size_t ThinString::len() const
