@@ -72,9 +72,12 @@ TEST(thin_string, substr)
 
 TEST(thin_string, find)
 {
-	ThinString str("0123456789ABCDEF", 3, 10);
-	// std::cout << str << std::endl;
+	ThinString str;
+
+	str = ThinString("0123456789ABCDEF", 3, 10);
 	EXPECT_EQ(str.find("345"), 0);
+	str = ThinString("aaa/bbb", 3, 10);
+	EXPECT_EQ(str.find("/"), 0);
 }
 
 TEST(thin_string, operator_equal)
@@ -136,4 +139,41 @@ TEST(thin_string, DivideBy)
 	test_divide_by("a?b??c", "??", "a?b", "c");
 	test_divide_by("a??b?c", "??", "a", "b?c");
 	test_divide_by("a??b?c", "?", "a", "?b?c");
+
+	test_divide_by("this is awesome test case.", "awesome", "this is ", " test case.");
+	test_divide_by("this is awesome test case.", "this", "", " is awesome test case.");
+	test_divide_by("this is awesome test case.", "case.", "this is awesome test ", "");
+	test_divide_by("this is awesome test case.", "case.", "this is awesome test ", "");
+
+	ThinString str("this is awesome test case.", 5, 8);
+	ThinString::ThinStrPair p = str.DivideBy("some");
+	EXPECT_EQ(p.first, "is aweso");
+	EXPECT_EQ(p.second, "");
+}
+
+TEST(thin_string, MeasureUntil)
+{
+	ThinString str;
+
+	str = ThinString("aaa/bbb");
+	EXPECT_EQ(str.MeasureUntil("/"), 3);
+	str = ThinString("aaa/bbb");
+	EXPECT_EQ(str.MeasureUntil("bbbb"), 7);
+
+	str = ThinString("aaa/bbb", 3, 10);
+	EXPECT_EQ(str.MeasureUntil("/"), 0);
+	str = ThinString("aaa/bbb", 4, 10);
+	EXPECT_EQ(str.MeasureUntil("/"), str.len());
+
+	str = ThinString("this is awesome test case.");
+	EXPECT_EQ(str.MeasureUntil("this"), 0);
+	str = ThinString("this is awesome test case.");
+	EXPECT_EQ(str.MeasureUntil("awesome"), 8);
+
+	str = ThinString("this is awesome test case.", 3, 10);
+	EXPECT_EQ(str.MeasureUntil("this"), str.len());
+	str = ThinString("this is awesome test case.", 3, 10);
+	EXPECT_EQ(str.MeasureUntil("awesome"), str.len());
+	str = ThinString("this is awesome test case.", 3, 10);
+	EXPECT_EQ(str.MeasureUntil("case"), str.len());
 }
