@@ -35,6 +35,7 @@ class ThinString
 	void init(const std::string &str);
 
   public:
+	bool empty() const;
 	std::size_t len() const;
 	std::size_t size() const;
 	std::size_t find(const std::string &str, std::size_t pos = 0) const;

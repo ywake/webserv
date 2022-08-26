@@ -44,6 +44,9 @@ void ThinString::init(const std::string &str)
 	start_ = std::min(start_, base_->size());
 	length_ = std::min(length_, base_->size() - start_);
 }
+bool ThinString::empty() const{
+	return size() == 0;
+}
 
 std::size_t ThinString::len() const
 {
