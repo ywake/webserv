@@ -12,9 +12,9 @@ namespace ABNF
 	static const size_t kPctEncodingSize = 3;
 
 	//[FIX]
-	ThinStrAry Split(const std::string &str, const std::string delim)
+	StringAry Split(const std::string &str, const std::string delim)
 	{
-		ThinStrAry split;
+		StringAry split;
 		std::size_t delim_length = delim.length();
 		if (delim_length == 0) {
 			split.push_back(str);
@@ -33,18 +33,21 @@ namespace ABNF
 		return split;
 	}
 
-	ThinStrAry TokenizePathAbsolute(const ThinString &str)
+	StringAry TokenizePathAbsolute(const ThinString &str)
 	{
-		ThinStrAry tokens;
+		StringAry tokens;
 		ThinString head = str;
 
 		while (1) {
 			std::size_t slash_pos = head.MeasureUntil("/");
-			tokens.push_back(head.substr(0, slash_pos));
-			bool is_found = slash_pos != head.len();
-			if (is_found) {
+			if (slash_pos != 0) {
+				tokens.push_back(head.substr(0, slash_pos)); // before '/'
+			}
+			bool is_end = slash_pos == head.len();
+			if (is_end) {
 				break;
 			}
+			tokens.push_back(head.substr(slash_pos, 1)); // "/"
 			head = head.substr(slash_pos + 1);
 		}
 
@@ -58,12 +61,12 @@ namespace ABNF
 		if (str.empty() || str.at(0) != '/') {
 			return false;
 		}
-		ThinStrAry tokens = TokenizePathAbsolute(str);
-		for (ThinStrAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
+		StringAry tokens = TokenizePathAbsolute(str);
+		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
 			if (*itr == "/") {
 				continue;
 			}
-			if (!IsSegment((*itr))) {
+			if (!IsSegment(*itr)) {
 				return false;
 			}
 		}
@@ -71,7 +74,7 @@ namespace ABNF
 	}
 
 	// query         = *( pchar / "/" / "?" )
-	bool IsQuery(const std::string &str)
+	bool IsQuery(const ThinString &str)
 	{
 		StringAry token = TokenizePchar(str);
 		for (StringAry::const_iterator itr = token.begin(); itr != token.end(); itr++) {
@@ -86,9 +89,9 @@ namespace ABNF
 	// segment       = *pchar
 	bool IsSegment(const ThinString &str)
 	{
-		ThinStrAry token = TokenizePchar(str);
-		for (ThinStrAry::const_iterator itr = token.begin(); itr != token.end(); itr++) {
-			if (!IsPchar((*itr))) {
+		StringAry token = TokenizePchar(str);
+		for (StringAry::const_iterator itr = token.begin(); itr != token.end(); itr++) {
+			if (!IsPchar(*itr)) {
 				return false;
 			}
 		}
@@ -97,9 +100,9 @@ namespace ABNF
 
 	// abcd%88ab%99a
 	// a, b, c, d, %88, a, b, %99, a
-	ThinStrAry TokenizePchar(const ThinString &str)
+	StringAry TokenizePchar(const ThinString &str)
 	{
-		ThinStrAry tokens;
+		StringAry tokens;
 		for (std::string::const_iterator itr = str.begin(); itr != str.end();) {
 			std::size_t token_start = itr - str.begin();
 			std::size_t token_len = *itr == '%' ? kPctEncodingSize : sizeof(char);
@@ -115,7 +118,7 @@ namespace ABNF
 		if (token.size() == kPctEncodingSize) {
 			return IsPctEncoded(token);
 		} else if (token.size() == sizeof(char)) {
-			char c = token.at(0);
+			char c = *token.begin();
 			return IsUnreserved(c) || IsSubDelims(c) || std::strchr(kPcharUniqSet, c);
 		} else {
 			return false;
@@ -129,7 +132,7 @@ namespace ABNF
 	}
 
 	// pct-encoded   = "%" HEXDIG HEXDIG
-	bool IsPctEncoded(const std::string &str)
+	bool IsPctEncoded(const ThinString &str)
 	{
 		return str.size() == kPctEncodingSize && str.at(0) == '%' && IsHexDigit(str.at(1)) &&
 			   IsHexDigit(str.at(2));

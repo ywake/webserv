@@ -48,3 +48,19 @@ TEST(uri_abnf, tokenize_path_absolute_empty_x_empty)
 
 	EXPECT_EQ(act, exp);
 }
+
+TEST(uri_abnf, tokenize_path_absolute_slash_only)
+{
+	ABNF::StringAry act = ABNF::TokenizePathAbsolute("/");
+	ABNF::StringAry exp = ABNF::StringAry({"/"});
+
+	EXPECT_EQ(act, exp);
+}
+
+TEST(uri_abnf, tokenize_path_absolute_slash_a)
+{
+	ABNF::StringAry act = ABNF::TokenizePathAbsolute("/a");
+	ABNF::StringAry exp = ABNF::StringAry({"/", "a"});
+
+	EXPECT_EQ(act, exp);
+}
