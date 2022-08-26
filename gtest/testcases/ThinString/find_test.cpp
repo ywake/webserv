@@ -96,10 +96,32 @@ TEST(thin_string, operator_equal)
 	EXPECT_FALSE(ThinString("abcdef") == std::string("abcd"));
 }
 
+void test_divide_by(
+	const std::string &str,
+	const std::string &delim,
+	const std::string &first,
+	const std::string &second
+)
+{
+	ThinString thin(str);
+	ThinString::ThinStrPair p = thin.DivideBy(delim);
+	EXPECT_EQ(p.first, first);
+	EXPECT_EQ(p.second, second);
+}
+
 TEST(thin_string, DivideBy)
 {
-	ThinString str("aaa/bbb");
-	ThinString::ThinStrPair p = str.DivideBy("/");
-	EXPECT_EQ(p.first, "aaa");
-	EXPECT_EQ(p.second, "bbb");
+	test_divide_by("aaa/bbb", "/", "aaa", "bbb");
+	test_divide_by("a?b", "?", "a", "b");
+	test_divide_by("ab?", "?", "ab", "");
+	test_divide_by("?ab", "?", "", "ab");
+	test_divide_by("ab", "?", "ab", "");
+	test_divide_by("ab", "", "ab", "");
+	test_divide_by("ab", "?/", "ab", "");
+	test_divide_by("a?b", "??", "a?b", "");
+	test_divide_by("a?b?c", "?", "a", "b?c");
+	test_divide_by("a?b?c", "??", "a?b?c", "");
+	test_divide_by("a?b??c", "??", "a?b", "c");
+	test_divide_by("a??b?c", "??", "a", "b?c");
+	test_divide_by("a??b?c", "?", "a", "?b?c");
 }
