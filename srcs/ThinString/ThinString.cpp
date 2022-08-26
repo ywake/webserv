@@ -1,5 +1,7 @@
 #include "ThinString.hpp"
 
+#include <cstring>
+
 ThinString::ReferenceCount ThinString::reference_count_ = ThinString::ReferenceCount();
 
 ThinString::ThinString() : base_(), start_(0), length_(0)
@@ -41,6 +43,9 @@ void ThinString::init(const std::string &str)
 	base_ = &reference_count_.find(str)->first;
 	start_ = std::min(start_, base_->size());
 	length_ = std::min(length_, base_->size() - start_);
+}
+bool ThinString::empty() const{
+	return size() == 0;
 }
 
 std::size_t ThinString::len() const
@@ -100,8 +105,8 @@ ThinString::ThinStrPair ThinString::DivideBy(const std::string &delim) const
 
 std::size_t ThinString::MeasureUntil(const std::string &delim) const
 {
-	std::size_t pos = find(delim, start_);
-	return pos == std::string::npos ? size() - start_ : pos - start_;
+	std::size_t pos = find(delim);
+	return pos == std::string::npos ? size() : pos;
 }
 
 ThinString::const_iterator ThinString::begin() const
@@ -133,12 +138,12 @@ bool ThinString::operator==(const ThinString &rhs) const
 
 bool ThinString::operator==(const char *rhs) const
 {
-	return std::equal(begin(), end(), rhs);
+	return len() == std::strlen(rhs) && std::equal(begin(), end(), rhs);
 }
 
 bool ThinString::operator==(const std::string &rhs) const
 {
-	return std::equal(begin(), end(), rhs.begin());
+	return len() == rhs.length() && std::equal(begin(), end(), rhs.begin());
 }
 
 std::ostream &operator<<(std::ostream &os, const ThinString &thin_str)
