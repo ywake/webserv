@@ -87,6 +87,18 @@ TEST(thin_string, operator_equal)
 	EXPECT_TRUE(ThinString("abcdef", 3, 3) == "def");
 	EXPECT_TRUE(ThinString("abcdef", 3, 10) == std::string("def"));
 
+	EXPECT_FALSE(ThinString("aaa") == ThinString(""));
+	EXPECT_FALSE(ThinString("aaa") == "");
+	EXPECT_FALSE(ThinString("aaa") == std::string(""));
+
+	EXPECT_FALSE(ThinString("") == ThinString("bbb"));
+	EXPECT_FALSE(ThinString("") == "bbb");
+	EXPECT_FALSE(ThinString("") == std::string("bbb"));
+
+	EXPECT_FALSE(ThinString("bb") == ThinString("bbb"));
+	EXPECT_FALSE(ThinString("bb") == "bbb");
+	EXPECT_FALSE(ThinString("bb") == std::string("bbb"));
+
 	EXPECT_FALSE(ThinString("aaa") == ThinString("bbb"));
 	EXPECT_FALSE(ThinString("aaa") == "bbb");
 	EXPECT_FALSE(ThinString("aaa") == std::string("bbb"));
