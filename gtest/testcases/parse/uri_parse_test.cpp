@@ -37,35 +37,6 @@ TEST(uri_parse, specify_form)
 	test_specify_form("*", RequestTarget::ASTERISK);
 }
 
-void test_divide_str(
-	const std::string &str,
-	const std::string &delim,
-	const std::string &first,
-	const std::string &second
-)
-{
-	RequestTarget req;
-	RequestTarget::StrPair act = req.DivideStr(str, delim);
-	EXPECT_EQ(act.first, first);
-	EXPECT_EQ(act.second, second);
-}
-
-TEST(uri_parse, divide_str)
-{
-	test_divide_str("a?b", "?", "a", "b");
-	test_divide_str("ab?", "?", "ab", "");
-	test_divide_str("?ab", "?", "", "ab");
-	test_divide_str("ab", "?", "ab", "");
-	test_divide_str("ab", "", "ab", "");
-	test_divide_str("ab", "?/", "ab", "");
-	test_divide_str("a?b", "??", "a?b", "");
-	test_divide_str("a?b?c", "?", "a", "b?c");
-	test_divide_str("a?b?c", "??", "a?b?c", "");
-	test_divide_str("a?b??c", "??", "a?b", "c");
-	test_divide_str("a??b?c", "??", "a", "b?c");
-	test_divide_str("a??b?c", "?", "a", "?b?c");
-}
-
 void test_parse_origin_form(const std::string &input, const URI &uri, const Error &err = Error())
 {
 	RequestTarget exp(RequestTarget::ORIGIN, uri);

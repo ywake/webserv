@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cctype>
 
+/*
 TEST(start_line, get)
 {
 	std::string input = "GET / HTTP/1.1";
@@ -31,3 +32,4 @@ TEST(start_line, whitespace)
 	}
 	ASSERT_EQ(error, Error("400"));
 }
+*/
