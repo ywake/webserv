@@ -38,6 +38,8 @@ class ThinString
 	bool empty() const;
 	std::size_t len() const;
 	std::size_t size() const;
+	const char &at(size_t n) const;
+
 	std::size_t find(const std::string &str, std::size_t pos = 0) const;
 	std::size_t find(const char *s, std::size_t pos = 0) const;
 	std::size_t find(char ch, std::size_t pos = 0) const;
@@ -46,6 +48,7 @@ class ThinString
 	std::string ToString() const;
 	ThinStrPair DivideBy(const std::string &delim) const;
 	std::size_t MeasureUntil(const std::string &delim) const;
+
 	const_iterator begin() const;
 	const_iterator end() const;
 

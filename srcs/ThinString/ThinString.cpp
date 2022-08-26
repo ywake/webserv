@@ -44,7 +44,8 @@ void ThinString::init(const std::string &str)
 	start_ = std::min(start_, base_->size());
 	length_ = std::min(length_, base_->size() - start_);
 }
-bool ThinString::empty() const{
+bool ThinString::empty() const
+{
 	return size() == 0;
 }
 
@@ -56,6 +57,17 @@ std::size_t ThinString::len() const
 std::size_t ThinString::size() const
 {
 	return length_;
+}
+
+const char &ThinString::at(size_t n) const
+{
+	bool is_within_range = len() > n && ~0 - start_ > n;
+	if (is_within_range) {
+		return base_->at(start_ + n);
+
+	} else {
+		return base_->at(base_->length());
+	}
 }
 
 std::size_t ThinString::find(const std::string &str, std::size_t pos) const
