@@ -68,30 +68,18 @@ class RequestTarget // TODO: Abstruct説
 		}
 	}
 
-	typedef std::pair<std::string, std::string> StrPair;
-	StrPair DivideStr(const std::string &str, const std::string &delim)
-	{
-		std::size_t boundary = str.find(delim);
-		bool has_no_second = delim.empty() || boundary == std::string::npos;
-		if (has_no_second) {
-			return StrPair(str, "");
-		}
-		std::string left = str.substr(0, boundary);
-		std::string right = str.substr(boundary + delim.size());
-		return StrPair(left, right);
-	}
-
 	// origin-form
 	// = absolute-path [ "?" query ]
 	void ParseOriginForm(std::string uri)
 	{
-		StrPair path_query = DivideStr(uri, "?");
+		ThinString thin(uri);
+		ThinString::ThinStrPair path_query = thin.DivideBy("?");
 
 		if (!ABNF::IsPathAbsolute(path_query.first) || !ABNF::IsQuery(path_query.second)) {
 			throw Error("400");
 		}
-		request_target_.path_ = path_query.first;
-		request_target_.query_ = path_query.second;
+		request_target_.path_ = path_query.first.ToString();
+		request_target_.query_ = path_query.second.ToString();
 	}
 };
 #endif
