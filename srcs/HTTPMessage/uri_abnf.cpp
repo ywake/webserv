@@ -9,6 +9,7 @@ namespace ABNF
 	static const char *kPcharUniqSet = ":@";
 	static const char *kUnreservedUniqSet = "-._~";
 	static const char *kSubDelimsUniqSet = "!$&'()*+,;=";
+	static const char *kSchemeUniqSet = "+-.";
 	static const size_t kPctEncodingSize = 3;
 
 	//[FIX]
@@ -149,5 +150,24 @@ namespace ABNF
 	bool IsHexDigit(const char c)
 	{
 		return std::isdigit(c) || ('A' <= c && c <= 'F') || ('a' <= c && c <= 'f');
+	}
+
+	bool IsScheme(const ThinString &str)
+	{
+		if (str.len() == 0 || !std::isalpha(str.at(0))) {
+			return false;
+		}
+		for (ThinString::const_iterator it = str.begin(); it != str.end(); it++) {
+			if (!std::isalnum(*it) && !std::strchr(kSchemeUniqSet, *it)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool IsHeirPart(const ThinString &str)
+	{
+		(void)str;
+		return true;
 	}
 } // namespace ABNF

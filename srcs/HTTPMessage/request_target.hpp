@@ -28,6 +28,7 @@ class RequestTarget // TODO: Abstruct説
 			ParseOriginForm(uri);
 			break;
 		case ABSOLUTE:
+			ParseAbsoluteForm(uri);
 			break;
 		case AUTHORITY:
 			break;
@@ -80,6 +81,17 @@ class RequestTarget // TODO: Abstruct説
 		}
 		request_target_.path_ = path_query.first.ToString();
 		request_target_.query_ = path_query.second.ToString();
+	}
+
+	// absolute-form = absolute-URI
+	void ParseAbsoluteForm(ThinString uri)
+	{
+		ThinString::ThinStrPair scheme_heir = uri.DivideBy(":");
+		ThinString::ThinStrPair heir_query = scheme_heir.second.DivideBy("?");
+		if (!ABNF::IsScheme(scheme_heir.first) || !ABNF::IsHeirPart(heir_query.first) || !ABNF::IsQuery(heir_query.second)) {
+			throw Error("400");
+		}
+		request_target_.scheme_ = scheme_heir.first.ToString();
 	}
 };
 #endif
