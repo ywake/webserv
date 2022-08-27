@@ -19,6 +19,7 @@ namespace ABNF
 	bool IsHexDigit(const char c);
 	bool IsScheme(const ThinString &str);
 	bool IsHeirPart(const ThinString &str);
+	bool IsPathRootless(ThinString str);
 	StringAry TokenizePchar(const ThinString &str);
 	StringAry TokenizePathAbsolute(const ThinString &str);
 } // namespace ABNF

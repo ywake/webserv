@@ -167,7 +167,33 @@ namespace ABNF
 
 	bool IsHeirPart(const ThinString &str)
 	{
-		(void)str;
+		if (str.empty()) {
+			return true;
+		} else if (str.find("//") == 0) {
+			// "//" authority path-abempty
+		} else if (str.at(0) == '/' && IsPathAbsolute(str)) {
+			return true;
+		} else if (IsPathRootless(str)) {
+			return true;
+		}
+		return false;
+	}
+
+	// path-rootless = segment-nz *("/" segment )
+	bool IsPathRootless(ThinString str)
+	{
+		if (str.empty() || str.at(0) == '/') {
+			return false;
+		}
+		StringAry tokens = TokenizePathAbsolute(str);
+		for (int i = 0; tokens.begin() + i == tokens.end(); i++) {
+			StringAry::const_iterator it = tokens.begin() + i;
+			if (i % 2 == 0 && !IsSegment(*it)) {
+				return false;
+			} else if (*it != "/") {
+				return false;
+			}
+		}
 		return true;
 	}
 } // namespace ABNF

@@ -47,5 +47,4 @@ TEST(uri_abnf, is_heir_part_path_empty)
 TEST(uri_abnf, is_heir_part_false_case)
 {
 	EXPECT_FALSE(ABNF::IsHeirPart("///"));
-	EXPECT_FALSE(ABNF::IsHeirPart("a"));
 }
