@@ -59,6 +59,9 @@ class ThinString
 	bool operator==(const ThinString &rhs) const;
 	bool operator==(const std::string &rhs) const;
 	bool operator==(const char *rhs) const;
+	bool operator!=(const ThinString &rhs) const;
+	bool operator!=(const std::string &rhs) const;
+	bool operator!=(const char *rhs) const;
 };
 
 std::ostream &operator<<(std::ostream &os, const ThinString &thin_str);

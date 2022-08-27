@@ -158,6 +158,21 @@ bool ThinString::operator==(const std::string &rhs) const
 	return len() == rhs.length() && std::equal(begin(), end(), rhs.begin());
 }
 
+bool ThinString::operator!=(const ThinString &rhs) const
+{
+	return !(*this == rhs);
+}
+
+bool ThinString::operator!=(const char *rhs) const
+{
+	return !(*this == rhs);
+}
+
+bool ThinString::operator!=(const std::string &rhs) const
+{
+	return !(*this == rhs);
+}
+
 std::ostream &operator<<(std::ostream &os, const ThinString &thin_str)
 {
 	os << thin_str.ToString();
