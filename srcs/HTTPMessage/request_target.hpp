@@ -88,7 +88,8 @@ class RequestTarget // TODO: Abstruct説
 	{
 		ThinString::ThinStrPair scheme_heir = uri.DivideBy(":");
 		ThinString::ThinStrPair heir_query = scheme_heir.second.DivideBy("?");
-		if (!ABNF::IsScheme(scheme_heir.first) || !ABNF::IsHeirPart(heir_query.first) || !ABNF::IsQuery(heir_query.second)) {
+		if (!ABNF::IsScheme(scheme_heir.first) || !ABNF::IsHierPart(heir_query.first) ||
+			!ABNF::IsQuery(heir_query.second)) {
 			throw Error("400");
 		}
 		request_target_.scheme_ = scheme_heir.first.ToString();

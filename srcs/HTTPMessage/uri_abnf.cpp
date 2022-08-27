@@ -55,11 +55,10 @@ namespace ABNF
 		return tokens;
 	}
 
-	// absolute-path
-	//	 = 1*( "/" segment )
-	bool IsPathAbsolute(const ThinString &str)
+	// path-rootless = segment-nz *( "/" segment )
+	bool IsPathRootless(const ThinString &str)
 	{
-		if (str.empty() || str.at(0) != '/') {
+		if (str.empty() || str.at(0) == '/') {
 			return false;
 		}
 		StringAry tokens = TokenizePathAbsolute(str);
@@ -72,6 +71,37 @@ namespace ABNF
 			}
 		}
 		return true;
+	}
+
+	// absolute-path = "/" [ segment-nz *( "/" segment ) ] -> start with "//"
+	// absolute-path = 1 *( "/" segment ) -> start with "//" ok
+	bool IsPathAbsolute(const ThinString &str)
+	{
+		if (str.empty() || str.at(0) != '/') {
+			return false;
+		}
+		ThinString trimed_slash = str.substr(1);
+		if (trimed_slash.empty()) {
+			return true;
+		}
+		StringAry tokens = TokenizePathAbsolute(str);
+		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
+			if (*itr == "/") {
+				continue;
+			}
+			if (!IsSegment(*itr)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool IsPathAbempty(const ThinString &str)
+	{
+		if (str.empty()) {
+			return true;
+		}
+		return IsPathAbsolute(str);
 	}
 
 	// query         = *( pchar / "/" / "?" )
@@ -165,35 +195,29 @@ namespace ABNF
 		return true;
 	}
 
-	bool IsHeirPart(const ThinString &str)
+	bool IsAuthority(const ThinString &str)
+	{
+		(void)str;
+		return true;
+	}
+
+	// hier-part    = "//" authority path-abempty
+	//              / path-absolute
+	//              / path-rootless ; Not support
+	//              / path-empty
+	bool IsHierPart(const ThinString &str)
 	{
 		if (str.empty()) {
 			return true;
 		} else if (str.find("//") == 0) {
-			// "//" authority path-abempty
-		} else if (str.at(0) == '/' && IsPathAbsolute(str)) {
-			return true;
-		} else if (IsPathRootless(str)) {
+			ThinString after_2slash = str.substr(2);
+			std::size_t boundary = after_2slash.MeasureUntil("/");
+			ThinString authority = after_2slash.substr(0, boundary);
+			ThinString path = after_2slash.substr(boundary);
+			return IsAuthority(authority) && IsPathAbempty(path);
+		} else if (IsPathAbsolute(str)) {
 			return true;
 		}
 		return false;
-	}
-
-	// path-rootless = segment-nz *("/" segment )
-	bool IsPathRootless(ThinString str)
-	{
-		if (str.empty() || str.at(0) == '/') {
-			return false;
-		}
-		StringAry tokens = TokenizePathAbsolute(str);
-		for (int i = 0; tokens.begin() + i == tokens.end(); i++) {
-			StringAry::const_iterator it = tokens.begin() + i;
-			if (i % 2 == 0 && !IsSegment(*it)) {
-				return false;
-			} else if (*it != "/") {
-				return false;
-			}
-		}
-		return true;
 	}
 } // namespace ABNF
