@@ -35,7 +35,7 @@ namespace ABNF
 		return split;
 	}
 
-	StringAry TokenizePathAbsolute(const ThinString &str)
+	StringAry TokenizePath(const ThinString &str)
 	{
 		StringAry tokens;
 		ThinString head = str;
@@ -56,13 +56,9 @@ namespace ABNF
 		return tokens;
 	}
 
-	// path-rootless = segment-nz *( "/" segment )
-	bool IsPathRootless(const ThinString &str)
+	bool IsValidPath(const ThinString &str)
 	{
-		if (str.empty() || str.at(0) == '/') {
-			return false;
-		}
-		StringAry tokens = TokenizePathAbsolute(str);
+		StringAry tokens = TokenizePath(str);
 		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
 			if (*itr == "/") {
 				continue;
@@ -74,6 +70,15 @@ namespace ABNF
 		return true;
 	}
 
+	// path-rootless = segment-nz *( "/" segment )
+	bool IsPathRootless(const ThinString &str)
+	{
+		if (str.empty() || str.at(0) == '/') {
+			return false;
+		}
+		return IsValidPath(str);
+	}
+
 	// absolute-path = "/" [ segment-nz *( "/" segment ) ] -> start with "//"
 	// absolute-path = 1 *( "/" segment ) -> start with "//" ok
 	bool IsPathAbsolute(const ThinString &str)
@@ -81,20 +86,7 @@ namespace ABNF
 		if (str.empty() || str.at(0) != '/') {
 			return false;
 		}
-		ThinString trimed_slash = str.substr(1);
-		if (trimed_slash.empty()) {
-			return true;
-		}
-		StringAry tokens = TokenizePathAbsolute(str);
-		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
-			if (*itr == "/") {
-				continue;
-			}
-			if (!IsSegment(*itr)) {
-				return false;
-			}
-		}
-		return true;
+		return IsValidPath(str);
 	}
 
 	bool IsPathAbempty(const ThinString &str)

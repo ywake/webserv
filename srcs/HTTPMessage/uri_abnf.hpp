@@ -27,7 +27,7 @@ namespace ABNF
 	bool IsHost(const ThinString &str);
 	bool IsPort(const ThinString &str);
 	StringAry TokenizePchar(const ThinString &str);
-	StringAry TokenizePathAbsolute(const ThinString &str);
+	StringAry TokenizePath(const ThinString &str);
 } // namespace ABNF
 
 #endif // URI_ABNF_HPP
