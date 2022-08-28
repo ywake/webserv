@@ -195,12 +195,6 @@ namespace ABNF
 		return true;
 	}
 
-	bool IsAuthority(const ThinString &str)
-	{
-		(void)str;
-		return true;
-	}
-
 	// hier-part    = "//" authority path-abempty
 	//              / path-absolute
 	//              / path-rootless ; Not support
@@ -218,6 +212,54 @@ namespace ABNF
 		} else if (IsPathAbsolute(str)) {
 			return true;
 		}
+		return false;
+	}
+
+	// authority = [ userinfo "@" ] host [ ":" port ]
+	bool IsAuthority(const ThinString &str)
+	{
+		(void)str;
+		ThinString::ThinStrPair userinfo_hostport_pair = str.DivideBy("@");
+		ThinString userinfo = userinfo_hostport_pair.first;
+		ThinString hostport = userinfo_hostport_pair.second;
+		if (!IsUserInfo(userinfo)) {
+			return false;
+		}
+		ThinString::ThinStrPair host_port_pair = hostport.DivideBy(":");
+		ThinString host = host_port_pair.first;
+		ThinString port = host_port_pair.second;
+		return IsHost(host) && IsPort(port);
+	}
+
+	// userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
+	bool IsUserInfo(const ThinString &str)
+	{
+		StringAry tokens = TokenizePchar(str);
+		for (StringAry::const_iterator it = tokens.begin(); it != tokens.end(); it++) {
+			ThinString token = *it;
+			if (token.size() == kPctEncodingSize && !IsPctEncoded(token)) {
+				return false;
+			} else if (token.size() == sizeof(char)) {
+				char c = *token.begin();
+				if (!IsUnreserved(c) || !IsSubDelims(c) || !std::strchr(kPcharUniqSet, c)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	// host = IP-literal / IPv4address / reg-name
+	bool IsHost(const ThinString &str)
+	{
+		(void)str;
+		return false;
+	}
+
+	// port = *DIGIT
+	bool IsPort(const ThinString &str)
+	{
+		(void)str;
 		return false;
 	}
 } // namespace ABNF
