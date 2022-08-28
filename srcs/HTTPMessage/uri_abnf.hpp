@@ -12,6 +12,7 @@ namespace ABNF
 	bool IsPathAbsolute(const ThinString &str);
 	bool IsQuery(const ThinString &str);
 	bool IsSegment(const ThinString &str);
+	bool IsRegularChar(const ThinString &token, const char *additional_char_set);
 	bool IsPchar(const ThinString &str);
 	bool IsUnreserved(const char c);
 	bool IsPctEncoded(const ThinString &str);

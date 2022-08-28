@@ -7,6 +7,7 @@ namespace ABNF
 {
 	static const char *kQueryUniqSet = "/?";
 	static const char *kPcharUniqSet = ":@";
+	static const char *kUserInfoUniqSet = ":";
 	static const char *kUnreservedUniqSet = "-._~";
 	static const char *kSubDelimsUniqSet = "!$&'()*+,;=";
 	static const char *kSchemeUniqSet = "+-.";
@@ -143,17 +144,23 @@ namespace ABNF
 		return tokens;
 	}
 
-	// pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
-	bool IsPchar(const ThinString &token)
+	// unreserved / pct-encoded / sub-delims
+	bool IsRegularChar(const ThinString &token, const char *additional_char_set)
 	{
 		if (token.size() == kPctEncodingSize) {
 			return IsPctEncoded(token);
 		} else if (token.size() == sizeof(char)) {
 			char c = *token.begin();
-			return IsUnreserved(c) || IsSubDelims(c) || std::strchr(kPcharUniqSet, c);
+			return IsUnreserved(c) || IsSubDelims(c) || std::strchr(additional_char_set, c);
 		} else {
 			return false;
 		}
+	}
+
+	// pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
+	bool IsPchar(const ThinString &token)
+	{
+		return IsRegularChar(token, kPcharUniqSet);
 	}
 
 	// unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
@@ -236,14 +243,8 @@ namespace ABNF
 	{
 		StringAry tokens = TokenizePchar(str);
 		for (StringAry::const_iterator it = tokens.begin(); it != tokens.end(); it++) {
-			ThinString token = *it;
-			if (token.size() == kPctEncodingSize && !IsPctEncoded(token)) {
+			if (!IsRegularChar(*it, kUserInfoUniqSet)) {
 				return false;
-			} else if (token.size() == sizeof(char)) {
-				char c = *token.begin();
-				if (!IsUnreserved(c) || !IsSubDelims(c) || !std::strchr(kPcharUniqSet, c)) {
-					return false;
-				}
 			}
 		}
 		return true;
@@ -262,4 +263,5 @@ namespace ABNF
 		(void)str;
 		return false;
 	}
+
 } // namespace ABNF
