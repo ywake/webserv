@@ -104,25 +104,24 @@ std::string ThinString::ToString() const
 }
 
 ThinString
-ThinString::CreateLeftSide(std::size_t size, const std::string &delim, eDelimSide delim_side) const
+ThinString::CreateLeftSide(std::size_t size, const std::string &delim, DelimSide delim_side) const
 {
-	if (delim_side == LEFT) {
+	if (delim_side == kInLeft) {
 		size += delim.size();
 	}
 	return substr(0, size);
 }
 
-ThinString ThinString::CreateRightSide(
-	std::size_t start, const std::string &delim, eDelimSide delim_side
-) const
+ThinString
+ThinString::CreateRightSide(std::size_t start, const std::string &delim, DelimSide delim_side) const
 {
-	if (delim_side != RIGHT) {
+	if (delim_side != kInRight) {
 		start += delim.size();
 	}
 	return substr(start);
 }
 
-ThinString::ThinStrPair ThinString::DivideBy(const std::string &delim, eDelimSide delim_side) const
+ThinString::ThinStrPair ThinString::DivideBy(const std::string &delim, DelimSide delim_side) const
 {
 	std::size_t boundary = find(delim);
 	bool has_no_second = delim.empty() || boundary == std::string::npos;
