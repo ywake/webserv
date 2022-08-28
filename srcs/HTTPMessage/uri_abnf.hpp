@@ -22,6 +22,7 @@ namespace ABNF
 	bool IsPathRootless(const ThinString &str);
 	bool IsPathAbempty(const ThinString &str);
 	bool IsAuthority(const ThinString &str);
+	bool IsUserInfo(const ThinString &str);
 	bool IsHost(const ThinString &str);
 	bool IsPort(const ThinString &str);
 	StringAry TokenizePchar(const ThinString &str);
