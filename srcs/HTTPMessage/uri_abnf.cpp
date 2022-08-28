@@ -204,10 +204,9 @@ namespace ABNF
 			return true;
 		} else if (str.find("//") == 0) {
 			ThinString after_2slash = str.substr(2);
-			std::size_t boundary = after_2slash.MeasureUntil("/");
-			ThinString authority = after_2slash.substr(0, boundary);
-			ThinString path = after_2slash.substr(boundary);
-			return IsAuthority(authority) && IsPathAbempty(path);
+			ThinString::ThinStrPair authority_path =
+				after_2slash.DivideBy("/", ThinString::DelimSide::kInRight);
+			return IsAuthority(authority_path.first) && IsPathAbempty(authority_path.second);
 		} else if (IsPathAbsolute(str)) {
 			return true;
 		}
