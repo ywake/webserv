@@ -104,7 +104,7 @@ std::string ThinString::ToString() const
 }
 
 ThinString
-ThinString::CreateLeftSide(std::size_t size, const std::string &delim, DelimSide delim_side) const
+ThinString::CreateLeftSide(const std::string &delim, std::size_t size, DelimSide delim_side) const
 {
 	if (delim_side == kInLeft) {
 		size += delim.size();
@@ -113,7 +113,7 @@ ThinString::CreateLeftSide(std::size_t size, const std::string &delim, DelimSide
 }
 
 ThinString
-ThinString::CreateRightSide(std::size_t start, const std::string &delim, DelimSide delim_side) const
+ThinString::CreateRightSide(const std::string &delim, std::size_t start, DelimSide delim_side) const
 {
 	if (delim_side != kInRight) {
 		start += delim.size();
@@ -123,13 +123,13 @@ ThinString::CreateRightSide(std::size_t start, const std::string &delim, DelimSi
 
 ThinString::ThinStrPair ThinString::DivideBy(const std::string &delim, DelimSide delim_side) const
 {
-	std::size_t boundary = find(delim);
-	bool has_no_second = delim.empty() || boundary == std::string::npos;
+	std::size_t delim_pos = find(delim);
+	bool has_no_second = delim.empty() || delim_pos == std::string::npos;
 	if (has_no_second) {
 		return ThinStrPair(*this, "");
 	}
-	ThinString left = CreateLeftSide(boundary, delim, delim_side);
-	ThinString right = CreateRightSide(boundary, delim, delim_side);
+	ThinString left = CreateLeftSide(delim, delim_pos, delim_side);
+	ThinString right = CreateRightSide(delim, delim_pos, delim_side);
 	return ThinStrPair(left, right);
 }
 

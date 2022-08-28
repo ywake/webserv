@@ -40,9 +40,9 @@ class ThinString
   private:
 	void init(const std::string &str);
 	ThinString
-	CreateLeftSide(std::size_t size, const std::string &delim, DelimSide delim_side) const;
+	CreateLeftSide(const std::string &delim, std::size_t size, DelimSide delim_side) const;
 	ThinString
-	CreateRightSide(std::size_t start, const std::string &delim, DelimSide delim_side) const;
+	CreateRightSide(const std::string &delim, std::size_t start, DelimSide delim_side) const;
 
   public:
 	bool empty() const;
