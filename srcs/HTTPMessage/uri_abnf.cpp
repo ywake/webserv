@@ -137,7 +137,7 @@ namespace ABNF
 	}
 
 	// unreserved / pct-encoded / sub-delims
-	bool IsRegularChar(const ThinString &token, const char *additional_char_set)
+	bool IsValidURIChar(const ThinString &token, const char *additional_char_set)
 	{
 		if (token.size() == kPctEncodingSize) {
 			return IsPctEncoded(token);
@@ -152,7 +152,7 @@ namespace ABNF
 	// pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
 	bool IsPchar(const ThinString &token)
 	{
-		return IsRegularChar(token, kPcharUniqSet);
+		return IsValidURIChar(token, kPcharUniqSet);
 	}
 
 	// unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
@@ -234,7 +234,7 @@ namespace ABNF
 	{
 		StringAry tokens = TokenizePchar(str);
 		for (StringAry::const_iterator it = tokens.begin(); it != tokens.end(); it++) {
-			if (!IsRegularChar(*it, kUserInfoUniqSet)) {
+			if (!IsValidURIChar(*it, kUserInfoUniqSet)) {
 				return false;
 			}
 		}
