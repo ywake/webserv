@@ -205,7 +205,7 @@ namespace ABNF
 		} else if (str.find("//") == 0) {
 			ThinString after_2slash = str.substr(2);
 			ThinString::ThinStrPair authority_path =
-				after_2slash.DivideBy("/", ThinString::DelimSide::kInRight);
+				after_2slash.DivideBy("/", ThinString::kIncludeRight);
 			return IsAuthority(authority_path.first) && IsPathAbempty(authority_path.second);
 		} else if (IsPathAbsolute(str)) {
 			return true;

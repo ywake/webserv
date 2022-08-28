@@ -106,7 +106,7 @@ std::string ThinString::ToString() const
 ThinString
 ThinString::CreateLeftSide(const std::string &delim, std::size_t size, DelimSide delim_side) const
 {
-	if (delim_side == kInLeft) {
+	if (delim_side == kIncludeLeft) {
 		size += delim.size();
 	}
 	return substr(0, size);
@@ -115,7 +115,7 @@ ThinString::CreateLeftSide(const std::string &delim, std::size_t size, DelimSide
 ThinString
 ThinString::CreateRightSide(const std::string &delim, std::size_t start, DelimSide delim_side) const
 {
-	if (delim_side != kInRight) {
+	if (delim_side != kIncludeRight) {
 		start += delim.size();
 	}
 	return substr(start);

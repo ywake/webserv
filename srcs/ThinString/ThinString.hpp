@@ -19,9 +19,9 @@ class ThinString
 	typedef std::pair<ThinString, ThinString> ThinStrPair;
 	// clang-format off
 	typedef enum {
-		kInLeft,
-		kInRight,
-		kNONE
+		kIncludeLeft,
+		kIncludeRight,
+		kExclude
 	} DelimSide;
 	// clang-format on
   private:
@@ -56,7 +56,7 @@ class ThinString
 
 	ThinString substr(std::size_t pos = 0, std::size_t size = ~0UL) const;
 	std::string ToString() const;
-	ThinStrPair DivideBy(const std::string &delim, DelimSide delim_side = kNONE) const;
+	ThinStrPair DivideBy(const std::string &delim, DelimSide delim_side = kExclude) const;
 	std::size_t MeasureUntil(const std::string &delim) const;
 
 	const_iterator begin() const;
