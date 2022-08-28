@@ -103,6 +103,24 @@ std::string ThinString::ToString() const
 	return base_->substr(start_, len());
 }
 
+ThinString
+ThinString::PickLeftSide(std::size_t size, const std::string &delim, eDelimSide delim_side) const
+{
+	if (delim_side == LEFT) {
+		size += delim.size();
+	}
+	return substr(0, size);
+}
+
+ThinString
+ThinString::PickRightSide(std::size_t start, const std::string &delim, eDelimSide delim_side) const
+{
+	if (delim_side == NONE) {
+		start += delim.size();
+	}
+	return substr(start);
+}
+
 ThinString::ThinStrPair ThinString::DivideBy(const std::string &delim, eDelimSide delim_side) const
 {
 	std::size_t boundary = find(delim);
@@ -110,23 +128,8 @@ ThinString::ThinStrPair ThinString::DivideBy(const std::string &delim, eDelimSid
 	if (has_no_second) {
 		return ThinStrPair(*this, "");
 	}
-	ThinString left;
-	ThinString right;
-	switch (delim_side) {
-	case LEFT:
-		boundary += delim.size();
-		left = substr(0, boundary);
-		right = substr(boundary);
-		break;
-	case RIGHT:
-		left = substr(0, boundary);
-		right = substr(boundary);
-		break;
-	default:
-		left = substr(0, boundary);
-		right = substr(boundary + delim.size());
-		break;
-	}
+	ThinString left = PickLeftSide(boundary, delim, delim_side);
+	ThinString right = PickRightSide(boundary, delim, delim_side);
 	return ThinStrPair(left, right);
 }
 
