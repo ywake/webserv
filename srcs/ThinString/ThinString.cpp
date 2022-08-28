@@ -115,7 +115,7 @@ ThinString::PickLeftSide(std::size_t size, const std::string &delim, eDelimSide 
 ThinString
 ThinString::PickRightSide(std::size_t start, const std::string &delim, eDelimSide delim_side) const
 {
-	if (delim_side == NONE) {
+	if (delim_side != RIGHT) {
 		start += delim.size();
 	}
 	return substr(start);
