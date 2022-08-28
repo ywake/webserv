@@ -103,15 +103,30 @@ std::string ThinString::ToString() const
 	return base_->substr(start_, len());
 }
 
-ThinString::ThinStrPair ThinString::DivideBy(const std::string &delim) const
+ThinString::ThinStrPair ThinString::DivideBy(const std::string &delim, eDelimSide delim_side) const
 {
 	std::size_t boundary = find(delim);
 	bool has_no_second = delim.empty() || boundary == std::string::npos;
 	if (has_no_second) {
 		return ThinStrPair(*this, "");
 	}
-	ThinString left = substr(0, boundary);
-	ThinString right = substr(boundary + delim.size());
+	ThinString left;
+	ThinString right;
+	switch (delim_side) {
+	case LEFT:
+		boundary += delim.size();
+		left = substr(0, boundary);
+		right = substr(boundary);
+		break;
+	case RIGHT:
+		left = substr(0, boundary);
+		right = substr(boundary);
+		break;
+	default:
+		left = substr(0, boundary);
+		right = substr(boundary + delim.size());
+		break;
+	}
 	return ThinStrPair(left, right);
 }
 

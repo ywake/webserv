@@ -17,7 +17,13 @@ class ThinString
   public:
 	typedef std::string::const_iterator const_iterator;
 	typedef std::pair<ThinString, ThinString> ThinStrPair;
-
+	// clang-format off
+	typedef enum {
+		LEFT,
+		RIGHT,
+		NONE
+	} eDelimSide;
+	// clang-format on
   private:
 	static ReferenceCount reference_count_;
 	const std::string *base_;
@@ -46,7 +52,7 @@ class ThinString
 
 	ThinString substr(std::size_t pos = 0, std::size_t size = -1) const;
 	std::string ToString() const;
-	ThinStrPair DivideBy(const std::string &delim) const;
+	ThinStrPair DivideBy(const std::string &delim, eDelimSide delim_side = NONE) const;
 	std::size_t MeasureUntil(const std::string &delim) const;
 
 	const_iterator begin() const;
