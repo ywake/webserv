@@ -32,9 +32,9 @@ class ThinString
 
   public:
 	ThinString();
-	ThinString(const ThinString &other, std::size_t start = 0, std::size_t length = -1);
-	ThinString(const std::string &str, std::size_t start = 0, std::size_t length = -1);
-	ThinString(const char *str, std::size_t start = 0, std::size_t length = -1);
+	ThinString(const ThinString &other, std::size_t start = 0, std::size_t length = ~0UL);
+	ThinString(const std::string &str, std::size_t start = 0, std::size_t length = ~0UL);
+	ThinString(const char *str, std::size_t start = 0, std::size_t length = ~0UL);
 	~ThinString();
 
   private:
@@ -50,7 +50,7 @@ class ThinString
 	std::size_t find(const char *s, std::size_t pos = 0) const;
 	std::size_t find(char ch, std::size_t pos = 0) const;
 
-	ThinString substr(std::size_t pos = 0, std::size_t size = -1) const;
+	ThinString substr(std::size_t pos = 0, std::size_t size = ~0UL) const;
 	std::string ToString() const;
 	ThinStrPair DivideBy(const std::string &delim, eDelimSide delim_side = NONE) const;
 	std::size_t MeasureUntil(const std::string &delim) const;

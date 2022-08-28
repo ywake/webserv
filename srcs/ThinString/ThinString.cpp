@@ -61,7 +61,7 @@ std::size_t ThinString::size() const
 
 const char &ThinString::at(size_t n) const
 {
-	bool is_within_range = len() > n && ~0 - start_ > n;
+	bool is_within_range = len() > n && ~0UL - start_ > n;
 	if (is_within_range) {
 		return base_->at(start_ + n);
 
