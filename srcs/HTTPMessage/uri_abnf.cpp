@@ -217,7 +217,6 @@ namespace ABNF
 	// authority = [ userinfo "@" ] host [ ":" port ]
 	bool IsAuthority(const ThinString &str)
 	{
-		(void)str;
 		ThinString::ThinStrPair userinfo_hostport_pair = str.DivideBy("@");
 		ThinString userinfo = userinfo_hostport_pair.first;
 		ThinString hostport = userinfo_hostport_pair.second;
