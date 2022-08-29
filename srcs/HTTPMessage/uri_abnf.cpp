@@ -246,9 +246,15 @@ namespace ABNF
 		return IsIPLiteral(str) || IsIPv4address(str) || IsRegName(str);
 	}
 
+	// IP-literal = "[" ( IPv6address / IPvFuture  ) "]"
 	bool IsIPLiteral(const ThinString &str)
 	{
-		(void)str;
+		if (str.empty()) {
+			return false;
+		}
+		if (str.at(0) == '[' && str.back() == ']') {
+			return IsIPv6address(str) || IsIPvFuture(str);
+		}
 		return false;
 	}
 
