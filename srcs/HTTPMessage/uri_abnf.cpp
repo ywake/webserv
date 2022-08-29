@@ -253,7 +253,8 @@ namespace ABNF
 			return false;
 		}
 		if (str.at(0) == '[' && str.back() == ']') {
-			return IsIPv6address(str) || IsIPvFuture(str);
+			ThinString parenthesis_trimmed = str.substr(1, str.len() - 2);
+			return IsIPv6address(parenthesis_trimmed) || IsIPvFuture(parenthesis_trimmed);
 		}
 		return false;
 	}
