@@ -20,6 +20,7 @@ namespace ABNF
 	bool IsHexDigit(const char c);
 	bool IsScheme(const ThinString &str);
 	bool IsHierPart(const ThinString &str);
+	bool IsPathEmpty(const ThinString &str);
 	bool IsPathRootless(const ThinString &str);
 	bool IsPathAbempty(const ThinString &str);
 	bool IsAuthority(const ThinString &str);
