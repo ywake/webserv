@@ -1,6 +1,8 @@
 #include "uri_abnf.hpp"
+#include "result.hpp"
 #include <algorithm>
 #include <cctype>
+#include <cstdlib>
 #include <cstring>
 
 namespace ABNF
@@ -13,8 +15,11 @@ namespace ABNF
 	static const char *kSchemeUniqSet = "+-.";
 	static const size_t kPctEncodingSize = 3;
 
+	// prototype
+	static Result<long> StrToLong(const std::string &str);
+
 	//[FIX]
-	StringAry Split(const std::string &str, const std::string delim)
+	StringAry Split(const ThinString &str, const std::string delim)
 	{
 		StringAry split;
 		std::size_t delim_length = delim.length();
@@ -22,7 +27,7 @@ namespace ABNF
 			split.push_back(str);
 			return split;
 		}
-		std::size_t offset = std::string::size_type(0);
+		std::size_t offset = 0;
 		while (true) {
 			std::size_t pos = str.find(delim, offset);
 			if (pos == std::string::npos) {
@@ -271,10 +276,58 @@ namespace ABNF
 		return false;
 	}
 
+	// IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
 	bool IsIPv4address(const ThinString &str)
 	{
-		(void)str;
-		return false;
+		StringAry array = Split(str, ".");
+		static const std::size_t kIPv4Len = 4;
+		if (array.size() != kIPv4Len) {
+			return false;
+		}
+		for (StringAry::const_iterator it = array.begin(); it != array.end(); it++) {
+			if (!IsDecOctet(*it)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// dec-octet = DIGIT                // 0-9
+	//           / %x31-39 DIGIT         // 10-99
+	//           / "1" 2DIGIT            // 100-199
+	//           / "2" %x30-34 DIGIT     // 200-249
+	//           / "25" %x30-35          // 250-255
+	bool IsDecOctet(const ThinString &str)
+	{
+		if (str.empty()) {
+			return false;
+		}
+		static const std::size_t max_len = sizeof("255") - 1;
+		bool is_start_with_digit = std::isdigit(str.at(0));
+		if (!is_start_with_digit || str.len() > max_len) {
+			return false;
+		}
+		Result<long> res = StrToLong(str.ToString());
+		return res.IsOk() && 0 <= res.Val() && res.Val() <= 255;
+	}
+
+	static Result<long> StrToLong(const std::string &str)
+	{
+		if (str.empty()) {
+			return false;
+		}
+		bool has_zero_padding = str.at(0) == '0' && str.length() > 2;
+		if (has_zero_padding) {
+			return Error("");
+		}
+		errno = 0;
+		char *endptr = NULL;
+		long n = std::strtol(str.c_str(), &endptr, 10);
+		bool is_all_num = *endptr == '\0';
+		if (!is_all_num || errno) {
+			return Error("");
+		}
+		return n;
 	}
 
 	bool IsRegName(const ThinString &str)

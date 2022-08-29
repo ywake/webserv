@@ -8,7 +8,7 @@
 namespace ABNF
 {
 	typedef std::vector<ThinString> StringAry;
-	StringAry Split(const std::string &str, const std::string delim);
+	StringAry Split(const ThinString &str, const std::string delim);
 	bool IsPathAbsolute(const ThinString &str);
 	bool IsQuery(const ThinString &str);
 	bool IsSegment(const ThinString &str);
@@ -29,6 +29,7 @@ namespace ABNF
 	bool IsIPv6address(const ThinString &str);
 	bool IsIPvFuture(const ThinString &str);
 	bool IsIPv4address(const ThinString &str);
+	bool IsDecOctet(const ThinString &str);
 	bool IsRegName(const ThinString &str);
 	bool IsPort(const ThinString &str);
 	StringAry TokenizePchar(const ThinString &str);
