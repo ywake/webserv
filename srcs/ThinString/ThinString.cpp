@@ -70,6 +70,11 @@ const char &ThinString::at(size_t n) const
 	}
 }
 
+const char &ThinString::back() const
+{
+	return this->at(this->len() - 1);
+}
+
 std::size_t ThinString::find(const std::string &str, std::size_t pos) const
 {
 	std::size_t offset = std::min(pos, length_);

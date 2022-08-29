@@ -49,6 +49,7 @@ class ThinString
 	std::size_t len() const;
 	std::size_t size() const;
 	const char &at(size_t n) const;
+	const char &back() const;
 
 	std::size_t find(const std::string &str, std::size_t pos = 0) const;
 	std::size_t find(const char *s, std::size_t pos = 0) const;
