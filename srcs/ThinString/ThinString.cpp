@@ -64,14 +64,16 @@ const char &ThinString::at(size_t n) const
 	bool is_within_range = len() > n && ~0UL - start_ > n;
 	if (is_within_range) {
 		return base_->at(start_ + n);
-
 	} else {
-		return base_->at(base_->length());
+		return base_->at(base_->length()); // exception
 	}
 }
 
 const char &ThinString::back() const
 {
+	if (this->empty() == 0) {
+		return this->at(0); // exception
+	}
 	return this->at(this->len() - 1);
 }
 
