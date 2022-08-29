@@ -243,6 +243,35 @@ namespace ABNF
 	// host = IP-literal / IPv4address / reg-name
 	bool IsHost(const ThinString &str)
 	{
+		return IsIPLiteral(str) || IsIPv4address(str) || IsRegName(str);
+	}
+
+	bool IsIPLiteral(const ThinString &str)
+	{
+		(void)str;
+		return false;
+	}
+
+	bool IsIPv6address(const ThinString &str)
+	{
+		(void)str;
+		return false;
+	}
+
+	bool IsIPvFuture(const ThinString &str)
+	{
+		(void)str;
+		return false;
+	}
+
+	bool IsIPv4address(const ThinString &str)
+	{
+		(void)str;
+		return false;
+	}
+
+	bool IsRegName(const ThinString &str)
+	{
 		(void)str;
 		return false;
 	}
