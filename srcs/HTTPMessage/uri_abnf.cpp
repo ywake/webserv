@@ -200,7 +200,7 @@ namespace ABNF
 	//              / path-empty
 	bool IsHierPart(const ThinString &str)
 	{
-		if (str.empty()) {
+		if (IsPathEmpty(str)) {
 			return true;
 		} else if (str.find("//") == 0) {
 			ThinString after_2slash = str.substr(2);
@@ -211,6 +211,12 @@ namespace ABNF
 			return true;
 		}
 		return false;
+	}
+
+	// path-empty = 0<pchar>
+	bool IsPathEmpty(const ThinString &str)
+	{
+		return str.empty();
 	}
 
 	// authority = [ userinfo "@" ] host [ ":" port ]
