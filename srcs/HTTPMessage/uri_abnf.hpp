@@ -26,6 +26,11 @@ namespace ABNF
 	bool IsAuthority(const ThinString &str);
 	bool IsUserInfo(const ThinString &str);
 	bool IsHost(const ThinString &str);
+	bool IsIPLiteral(const ThinString &str);
+	bool IsIPv6address(const ThinString &str);
+	bool IsIPvFuture(const ThinString &str);
+	bool IsIPv4address(const ThinString &str);
+	bool IsRegName(const ThinString &str);
 	bool IsPort(const ThinString &str);
 	StringAry TokenizePchar(const ThinString &str);
 	StringAry TokenizePath(const ThinString &str);
