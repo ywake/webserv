@@ -40,24 +40,42 @@ namespace ABNF
 		return split;
 	}
 
+	// StringAry TokenizePath(const ThinString &str)
+	// {
+		// StringAry tokens;
+		// ThinString head = str;
+//
+		// while (1) {
+			// std::size_t slash_pos = head.MeasureUntil("/");
+			// if (slash_pos != 0) {
+				// tokens.push_back(head.substr(0, slash_pos)); // before '/'
+			// }
+			// bool is_end = slash_pos == head.len();
+			// if (is_end) {
+				// break;
+			// }
+			// tokens.push_back(head.substr(slash_pos, 1)); // "/"
+			// head = head.substr(slash_pos + 1);
+		// }
+//
+		// return tokens;
+	// }
+
 	StringAry TokenizePath(const ThinString &str)
 	{
 		StringAry tokens;
-		ThinString head = str;
 
-		while (1) {
-			std::size_t slash_pos = head.MeasureUntil("/");
-			if (slash_pos != 0) {
-				tokens.push_back(head.substr(0, slash_pos)); // before '/'
+		for (ThinString::const_iterator itr = str.begin(); itr != str.end();) {
+			std::size_t start_index = itr - str.begin();
+			std::size_t token_len = 0;
+			if (*itr == '/') {
+				token_len = sizeof(char);
+			} else {
+				token_len = str.substr(start_index).MeasureUntil("/");
 			}
-			bool is_end = slash_pos == head.len();
-			if (is_end) {
-				break;
-			}
-			tokens.push_back(head.substr(slash_pos, 1)); // "/"
-			head = head.substr(slash_pos + 1);
+			tokens.push_back(str.substr(start_index, token_len));
+			itr += token_len;
 		}
-
 		return tokens;
 	}
 
@@ -270,7 +288,7 @@ namespace ABNF
 		return false;
 	}
 
-	// IPv6address   =                            6( h16 ":" ) ls32
+	// IPv6address   =                           6( h16 ":" ) ls32
 	//              /                       "::" 5( h16 ":" ) ls32
 	//              / [               h16 ] "::" 4( h16 ":" ) ls32
 	//              / [ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32
@@ -279,9 +297,64 @@ namespace ABNF
 	//              / [ *4( h16 ":" ) h16 ] "::"              ls32
 	//              / [ *5( h16 ":" ) h16 ] "::"              h16
 	//              / [ *6( h16 ":" ) h16 ] "::"
+
+	bool HasMultiDcolon(const StringAry &tokens)
+	{
+		std::size_t num_of_dcolon = 0;
+		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
+			if (*itr == "::") {
+				num_of_dcolon++;
+			}
+			if (num_of_dcolon > 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// bool BalancedOctet(const StringAry &tokens)
+	// {
+		// itr = findDcolonItr();
+		// left = halfTokens(tokens, begin, itr);
+		// right = halfTokens(tokens, itr, end);//6右
+//
+		// StringAry left;
+		// StringAry right;
+		// std::size_t left_h16 = CountH16Token(left);
+		// return size == CountHextetBeforeDcolon(right);
+	// }
+
+	// std::size_t CountH16Token(const StringAry &tokens)
+	// {
+		// return 0;
+	// }
+//
+	// std::size_t CountHextetBeforeDcolon(const StringAry &right)
+	// {
+		// if (right.empty()) {
+			// return 6;
+		// }
+		// if (right.size() == 1 && IsH16(right.at(0))) {
+			// return 5;
+		// }
+		// std::size_t right_h16 = CountH16Token(right);
+		// if (!IsIPv4address(right.back())) {
+			// right_h16 = std::min(right_h16 - 2, 0);
+		// }
+	// }
+
 	bool IsIPv6address(const ThinString &str)
 	{
-		(void)str;
+		StringAry tokens = TokenizeIPv6address(str);
+		static const std::size_t kNumOfTokenMax = 14;
+		if (tokens.size() > kNumOfTokenMax) {
+			return false;
+		}
+		if (HasMultiDcolon(tokens)) {
+			return false;
+		}
+		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
+		}
 		return false;
 	}
 
@@ -335,8 +408,8 @@ namespace ABNF
 	bool IsIPv4address(const ThinString &str)
 	{
 		StringAry array = Split(str, ".");
-		static const std::size_t kIPv4Len = 4;
-		if (array.size() != kIPv4Len) {
+		static const std::size_t kNumOfDecOctet = 4;
+		if (array.size() != kNumOfDecOctet) {
 			return false;
 		}
 		for (StringAry::const_iterator it = array.begin(); it != array.end(); it++) {
