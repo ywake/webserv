@@ -35,6 +35,7 @@ namespace ABNF
 	bool IsPort(const ThinString &str);
 	StringAry TokenizePchar(const ThinString &str);
 	StringAry TokenizePath(const ThinString &str);
+	StringAry TokenizeIPv6address(const ThinString &str);
 } // namespace ABNF
 
 #endif // URI_ABNF_HPP

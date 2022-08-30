@@ -270,10 +270,59 @@ namespace ABNF
 		return false;
 	}
 
+	// IPv6address   =                            6( h16 ":" ) ls32
+	//              /                       "::" 5( h16 ":" ) ls32
+	//              / [               h16 ] "::" 4( h16 ":" ) ls32
+	//              / [ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32
+	//              / [ *2( h16 ":" ) h16 ] "::" 2( h16 ":" ) ls32
+	//              / [ *3( h16 ":" ) h16 ] "::"    h16 ":"   ls32
+	//              / [ *4( h16 ":" ) h16 ] "::"              ls32
+	//              / [ *5( h16 ":" ) h16 ] "::"              h16
+	//              / [ *6( h16 ":" ) h16 ] "::"
 	bool IsIPv6address(const ThinString &str)
 	{
 		(void)str;
 		return false;
+	}
+
+	StringAry TokenizeIPv6address(const ThinString &str)
+	{
+		StringAry tokens;
+		ThinString head = str;
+
+		while (1) {
+			std::size_t colon_index = head.MeasureUntil(":");
+			std::size_t dcolon_index = head.MeasureUntil("::");
+			std::size_t delim_len = 1 + (dcolon_index == colon_index);
+			if (colon_index != 0) {
+				tokens.push_back(head.substr(0, colon_index));
+			}
+			bool is_end = colon_index == head.len();
+			if (is_end) {
+				break;
+			}
+			tokens.push_back(head.substr(colon_index, delim_len));
+			head = head.substr(colon_index + delim_len);
+		}
+		return tokens;
+	}
+
+	// h16           = 1*4HEXDIG
+	bool IsH16(const ThinString &str)
+	{
+		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
+			if (IsHexDigit(*itr)) {
+				return false;
+			}
+		}
+		return str.size() >= 1 && str.size() <= 4;
+	}
+
+	// ls32          = ( h16 ":" h16 ) / IPv4address
+	bool IsLS32(const ThinString &str)
+	{
+		ThinString::ThinStrPair pair = str.DivideBy(":");
+		return (IsH16(pair.first) && IsH16(pair.second)) || IsIPv4address(str);
 	}
 
 	bool IsIPvFuture(const ThinString &str)
