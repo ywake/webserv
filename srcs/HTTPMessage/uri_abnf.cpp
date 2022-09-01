@@ -343,6 +343,13 @@ namespace ABNF
 			// right_h16 = std::min(right_h16 - 2, 0);
 		// }
 	// }
+	bool isValidColonPosition(StringAry &tokens)
+	{
+		if (tokens.empty()) {
+			return true;
+		}
+		return tokens.front() != ":" && tokens.back() != ":";
+	}
 
 	bool IsIPv6address(const ThinString &str)
 	{
