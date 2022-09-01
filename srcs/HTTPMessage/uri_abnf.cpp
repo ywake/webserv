@@ -355,6 +355,9 @@ namespace ABNF
 	{
 		StringAry tokens = TokenizeIPv6address(str);
 		static const std::size_t kNumOfTokenMax = 14;
+		if (tokens.empty()) {
+			return false;
+		}
 		if (tokens.size() > kNumOfTokenMax) {
 			return false;
 		}
