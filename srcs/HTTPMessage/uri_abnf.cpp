@@ -108,8 +108,8 @@ namespace ABNF
 	// query         = *( pchar / "/" / "?" )
 	bool IsQuery(const ThinString &str)
 	{
-		StringAry token = TokenizePchar(str);
-		for (StringAry::const_iterator itr = token.begin(); itr != token.end(); itr++) {
+		StringAry tokens = TokenizePchar(str);
+		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
 			bool is_valid_token = IsPchar(*itr) || std::strchr(kQueryUniqSet, itr->at(0));
 			if (!is_valid_token) {
 				return false;
