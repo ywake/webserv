@@ -391,7 +391,6 @@ namespace ABNF
 	bool IsIPv6address(const ThinString &str)
 	{
 		StringAry tokens = TokenizeIPv6address(str);
-		// static const std::size_t kNumOfTokenMax = 14;
 		static const std::size_t kNumOfTokenMax = 15;
 		if (tokens.empty()) {
 			return false;
