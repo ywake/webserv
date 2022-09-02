@@ -71,7 +71,7 @@ const char &ThinString::at(size_t n) const
 
 const char &ThinString::back() const
 {
-	if (this->empty() == 0) {
+	if (this->empty()) {
 		return this->at(0); // exception
 	}
 	return this->at(this->len() - 1);
