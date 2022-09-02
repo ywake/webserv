@@ -1,6 +1,6 @@
 #include "gtest.h"
 
-#include "uri_abnf.hpp"
+#include "parse_authority.hpp"
 
 // *( unreserved / pct-encoded / sub-delims / ":" )
 TEST(uri_abnf, is_userinfo_unreserved_tests)

@@ -1,6 +1,6 @@
 #include "gtest.h"
 
-#include "uri_abnf.hpp"
+#include "parse_path.hpp"
 
 // host = IP-literal / IPv4address / reg-name
 TEST(uri_abnf, is_path_empty_true)

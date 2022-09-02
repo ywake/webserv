@@ -1,6 +1,6 @@
 #include "gtest.h"
 
-#include "uri_abnf.hpp"
+#include "parse_abnf_core_rules.hpp"
 
 // "%" HEXDIG HEXDIG
 TEST(uri_abnf, IsHexDigit_true)

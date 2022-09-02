@@ -1,6 +1,6 @@
 #include "gtest.h"
 
-#include "uri_abnf.hpp"
+#include "parse_authority.hpp"
 
 // authority = [ userinfo "@" ] host [ ":" port ]
 TEST(uri_abnf, is_authority_userinfo)

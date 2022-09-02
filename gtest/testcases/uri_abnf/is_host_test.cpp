@@ -1,6 +1,6 @@
 #include "gtest.h"
 
-#include "uri_abnf.hpp"
+#include "parse_authority.hpp"
 
 // host = IP-literal / IPv4address / reg-name
 TEST(uri_abnf, is_host_ipv6)

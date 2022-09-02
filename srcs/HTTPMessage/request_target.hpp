@@ -1,8 +1,10 @@
 #ifndef REQUEST_TARGET_HPP
 #define REQUEST_TARGET_HPP
+#include "ThinString.hpp"
+#include "parse_path.hpp"
+#include "parse_uri.hpp"
 #include "result.hpp"
 #include "uri.hpp"
-#include "uri_abnf.hpp"
 #include <cstdlib>
 #include <vector>
 

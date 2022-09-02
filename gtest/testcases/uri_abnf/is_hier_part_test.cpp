@@ -1,6 +1,6 @@
 #include "gtest.h"
 
-#include "uri_abnf.hpp"
+#include "parse_uri.hpp"
 
 // "//" authority path-abempty
 TEST(uri_abnf, is_hier_part_authority_and_path_abempty)

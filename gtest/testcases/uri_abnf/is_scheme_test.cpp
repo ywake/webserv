@@ -1,6 +1,6 @@
 #include "gtest.h"
 
-#include "uri_abnf.hpp"
+#include "parse_uri.hpp"
 
 TEST(uri_abnf, is_scheme_true_test)
 {
