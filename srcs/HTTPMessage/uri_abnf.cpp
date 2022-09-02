@@ -46,27 +46,6 @@ namespace ABNF
 		return split;
 	}
 
-	// StringAry TokenizePath(const ThinString &str)
-	// {
-	// StringAry tokens;
-	// ThinString head = str;
-	//
-	// while (1) {
-	// std::size_t slash_pos = head.MeasureUntil("/");
-	// if (slash_pos != 0) {
-	// tokens.push_back(head.substr(0, slash_pos)); // before '/'
-	// }
-	// bool is_end = slash_pos == head.len();
-	// if (is_end) {
-	// break;
-	// }
-	// tokens.push_back(head.substr(slash_pos, 1)); // "/"
-	// head = head.substr(slash_pos + 1);
-	// }
-	//
-	// return tokens;
-	// }
-
 	StringAry TokenizePath(const ThinString &str)
 	{
 		StringAry tokens;
