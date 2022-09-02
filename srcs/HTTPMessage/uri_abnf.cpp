@@ -338,24 +338,13 @@ namespace ABNF
 		return Ipv6TokensPair(left, right);
 	}
 
-	Result<std::size_t> CountH16Bytes(Iterator begin, Iterator end)
-	{
-		static const std::size_t kH16Bytes = 2;
-
-		std::size_t bytes = 0;
-		for (Iterator itr = begin; itr < end; itr++) {
-			if (!IsH16(*itr)) {
-				return Error("");
-			}
-			bytes += kH16Bytes;
-		}
-		return bytes;
-	}
-
 	Result<std::size_t> CountLeftBytes(const StringAry &tokens)
 	{
 		std::size_t bytes = 0;
 		for (Iterator itr = tokens.begin(); itr < tokens.end(); itr++) {
+			if (*itr == ":") {
+				continue;
+			}
 			if (!IsH16(*itr)) {
 				return Error("");
 			}
@@ -371,6 +360,9 @@ namespace ABNF
 			return bytes;
 		}
 		for (Iterator itr = tokens.begin(); itr + 1 < tokens.end(); itr++) {
+			if (*itr == ":") {
+				continue;
+			}
 			if (!IsH16(*itr)) {
 				return Error("");
 			}
@@ -389,7 +381,8 @@ namespace ABNF
 	bool IsIPv6address(const ThinString &str)
 	{
 		StringAry tokens = TokenizeIPv6address(str);
-		static const std::size_t kNumOfTokenMax = 14;
+		// static const std::size_t kNumOfTokenMax = 14;
+		static const std::size_t kNumOfTokenMax = 15;
 		if (tokens.empty()) {
 			return false;
 		}
@@ -440,7 +433,7 @@ namespace ABNF
 	bool IsH16(const ThinString &str)
 	{
 		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
-			if (IsHexDigit(*itr)) {
+			if (!IsHexDigit(*itr)) {
 				return false;
 			}
 		}
