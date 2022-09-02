@@ -392,6 +392,7 @@ namespace ABNF
 	{
 		StringAry tokens = TokenizeIPv6address(str);
 		static const std::size_t kNumOfTokenMax = 15;
+		static const std::size_t kIpv6BytesMax = 16;
 		if (tokens.empty()) {
 			return false;
 		}
@@ -414,9 +415,9 @@ namespace ABNF
 			return false;
 		}
 		if (HasNoDcolon(tokens)) {
-			return right_bytes.Val() == 16;
+			return right_bytes.Val() == kIpv6BytesMax;
 		}
-		return left_bytes.Val() + right_bytes.Val() < 16;
+		return left_bytes.Val() + right_bytes.Val() < kIpv6BytesMax;
 	}
 
 	StringAry TokenizeIPv6address(const ThinString &str)
