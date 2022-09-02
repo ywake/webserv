@@ -8,6 +8,11 @@
 
 namespace ABNF
 {
+	typedef StringAry::const_iterator Iterator; // TODO rename
+
+	static const std::size_t kH16Bytes = 2;
+	static const std::size_t kIpv4Bytes = 4;
+
 	static const char *kQueryUniqSet = "/?";
 	static const char *kPcharUniqSet = ":@";
 	static const char *kUserInfoUniqSet = ":";
@@ -43,23 +48,23 @@ namespace ABNF
 
 	// StringAry TokenizePath(const ThinString &str)
 	// {
-		// StringAry tokens;
-		// ThinString head = str;
-//
-		// while (1) {
-			// std::size_t slash_pos = head.MeasureUntil("/");
-			// if (slash_pos != 0) {
-				// tokens.push_back(head.substr(0, slash_pos)); // before '/'
-			// }
-			// bool is_end = slash_pos == head.len();
-			// if (is_end) {
-				// break;
-			// }
-			// tokens.push_back(head.substr(slash_pos, 1)); // "/"
-			// head = head.substr(slash_pos + 1);
-		// }
-//
-		// return tokens;
+	// StringAry tokens;
+	// ThinString head = str;
+	//
+	// while (1) {
+	// std::size_t slash_pos = head.MeasureUntil("/");
+	// if (slash_pos != 0) {
+	// tokens.push_back(head.substr(0, slash_pos)); // before '/'
+	// }
+	// bool is_end = slash_pos == head.len();
+	// if (is_end) {
+	// break;
+	// }
+	// tokens.push_back(head.substr(slash_pos, 1)); // "/"
+	// head = head.substr(slash_pos + 1);
+	// }
+	//
+	// return tokens;
 	// }
 
 	StringAry TokenizePath(const ThinString &str)
@@ -313,37 +318,7 @@ namespace ABNF
 		return false;
 	}
 
-	// bool BalancedOctet(const StringAry &tokens)
-	// {
-		// itr = findDcolonItr();
-		// left = halfTokens(tokens, begin, itr);
-		// right = halfTokens(tokens, itr, end);//6右
-//
-		// StringAry left;
-		// StringAry right;
-		// std::size_t left_h16 = CountH16Token(left);
-		// return size == CountHextetBeforeDcolon(right);
-	// }
-
-	// std::size_t CountH16Token(const StringAry &tokens)
-	// {
-		// return 0;
-	// }
-//
-	// std::size_t CountHextetBeforeDcolon(const StringAry &right)
-	// {
-		// if (right.empty()) {
-			// return 6;
-		// }
-		// if (right.size() == 1 && IsH16(right.at(0))) {
-			// return 5;
-		// }
-		// std::size_t right_h16 = CountH16Token(right);
-		// if (!IsIPv4address(right.back())) {
-			// right_h16 = std::min(right_h16 - 2, 0);
-		// }
-	// }
-	bool isValidColonPosition(StringAry &tokens)
+	bool IsValidColonPosition(StringAry &tokens)
 	{
 		if (tokens.empty()) {
 			return true;
@@ -363,6 +338,54 @@ namespace ABNF
 		return Ipv6TokensPair(left, right);
 	}
 
+	Result<std::size_t> CountH16Bytes(Iterator begin, Iterator end)
+	{
+		static const std::size_t kH16Bytes = 2;
+
+		std::size_t bytes = 0;
+		for (Iterator itr = begin; itr < end; itr++) {
+			if (!IsH16(*itr)) {
+				return Error("");
+			}
+			bytes += kH16Bytes;
+		}
+		return bytes;
+	}
+
+	Result<std::size_t> CountLeftBytes(const StringAry &tokens)
+	{
+		std::size_t bytes = 0;
+		for (Iterator itr = tokens.begin(); itr < tokens.end(); itr++) {
+			if (!IsH16(*itr)) {
+				return Error("");
+			}
+			bytes += kH16Bytes;
+		}
+		return bytes;
+	}
+
+	Result<std::size_t> CountRightBytes(const StringAry &tokens)
+	{
+		std::size_t bytes = 0;
+		if (tokens.empty()) {
+			return bytes;
+		}
+		for (Iterator itr = tokens.begin(); itr + 1 < tokens.end(); itr++) {
+			if (!IsH16(*itr)) {
+				return Error("");
+			}
+			bytes += kH16Bytes;
+		}
+		if (IsIPv4address(tokens.back())) {
+			bytes += kIpv4Bytes;
+		} else if (IsH16(tokens.back())) {
+			bytes += kH16Bytes;
+		} else {
+			return Error("");
+		}
+		return bytes;
+	}
+
 	bool IsIPv6address(const ThinString &str)
 	{
 		StringAry tokens = TokenizeIPv6address(str);
@@ -380,7 +403,15 @@ namespace ABNF
 		if (!IsValidColonPosition(left_right.first) || !IsValidColonPosition(left_right.second)) {
 			return false;
 		}
-		return false;
+		Result<std::size_t> left_bytes = CountLeftBytes(left_right.first);
+		if (left_bytes.IsErr()) {
+			return false;
+		}
+		Result<std::size_t> right_bytes = CountRightBytes(left_right.second);
+		if (right_bytes.IsErr()) {
+			return false;
+		}
+		return left_bytes.Val() + right_bytes.Val() <= 16;
 	}
 
 	StringAry TokenizeIPv6address(const ThinString &str)

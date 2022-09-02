@@ -36,6 +36,7 @@ namespace ABNF
 	bool IsRegName(const ThinString &str);
 	bool IsPort(const ThinString &str);
 	bool IsValidColonPosition(StringAry &tokens);
+	bool IsH16(const ThinString &str);
 	StringAry TokenizePchar(const ThinString &str);
 	StringAry TokenizePath(const ThinString &str);
 	StringAry TokenizeIPv6address(const ThinString &str);
