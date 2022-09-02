@@ -318,6 +318,16 @@ namespace ABNF
 		return false;
 	}
 
+	bool HasNoDcolon(const StringAry &tokens)
+	{
+		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
+			if (*itr == "::") {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	bool IsValidColonPosition(StringAry &tokens)
 	{
 		if (tokens.empty()) {
@@ -404,7 +414,10 @@ namespace ABNF
 		if (right_bytes.IsErr()) {
 			return false;
 		}
-		return left_bytes.Val() + right_bytes.Val() <= 16;
+		if (HasNoDcolon(tokens)) {
+			return right_bytes.Val() == 16;
+		}
+		return left_bytes.Val() + right_bytes.Val() < 16;
 	}
 
 	StringAry TokenizeIPv6address(const ThinString &str)

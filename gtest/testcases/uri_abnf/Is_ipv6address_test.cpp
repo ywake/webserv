@@ -48,7 +48,6 @@ TEST(uri_abnf, is_ipv6address_dcolon_true)
 	EXPECT_TRUE(ABNF::IsIPv6address("1:2:3:4::5:6"));
 	EXPECT_TRUE(ABNF::IsIPv6address("1:2:3:4:5::6"));
 	EXPECT_TRUE(ABNF::IsIPv6address("1:2:3:4:5:6::"));
-	EXPECT_TRUE(ABNF::IsIPv6address("1:2:3:4:5:6:7"));
 	EXPECT_TRUE(ABNF::IsIPv6address("::1:2:3:4:5:6:7"));
 	EXPECT_TRUE(ABNF::IsIPv6address("1::2:3:4:5:6:7"));
 	EXPECT_TRUE(ABNF::IsIPv6address("1:2::3:4:5:6:7"));
