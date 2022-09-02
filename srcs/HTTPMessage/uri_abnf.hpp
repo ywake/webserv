@@ -8,6 +8,8 @@
 namespace ABNF
 {
 	typedef std::vector<ThinString> StringAry;
+	typedef std::pair<StringAry, StringAry> Ipv6TokensPair;
+
 	StringAry Split(const ThinString &str, const std::string delim);
 	bool IsPathAbsolute(const ThinString &str);
 	bool IsQuery(const ThinString &str);
@@ -33,9 +35,11 @@ namespace ABNF
 	bool IsDecOctet(const ThinString &str);
 	bool IsRegName(const ThinString &str);
 	bool IsPort(const ThinString &str);
+	bool IsValidColonPosition(StringAry &tokens);
 	StringAry TokenizePchar(const ThinString &str);
 	StringAry TokenizePath(const ThinString &str);
 	StringAry TokenizeIPv6address(const ThinString &str);
+	Ipv6TokensPair DivideByDcolon(const StringAry &tokens);
 } // namespace ABNF
 
 #endif // URI_ABNF_HPP

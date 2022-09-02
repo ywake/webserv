@@ -351,6 +351,18 @@ namespace ABNF
 		return tokens.front() != ":" && tokens.back() != ":";
 	}
 
+	Ipv6TokensPair DivideByDcolon(const StringAry &tokens)
+	{
+		typedef StringAry::const_iterator Iterator;
+		Iterator itr = std::find<Iterator>(tokens.begin(), tokens.end(), "::");
+		if (itr == tokens.end()) {
+			return Ipv6TokensPair(StringAry(), tokens);
+		}
+		StringAry left = StringAry(tokens.begin(), itr);
+		StringAry right = StringAry(itr + 1, tokens.end());
+		return Ipv6TokensPair(left, right);
+	}
+
 	bool IsIPv6address(const ThinString &str)
 	{
 		StringAry tokens = TokenizeIPv6address(str);
@@ -364,7 +376,9 @@ namespace ABNF
 		if (HasMultiDcolon(tokens)) {
 			return false;
 		}
-		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
+		Ipv6TokensPair left_right = DivideByDcolon(tokens);
+		if (!IsValidColonPosition(left_right.first) || !IsValidColonPosition(left_right.second)) {
+			return false;
 		}
 		return false;
 	}
