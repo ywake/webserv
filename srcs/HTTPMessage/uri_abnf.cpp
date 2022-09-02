@@ -294,16 +294,6 @@ namespace ABNF
 		return false;
 	}
 
-	// IPv6address   =                           6( h16 ":" ) ls32
-	//              /                       "::" 5( h16 ":" ) ls32
-	//              / [               h16 ] "::" 4( h16 ":" ) ls32
-	//              / [ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32
-	//              / [ *2( h16 ":" ) h16 ] "::" 2( h16 ":" ) ls32
-	//              / [ *3( h16 ":" ) h16 ] "::"    h16 ":"   ls32
-	//              / [ *4( h16 ":" ) h16 ] "::"              ls32
-	//              / [ *5( h16 ":" ) h16 ] "::"              h16
-	//              / [ *6( h16 ":" ) h16 ] "::"
-
 	bool HasMultiDcolon(const StringAry &tokens)
 	{
 		std::size_t num_of_dcolon = 0;
@@ -363,6 +353,7 @@ namespace ABNF
 		return bytes;
 	}
 
+	// TODO refactor
 	Result<std::size_t> CountRightBytes(const StringAry &tokens)
 	{
 		std::size_t bytes = 0;
@@ -388,6 +379,16 @@ namespace ABNF
 		return bytes;
 	}
 
+	// IPv6address   =                           6( h16 ":" ) ls32
+	//              /                       "::" 5( h16 ":" ) ls32
+	//              / [               h16 ] "::" 4( h16 ":" ) ls32
+	//              / [ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32
+	//              / [ *2( h16 ":" ) h16 ] "::" 2( h16 ":" ) ls32
+	//              / [ *3( h16 ":" ) h16 ] "::"    h16 ":"   ls32
+	//              / [ *4( h16 ":" ) h16 ] "::"              ls32
+	//              / [ *5( h16 ":" ) h16 ] "::"              h16
+	//              / [ *6( h16 ":" ) h16 ] "::"
+	// TODO refactor
 	bool IsIPv6address(const ThinString &str)
 	{
 		StringAry tokens = TokenizeIPv6address(str);
@@ -420,6 +421,7 @@ namespace ABNF
 		return left_bytes.Val() + right_bytes.Val() < kIpv6BytesMax;
 	}
 
+	// TODO refactor
 	StringAry TokenizeIPv6address(const ThinString &str)
 	{
 		StringAry tokens;
