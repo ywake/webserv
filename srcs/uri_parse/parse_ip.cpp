@@ -9,6 +9,8 @@
 
 namespace ABNF
 {
+	static const std::size_t kNumOfIpv6TokenMax = 15;
+	static const std::size_t kIpv6BytesMax = 16;
 
 	// IP-literal = "[" ( IPv6address / IPvFuture  ) "]"
 	bool IsIPLiteral(const ThinString &str)
@@ -32,37 +34,26 @@ namespace ABNF
 	//              / [ *4( h16 ":" ) h16 ] "::"              ls32
 	//              / [ *5( h16 ":" ) h16 ] "::"              h16
 	//              / [ *6( h16 ":" ) h16 ] "::"
-	// TODO refactor
 	bool IsIPv6address(const ThinString &str)
 	{
 		StringAry tokens = TokenizeIPv6address(str);
-		static const std::size_t kNumOfTokenMax = 15;
-		static const std::size_t kIpv6BytesMax = 16;
-		if (tokens.empty()) {
+		if (tokens.empty() || tokens.size() > kNumOfIpv6TokenMax) {
 			return false;
 		}
-		if (tokens.size() > kNumOfTokenMax) {
+		std::size_t num_of_dcolons = CountDcolons(tokens);
+		if (num_of_dcolons > 1) {
 			return false;
 		}
-		if (HasMultiDcolon(tokens)) {
+		Result<std::size_t> bytes = CountIpv6Bytes(tokens);
+		if (bytes.IsErr()) {
 			return false;
 		}
-		Ipv6TokensPair left_right = DivideByDcolon(tokens);
-		if (!IsValidColonPosition(left_right.first) || !IsValidColonPosition(left_right.second)) {
-			return false;
+		bool has_omitted_bytes = num_of_dcolons == 1;
+		if (has_omitted_bytes) {
+			return bytes.Val() < kIpv6BytesMax;
+		} else {
+			return bytes.Val() == kIpv6BytesMax;
 		}
-		Result<std::size_t> left_bytes = CountLeftBytes(left_right.first);
-		if (left_bytes.IsErr()) {
-			return false;
-		}
-		Result<std::size_t> right_bytes = CountRightBytes(left_right.second);
-		if (right_bytes.IsErr()) {
-			return false;
-		}
-		if (HasNoDcolon(tokens)) {
-			return right_bytes.Val() == kIpv6BytesMax;
-		}
-		return left_bytes.Val() + right_bytes.Val() < kIpv6BytesMax;
 	}
 
 	// h16           = 1*4HEXDIG

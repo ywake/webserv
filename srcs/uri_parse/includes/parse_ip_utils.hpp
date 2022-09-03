@@ -7,13 +7,13 @@
 
 namespace ABNF
 {
-	bool HasMultiDcolon(const StringAry &tokens);
-	bool HasNoDcolon(const StringAry &tokens);
+	std::size_t CountDcolons(const StringAry &tokens);
 	bool IsValidColonPosition(StringAry &tokens);
 	Ipv6TokensPair DivideByDcolon(const StringAry &tokens);
 	Result<std::size_t> CountLeftBytes(const StringAry &tokens);
 	Result<std::size_t> CountRightBytes(const StringAry &tokens);
 	StringAry TokenizeIPv6address(const ThinString &str);
+	Result<std::size_t> CountIpv6Bytes(const StringAry &tokens);
 
 } // namespace ABNF
 

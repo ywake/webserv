@@ -13,7 +13,6 @@ namespace ABNF
 	bool IsIPv4address(const ThinString &str);
 	bool IsDecOctet(const ThinString &str);
 	bool IsRegName(const ThinString &str);
-
 } // namespace ABNF
 
 #endif

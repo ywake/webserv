@@ -7,6 +7,7 @@ namespace ABNF
 {
 	static const std::size_t kH16Bytes = 2;
 	static const std::size_t kIpv4Bytes = 4;
+	static const std::size_t kIpv6BytesMax = 16;
 
 	bool HasMultiDcolon(const StringAry &tokens)
 	{
@@ -22,14 +23,15 @@ namespace ABNF
 		return false;
 	}
 
-	bool HasNoDcolon(const StringAry &tokens)
+	std::size_t CountDcolons(const StringAry &tokens)
 	{
+		std::size_t num_of_dcolon = 0;
 		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
 			if (*itr == "::") {
-				return false;
+				num_of_dcolon++;
 			}
 		}
-		return true;
+		return num_of_dcolon;
 	}
 
 	bool IsValidColonPosition(StringAry &tokens)
@@ -52,10 +54,10 @@ namespace ABNF
 		return Ipv6TokensPair(left, right);
 	}
 
-	Result<std::size_t> CountLeftBytes(const StringAry &tokens)
+	Result<std::size_t> CountH16Bytes(RevIterator begin, RevIterator end)
 	{
 		std::size_t bytes = 0;
-		for (Iterator itr = tokens.begin(); itr < tokens.end(); itr++) {
+		for (RevIterator itr = begin; itr != end; itr++) {
 			if (*itr == ":") {
 				continue;
 			}
@@ -67,30 +69,43 @@ namespace ABNF
 		return bytes;
 	}
 
-	// TODO refactor
+	Result<std::size_t> CountLeftBytes(const StringAry &tokens)
+	{
+		return CountH16Bytes(tokens.rbegin(), tokens.rend());
+	}
+
 	Result<std::size_t> CountRightBytes(const StringAry &tokens)
 	{
-		std::size_t bytes = 0;
 		if (tokens.empty()) {
-			return bytes;
+			return 0;
 		}
-		for (Iterator itr = tokens.begin(); itr + 1 < tokens.end(); itr++) {
-			if (*itr == ":") {
-				continue;
-			}
-			if (!IsH16(*itr)) {
-				return Error("");
-			}
-			bytes += kH16Bytes;
-		}
-		if (IsIPv4address(tokens.back())) {
-			bytes += kIpv4Bytes;
+		Result<std::size_t> bytes = CountH16Bytes(++tokens.rbegin(), tokens.rend());
+		if (bytes.IsErr()) {
+			return Error("");
+		} else if (IsIPv4address(tokens.back())) {
+			return bytes.Val() + kIpv4Bytes;
 		} else if (IsH16(tokens.back())) {
-			bytes += kH16Bytes;
+			return bytes.Val() + kH16Bytes;
 		} else {
 			return Error("");
 		}
-		return bytes;
+	}
+
+	Result<std::size_t> CountIpv6Bytes(const StringAry &tokens)
+	{
+		Ipv6TokensPair left_right = DivideByDcolon(tokens);
+		if (!IsValidColonPosition(left_right.first) || !IsValidColonPosition(left_right.second)) {
+			return Error("");
+		}
+		Result<std::size_t> left_bytes = CountLeftBytes(left_right.first);
+		if (left_bytes.IsErr()) {
+			return Error("");
+		}
+		Result<std::size_t> right_bytes = CountRightBytes(left_right.second);
+		if (right_bytes.IsErr()) {
+			return Error("");
+		}
+		return left_bytes.Val() + right_bytes.Val();
 	}
 
 	// TODO refactor
