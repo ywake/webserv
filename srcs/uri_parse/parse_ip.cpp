@@ -4,6 +4,7 @@
 #include "parse_abnf_core_rules.hpp"
 #include "parse_define.hpp"
 #include "parse_ip_utils.hpp"
+#include "parse_path_utils.hpp"
 #include "parse_uri_utils.hpp"
 #include "result.hpp"
 #include "webserv_utils.hpp"
@@ -127,10 +128,11 @@ namespace ABNF
 		return res.IsOk() && 0 <= res.Val() && res.Val() <= 255;
 	}
 
+	// reg-name      = *( unreserved / pct-encoded / sub-delims )
 	bool IsRegName(const ThinString &str)
 	{
-		(void)str;
-		return false;
+		StringAry tokens = TokenizePchar(str);
+		return IsRegularURITokenAll(tokens, "");
 	}
 
 } // namespace ABNF
