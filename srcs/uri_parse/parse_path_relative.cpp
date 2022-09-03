@@ -24,7 +24,7 @@ namespace ABNF
 	// pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
 	bool IsPchar(const ThinString &token)
 	{
-		return IsValidURIChar(token, kPcharUniqSet);
+		return IsRegularURIToken(token, kPcharUniqSet);
 	}
 
 } // namespace ABNF

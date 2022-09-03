@@ -30,7 +30,7 @@ namespace ABNF
 	{
 		StringAry tokens = TokenizePchar(str);
 		for (StringAry::const_iterator it = tokens.begin(); it != tokens.end(); it++) {
-			if (!IsValidURIChar(*it, kUserInfoUniqSet)) {
+			if (!IsRegularURIToken(*it, kUserInfoUniqSet)) {
 				return false;
 			}
 		}

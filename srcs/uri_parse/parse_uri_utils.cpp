@@ -9,13 +9,18 @@
 namespace ABNF
 {
 	// unreserved / pct-encoded / sub-delims
-	bool IsValidURIChar(const ThinString &token, const char *additional_char_set)
+	bool IsRegularURIChar(const char c, const char *additional_char_set)
+	{
+		return IsUnreserved(c) || IsSubDelims(c) || std::strchr(additional_char_set, c);
+	}
+
+	bool IsRegularURIToken(const ThinString &token, const char *additional_char_set)
 	{
 		if (token.size() == kPctEncodingSize) {
 			return IsPctEncoded(token);
 		} else if (token.size() == sizeof(char)) {
 			char c = *token.begin();
-			return IsUnreserved(c) || IsSubDelims(c) || std::strchr(additional_char_set, c);
+			return IsRegularURIChar(c, additional_char_set);
 		} else {
 			return false;
 		}
