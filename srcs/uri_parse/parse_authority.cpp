@@ -48,7 +48,11 @@ namespace ABNF
 	// port = *DIGIT
 	bool IsPort(const ThinString &str)
 	{
-		(void)str;
-		return false;
+		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
+			if (!std::isdigit(*itr)) {
+				return false;
+			}
+		}
+		return true;
 	}
 } // namespace ABNF
