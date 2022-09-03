@@ -2,6 +2,7 @@
 #define PARSE_URI_UTILS_HPP
 
 #include "ThinString.hpp"
+#include "parse_define.hpp"
 
 namespace ABNF
 {
