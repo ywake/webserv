@@ -84,8 +84,8 @@ namespace ABNF
 	bool IsIPv4address(const ThinString &str)
 	{
 		StringAry array = Split(str, ".");
-		static const std::size_t kNumOfDecOctet = 4;
-		if (array.size() != kNumOfDecOctet) {
+		static const std::size_t kNumOfDecOctets = 4;
+		if (array.size() != kNumOfDecOctets) {
 			return false;
 		}
 		for (StringAry::const_iterator it = array.begin(); it != array.end(); it++) {
