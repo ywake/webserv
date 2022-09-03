@@ -1,4 +1,5 @@
 #include "webserv_utils.hpp"
+#include <cerrno>
 
 Result<long> StrToLong(const std::string &str)
 {
