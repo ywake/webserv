@@ -26,6 +26,16 @@ namespace ABNF
 		}
 	}
 
+	bool IsRegularURICharAll(const ThinString &str, const char *additional_char_set)
+	{
+		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
+			if (!IsRegularURIChar(*itr, additional_char_set)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	bool IsHexDigitAll(const ThinString &str)
 	{
 		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
