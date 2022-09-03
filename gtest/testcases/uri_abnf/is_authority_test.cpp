@@ -17,10 +17,10 @@ TEST(uri_abnf, is_authority_userinfo)
 
 TEST(uri_abnf, is_authority_host)
 {
-	EXPECT_TRUE(ABNF::IsAuthority(""));
 	EXPECT_TRUE(ABNF::IsAuthority("example.com"));
 
 	EXPECT_FALSE(ABNF::IsAuthority("example@com"));
+	EXPECT_FALSE(ABNF::IsAuthority(""));
 }
 
 TEST(uri_abnf, is_authority_port)
