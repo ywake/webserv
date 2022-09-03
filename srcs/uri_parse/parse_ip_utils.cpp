@@ -9,20 +9,6 @@ namespace ABNF
 	static const std::size_t kIpv4Bytes = 4;
 	static const std::size_t kIpv6BytesMax = 16;
 
-	bool HasMultiDcolon(const StringAry &tokens)
-	{
-		std::size_t num_of_dcolon = 0;
-		for (StringAry::const_iterator itr = tokens.begin(); itr != tokens.end(); itr++) {
-			if (*itr == "::") {
-				num_of_dcolon++;
-			}
-			if (num_of_dcolon > 1) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	std::size_t CountDcolons(const StringAry &tokens)
 	{
 		std::size_t num_of_dcolon = 0;
