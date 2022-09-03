@@ -6,6 +6,7 @@
 namespace ABNF
 {
 	bool IsValidURIChar(const ThinString &token, const char *additional_char_set);
+	bool IsHexDigitAll(const ThinString &str);
 
 } // namespace ABNF
 

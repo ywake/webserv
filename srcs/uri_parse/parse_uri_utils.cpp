@@ -1,6 +1,7 @@
 #include "parse_uri_utils.hpp"
 
 #include "ThinString.hpp"
+#include "parse_abnf_core_rules.hpp"
 #include "parse_define.hpp"
 #include "parse_uri_relative.hpp"
 #include <cstring>
@@ -20,4 +21,13 @@ namespace ABNF
 		}
 	}
 
+	bool IsHexDigitAll(const ThinString &str)
+	{
+		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
+			if (!IsHexDigit(*itr)) {
+				return false;
+			}
+		}
+		return true;
+	}
 } // namespace ABNF

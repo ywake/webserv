@@ -59,10 +59,8 @@ namespace ABNF
 	// h16           = 1*4HEXDIG
 	bool IsH16(const ThinString &str)
 	{
-		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
-			if (!IsHexDigit(*itr)) {
-				return false;
-			}
+		if (!IsHexDigitAll(str)) {
+			return false;
 		}
 		return str.size() >= 1 && str.size() <= 4;
 	}
