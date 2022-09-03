@@ -129,6 +129,7 @@ namespace ABNF
 	}
 
 	// reg-name      = *( unreserved / pct-encoded / sub-delims )
+	// TODO テスト追加
 	bool IsRegName(const ThinString &str)
 	{
 		StringAry tokens = TokenizePchar(str);

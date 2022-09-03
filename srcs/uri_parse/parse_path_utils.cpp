@@ -24,6 +24,7 @@ namespace ABNF
 
 	// abcd%88ab%99a
 	// a, b, c, d, %88, a, b, %99, a
+	// TODO pchar以外の判定にも使ってるので関数名考える
 	StringAry TokenizePchar(const ThinString &str)
 	{
 		StringAry tokens;
