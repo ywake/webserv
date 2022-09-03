@@ -14,6 +14,16 @@ namespace ABNF
 		return IsUnreserved(c) || IsSubDelims(c) || std::strchr(additional_char_set, c);
 	}
 
+	bool IsRegularURICharAll(const ThinString &str, const char *additional_char_set)
+	{
+		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
+			if (!IsRegularURIChar(*itr, additional_char_set)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	bool IsRegularURIToken(const ThinString &token, const char *additional_char_set)
 	{
 		if (token.size() == kPctEncodingSize) {
