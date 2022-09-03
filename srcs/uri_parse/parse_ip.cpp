@@ -4,6 +4,7 @@
 #include "parse_abnf_core_rules.hpp"
 #include "parse_define.hpp"
 #include "parse_ip_utils.hpp"
+#include "parse_uri_utils.hpp"
 #include "result.hpp"
 #include "webserv_utils.hpp"
 
@@ -11,6 +12,7 @@ namespace ABNF
 {
 	static const std::size_t kNumOfIpv6TokenMax = 15;
 	static const std::size_t kIpv6BytesMax = 16;
+	static const char *kIpvFutureUniqSet = ":";
 
 	// IP-literal = "[" ( IPv6address / IPvFuture  ) "]"
 	bool IsIPLiteral(const ThinString &str)
@@ -72,10 +74,22 @@ namespace ABNF
 		return (IsH16(pair.first) && IsH16(pair.second)) || IsIPv4address(str);
 	}
 
+	// IPvFuture     = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
 	bool IsIPvFuture(const ThinString &str)
 	{
-		(void)str;
-		return false;
+		if (str.empty() || str.at(0) != 'v') {
+			return false;
+		}
+		ThinString::ThinStrPair strs = str.DivideBy(".", ThinString::kIncludeRight);
+		if (strs.second.empty() || strs.second.at(0) != '.') {
+			return false;
+		}
+		ThinString trimed_v = strs.first.substr(1);
+		ThinString trimed_dot = strs.second.substr(1);
+		if (trimed_v.empty() || trimed_dot.empty()) {
+			return false;
+		}
+		return IsHexDigitAll(trimed_v) && IsRegularURICharAll(trimed_dot, kIpvFutureUniqSet);
 	}
 
 	// IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
