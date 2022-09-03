@@ -36,10 +36,10 @@ namespace ABNF
 		}
 	}
 
-	bool IsRegularURICharAll(const ThinString &str, const char *additional_char_set)
+	bool IsRegularURITokenAll(const StringAry &tokens, const char *additional_char_set)
 	{
-		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
-			if (!IsRegularURIChar(*itr, additional_char_set)) {
+		for (Iterator it = tokens.begin(); it != tokens.end(); it++) {
+			if (!IsRegularURIToken(*it, additional_char_set)) {
 				return false;
 			}
 		}
