@@ -42,7 +42,15 @@ $(TESTER)	: $(GTESTLIB) $(TEST_TARGET) $(TESTCASE_OBJDIRS) $(TESTCASE_OBJS)
 
 GTEST_OPT	:= $(subst $() ,*:*,$(filter-out gtest,$(MAKECMDGOALS)))
 gtest		: $(TESTER) FORCE
-	./$< --gtest_filter='*$(GTEST_OPT)*'
+	./$< --gtest_filter='*$(GTEST_OPT)*' || ($(MAKE) check; ! :)
+	@$(MAKE) check
+
+check:
+	@printf "$(RED)$(BOLD)\n"
+	@WARN_FILE=$$(find $(TESTCASE_DIR) -type f | grep -v '_test\.cpp') \
+		&& printf "Some files are not included.\n$(END)$(RED)%s\n" $$WARN_FILE \
+		||:
+	@printf "$(END)"
 
 %:;@:
 
