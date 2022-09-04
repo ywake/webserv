@@ -7,7 +7,7 @@ namespace ABNF
 {
 	static const std::size_t kH16Bytes = 2;
 	static const std::size_t kIpv4Bytes = 4;
-	//static const std::size_t kIpv6BytesMax = 16;
+	// static const std::size_t kIpv6BytesMax = 16;
 
 	std::size_t CountDcolons(const StringAry &tokens)
 	{
@@ -94,25 +94,20 @@ namespace ABNF
 		return left_bytes.Val() + right_bytes.Val();
 	}
 
-	// TODO refactor
 	StringAry TokenizeIPv6address(const ThinString &str)
 	{
 		StringAry tokens;
 		ThinString head = str;
 
-		while (1) {
+		while (head.len()) {
 			std::size_t colon_index = head.MeasureUntil(":");
 			std::size_t dcolon_index = head.MeasureUntil("::");
 			std::size_t delim_len = 1 + (dcolon_index == colon_index);
-			if (colon_index != 0) {
-				tokens.push_back(head.substr(0, colon_index));
-			}
-			bool is_end = colon_index == head.len();
-			if (is_end) {
-				break;
-			}
-			tokens.push_back(head.substr(colon_index, delim_len));
-			head = head.substr(colon_index + delim_len);
+
+			std::size_t substr_len = colon_index == 0 ? delim_len : colon_index;
+
+			tokens.push_back(head.substr(0, substr_len));
+			head = head.substr(substr_len);
 		}
 		return tokens;
 	}
