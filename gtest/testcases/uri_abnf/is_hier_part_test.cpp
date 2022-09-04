@@ -5,9 +5,7 @@
 // "//" authority path-abempty
 TEST(uri_abnf, is_hier_part_authority_and_path_abempty)
 {
-	EXPECT_TRUE(ABNF::IsHierPart("//"));
 	EXPECT_TRUE(ABNF::IsHierPart("//example.com"));
-	EXPECT_TRUE(ABNF::IsHierPart("//example.com/index.html"));
 	EXPECT_TRUE(ABNF::IsHierPart("//example.com//index.html"));
 
 	EXPECT_TRUE(ABNF::IsHierPart("//example.com:80//index.html"));
@@ -18,6 +16,9 @@ TEST(uri_abnf, is_hier_part_authority_and_path_abempty)
 	EXPECT_TRUE(ABNF::IsHierPart("//name:pass:@example.com//index.html"));
 	EXPECT_TRUE(ABNF::IsHierPart("//name:pass:xxxx@example.com//index.html"));
 	EXPECT_TRUE(ABNF::IsHierPart("//name:pass:xxxx@example.com:8080//index.html"));
+
+	EXPECT_FALSE(ABNF::IsHierPart("//"));
+	EXPECT_FALSE(ABNF::IsHierPart("//example.com/index.html"));
 }
 
 // path-absolute = "/" [segment-nz *("/" segment )]
@@ -46,6 +47,6 @@ TEST(uri_abnf, is_hier_part_path_empty)
 
 TEST(uri_abnf, is_hier_part_empty_authority_case)
 {
-	EXPECT_TRUE(ABNF::IsHierPart("///"));
-	EXPECT_TRUE(ABNF::IsHierPart("///example.com"));
+	EXPECT_FALSE(ABNF::IsHierPart("///"));
+	EXPECT_FALSE(ABNF::IsHierPart("///example.com"));
 }
