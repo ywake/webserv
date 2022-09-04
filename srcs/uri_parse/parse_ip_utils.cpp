@@ -101,8 +101,8 @@ namespace ABNF
 
 		while (head.len()) {
 			std::size_t colon_index = head.MeasureUntil(":");
-			std::size_t dcolon_index = head.MeasureUntil("::");
-			std::size_t delim_len = 1 + (dcolon_index == colon_index);
+			bool is_dcolon = colon_index < head.len() - 1 && head.at(colon_index + 1) == ':';
+			std::size_t delim_len = 1 + is_dcolon;
 
 			std::size_t substr_len = colon_index == 0 ? delim_len : colon_index;
 

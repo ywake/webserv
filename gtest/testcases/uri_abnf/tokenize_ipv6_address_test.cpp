@@ -12,6 +12,8 @@ void test_tokenize_ipv6_address(const ThinString &input, ABNF::StringAry exp)
 TEST(uri_abnf, tokenize_ipv6_address)
 {
 
+	test_tokenize_ipv6_address("abc", {"abc"});
+	test_tokenize_ipv6_address("a:b", {"a", ":", "b"});
 	test_tokenize_ipv6_address("a::b", {"a", "::", "b"});
 	test_tokenize_ipv6_address("a::b:", {"a", "::", "b", ":"});
 	test_tokenize_ipv6_address("a::b::", {"a", "::", "b", "::"});
