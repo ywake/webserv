@@ -7,7 +7,7 @@ namespace ABNF
 {
 	static const std::size_t kH16Bytes = 2;
 	static const std::size_t kIpv4Bytes = 4;
-	static const std::size_t kIpv6BytesMax = 16;
+	//static const std::size_t kIpv6BytesMax = 16;
 
 	std::size_t CountDcolons(const StringAry &tokens)
 	{

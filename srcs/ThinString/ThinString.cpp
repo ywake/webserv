@@ -128,12 +128,17 @@ ThinString::CreateRightSide(const std::string &delim, std::size_t start, DelimSi
 	return substr(start);
 }
 
-ThinString::ThinStrPair ThinString::DivideBy(const std::string &delim, DelimSide delim_side) const
+ThinString::ThinStrPair
+ThinString::DivideBy(const std::string &delim, bool is_left_order, DelimSide delim_side) const
 {
 	std::size_t delim_pos = find(delim);
 	bool has_no_second = delim.empty() || delim_pos == std::string::npos;
 	if (has_no_second) {
-		return ThinStrPair(*this, "");
+		if (is_left_order) {
+			return ThinStrPair(*this, "");
+		} else {
+			return ThinStrPair("", *this);
+		}
 	}
 	ThinString left = CreateLeftSide(delim, delim_pos, delim_side);
 	ThinString right = CreateRightSide(delim, delim_pos, delim_side);

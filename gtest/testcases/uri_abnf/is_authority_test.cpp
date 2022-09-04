@@ -5,12 +5,12 @@
 // authority = [ userinfo "@" ] host [ ":" port ]
 TEST(uri_abnf, is_authority_userinfo)
 {
-	EXPECT_TRUE(ABNF::IsAuthority("@"));
-	EXPECT_TRUE(ABNF::IsAuthority("username@"));
-	EXPECT_TRUE(ABNF::IsAuthority("username:pass@"));
-	EXPECT_TRUE(ABNF::IsAuthority("username:pass:@"));
-	EXPECT_TRUE(ABNF::IsAuthority("username::@"));
-	EXPECT_TRUE(ABNF::IsAuthority("username:pass:xxx@"));
+	EXPECT_FALSE(ABNF::IsAuthority("@"));
+	EXPECT_FALSE(ABNF::IsAuthority("username@"));
+	EXPECT_FALSE(ABNF::IsAuthority("username:pass@"));
+	EXPECT_FALSE(ABNF::IsAuthority("username:pass:@"));
+	EXPECT_FALSE(ABNF::IsAuthority("username::@"));
+	EXPECT_FALSE(ABNF::IsAuthority("username:pass:xxx@"));
 
 	EXPECT_FALSE(ABNF::IsAuthority("username:pass:xxx"));
 }
@@ -19,16 +19,16 @@ TEST(uri_abnf, is_authority_host)
 {
 	EXPECT_TRUE(ABNF::IsAuthority("example.com"));
 
-	EXPECT_FALSE(ABNF::IsAuthority("example@com"));
+	EXPECT_TRUE(ABNF::IsAuthority("example@com"));
 	EXPECT_FALSE(ABNF::IsAuthority(""));
 }
 
 TEST(uri_abnf, is_authority_port)
 {
-	EXPECT_TRUE(ABNF::IsAuthority(":"));
-	EXPECT_TRUE(ABNF::IsAuthority(":80"));
+	EXPECT_FALSE(ABNF::IsAuthority(":"));
+	EXPECT_FALSE(ABNF::IsAuthority(":80"));
 
-	EXPECT_TRUE(ABNF::IsAuthority(""));
+	EXPECT_FALSE(ABNF::IsAuthority(""));
 	EXPECT_FALSE(ABNF::IsAuthority(":aaa"));
 }
 
@@ -49,10 +49,10 @@ TEST(uri_abnf, is_authority_host_port)
 
 TEST(uri_abnf, is_authority_userinfo_port)
 {
-	EXPECT_TRUE(ABNF::IsAuthority("username@:80"));
-	EXPECT_TRUE(ABNF::IsAuthority("username:pass:@:80"));
-	EXPECT_TRUE(ABNF::IsAuthority("username:pass:xxx@:80"));
-	EXPECT_TRUE(ABNF::IsAuthority("username::@:80"));
+	EXPECT_FALSE(ABNF::IsAuthority("username@:80"));
+	EXPECT_FALSE(ABNF::IsAuthority("username:pass:@:80"));
+	EXPECT_FALSE(ABNF::IsAuthority("username:pass:xxx@:80"));
+	EXPECT_FALSE(ABNF::IsAuthority("username::@:80"));
 
 	EXPECT_FALSE(ABNF::IsAuthority("username@:aaa"));
 	EXPECT_FALSE(ABNF::IsAuthority("username:pass:@:aaa"));

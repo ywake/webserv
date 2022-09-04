@@ -57,7 +57,7 @@ class ThinString
 
 	ThinString substr(std::size_t pos = 0, std::size_t size = ~0UL) const;
 	std::string ToString() const;
-	ThinStrPair DivideBy(const std::string &delim, DelimSide delim_side = kExclude) const;
+	ThinStrPair DivideBy(const std::string &delim, bool is_left_order = true, DelimSide delim_side = kExclude) const;
 	std::size_t MeasureUntil(const std::string &delim) const;
 
 	const_iterator begin() const;
