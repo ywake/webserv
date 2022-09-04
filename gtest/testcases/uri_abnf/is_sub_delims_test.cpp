@@ -23,7 +23,6 @@ TEST(uri_abnf, IsSubDelims_false)
 	ASSERT_FALSE(ABNF::IsSubDelims('\"'));
 	ASSERT_FALSE(ABNF::IsSubDelims('#'));
 	ASSERT_FALSE(ABNF::IsSubDelims('%'));
-	ASSERT_FALSE(ABNF::IsSubDelims('&'));
 	ASSERT_FALSE(ABNF::IsSubDelims('-'));
 	ASSERT_FALSE(ABNF::IsSubDelims('.'));
 	ASSERT_FALSE(ABNF::IsSubDelims('/'));
