@@ -110,38 +110,41 @@ std::string ThinString::ToString() const
 	return base_->substr(start_, len());
 }
 
-ThinString
-ThinString::CreateLeftSide(const std::string &delim, std::size_t size, DelimSide delim_side) const
+ThinString ThinString::CreateLeftSide(
+	const std::string &delim, std::size_t size, unsigned int delim_flag
+) const
 {
-	if (delim_side == kIncludeLeft) {
+	if (delim_flag & kKeepDelimLeft) {
 		size += delim.size();
 	}
 	return substr(0, size);
 }
 
-ThinString
-ThinString::CreateRightSide(const std::string &delim, std::size_t start, DelimSide delim_side) const
+ThinString ThinString::CreateRightSide(
+	const std::string &delim, std::size_t start, unsigned int delim_flag
+) const
 {
-	if (delim_side != kIncludeRight) {
+	if (!(delim_flag & kKeepDelimRight)) {
 		start += delim.size();
 	}
 	return substr(start);
 }
 
 ThinString::ThinStrPair
-ThinString::DivideBy(const std::string &delim, bool is_left_order, DelimSide delim_side) const
+// ThinString::DivideBy(const std::string &delim, bool is_left_order, DelimFlag delim_side) const
+ThinString::DivideBy(const std::string &delim, unsigned int delim_flag) const
 {
 	std::size_t delim_pos = find(delim);
 	bool has_no_second = delim.empty() || delim_pos == std::string::npos;
 	if (has_no_second) {
-		if (is_left_order) {
-			return ThinStrPair(*this, "");
-		} else {
+		if (delim_flag & kAlignRight) {
 			return ThinStrPair("", *this);
+		} else {
+			return ThinStrPair(*this, "");
 		}
 	}
-	ThinString left = CreateLeftSide(delim, delim_pos, delim_side);
-	ThinString right = CreateRightSide(delim, delim_pos, delim_side);
+	ThinString left = CreateLeftSide(delim, delim_pos, delim_flag);
+	ThinString right = CreateRightSide(delim, delim_pos, delim_flag);
 	return ThinStrPair(left, right);
 }
 

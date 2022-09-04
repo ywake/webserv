@@ -19,10 +19,11 @@ class ThinString
 	typedef std::pair<ThinString, ThinString> ThinStrPair;
 	// clang-format off
 	typedef enum {
-		kIncludeLeft,
-		kIncludeRight,
-		kExclude
-	} DelimSide;
+		kAlignLeft = 0 << 0,
+		kAlignRight = 1 << 0,
+		kKeepDelimLeft = 1 << 1,
+		kKeepDelimRight = 1 << 2
+	} DelimFlag;
 	// clang-format on
   private:
 	static ReferenceCount reference_count_;
@@ -40,9 +41,9 @@ class ThinString
   private:
 	void init(const std::string &str);
 	ThinString
-	CreateLeftSide(const std::string &delim, std::size_t size, DelimSide delim_side) const;
+	CreateLeftSide(const std::string &delim, std::size_t size, unsigned int delim_side) const;
 	ThinString
-	CreateRightSide(const std::string &delim, std::size_t start, DelimSide delim_side) const;
+	CreateRightSide(const std::string &delim, std::size_t start, unsigned int delim_side) const;
 
   public:
 	bool empty() const;
@@ -57,7 +58,10 @@ class ThinString
 
 	ThinString substr(std::size_t pos = 0, std::size_t size = ~0UL) const;
 	std::string ToString() const;
-	ThinStrPair DivideBy(const std::string &delim, bool is_left_order = true, DelimSide delim_side = kExclude) const;
+	ThinStrPair DivideBy(const std::string &delim, unsigned int delim_flag = kAlignLeft) const;
+	// ThinString::ThinStrPair DivideBy(
+	// 	const std::string &delim, bool is_left_order = true, DelimFlag delim_side = kExclude
+	// ) const;
 	std::size_t MeasureUntil(const std::string &delim) const;
 
 	const_iterator begin() const;

@@ -115,7 +115,8 @@ void test_divide_by(
 	const std::string &str,
 	const std::string &delim,
 	const std::string &first,
-	const std::string &second
+	const std::string &second,
+	ThinString::DelimFlag option = ThinString::DelimFlag::kKeepDelimLeft
 )
 {
 	ThinString thin(str);

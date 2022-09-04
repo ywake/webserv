@@ -81,7 +81,8 @@ namespace ABNF
 		if (str.empty() || str.at(0) != 'v') {
 			return false;
 		}
-		ThinString::ThinStrPair strs = str.DivideBy(".", true, ThinString::kIncludeRight);
+		ThinString::ThinStrPair strs =
+			str.DivideBy(".", ThinString::kAlignRight | ThinString::kKeepDelimRight);
 		if (strs.second.empty() || strs.second.at(0) != '.') {
 			return false;
 		}
