@@ -21,4 +21,6 @@ class Error
 	bool operator!=(const Error &rhs) const;
 };
 
+std::ostream &operator<<(std::ostream &os, const Error &error);
+
 #endif

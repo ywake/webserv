@@ -35,3 +35,10 @@ bool Error::operator!=(const Error &rhs) const
 {
 	return !(*this == rhs);
 }
+
+std::ostream &operator<<(std::ostream &os, const Error &error)
+{
+	std::string title = error.IsErr() ? "Error!" : "Success";
+	os << title << "(" + error.Err() + ")";
+	return os;
+}

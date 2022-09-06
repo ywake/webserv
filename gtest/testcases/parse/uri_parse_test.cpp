@@ -46,16 +46,6 @@ void test_form(
 {
 	RequestTarget exp(form, uri);
 	Result<RequestTarget> act = test_actualy(input);
-	if (act.Val() != exp) {
-		std::cout << "***Expect***" << std::endl;
-		std::cout << exp.request_target_ << std::endl;
-		std::cout << "***Actual***" << std::endl;
-		std::cout << act.Val().request_target_ << std::endl;
-	}
-	if (act.err != err) {
-		std::cout << "***Error***" << std::endl;
-		std::cout << act.Err() << " : " << err.Err() << std::endl;
-	}
 	EXPECT_EQ(act.Val(), exp);
 	EXPECT_EQ(act.err, err);
 }
