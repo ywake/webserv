@@ -1,7 +1,5 @@
 #include "uri.hpp"
 
-URI::URI() : scheme_(), userinfo_(), host_(), port_(), path_(), query_(), fragment_() {}
-
 URI::URI(
 	std::string &scheme,
 	std::string &userinfo,

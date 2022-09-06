@@ -14,7 +14,6 @@ class URI
 	std::string query_;
 	std::string fragment_;
 
-	URI();
 	URI(std::string &scheme,
 		std::string &userinfo,
 		std::string &host,
@@ -22,7 +21,7 @@ class URI
 		std::string &path,
 		std::string &query,
 		std::string &fragment);
-	URI(const char *scheme,
+	URI(const char *scheme = "",
 		const char *userinfo = "",
 		const char *host = "",
 		const char *port = "",
