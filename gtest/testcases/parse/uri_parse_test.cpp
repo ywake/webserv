@@ -81,6 +81,8 @@ TEST(uri_parse, parse_origin_form)
 
 TEST(uri_parse, absolute_form)
 {
+	test_form(RequestTarget::ABSOLUTE, "a://a", URI("a", "", "a"));
+
 	test_form(RequestTarget::UNDEFINED, "a://", URI(), Error("400"));
 }
 
