@@ -13,7 +13,6 @@ static Result<RequestTarget> test_actualy(std::string input)
 	} catch (const Error &e) {
 		err = e;
 	}
-	std::cout << act.form_type_ << std::endl;
 	return Result<RequestTarget>(act, err);
 }
 
