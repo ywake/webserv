@@ -22,7 +22,7 @@ TEST(uri_parse, empty)
 	ASSERT_EQ(act.err, Error("400"));
 }
 
-void test_specify_form(const std::string& request_line, RequestTarget::RequestForm form)
+void test_specify_form(const std::string &request_line, RequestTarget::RequestForm form)
 {
 	RequestTarget req;
 	req.SpecifyForm(request_line);
@@ -37,9 +37,14 @@ TEST(uri_parse, specify_form)
 	test_specify_form("*", RequestTarget::ASTERISK);
 }
 
-void test_parse_origin_form(const std::string &input, const URI &uri, const Error &err = Error())
+void test_form(
+	RequestTarget::RequestForm form,
+	const std::string &input,
+	const URI &uri,
+	const Error &err = Error()
+)
 {
-	RequestTarget exp(RequestTarget::ORIGIN, uri);
+	RequestTarget exp(form, uri);
 	Result<RequestTarget> act = test_actualy(input);
 	if (act.Val() != exp) {
 		std::cout << "***Expect***" << std::endl;
@@ -57,34 +62,36 @@ void test_parse_origin_form(const std::string &input, const URI &uri, const Erro
 
 TEST(uri_parse, parse_origin_form)
 {
-	test_parse_origin_form("/", URI("", "", "", "", "/"));
-	test_parse_origin_form("/?", URI("", "", "", "", "/", ""));
-	test_parse_origin_form("/where", URI("", "", "", "", "/where"));
-	test_parse_origin_form("/where?q=now", URI("", "", "", "", "/where", "q=now"));
-	test_parse_origin_form("/where/is/this?q=now", URI("", "", "", "", "/where/is/this", "q=now"));
-	test_parse_origin_form(
-		"/where/is/this?q=now???", URI("", "", "", "", "/where/is/this", "q=now???")
+	test_form(RequestTarget::ORIGIN, "/", URI("", "", "", "", "/"));
+	test_form(RequestTarget::ORIGIN, "/?", URI("", "", "", "", "/", ""));
+	test_form(RequestTarget::ORIGIN, "/where", URI("", "", "", "", "/where"));
+	test_form(RequestTarget::ORIGIN, "/where?q=now", URI("", "", "", "", "/where", "q=now"));
+	test_form(
+		RequestTarget::ORIGIN,
+		"/where/is/this?q=now",
+		URI("", "", "", "", "/where/is/this", "q=now")
 	);
-	test_parse_origin_form("//", URI("", "", "", "", "//"));
-	test_parse_origin_form("/a//", URI("", "", "", "", "/a//"));
-	test_parse_origin_form("///", URI("", "", "", "", "///"));
-	test_parse_origin_form("/a///", URI("", "", "", "", "/a///"));
-	test_parse_origin_form("/where/is/this///", URI("", "", "", "", "/where/is/this///"));
+	test_form(
+		RequestTarget::ORIGIN,
+		"/where/is/this?q=now???",
+		URI("", "", "", "", "/where/is/this", "q=now???")
+	);
+	test_form(RequestTarget::ORIGIN, "//", URI("", "", "", "", "//"));
+	test_form(RequestTarget::ORIGIN, "/a//", URI("", "", "", "", "/a//"));
+	test_form(RequestTarget::ORIGIN, "///", URI("", "", "", "", "///"));
+	test_form(RequestTarget::ORIGIN, "/a///", URI("", "", "", "", "/a///"));
+	test_form(RequestTarget::ORIGIN, "/where/is/this///", URI("", "", "", "", "/where/is/this///"));
 
 	// Error Case
-	test_parse_origin_form("", URI(), Error("400"));
-	test_parse_origin_form("/where/is/this>", URI(), Error("400"));
-	test_parse_origin_form("/where?#", URI(), Error("400"));
-	test_parse_origin_form("/where???#", URI(), Error("400"));
+	test_form(RequestTarget::ORIGIN, "", URI(), Error("400"));
+	test_form(RequestTarget::ORIGIN, "/where/is/this>", URI(), Error("400"));
+	test_form(RequestTarget::ORIGIN, "/where?#", URI(), Error("400"));
+	test_form(RequestTarget::ORIGIN, "/where???#", URI(), Error("400"));
 }
 
-// TODO:
-TEST(uri_parse, minimum_absolute_target)
+TEST(uri_parse, absolute_form)
 {
-	// Result<RequestTarget> act = test_actualy("a://");
-	// URI exp("a", "", "", "", "", "", "");
-	//
-	// ASSERT_EQ(act.Val(), exp);
+	test_form(RequestTarget::ABSOLUTE, "a://", URI("a"));
 }
 
 // a://
