@@ -13,6 +13,7 @@ static Result<RequestTarget> test_actualy(std::string input)
 	} catch (const Error &e) {
 		err = e;
 	}
+	std::cout << act.form_type_ << std::endl;
 	return Result<RequestTarget>(act, err);
 }
 
@@ -83,15 +84,15 @@ TEST(uri_parse, parse_origin_form)
 	test_form(RequestTarget::ORIGIN, "/where/is/this///", URI("", "", "", "", "/where/is/this///"));
 
 	// Error Case
-	test_form(RequestTarget::ORIGIN, "", URI(), Error("400"));
-	test_form(RequestTarget::ORIGIN, "/where/is/this>", URI(), Error("400"));
-	test_form(RequestTarget::ORIGIN, "/where?#", URI(), Error("400"));
-	test_form(RequestTarget::ORIGIN, "/where???#", URI(), Error("400"));
+	test_form(RequestTarget::UNDEFINED, "", URI(), Error("400"));
+	test_form(RequestTarget::UNDEFINED, "/where/is/this>", URI(), Error("400"));
+	test_form(RequestTarget::UNDEFINED, "/where?#", URI(), Error("400"));
+	test_form(RequestTarget::UNDEFINED, "/where???#", URI(), Error("400"));
 }
 
 TEST(uri_parse, absolute_form)
 {
-	test_form(RequestTarget::ABSOLUTE, "a://", URI("a"));
+	test_form(RequestTarget::UNDEFINED, "a://", URI(), Error("400"));
 }
 
 // a://

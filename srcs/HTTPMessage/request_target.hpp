@@ -11,11 +11,11 @@
 class RequestTarget // TODO: Abstruct説
 {
   public:
-	enum RequestForm { ORIGIN, ABSOLUTE, AUTHORITY, ASTERISK };
+	enum RequestForm { ORIGIN, ABSOLUTE, AUTHORITY, ASTERISK, UNDEFINED };
 	RequestForm form_type_;
 	URI request_target_; // TODO: variable name
 
-	RequestTarget() : form_type_(), request_target_() {}
+	RequestTarget() : form_type_(UNDEFINED), request_target_() {}
 
 	//[FIX]
 	//例外投げてるけど、Errorの有無を変数で持ってコンストラクタ呼び出し後にチェックの方が良い？
@@ -97,4 +97,7 @@ class RequestTarget // TODO: Abstruct説
 		request_target_.scheme_ = scheme_heir.first.ToString();
 	}
 };
+
+std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target);
+
 #endif
