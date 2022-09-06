@@ -1,5 +1,6 @@
 #ifndef URI_HPP
 #define URI_HPP
+#include "ThinString.hpp"
 #include <iostream>
 #include <string>
 
@@ -30,6 +31,8 @@ class URI
 		const char *fragment = "");
 
 	bool operator==(const URI &rhs) const;
+
+	static URI ConstructFromOrigin(ThinString origin_form);
 };
 
 std::ostream &operator<<(std::ostream &os, const URI &uri);

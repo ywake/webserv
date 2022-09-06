@@ -28,6 +28,16 @@ URI::URI(
 {
 }
 
+// URI URI::ConstructFromOrigin(ThinString origin_form)
+// {
+// 	URI uri();
+// 	// uri.scheme = "";
+// 	// uri.HierPart = HierPart();
+// 	// uri.query = ();
+// 	// uri.fragment = ();
+// 	return uri;
+// }
+
 bool URI::operator==(const URI &rhs) const
 {
 	return scheme_ == rhs.scheme_ && userinfo_ == rhs.userinfo_ && host_ == rhs.host_ &&
