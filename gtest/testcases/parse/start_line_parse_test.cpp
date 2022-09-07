@@ -13,7 +13,7 @@ TEST(start_line, get)
 	RequestLine act(input);
 	RequestLine exp(
 		RequestLine::GET,
-		RequestTarget(RequestTarget::ORIGIN, URI("", "", "", "", "/", "", "")),
+		RequestTarget(RequestTarget::ORIGIN, Uri("", "", "", "", "/", "", "")),
 		"1.1"
 	);
 

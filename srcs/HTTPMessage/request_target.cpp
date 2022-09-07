@@ -28,7 +28,7 @@ RequestTarget::RequestTarget(std::string uri)
 	}
 }
 
-RequestTarget::RequestTarget(RequestForm form_type, URI request_target)
+RequestTarget::RequestTarget(RequestForm form_type, Uri request_target)
 	: form_type_(form_type), uri_(request_target)
 {
 }

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-class URI
+class Uri
 {
   public:
 	std::string scheme_;
@@ -15,14 +15,14 @@ class URI
 	std::string query_;
 	std::string fragment_;
 
-	URI(std::string &scheme,
+	Uri(std::string &scheme,
 		std::string &userinfo,
 		std::string &host,
 		std::string &port,
 		std::string &path,
 		std::string &query,
 		std::string &fragment);
-	URI(const char *scheme = "",
+	Uri(const char *scheme = "",
 		const char *userinfo = "",
 		const char *host = "",
 		const char *port = "",
@@ -30,11 +30,11 @@ class URI
 		const char *query = "",
 		const char *fragment = "");
 
-	bool operator==(const URI &rhs) const;
+	bool operator==(const Uri &rhs) const;
 
-	static URI ConstructFromOrigin(ThinString origin_form);
+	static Uri ConstructFromOrigin(ThinString origin_form);
 };
 
-std::ostream &operator<<(std::ostream &os, const URI &uri);
+std::ostream &operator<<(std::ostream &os, const Uri &uri);
 
 #endif

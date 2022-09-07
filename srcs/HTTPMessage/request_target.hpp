@@ -13,7 +13,7 @@ class RequestTarget // TODO: Abstruct説
   public:
 	enum RequestForm { ORIGIN, ABSOLUTE, AUTHORITY, ASTERISK, UNDEFINED };
 	RequestForm form_type_;
-	URI uri_;
+	Uri uri_;
 	/**
 	 * Asterisk-formのみURI形式にパースできないので、
 	 * Asterisk-formはform_typeで特定する。
@@ -21,7 +21,7 @@ class RequestTarget // TODO: Abstruct説
 
 	RequestTarget();
 	RequestTarget(std::string uri);
-	RequestTarget(RequestForm form_type, URI request_target);
+	RequestTarget(RequestForm form_type, Uri request_target);
 
 	bool operator==(const RequestTarget &rhs) const;
 	bool operator!=(const RequestTarget &rhs) const;

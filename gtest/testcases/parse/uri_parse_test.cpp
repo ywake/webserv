@@ -40,7 +40,7 @@ TEST(uri_parse, specify_form)
 void test_form(
 	RequestTarget::RequestForm form,
 	const std::string &input,
-	const URI &uri,
+	const Uri &uri,
 	const Error &err = Error()
 )
 {
@@ -52,38 +52,38 @@ void test_form(
 
 TEST(uri_parse, parse_origin_form)
 {
-	test_form(RequestTarget::ORIGIN, "/", URI("", "", "", "", "/"));
-	test_form(RequestTarget::ORIGIN, "/?", URI("", "", "", "", "/", ""));
-	test_form(RequestTarget::ORIGIN, "/where", URI("", "", "", "", "/where"));
-	test_form(RequestTarget::ORIGIN, "/where?q=now", URI("", "", "", "", "/where", "q=now"));
+	test_form(RequestTarget::ORIGIN, "/", Uri("", "", "", "", "/"));
+	test_form(RequestTarget::ORIGIN, "/?", Uri("", "", "", "", "/", ""));
+	test_form(RequestTarget::ORIGIN, "/where", Uri("", "", "", "", "/where"));
+	test_form(RequestTarget::ORIGIN, "/where?q=now", Uri("", "", "", "", "/where", "q=now"));
 	test_form(
 		RequestTarget::ORIGIN,
 		"/where/is/this?q=now",
-		URI("", "", "", "", "/where/is/this", "q=now")
+		Uri("", "", "", "", "/where/is/this", "q=now")
 	);
 	test_form(
 		RequestTarget::ORIGIN,
 		"/where/is/this?q=now???",
-		URI("", "", "", "", "/where/is/this", "q=now???")
+		Uri("", "", "", "", "/where/is/this", "q=now???")
 	);
-	test_form(RequestTarget::ORIGIN, "//", URI("", "", "", "", "//"));
-	test_form(RequestTarget::ORIGIN, "/a//", URI("", "", "", "", "/a//"));
-	test_form(RequestTarget::ORIGIN, "///", URI("", "", "", "", "///"));
-	test_form(RequestTarget::ORIGIN, "/a///", URI("", "", "", "", "/a///"));
-	test_form(RequestTarget::ORIGIN, "/where/is/this///", URI("", "", "", "", "/where/is/this///"));
+	test_form(RequestTarget::ORIGIN, "//", Uri("", "", "", "", "//"));
+	test_form(RequestTarget::ORIGIN, "/a//", Uri("", "", "", "", "/a//"));
+	test_form(RequestTarget::ORIGIN, "///", Uri("", "", "", "", "///"));
+	test_form(RequestTarget::ORIGIN, "/a///", Uri("", "", "", "", "/a///"));
+	test_form(RequestTarget::ORIGIN, "/where/is/this///", Uri("", "", "", "", "/where/is/this///"));
 
 	// Error Case
-	test_form(RequestTarget::UNDEFINED, "", URI(), Error("400"));
-	test_form(RequestTarget::UNDEFINED, "/where/is/this>", URI(), Error("400"));
-	test_form(RequestTarget::UNDEFINED, "/where?#", URI(), Error("400"));
-	test_form(RequestTarget::UNDEFINED, "/where???#", URI(), Error("400"));
+	test_form(RequestTarget::UNDEFINED, "", Uri(), Error("400"));
+	test_form(RequestTarget::UNDEFINED, "/where/is/this>", Uri(), Error("400"));
+	test_form(RequestTarget::UNDEFINED, "/where?#", Uri(), Error("400"));
+	test_form(RequestTarget::UNDEFINED, "/where???#", Uri(), Error("400"));
 }
 
 TEST(uri_parse, absolute_form)
 {
-	test_form(RequestTarget::ABSOLUTE, "a://a", URI("a", "", "a"));
+	test_form(RequestTarget::ABSOLUTE, "a://a", Uri("a", "", "a"));
 
-	test_form(RequestTarget::UNDEFINED, "a://", URI(), Error("400"));
+	test_form(RequestTarget::UNDEFINED, "a://", Uri(), Error("400"));
 }
 
 // a://

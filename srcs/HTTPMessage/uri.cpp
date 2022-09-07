@@ -1,6 +1,6 @@
 #include "uri.hpp"
 
-URI::URI(
+Uri::Uri(
 	std::string &scheme,
 	std::string &userinfo,
 	std::string &host,
@@ -14,7 +14,7 @@ URI::URI(
 {
 }
 
-URI::URI(
+Uri::Uri(
 	const char *scheme,
 	const char *userinfo,
 	const char *host,
@@ -38,14 +38,14 @@ URI::URI(
 // 	return uri;
 // }
 
-bool URI::operator==(const URI &rhs) const
+bool Uri::operator==(const Uri &rhs) const
 {
 	return scheme_ == rhs.scheme_ && userinfo_ == rhs.userinfo_ && host_ == rhs.host_ &&
 		   port_ == rhs.port_ && path_ == rhs.path_ && query_ == rhs.query_ &&
 		   fragment_ == rhs.fragment_;
 }
 
-std::ostream &operator<<(std::ostream &os, const URI &uri)
+std::ostream &operator<<(std::ostream &os, const Uri &uri)
 {
 	os << "scheme   : " << uri.scheme_ << std::endl;
 	os << "userinfo : " << uri.userinfo_ << std::endl;
