@@ -5,7 +5,7 @@ RequestTarget::RequestTarget() : form_type_(UNDEFINED), uri_() {}
 
 //[FIX]
 //例外投げてるけど、Errorの有無を変数で持ってコンストラクタ呼び出し後にチェックの方が良い？
-RequestTarget::RequestTarget(std::string uri)
+RequestTarget::RequestTarget(std::string uri) : uri_()
 {
 	if (uri.empty()) {
 		throw Error("400");
@@ -15,6 +15,7 @@ RequestTarget::RequestTarget(std::string uri)
 	case ORIGIN:
 		ParseOriginForm(uri);
 		// uri_ = URI::ConstructFromOriginForm(uri);
+		// uri.ParseOriginForm(uri);
 		break;
 	case ABSOLUTE:
 		ParseAbsoluteForm(uri);

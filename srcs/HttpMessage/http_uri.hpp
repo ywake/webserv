@@ -3,11 +3,13 @@
 
 #include "uri.hpp"
 
-class HttpUri
+class HttpUri : public Uri
 {
 public:
-	HttpUri(/* args */);
-	~HttpUri();
+	HttpUri();
+	void ParseOriginForm(ThinString uri);
+	void ParseAbsoluteForm(ThinString uri);
+	void ParseAuthorityForm(ThinString uri);
 };
 
 
