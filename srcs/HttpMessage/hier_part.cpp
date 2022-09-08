@@ -2,6 +2,8 @@
 #include "error.hpp"
 #include "parse_path.hpp"
 
+HierPart::HierPart() : authority_(), path_() {}
+
 HierPart::HierPart(const ThinString &hier_part) : authority_()
 {
 	if (hier_part.substr(0, 2) == "//") {
@@ -26,4 +28,14 @@ void HierPart::TrySetPath(ThinString hier_part)
 		throw Error("400");
 	}
 	path_ = hier_part;
+}
+
+HierPart &HierPart::operator=(const HierPart &other)
+{
+	if (this == &other) {
+		return *this;
+	}
+	authority_ = other.authority_;
+	path_ = other.path_;
+	return *this;
 }

@@ -13,7 +13,9 @@ class HierPart
 	void TrySetPath(ThinString hier_part);
 
   public:
+	HierPart();
 	HierPart(const ThinString &hier_part);
+	HierPart &operator=(const HierPart &other);
 };
 
 #endif // HIER_PART_HPP
