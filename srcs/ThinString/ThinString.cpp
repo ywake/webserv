@@ -44,6 +44,7 @@ void ThinString::init(const std::string &str)
 	start_ = std::min(start_, base_->size());
 	length_ = std::min(length_, base_->size() - start_);
 }
+
 bool ThinString::empty() const
 {
 	return size() == 0;
@@ -131,7 +132,6 @@ ThinString ThinString::CreateRightSide(
 }
 
 ThinString::ThinStrPair
-// ThinString::DivideBy(const std::string &delim, bool is_left_order, DelimFlag delim_side) const
 ThinString::DivideBy(const std::string &delim, unsigned int delim_flag) const
 {
 	std::size_t delim_pos = find(delim);
