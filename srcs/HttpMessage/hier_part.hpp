@@ -6,10 +6,13 @@
 
 class HierPart
 {
-private:
+  private:
 	Authority authority_;
-	std::string path_;
-public:
+	ThinString path_;
+	void ParseAuthorityPath(ThinString hier_part);
+	void ParseOnlyPath(ThinString hier_part);
+
+  public:
 	HierPart(ThinString hier_part);
 };
 
