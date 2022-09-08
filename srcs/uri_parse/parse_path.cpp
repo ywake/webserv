@@ -12,10 +12,7 @@ namespace ABNF
 
 	bool IsPathAbempty(const ThinString &str)
 	{
-		if (str.empty()) {
-			return true;
-		}
-		return IsPathAbsolute(str);
+		return IsPathEmpty(str) || IsPathAbsolute(str);
 	}
 
 	// absolute-path = "/" [ segment-nz *( "/" segment ) ] -> start with "//"
