@@ -13,7 +13,7 @@ class HierPart
 	void TrySetPath(ThinString hier_part);
 
   public:
-	HierPart(ThinString hier_part);
+	HierPart(const ThinString &hier_part);
 };
 
 #endif // HIER_PART_HPP

@@ -12,7 +12,7 @@ class Authority
 
   public:
 	Authority();
-	Authority(ThinString authority);
+	Authority(const ThinString &authority);
 	Authority &operator=(const Authority &other);
 };
 

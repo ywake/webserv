@@ -5,7 +5,7 @@
 
 Authority::Authority() : userinfo_(), host_(), port_() {}
 
-Authority::Authority(ThinString authority) : userinfo_(), host_(), port_()
+Authority::Authority(const ThinString &authority) : userinfo_(), host_(), port_()
 {
 	ThinString::ThinStrPair userinfo_hostport = authority.DivideBy("@", ThinString::kAlignRight);
 	ThinString hostport = userinfo_hostport.second;

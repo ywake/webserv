@@ -2,7 +2,7 @@
 #include "error.hpp"
 #include "parse_path.hpp"
 
-HierPart::HierPart(ThinString hier_part) : authority_()
+HierPart::HierPart(const ThinString &hier_part) : authority_()
 {
 	if (hier_part.substr(0, 2) == "//") {
 		ParseAuthorityPath(hier_part);
