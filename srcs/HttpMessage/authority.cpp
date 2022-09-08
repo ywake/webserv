@@ -3,7 +3,7 @@
 #include "error.hpp"
 #include "parse_authority.hpp"
 
-Authority::Authority() : userinfo_(), host_(), port_(){};
+Authority::Authority() : userinfo_(), host_(), port_() {}
 
 Authority::Authority(ThinString authority) : userinfo_(), host_(), port_()
 {
