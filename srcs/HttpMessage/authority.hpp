@@ -13,6 +13,7 @@ class Authority
   public:
 	Authority();
 	Authority(ThinString authority);
+	Authority &operator=(const Authority &other);
 };
 
 #endif // AUTHORITY_HPP

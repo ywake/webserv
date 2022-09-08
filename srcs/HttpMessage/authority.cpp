@@ -21,3 +21,14 @@ Authority::Authority(ThinString authority) : userinfo_(), host_(), port_()
 	host_ = host;
 	port_ = port;
 }
+
+Authority &Authority::operator=(const Authority &other)
+{
+	if (this == &other) {
+		return *this;
+	}
+	userinfo_ = other.userinfo_;
+	host_ = other.host_;
+	port_ = other.port_;
+	return *this;
+}
