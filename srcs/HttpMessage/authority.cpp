@@ -3,27 +3,21 @@
 #include "error.hpp"
 #include "parse_authority.hpp"
 
-Authority::Authority(ThinString authority)
-{
-	Tokens tokens = TokenizeAuthority(authority);
-	if (!ABNF::IsUserInfo(tokens.userinfo) || !ABNF::IsHost(tokens.host) ||
-		!ABNF::IsPort(tokens.port)) {
-		throw Error("400");
-	}
-	userinfo_ = tokens.userinfo.ToString();
-	host_ = tokens.host.ToString();
-	port_ = tokens.port.ToString();
-}
+Authority::Authority() : userinfo_(), host_(), port_(){};
 
-// TODO ここもうちょい上手く書けるかも
-Authority::Tokens Authority::TokenizeAuthority(ThinString authority)
+Authority::Authority(ThinString authority) : userinfo_(), host_(), port_()
 {
-	Tokens tokens;
 	ThinString::ThinStrPair userinfo_hostport = authority.DivideBy("@", ThinString::kAlignRight);
 	ThinString hostport = userinfo_hostport.second;
 	ThinString::ThinStrPair host_port = hostport.DivideBy(":");
-	tokens.userinfo = userinfo_hostport.first;
-	tokens.host = host_port.first;
-	tokens.port = host_port.second;
-	return tokens;
+
+	ThinString userinfo = userinfo_hostport.first;
+	ThinString host = host_port.first;
+	ThinString port = host_port.second;
+	if (!ABNF::IsUserInfo(userinfo) || !ABNF::IsHost(host) || !ABNF::IsPort(port)) {
+		throw Error("400");
+	}
+	userinfo_ = userinfo;
+	host_ = host;
+	port_ = port;
 }
