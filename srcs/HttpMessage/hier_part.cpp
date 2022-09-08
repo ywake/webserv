@@ -7,7 +7,7 @@ HierPart::HierPart(ThinString hier_part) : authority_()
 	if (hier_part.substr(0, 2) == "//") {
 		ParseAuthorityPath(hier_part);
 	} else {
-		ParseOnlyPath(hier_part);
+		TrySetPath(hier_part);
 	}
 }
 
@@ -17,13 +17,10 @@ void HierPart::ParseAuthorityPath(ThinString hier_part)
 	ThinString::ThinStrPair authority_path =
 		after_2slash.DivideBy("/", ThinString::kKeepDelimRight);
 	authority_ = Authority(authority_path.first);
-	if (!ABNF::IsPathAbempty(authority_path.second)) {
-		throw Error("400");
-	}
-	path_ = authority_path.second;
+	TrySetPath(authority_path.second);
 }
 
-void HierPart::ParseOnlyPath(ThinString hier_part)
+void HierPart::TrySetPath(ThinString hier_part)
 {
 	if (!ABNF::IsPathAbempty(hier_part)) {
 		throw Error("400");
