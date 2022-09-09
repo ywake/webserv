@@ -28,4 +28,4 @@ class HierPart
 
 std::ostream &operator<<(std::ostream &os, const HierPart &hier_part);
 
-#endif // HIER_PART_HPP
+#endif
