@@ -36,6 +36,9 @@ RequestFormData::RequestFormData(
 
 bool RequestFormData::operator==(const RequestFormData &rhs) const
 {
+	if (this == &rhs) {
+		return true;
+	}
 	return scheme_ == rhs.scheme_ && userinfo_ == rhs.userinfo_ && host_ == rhs.host_ &&
 		   port_ == rhs.port_ && path_ == rhs.path_ && query_ == rhs.query_;
 }

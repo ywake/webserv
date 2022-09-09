@@ -61,6 +61,9 @@ const ThinString &Authority::GetPort() const
 
 bool Authority::operator==(const Authority &other) const
 {
+	if (this == &other) {
+		return true;
+	}
 	return userinfo_ == other.userinfo_ && host_ == other.host_ && port_ == other.port_;
 }
 

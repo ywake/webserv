@@ -22,10 +22,7 @@ HierPart::HierPart(const Authority &authority, const ThinString &path)
 {
 }
 
-HierPart::HierPart(const HierPart &other)
-	: authority_(other.authority_), path_(other.path_)
-{
-}
+HierPart::HierPart(const HierPart &other) : authority_(other.authority_), path_(other.path_) {}
 
 void HierPart::ParseAuthorityPath(ThinString hier_part)
 {
@@ -56,6 +53,9 @@ HierPart &HierPart::operator=(const HierPart &other)
 
 bool HierPart::operator==(const HierPart &other) const
 {
+	if (this == &other) {
+		return true;
+	}
 	return authority_ == other.authority_ && path_ == other.path_;
 }
 
