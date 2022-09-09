@@ -1,5 +1,5 @@
-#ifndef THINSTRING_HPP
-#define THINSTRING_HPP
+#ifndef THIN_STRING_HPP
+#define THIN_STRING_HPP
 #include <algorithm>
 #include <iostream>
 #include <map>

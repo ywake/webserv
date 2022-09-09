@@ -1,7 +1,7 @@
 #ifndef PARSE_URI_HPP
 #define PARSE_URI_HPP
 
-#include "ThinString.hpp"
+#include "thin_string.hpp"
 
 namespace ABNF
 {

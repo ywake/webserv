@@ -1,7 +1,7 @@
 #ifndef PARSE_DEFINE_HPP
 #define PARSE_DEFINE_HPP
 
-#include "ThinString.hpp"
+#include "thin_string.hpp"
 #include <vector>
 
 namespace ABNF

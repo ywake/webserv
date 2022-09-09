@@ -1,9 +1,9 @@
 #include "parse_uri_utils.hpp"
 
-#include "ThinString.hpp"
 #include "parse_abnf_core_rules.hpp"
 #include "parse_define.hpp"
 #include "parse_uri_relative.hpp"
+#include "thin_string.hpp"
 #include <cstring>
 // TODO hexdigitAllとかここにあっていいのか微妙
 // TODO ~all系の命名が微妙かも

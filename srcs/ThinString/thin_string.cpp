@@ -1,4 +1,4 @@
-#include "ThinString.hpp"
+#include "thin_string.hpp"
 
 #include <cstring>
 

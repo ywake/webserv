@@ -4,7 +4,6 @@
 #include <string>
 
 #include "hier_part.hpp"
-#include "i_target_form.hpp"
 #include "thin_string.hpp"
 
 class AbsoluteUri
@@ -20,11 +19,6 @@ class AbsoluteUri
   private:
 	void TrySetScheme(const ThinString &scheme);
 	void TrySetQuery(const ThinString &query);
-
-  public:
-	const ThinString &GetScheme() const;
-	const HierPart &GetHierPart() const;
-	const ThinString &GetQuery() const;
 };
 
 #endif

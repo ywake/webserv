@@ -1,8 +1,8 @@
 #ifndef ABSOLUTE_FORM_HPP
 #define ABSOLUTE_FORM_HPP
 
-#include "ThinString.hpp"
 #include "absolute_uri.hpp"
+#include "thin_string.hpp"
 
 class AbsoluteForm : public ITargetForm
 {
@@ -18,7 +18,6 @@ class AbsoluteForm : public ITargetForm
 	const ThinString &GetPort() const;
 	const ThinString &GetPath() const;
 	const ThinString &GetQuery() const;
-
 };
 
 #endif // ABSOLUTE_FORM_HPP

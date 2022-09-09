@@ -1,9 +1,9 @@
 #ifndef PARSE_IP_UTILS_HPP
 #define PARSE_IP_UTILS_HPP
 
-#include "ThinString.hpp"
 #include "parse_define.hpp"
 #include "result.hpp"
+#include "thin_string.hpp"
 
 namespace ABNF
 {

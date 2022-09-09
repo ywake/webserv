@@ -1,7 +1,7 @@
 #ifndef I_TARGET_FORM_HPP
 #define I_TARGET_FORM_HPP
 
-#include "ThinString.hpp"
+#include "thin_string.hpp"
 
 class ITargetForm
 {

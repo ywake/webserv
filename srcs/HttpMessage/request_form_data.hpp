@@ -1,6 +1,6 @@
 #ifndef REQUEST_FORM_DATA_HPP
 #define REQUEST_FORM_DATA_HPP
-#include "ThinString.hpp"
+#include "thin_string.hpp"
 #include <iostream>
 #include <string>
 

@@ -1,7 +1,7 @@
 #ifndef AUTHORITY_HPP
 #define AUTHORITY_HPP
 
-#include "ThinString.hpp"
+#include "thin_string.hpp"
 
 class Authority
 {

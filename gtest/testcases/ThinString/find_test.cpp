@@ -1,6 +1,6 @@
 #include "gtest.h"
 
-#include "ThinString.hpp"
+#include "thin_string.hpp"
 
 #include <iostream>
 

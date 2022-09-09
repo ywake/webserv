@@ -1,8 +1,8 @@
 #ifndef HIER_PART_HPP
 #define HIER_PART_HPP
 
-#include "ThinString.hpp"
 #include "authority.hpp"
+#include "thin_string.hpp"
 
 class HierPart
 {

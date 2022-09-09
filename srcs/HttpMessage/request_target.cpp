@@ -1,9 +1,9 @@
 #include "request_target.hpp"
-#include "ThinString.hpp"
 #include "absolute_form.hpp"
 #include "error.hpp"
 #include "parse_path.hpp"
 #include "parse_uri.hpp"
+#include "thin_string.hpp"
 
 #include <string>
 #include <vector>

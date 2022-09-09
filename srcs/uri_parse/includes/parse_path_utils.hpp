@@ -1,8 +1,8 @@
 #ifndef PARSE_PATH_UTILS_HPP
 #define PARSE_PATH_UTILS_HPP
 
-#include "ThinString.hpp"
 #include "parse_define.hpp"
+#include "thin_string.hpp"
 
 namespace ABNF
 {

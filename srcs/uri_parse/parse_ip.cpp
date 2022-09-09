@@ -1,12 +1,12 @@
 #include "parse_ip.hpp"
 
-#include "ThinString.hpp"
 #include "parse_abnf_core_rules.hpp"
 #include "parse_define.hpp"
 #include "parse_ip_utils.hpp"
 #include "parse_path_utils.hpp"
 #include "parse_uri_utils.hpp"
 #include "result.hpp"
+#include "thin_string.hpp"
 #include "webserv_utils.hpp"
 
 namespace ABNF

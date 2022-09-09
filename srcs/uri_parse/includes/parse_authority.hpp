@@ -1,7 +1,7 @@
 #ifndef PARSE_AUTHORITY_HPP
 #define PARSE_AUTHORITY_HPP
 
-#include "ThinString.hpp"
+#include "thin_string.hpp"
 
 namespace ABNF
 {

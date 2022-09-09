@@ -1,10 +1,10 @@
 #include "parse_authority.hpp"
 
-#include "ThinString.hpp"
 #include "parse_define.hpp"
 #include "parse_ip.hpp"
 #include "parse_path_utils.hpp"
 #include "parse_uri_utils.hpp"
+#include "thin_string.hpp"
 
 namespace ABNF
 {

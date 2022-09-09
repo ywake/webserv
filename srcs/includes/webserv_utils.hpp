@@ -1,8 +1,8 @@
 #ifndef WEBSERV_UTILS_HPP
 #define WEBSERV_UTILS_HPP
 
-#include "ThinString.hpp"
 #include "result.hpp"
+#include "thin_string.hpp"
 #include <string>
 #include <vector>
 
