@@ -33,24 +33,9 @@ const ThinString &AbsoluteUri::GetScheme() const
 	return scheme_;
 }
 
-const ThinString &AbsoluteUri::GetUserinfo() const
+const HierPart &AbsoluteUri::GetHierPart() const
 {
-	return hier_part_.GetAuthority().GetUserinfo();
-}
-
-const ThinString &AbsoluteUri::GetHost() const
-{
-	return hier_part_.GetAuthority().GetHost();
-}
-
-const ThinString &AbsoluteUri::GetPort() const
-{
-	return hier_part_.GetAuthority().GetPort();
-}
-
-const ThinString &AbsoluteUri::GetPath() const
-{
-	return hier_part_.GetPath();
+	return hier_part_;
 }
 
 const ThinString &AbsoluteUri::GetQuery() const

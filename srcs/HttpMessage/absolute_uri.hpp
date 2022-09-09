@@ -7,7 +7,7 @@
 #include "hier_part.hpp"
 #include "i_target_form.hpp"
 
-class AbsoluteUri : public ITargetForm
+class AbsoluteUri
 {
   private:
 	ThinString scheme_;
@@ -23,10 +23,7 @@ class AbsoluteUri : public ITargetForm
 
   public:
 	const ThinString &GetScheme() const;
-	const ThinString &GetUserinfo() const;
-	const ThinString &GetHost() const;
-	const ThinString &GetPort() const;
-	const ThinString &GetPath() const;
+	const HierPart &GetHierPart() const;
 	const ThinString &GetQuery() const;
 };
 
