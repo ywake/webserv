@@ -1,13 +1,13 @@
 #include "uri.hpp"
 
 Uri::Uri(
-	std::string &scheme,
-	std::string &userinfo,
-	std::string &host,
-	std::string &port,
-	std::string &path,
-	std::string &query,
-	std::string &fragment
+	ThinString &scheme,
+	ThinString &userinfo,
+	ThinString &host,
+	ThinString &port,
+	ThinString &path,
+	ThinString &query,
+	ThinString &fragment
 )
 	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query),
 	  fragment_(fragment)
