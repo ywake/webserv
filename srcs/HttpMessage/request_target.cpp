@@ -1,5 +1,6 @@
 #include "request_target.hpp"
 #include "absolute_form.hpp"
+#include "authority_form.hpp"
 #include "error.hpp"
 #include "origin_form.hpp"
 #include "parse_path.hpp"
@@ -30,8 +31,11 @@ RequestTarget::RequestTarget(std::string uri) : form_data_()
 		SetUri(&absolute);
 		break;
 	}
-	case AUTHORITY:
+	case AUTHORITY: {
+		AuthorityForm authority(uri);
+		SetUri(&authority);
 		break;
+	}
 	case ASTERISK:
 		break;
 	case UNDEFINED:

@@ -1,8 +1,8 @@
 #ifndef REQUEST_TARGET_HPP
 #define REQUEST_TARGET_HPP
 
-#include "request_form_data.hpp"
 #include "i_target_form.hpp"
+#include "request_form_data.hpp"
 
 class RequestTarget
 {
