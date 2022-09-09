@@ -1,5 +1,9 @@
 #include "request_target.hpp"
+
 #include <string>
+
+#include "absolute_uri.hpp"
+#include "i_target_form.hpp"
 
 RequestTarget::RequestTarget() : form_type_(UNDEFINED), uri_() {}
 
@@ -10,19 +14,25 @@ RequestTarget::RequestTarget(std::string uri) : uri_()
 	if (uri.empty()) {
 		throw Error("400");
 	}
-	SpecifyForm(uri);
+	form_type_ = SpecifyForm(uri);
 	switch (form_type_) {
-	case ORIGIN:
-		ParseOriginForm(uri);
-		// uri_ = URI::ConstructFromOriginForm(uri);
-		// uri.ParseOriginForm(uri);
+	case ORIGIN: {
+		// OriginForm origin(uri);
+		// SetUri(&origin);
 		break;
-	case ABSOLUTE:
-		ParseAbsoluteForm(uri);
+	}
+	case ABSOLUTE: { // variables cannot be declared in a switch statement, so enclosed in a block
+		typedef AbsoluteUri
+			AbsoluteForm; // TODO: HTTPエラーを処理するためにAbsoluteFormクラスを作る
+		AbsoluteForm absolute(uri);
+		SetUri(&absolute);
 		break;
+	}
 	case AUTHORITY:
 		break;
 	case ASTERISK:
+		break;
+	case UNDEFINED:
 		break;
 	default:
 		break;
@@ -44,16 +54,16 @@ bool RequestTarget::operator!=(const RequestTarget &rhs) const
 	return !(*this == rhs);
 }
 
-void RequestTarget::SpecifyForm(const std::string &uri)
+RequestTarget::RequestForm RequestTarget::SpecifyForm(const std::string &uri)
 {
 	if (uri == "*") {
-		form_type_ = ASTERISK;
+		return ASTERISK;
 	} else if (uri.at(0) == '/') {
-		form_type_ = ORIGIN;
+		return ORIGIN;
 	} else if (uri.find("://") != std::string::npos) {
-		form_type_ = ABSOLUTE;
+		return ABSOLUTE;
 	} else if (uri.find(":") != std::string::npos) {
-		form_type_ = AUTHORITY;
+		return AUTHORITY;
 	} else {
 		throw Error("400");
 	}
@@ -83,6 +93,16 @@ void RequestTarget::ParseAbsoluteForm(ThinString uri)
 		throw Error("400");
 	}
 	uri_.scheme_ = scheme_heir.first.ToString();
+}
+
+void RequestTarget::SetUri(ITargetForm *form)
+{
+	uri_.scheme_ = form->GetScheme();
+	uri_.userinfo_ = form->GetUserinfo();
+	uri_.host_ = form->GetHost();
+	uri_.port_ = form->GetPort();
+	uri_.path_ = form->GetPath();
+	uri_.query_ = form->GetQuery();
 }
 
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target)

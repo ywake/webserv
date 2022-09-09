@@ -14,6 +14,10 @@ class Authority
 	Authority();
 	Authority(const ThinString &authority);
 	Authority &operator=(const Authority &other);
+
+	const ThinString &GetUserinfo() const;
+	const ThinString &GetHost() const;
+	const ThinString &GetPort() const;
 };
 
 #endif // AUTHORITY_HPP

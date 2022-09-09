@@ -32,3 +32,18 @@ Authority &Authority::operator=(const Authority &other)
 	port_ = other.port_;
 	return *this;
 }
+
+const ThinString &Authority::GetUserinfo() const
+{
+	return userinfo_;
+}
+
+const ThinString &Authority::GetHost() const
+{
+	return host_;
+}
+
+const ThinString &Authority::GetPort() const
+{
+	return port_;
+}

@@ -5,8 +5,9 @@
 
 #include "ThinString.hpp"
 #include "hier_part.hpp"
+#include "i_target_form.hpp"
 
-class AbsoluteUri
+class AbsoluteUri : public ITargetForm
 {
   private:
 	ThinString scheme_;
@@ -19,6 +20,14 @@ class AbsoluteUri
   private:
 	void TrySetScheme(const ThinString &scheme);
 	void TrySetQuery(const ThinString &query);
+
+  public:
+	const ThinString &GetScheme() const;
+	const ThinString &GetUserinfo() const;
+	const ThinString &GetHost() const;
+	const ThinString &GetPort() const;
+	const ThinString &GetPath() const;
+	const ThinString &GetQuery() const;
 };
 
 #endif

@@ -39,3 +39,13 @@ HierPart &HierPart::operator=(const HierPart &other)
 	path_ = other.path_;
 	return *this;
 }
+
+const Authority &HierPart::GetAuthority() const
+{
+	return authority_;
+}
+
+const ThinString &HierPart::GetPath() const
+{
+	return path_;
+}

@@ -16,6 +16,9 @@ class HierPart
 	HierPart();
 	HierPart(const ThinString &hier_part);
 	HierPart &operator=(const HierPart &other);
+
+	const Authority &GetAuthority() const;
+	const ThinString &GetPath() const;
 };
 
 #endif // HIER_PART_HPP

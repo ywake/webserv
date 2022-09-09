@@ -27,3 +27,33 @@ void AbsoluteUri::TrySetQuery(const ThinString &query)
 	}
 	query_ = query;
 }
+
+const ThinString &AbsoluteUri::GetScheme() const
+{
+	return scheme_;
+}
+
+const ThinString &AbsoluteUri::GetUserinfo() const
+{
+	return hier_part_.GetAuthority().GetUserinfo();
+}
+
+const ThinString &AbsoluteUri::GetHost() const
+{
+	return hier_part_.GetAuthority().GetHost();
+}
+
+const ThinString &AbsoluteUri::GetPort() const
+{
+	return hier_part_.GetAuthority().GetPort();
+}
+
+const ThinString &AbsoluteUri::GetPath() const
+{
+	return hier_part_.GetPath();
+}
+
+const ThinString &AbsoluteUri::GetQuery() const
+{
+	return query_;
+}

@@ -1,6 +1,7 @@
 #ifndef REQUEST_TARGET_HPP
 #define REQUEST_TARGET_HPP
 #include "ThinString.hpp"
+#include "i_target_form.hpp"
 #include "parse_path.hpp"
 #include "parse_uri.hpp"
 #include "result.hpp"
@@ -25,9 +26,10 @@ class RequestTarget // TODO: Abstruct説
 
 	bool operator==(const RequestTarget &rhs) const;
 	bool operator!=(const RequestTarget &rhs) const;
-	void SpecifyForm(const std::string &uri);
+	RequestTarget::RequestForm SpecifyForm(const std::string &uri);
 	void ParseOriginForm(std::string uri);
 	void ParseAbsoluteForm(ThinString uri);
+	void SetUri(ITargetForm *uri);
 };
 
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target);
