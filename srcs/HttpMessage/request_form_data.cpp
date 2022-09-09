@@ -1,6 +1,6 @@
-#include "uri.hpp"
+#include "request_form_data.hpp"
 
-Uri::Uri(
+RequestFormData::RequestFormData(
 	ThinString &scheme,
 	ThinString &userinfo,
 	ThinString &host,
@@ -12,7 +12,7 @@ Uri::Uri(
 {
 }
 
-Uri::Uri(
+RequestFormData::RequestFormData(
 	const char *scheme,
 	const char *userinfo,
 	const char *host,
@@ -34,13 +34,13 @@ Uri::Uri(
 // 	return uri;
 // }
 
-bool Uri::operator==(const Uri &rhs) const
+bool RequestFormData::operator==(const RequestFormData &rhs) const
 {
 	return scheme_ == rhs.scheme_ && userinfo_ == rhs.userinfo_ && host_ == rhs.host_ &&
 		   port_ == rhs.port_ && path_ == rhs.path_ && query_ == rhs.query_;
 }
 
-std::ostream &operator<<(std::ostream &os, const Uri &uri)
+std::ostream &operator<<(std::ostream &os, const RequestFormData &uri)
 {
 	os << "scheme   : " << uri.scheme_ << std::endl;
 	os << "userinfo : " << uri.userinfo_ << std::endl;
