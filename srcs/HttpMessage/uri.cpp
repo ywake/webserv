@@ -6,8 +6,7 @@ Uri::Uri(
 	ThinString &host,
 	ThinString &port,
 	ThinString &path,
-	ThinString &query,
-	ThinString &fragment
+	ThinString &query
 )
 	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query)
 {
