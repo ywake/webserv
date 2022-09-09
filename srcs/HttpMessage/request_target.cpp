@@ -1,6 +1,7 @@
 #include "request_target.hpp"
 #include "absolute_form.hpp"
 #include "error.hpp"
+#include "origin_form.hpp"
 #include "parse_path.hpp"
 #include "parse_uri.hpp"
 #include "thin_string.hpp"
@@ -20,8 +21,8 @@ RequestTarget::RequestTarget(std::string uri) : form_data_()
 	form_type_ = SpecifyForm(uri);
 	switch (form_type_) {
 	case ORIGIN: {
-		// OriginForm origin(uri);
-		// SetUri(&origin);
+		OriginForm origin(uri);
+		SetUri(&origin);
 		break;
 	}
 	case ABSOLUTE: { // variables cannot be declared in a switch statement, so enclosed in a block
@@ -69,20 +70,6 @@ RequestTarget::RequestForm RequestTarget::SpecifyForm(const std::string &uri)
 	} else {
 		throw Error("400");
 	}
-}
-
-// origin-form
-// = absolute-path [ "?" query ]
-void RequestTarget::ParseOriginForm(std::string uri)
-{
-	ThinString thin(uri);
-	ThinString::ThinStrPair path_query = thin.DivideBy("?");
-
-	if (!ABNF::IsPathAbsolute(path_query.first) || !ABNF::IsQuery(path_query.second)) {
-		throw Error("400");
-	}
-	form_data_.path_ = path_query.first.ToString();
-	form_data_.query_ = path_query.second.ToString();
 }
 
 void RequestTarget::SetUri(ITargetForm *form)
