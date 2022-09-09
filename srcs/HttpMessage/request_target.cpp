@@ -23,17 +23,17 @@ RequestTarget::RequestTarget(std::string uri) : form_data_()
 	switch (form_type_) {
 	case ORIGIN: {
 		OriginForm origin(uri);
-		SetUri(&origin);
+		SetFormData(&origin);
 		break;
 	}
 	case ABSOLUTE: { // variables cannot be declared in a switch statement, so enclosed in a block
 		AbsoluteForm absolute(uri);
-		SetUri(&absolute);
+		SetFormData(&absolute);
 		break;
 	}
 	case AUTHORITY: {
 		AuthorityForm authority(uri);
-		SetUri(&authority);
+		SetFormData(&authority);
 		break;
 	}
 	case ASTERISK:
@@ -76,7 +76,7 @@ RequestTarget::RequestForm RequestTarget::SpecifyForm(const std::string &uri)
 	}
 }
 
-void RequestTarget::SetUri(ITargetForm *form)
+void RequestTarget::SetFormData(ITargetForm *form)
 {
 	form_data_.scheme_ = form->GetScheme();
 	form_data_.userinfo_ = form->GetUserinfo();
