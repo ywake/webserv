@@ -9,8 +9,7 @@ Uri::Uri(
 	ThinString &query,
 	ThinString &fragment
 )
-	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query),
-	  fragment_(fragment)
+	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query)
 {
 }
 
@@ -20,11 +19,9 @@ Uri::Uri(
 	const char *host,
 	const char *port,
 	const char *path,
-	const char *query,
-	const char *fragment
+	const char *query
 )
-	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query),
-	  fragment_(fragment)
+	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query)
 {
 }
 
@@ -41,8 +38,7 @@ Uri::Uri(
 bool Uri::operator==(const Uri &rhs) const
 {
 	return scheme_ == rhs.scheme_ && userinfo_ == rhs.userinfo_ && host_ == rhs.host_ &&
-		   port_ == rhs.port_ && path_ == rhs.path_ && query_ == rhs.query_ &&
-		   fragment_ == rhs.fragment_;
+		   port_ == rhs.port_ && path_ == rhs.path_ && query_ == rhs.query_;
 }
 
 std::ostream &operator<<(std::ostream &os, const Uri &uri)
@@ -53,6 +49,5 @@ std::ostream &operator<<(std::ostream &os, const Uri &uri)
 	os << "port     : " << uri.port_ << std::endl;
 	os << "path     : " << uri.path_ << std::endl;
 	os << "query    : " << uri.query_ << std::endl;
-	os << "fragment : " << uri.fragment_ << std::endl;
 	return os;
 }
