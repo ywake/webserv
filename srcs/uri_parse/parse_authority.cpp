@@ -33,15 +33,9 @@ namespace ABNF
 	}
 
 	// host = IP-literal / IPv4address / reg-name
-	// http URI scheme : A sender MUST NOT generate an "http" URI with an empty host identifier.
-	// A recipient that processes such a URI reference MUST reject it as invalid.
-	// TODO IsHTTPHostみたいの作ってwrapした方がいいかも
 	// TODO テスト追加
 	bool IsHost(const ThinString &str)
 	{
-		if (str.empty()) {
-			return false;
-		}
 		return IsIPLiteral(str) || IsIPv4address(str) || IsRegName(str);
 	}
 
