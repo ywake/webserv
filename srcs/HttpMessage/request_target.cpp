@@ -1,15 +1,18 @@
 #include "request_target.hpp"
+#include "ThinString.hpp"
+#include "absolute_form.hpp"
+#include "error.hpp"
+#include "parse_path.hpp"
+#include "parse_uri.hpp"
 
 #include <string>
+#include <vector>
 
-#include "absolute_uri.hpp"
-#include "i_target_form.hpp"
+RequestTarget::RequestTarget() : form_type_(UNDEFINED), form_data_() {}
 
-RequestTarget::RequestTarget() : form_type_(UNDEFINED), uri_() {}
-
-//[FIX]
+//[Q]
 //例外投げてるけど、Errorの有無を変数で持ってコンストラクタ呼び出し後にチェックの方が良い？
-RequestTarget::RequestTarget(std::string uri) : uri_()
+RequestTarget::RequestTarget(std::string uri) : form_data_()
 {
 	if (uri.empty()) {
 		throw Error("400");
@@ -22,8 +25,6 @@ RequestTarget::RequestTarget(std::string uri) : uri_()
 		break;
 	}
 	case ABSOLUTE: { // variables cannot be declared in a switch statement, so enclosed in a block
-		typedef AbsoluteUri
-			AbsoluteForm; // TODO: HTTPエラーを処理するためにAbsoluteFormクラスを作る
 		AbsoluteForm absolute(uri);
 		SetUri(&absolute);
 		break;
@@ -39,14 +40,14 @@ RequestTarget::RequestTarget(std::string uri) : uri_()
 	}
 }
 
-RequestTarget::RequestTarget(RequestForm form_type, Uri request_target)
-	: form_type_(form_type), uri_(request_target)
+RequestTarget::RequestTarget(RequestForm form_type, RequestFormData request_target)
+	: form_type_(form_type), form_data_(request_target)
 {
 }
 
 bool RequestTarget::operator==(const RequestTarget &rhs) const
 {
-	return form_type_ == rhs.form_type_ && uri_ == rhs.uri_;
+	return form_type_ == rhs.form_type_ && form_data_ == rhs.form_data_;
 }
 
 bool RequestTarget::operator!=(const RequestTarget &rhs) const
@@ -54,6 +55,7 @@ bool RequestTarget::operator!=(const RequestTarget &rhs) const
 	return !(*this == rhs);
 }
 
+//[TODO] メソッドの種類でフォームを判別する
 RequestTarget::RequestForm RequestTarget::SpecifyForm(const std::string &uri)
 {
 	if (uri == "*") {
@@ -79,35 +81,28 @@ void RequestTarget::ParseOriginForm(std::string uri)
 	if (!ABNF::IsPathAbsolute(path_query.first) || !ABNF::IsQuery(path_query.second)) {
 		throw Error("400");
 	}
-	uri_.path_ = path_query.first.ToString();
-	uri_.query_ = path_query.second.ToString();
-}
-
-// absolute-form = absolute-URI
-void RequestTarget::ParseAbsoluteForm(ThinString uri)
-{
-	ThinString::ThinStrPair scheme_heir = uri.DivideBy(":");
-	ThinString::ThinStrPair heir_query = scheme_heir.second.DivideBy("?");
-	if (!ABNF::IsScheme(scheme_heir.first) || !ABNF::IsHierPart(heir_query.first) ||
-		!ABNF::IsQuery(heir_query.second)) {
-		throw Error("400");
-	}
-	uri_.scheme_ = scheme_heir.first.ToString();
+	form_data_.path_ = path_query.first.ToString();
+	form_data_.query_ = path_query.second.ToString();
 }
 
 void RequestTarget::SetUri(ITargetForm *form)
 {
-	uri_.scheme_ = form->GetScheme();
-	uri_.userinfo_ = form->GetUserinfo();
-	uri_.host_ = form->GetHost();
-	uri_.port_ = form->GetPort();
-	uri_.path_ = form->GetPath();
-	uri_.query_ = form->GetQuery();
+	form_data_.scheme_ = form->GetScheme();
+	form_data_.userinfo_ = form->GetUserinfo();
+	form_data_.host_ = form->GetHost();
+	form_data_.port_ = form->GetPort();
+	form_data_.path_ = form->GetPath();
+	form_data_.query_ = form->GetQuery();
+}
+
+RequestTarget::RequestForm RequestTarget::GetRequestForm() const
+{
+	return form_type_;
 }
 
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target)
 {
-	switch (request_target.form_type_) {
+	switch (request_target.GetRequestForm()) {
 	case RequestTarget::UNDEFINED:
 		os << "UNDEFINED";
 		break;
@@ -124,6 +119,6 @@ std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target)
 		os << "ASTERISK";
 		break;
 	}
-	os << "\n" << request_target.uri_;
+	os << "\n" << request_target.GetRequestForm();
 	return os;
 }
