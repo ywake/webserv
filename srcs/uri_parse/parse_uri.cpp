@@ -28,25 +28,6 @@ namespace ABNF
 		return true;
 	}
 
-	// hier-part    = "//" authority path-abempty
-	//              / path-absolute
-	//              / path-rootless ; Not support
-	//              / path-empty
-	bool IsHierPart(const ThinString &str)
-	{
-		if (IsPathEmpty(str)) {
-			return true;
-		} else if (str.find("//") == 0) {
-			ThinString after_2slash = str.substr(2);
-			ThinString::ThinStrPair authority_path =
-				after_2slash.DivideBy("/", ThinString::kKeepDelimRight);
-			return IsAuthority(authority_path.first) && IsPathAbempty(authority_path.second);
-		} else if (IsPathAbsolute(str)) {
-			return true;
-		}
-		return false;
-	}
-
 	// query         = *( pchar / "/" / "?" )
 	bool IsQuery(const ThinString &str)
 	{

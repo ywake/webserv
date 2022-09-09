@@ -4,6 +4,10 @@
 
 HierPart::HierPart() : authority_(), path_() {}
 
+// hier-part    = "//" authority path-abempty
+//              / path-absolute
+//              / path-rootless ; Not support
+//              / path-empty
 HierPart::HierPart(const ThinString &hier_part) : authority_()
 {
 	if (hier_part.substr(0, 2) == "//") {
@@ -11,6 +15,16 @@ HierPart::HierPart(const ThinString &hier_part) : authority_()
 	} else {
 		TrySetPath(hier_part);
 	}
+}
+
+HierPart::HierPart(const Authority &authority, const ThinString &path)
+	: authority_(authority), path_(path)
+{
+}
+
+HierPart::HierPart(const HierPart &other)
+	: authority_(other.authority_), path_(other.path_)
+{
 }
 
 void HierPart::ParseAuthorityPath(ThinString hier_part)
@@ -40,6 +54,16 @@ HierPart &HierPart::operator=(const HierPart &other)
 	return *this;
 }
 
+bool HierPart::operator==(const HierPart &other) const
+{
+	return authority_ == other.authority_ && path_ == other.path_;
+}
+
+bool HierPart::operator!=(const HierPart &other) const
+{
+	return !(*this == other);
+}
+
 const Authority &HierPart::GetAuthority() const
 {
 	return authority_;
@@ -48,4 +72,11 @@ const Authority &HierPart::GetAuthority() const
 const ThinString &HierPart::GetPath() const
 {
 	return path_;
+}
+
+std::ostream &operator<<(std::ostream &os, const HierPart &hier_part)
+{
+	os << hier_part.GetAuthority() << std::endl;
+	os << "path :" << hier_part.GetPath() << std::endl;
+	return os;
 }

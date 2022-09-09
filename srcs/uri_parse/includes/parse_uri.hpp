@@ -6,7 +6,6 @@
 namespace ABNF
 {
 	bool IsScheme(const ThinString &str);
-	bool IsHierPart(const ThinString &str);
 	bool IsQuery(const ThinString &str);
 
 } // namespace ABNF
