@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <set>
 #include <string>
 
 /*
@@ -12,7 +13,8 @@
 class ThinString
 {
   private:
-	typedef std::map<const std::string, std::size_t> ReferenceCount;
+	typedef std::set<std::string> StringSet;
+	typedef std::map<const std::string *, std::size_t> ReferenceCount;
 
   public:
 	typedef std::string::const_iterator const_iterator;
@@ -27,6 +29,7 @@ class ThinString
 	// clang-format on
   private:
 	static ReferenceCount reference_count_;
+	static StringSet base_set_;
 	const std::string *base_;
 	std::size_t start_;
 	std::size_t length_;

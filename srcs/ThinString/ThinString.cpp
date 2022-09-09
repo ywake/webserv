@@ -3,6 +3,7 @@
 #include <cstring>
 
 ThinString::ReferenceCount ThinString::reference_count_ = ThinString::ReferenceCount();
+ThinString::StringSet ThinString::base_set_ = ThinString::StringSet();
 
 ThinString::ThinString() : base_(), start_(0), length_(0)
 {
@@ -21,26 +22,32 @@ ThinString::ThinString(const char *str, std::size_t start, std::size_t length)
 	std::string s = str;
 	init(s);
 }
-
+#include <iostream>
 ThinString::ThinString(const ThinString &other, std::size_t start, std::size_t length)
 {
+	// std::cout << "thin" << std::endl;
 	*this = other.substr(start, length);
 }
 
 ThinString::~ThinString()
 {
-	ReferenceCount::iterator it = reference_count_.find(*base_);
+	ReferenceCount::iterator ref_it = reference_count_.find(base_);
 
-	if (--it->second == 0) {
-		reference_count_.erase(it);
+	if (--ref_it->second == 0) {
+		StringSet::iterator set_itr = base_set_.find(*base_);
+		if (set_itr != base_set_.end()) {
+			base_set_.erase(set_itr);
+		}
+		reference_count_.erase(ref_it);
 		base_ = NULL;
 	}
 }
 
 void ThinString::init(const std::string &str)
 {
-	reference_count_[str]++;
-	base_ = &reference_count_.find(str)->first;
+	StringSet::iterator node = base_set_.insert(str).first;
+	base_ = &*node;
+	reference_count_[base_]++;
 	start_ = std::min(start_, base_->size());
 	length_ = std::min(length_, base_->size() - start_);
 }
@@ -172,7 +179,7 @@ ThinString &ThinString::operator=(const ThinString &rhs)
 	start_ = rhs.start_;
 	length_ = rhs.length_;
 	base_ = rhs.base_;
-	reference_count_[*base_]++;
+	reference_count_[base_]++;
 	return *this;
 }
 
