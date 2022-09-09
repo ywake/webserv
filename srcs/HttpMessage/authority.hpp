@@ -27,4 +27,4 @@ class Authority
 
 std::ostream &operator<<(std::ostream &os, const Authority &authority);
 
-#endif // AUTHORITY_HPP
+#endif
