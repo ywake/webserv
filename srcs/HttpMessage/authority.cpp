@@ -5,6 +5,7 @@
 
 Authority::Authority() : userinfo_(), host_(), port_() {}
 
+// authority = [ userinfo "@" ] host [ ":" port ]
 Authority::Authority(const ThinString &authority) : userinfo_(), host_(), port_()
 {
 	ThinString::ThinStrPair userinfo_hostport = authority.DivideBy("@", ThinString::kAlignRight);
@@ -20,6 +21,16 @@ Authority::Authority(const ThinString &authority) : userinfo_(), host_(), port_(
 	userinfo_ = userinfo;
 	host_ = host;
 	port_ = port;
+}
+
+Authority::Authority(const ThinString &userinfo, const ThinString &host, const ThinString &port)
+	: userinfo_(userinfo), host_(host), port_(port)
+{
+}
+
+Authority::Authority(const Authority &other)
+	: userinfo_(other.userinfo_), host_(other.host_), port_(other.port_)
+{
 }
 
 Authority &Authority::operator=(const Authority &other)
@@ -46,4 +57,22 @@ const ThinString &Authority::GetHost() const
 const ThinString &Authority::GetPort() const
 {
 	return port_;
+}
+
+bool Authority::operator==(const Authority &other) const
+{
+	return userinfo_ == other.userinfo_ && host_ == other.host_ && port_ == other.port_;
+}
+
+bool Authority::operator!=(const Authority &other) const
+{
+	return !(*this == other);
+}
+
+std::ostream &operator<<(std::ostream &os, const Authority &authority)
+{
+	os << "userinfo:" << authority.GetUserinfo() << std::endl;
+	os << "host    :" << authority.GetHost() << std::endl;
+	os << "port    :" << authority.GetPort() << std::endl;
+	return os;
 }
