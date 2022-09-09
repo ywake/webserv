@@ -22,11 +22,16 @@ ThinString::ThinString(const char *str, std::size_t start, std::size_t length)
 	std::string s = str;
 	init(s);
 }
-#include <iostream>
+
 ThinString::ThinString(const ThinString &other, std::size_t start, std::size_t length)
 {
-	// std::cout << "thin" << std::endl;
 	*this = other.substr(start, length);
+}
+
+ThinString::ThinString(const std::string *base, std::size_t start, std::size_t length)
+	: base_(base), start_(start), length_(length)
+{
+	reference_count_[base_]++;
 }
 
 ThinString::~ThinString()
@@ -110,7 +115,7 @@ ThinString ThinString::substr(std::size_t pos, std::size_t size) const
 {
 	std::size_t offset = std::min(pos, length_);
 	std::size_t sub_length = std::min(size, length_ - offset);
-	return ThinString(*base_, start_ + offset, sub_length);
+	return ThinString(base_, start_ + offset, sub_length);
 }
 
 std::string ThinString::ToString() const

@@ -42,6 +42,7 @@ class ThinString
 	~ThinString();
 
   private:
+	ThinString(const std::string *base, std::size_t start, std::size_t length);
 	void init(const std::string &str);
 	ThinString
 	CreateLeftSide(const std::string &delim, std::size_t size, unsigned int delim_side) const;
