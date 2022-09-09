@@ -11,7 +11,7 @@ class AbsoluteUri
 {
   private:
 	ThinString scheme_;
-	HierPart hier_part_;
+	HierPart   hier_part_;
 	ThinString query_;
 
   public:
@@ -23,7 +23,7 @@ class AbsoluteUri
 
   public:
 	const ThinString &GetScheme() const;
-	const HierPart &GetHierPart() const;
+	const HierPart   &GetHierPart() const;
 	const ThinString &GetQuery() const;
 };
 

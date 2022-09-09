@@ -47,8 +47,7 @@ RequestTarget::RequestTarget(std::string uri) : form_data_()
 
 RequestTarget::RequestTarget(RequestForm form_type, RequestFormData request_target)
 	: form_type_(form_type), form_data_(request_target)
-{
-}
+{}
 
 bool RequestTarget::operator==(const RequestTarget &rhs) const
 {
@@ -78,12 +77,12 @@ RequestTarget::RequestForm RequestTarget::SpecifyForm(const std::string &uri)
 
 void RequestTarget::SetFormData(ITargetForm *form)
 {
-	form_data_.scheme_ = form->GetScheme();
+	form_data_.scheme_	 = form->GetScheme();
 	form_data_.userinfo_ = form->GetUserinfo();
-	form_data_.host_ = form->GetHost();
-	form_data_.port_ = form->GetPort();
-	form_data_.path_ = form->GetPath();
-	form_data_.query_ = form->GetQuery();
+	form_data_.host_	 = form->GetHost();
+	form_data_.port_	 = form->GetPort();
+	form_data_.path_	 = form->GetPath();
+	form_data_.query_	 = form->GetQuery();
 }
 
 RequestTarget::RequestForm RequestTarget::GetRequestForm() const

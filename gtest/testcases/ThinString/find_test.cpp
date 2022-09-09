@@ -112,14 +112,14 @@ TEST(thin_string, operator_equal)
 }
 
 void test_divide_by(
-	const std::string &str,
-	const std::string &delim,
-	const std::string &first,
-	const std::string &second,
+	const std::string	  &str,
+	const std::string	  &delim,
+	const std::string	  &first,
+	const std::string	  &second,
 	ThinString::DelimFlag option = ThinString::DelimFlag::kKeepDelimLeft
 )
 {
-	ThinString thin(str);
+	ThinString				thin(str);
 	ThinString::ThinStrPair p = thin.DivideBy(delim);
 	EXPECT_EQ(p.first, first);
 	EXPECT_EQ(p.second, second);
@@ -146,7 +146,7 @@ TEST(thin_string, DivideBy)
 	test_divide_by("this is awesome test case.", "case.", "this is awesome test ", "");
 	test_divide_by("this is awesome test case.", "case.", "this is awesome test ", "");
 
-	ThinString str("this is awesome test case.", 5, 8);
+	ThinString				str("this is awesome test case.", 5, 8);
 	ThinString::ThinStrPair p = str.DivideBy("some");
 	EXPECT_EQ(p.first, "is aweso");
 	EXPECT_EQ(p.second, "");

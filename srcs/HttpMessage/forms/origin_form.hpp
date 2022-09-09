@@ -17,8 +17,8 @@ class OriginForm : public ITargetForm
 	OriginForm(const OriginForm &other);
 
 	OriginForm &operator=(const OriginForm &other);
-	bool operator==(const OriginForm &other) const;
-	bool operator!=(const OriginForm &other) const;
+	bool		operator==(const OriginForm &other) const;
+	bool		operator!=(const OriginForm &other) const;
 
 	const ThinString &GetScheme() const;
 	const ThinString &GetUserinfo() const;

@@ -7,7 +7,13 @@
 class RequestTarget
 {
   public:
-	enum RequestForm { ORIGIN, ABSOLUTE, AUTHORITY, ASTERISK, UNDEFINED };
+	enum RequestForm {
+		ORIGIN,
+		ABSOLUTE,
+		AUTHORITY,
+		ASTERISK,
+		UNDEFINED
+	};
 
   private:
 	RequestForm form_type_;
@@ -22,10 +28,10 @@ class RequestTarget
 	RequestTarget(std::string uri);
 	RequestTarget(RequestForm form_type, RequestFormData request_target);
 
-	bool operator==(const RequestTarget &rhs) const;
-	bool operator!=(const RequestTarget &rhs) const;
+	bool					   operator==(const RequestTarget &rhs) const;
+	bool					   operator!=(const RequestTarget &rhs) const;
 	RequestTarget::RequestForm SpecifyForm(const std::string &uri);
-	void SetFormData(ITargetForm *uri);
+	void					   SetFormData(ITargetForm *uri);
 
 	RequestForm GetRequestForm() const;
 };

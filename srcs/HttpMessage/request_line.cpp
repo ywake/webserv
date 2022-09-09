@@ -10,8 +10,7 @@ RequestLine::RequestLine(const std::string &request_line)
 
 RequestLine::RequestLine(Methods method, RequestTarget request_target, std::string http_version)
 	: method_(method), request_target_(request_target), http_version_(http_version)
-{
-}
+{}
 
 bool RequestLine::operator==(const RequestLine &rhs) const
 {

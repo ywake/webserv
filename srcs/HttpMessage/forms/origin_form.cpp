@@ -15,22 +15,21 @@ OriginForm::OriginForm(const ThinString &str)
 	if (!ABNF::IsPathAbsolute(path_query.first) || !ABNF::IsQuery(path_query.second)) {
 		throw Error("400");
 	}
-	path_ = path_query.first;
+	path_  = path_query.first;
 	query_ = path_query.second;
 }
 
 OriginForm::OriginForm(const OriginForm &other) : path_(other.path_), query_(other.query_) {}
 
 OriginForm::OriginForm(const ThinString &path, const ThinString &query) : path_(path), query_(query)
-{
-}
+{}
 
 OriginForm &OriginForm::operator=(const OriginForm &other)
 {
 	if (this == &other) {
 		return *this;
 	}
-	path_ = other.path_;
+	path_  = other.path_;
 	query_ = other.query_;
 	return *this;
 }

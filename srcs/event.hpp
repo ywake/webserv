@@ -11,8 +11,8 @@
 class Event
 {
   public:
-	int fd_;
-	Server *server_;
+	int		 fd_;
+	Server  *server_;
 	Callback func_;
 	Event() : fd_(-1), server_(NULL), func_(NULL){};
 	Event(int fd, Server *server, Callback func) : fd_(fd), server_(server), func_(func){};

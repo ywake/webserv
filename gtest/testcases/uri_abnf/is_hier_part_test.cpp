@@ -1,8 +1,8 @@
 #include "gtest.h"
 
+#include "error.hpp"
 #include "hier_part.hpp"
 #include "parse_uri.hpp"
-#include "error.hpp"
 
 // "//" authority path-abempty
 TEST(uri_abnf, hier_part_authority_and_path_abempty)
@@ -55,8 +55,12 @@ TEST(uri_abnf, hier_part_path_absolute)
 {
 	EXPECT_EQ(HierPart("/example.com"), HierPart(Authority(), "/example.com"));
 	EXPECT_EQ(HierPart("/example.com/"), HierPart(Authority(), "/example.com/"));
-	EXPECT_EQ(HierPart("/example.com/index.html"), HierPart(Authority(), "/example.com/index.html"));
-	EXPECT_EQ(HierPart("/example.com//index.html"), HierPart(Authority(), "/example.com//index.html"));
+	EXPECT_EQ(
+		HierPart("/example.com/index.html"), HierPart(Authority(), "/example.com/index.html")
+	);
+	EXPECT_EQ(
+		HierPart("/example.com//index.html"), HierPart(Authority(), "/example.com//index.html")
+	);
 }
 
 // path-rootless = segment-nz *("/" segment )

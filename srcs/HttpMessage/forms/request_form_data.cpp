@@ -9,8 +9,7 @@ RequestFormData::RequestFormData(
 	ThinString &query
 )
 	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query)
-{
-}
+{}
 
 RequestFormData::RequestFormData(
 	const char *scheme,
@@ -21,8 +20,7 @@ RequestFormData::RequestFormData(
 	const char *query
 )
 	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query)
-{
-}
+{}
 
 // URI URI::ConstructFromOrigin(ThinString origin_form)
 // {

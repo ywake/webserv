@@ -24,12 +24,12 @@ class RequestFormData
 	);
 
 	RequestFormData(
-		const char *scheme = "",
+		const char *scheme	 = "",
 		const char *userinfo = "",
-		const char *host = "",
-		const char *port = "",
-		const char *path = "",
-		const char *query = ""
+		const char *host	 = "",
+		const char *port	 = "",
+		const char *path	 = "",
+		const char *query	 = ""
 	);
 
 	bool operator==(const RequestFormData &rhs) const;

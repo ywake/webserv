@@ -10,8 +10,7 @@ class ResponseMessage : public HttpMessage
 
 	ResponseMessage(StatusLine &status_line, FieldLines &field_lines, std::string &message_body)
 		: HttpMessage(field_lines, message_body), status_line_(status_line)
-	{
-	}
+	{}
 
 	bool operator==(const ResponseMessage &rhs) const
 	{

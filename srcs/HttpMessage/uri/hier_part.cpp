@@ -19,14 +19,13 @@ HierPart::HierPart(const ThinString &hier_part) : authority_()
 
 HierPart::HierPart(const Authority &authority, const ThinString &path)
 	: authority_(authority), path_(path)
-{
-}
+{}
 
 HierPart::HierPart(const HierPart &other) : authority_(other.authority_), path_(other.path_) {}
 
 void HierPart::ParseAuthorityPath(ThinString hier_part)
 {
-	ThinString after_2slash = hier_part.substr(2);
+	ThinString				after_2slash = hier_part.substr(2);
 	ThinString::ThinStrPair authority_path =
 		after_2slash.DivideBy("/", ThinString::kKeepDelimRight);
 	authority_ = Authority(authority_path.first);
@@ -47,7 +46,7 @@ HierPart &HierPart::operator=(const HierPart &other)
 		return *this;
 	}
 	authority_ = other.authority_;
-	path_ = other.path_;
+	path_	   = other.path_;
 	return *this;
 }
 

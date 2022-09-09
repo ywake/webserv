@@ -6,10 +6,14 @@
 class RequestLine
 {
   public:
-	enum Methods { GET, POST, DELETE };
-	Methods method_;
+	enum Methods {
+		GET,
+		POST,
+		DELETE
+	};
+	Methods		  method_;
 	RequestTarget request_target_;
-	std::string http_version_;
+	std::string	  http_version_;
 
 	RequestLine();
 	RequestLine(const std::string &request_line);

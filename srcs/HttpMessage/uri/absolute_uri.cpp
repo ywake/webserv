@@ -5,7 +5,7 @@
 AbsoluteUri::AbsoluteUri(const ThinString &str)
 {
 	ThinString::ThinStrPair scheme_hier = str.DivideBy(":");
-	ThinString::ThinStrPair hier_query = scheme_hier.second.DivideBy("?");
+	ThinString::ThinStrPair hier_query	= scheme_hier.second.DivideBy("?");
 
 	TrySetScheme(scheme_hier.first);
 	hier_part_ = HierPart(hier_query.first);

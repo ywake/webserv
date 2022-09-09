@@ -10,7 +10,7 @@ class FdSet
 {
   private:
 	std::vector<uint64_t> ready_fds_;
-	static const size_t kBits = sizeof(uint64_t) * CHAR_BIT;
+	static const size_t	  kBits = sizeof(uint64_t) * CHAR_BIT;
 
   public:
 	FdSet();

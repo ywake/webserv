@@ -7,7 +7,7 @@
 namespace ABNF
 {
 	static const char *kUnreservedUniqSet = "-._~";
-	static const char *kSubDelimsUniqSet = "!$&'()*+,;=";
+	static const char *kSubDelimsUniqSet  = "!$&'()*+,;=";
 
 	// unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
 	bool IsUnreserved(const char c)

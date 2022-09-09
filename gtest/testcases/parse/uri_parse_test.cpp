@@ -1,13 +1,13 @@
 #include "error.hpp"
 #include "gtest.h"
+#include "request_form_data.hpp"
 #include "request_target.hpp"
 #include "result.hpp"
-#include "request_form_data.hpp"
 
 static Result<RequestTarget> test_actualy(std::string input)
 {
 	RequestTarget act;
-	Error err;
+	Error		  err;
 	try {
 		act = RequestTarget(input);
 	} catch (const Error &e) {
@@ -38,12 +38,12 @@ TEST(uri_parse, specify_form)
 
 void test_form(
 	RequestTarget::RequestForm form,
-	const std::string &input,
-	const RequestFormData &uri,
-	const Error &err = Error()
+	const std::string		  &input,
+	const RequestFormData	  &uri,
+	const Error				&err = Error()
 )
 {
-	RequestTarget exp(form, uri);
+	RequestTarget		  exp(form, uri);
 	Result<RequestTarget> act = test_actualy(input);
 	EXPECT_EQ(act.Val(), exp);
 	EXPECT_EQ(act.err, err);

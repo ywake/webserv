@@ -18,8 +18,7 @@ class RequestMessage : public HttpMessage
 
 	RequestMessage(RequestLine request_line, FieldLines field_lines, std::string message_body)
 		: HttpMessage(field_lines, message_body), request_line_(request_line)
-	{
-	}
+	{}
 
 	bool operator==(const RequestMessage &rhs) const
 	{

@@ -7,10 +7,10 @@
 class HierPart
 {
   private:
-	Authority authority_;
+	Authority  authority_;
 	ThinString path_;
-	void ParseAuthorityPath(ThinString hier_part);
-	void TrySetPath(ThinString hier_part);
+	void	   ParseAuthorityPath(ThinString hier_part);
+	void	   TrySetPath(ThinString hier_part);
 
   public:
 	HierPart();
@@ -19,10 +19,10 @@ class HierPart
 	HierPart(const HierPart &other);
 
 	HierPart &operator=(const HierPart &other);
-	bool operator==(const HierPart &rhs) const;
-	bool operator!=(const HierPart &rhs) const;
+	bool	  operator==(const HierPart &rhs) const;
+	bool	  operator!=(const HierPart &rhs) const;
 
-	const Authority &GetAuthority() const;
+	const Authority	&GetAuthority() const;
 	const ThinString &GetPath() const;
 };
 
