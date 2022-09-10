@@ -85,7 +85,7 @@ RequestTarget::RequestForm RequestTarget::SpecifyForm(const std::string &uri)
 	}
 }
 
-void RequestTarget::SetFormData(ITargetForm *form)
+void RequestTarget::SetFormData(const ITargetForm *form)
 {
 	form_data_.scheme_	 = form->GetScheme();
 	form_data_.userinfo_ = form->GetUserinfo();

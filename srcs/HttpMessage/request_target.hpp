@@ -32,7 +32,7 @@ class RequestTarget
 	bool					   operator==(const RequestTarget &rhs) const;
 	bool					   operator!=(const RequestTarget &rhs) const;
 	RequestTarget::RequestForm SpecifyForm(const std::string &uri);
-	void					   SetFormData(ITargetForm *uri);
+	void					   SetFormData(const ITargetForm *uri);
 
 	RequestForm GetRequestForm() const;
 };
