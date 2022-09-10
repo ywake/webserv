@@ -21,10 +21,11 @@ class RequestLine
 	RequestLine(const std::string &request_line);
 	RequestLine(Methods method, RequestTarget request_target, std::string http_version);
 
+	bool operator==(const RequestLine &rhs) const;
+
+  private:
 	void ParseRequestTarget(const ThinString &str);
 	void ParseRequestTargetForRegularMeshods(const ThinString &str);
-
-	bool operator==(const RequestLine &rhs) const;
 };
 
 #endif
