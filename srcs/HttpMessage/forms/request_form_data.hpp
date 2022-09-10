@@ -32,7 +32,8 @@ class RequestFormData
 		const char *query	 = ""
 	);
 
-	bool operator==(const RequestFormData &rhs) const;
+	RequestFormData &operator=(const RequestFormData &other);
+	bool			 operator==(const RequestFormData &rhs) const;
 
 	static RequestFormData ConstructFromOrigin(ThinString origin_form);
 };

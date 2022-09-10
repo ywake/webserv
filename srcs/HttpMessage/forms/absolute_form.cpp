@@ -7,7 +7,8 @@
 // recipient that processes such a URI reference MUST reject it as invalid.
 AbsoluteForm::AbsoluteForm(const ThinString request_target) : uri_(request_target)
 {
-	if (GetScheme() != "http" || GetHost().empty()) {
+	bool is_pathrootless = !GetPath().empty() && GetPath().at(0) != '/';
+	if (is_pathrootless || GetScheme() != "http" || GetHost().empty()) {
 		throw Error("400");
 	}
 }

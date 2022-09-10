@@ -1,16 +1,13 @@
-#ifndef ABSOLUTE_FORM_HPP
-#define ABSOLUTE_FORM_HPP
+#ifndef ASTERISK_FORM_HPP
+#define ASTERISK_FORM_HPP
 
-#include "absolute_uri.hpp"
+#include "i_target_form.hpp"
 #include "thin_string.hpp"
 
-class AbsoluteForm : public ITargetForm
+class AsteriskForm : public ITargetForm
 {
-  private:
-	AbsoluteUri uri_;
-
   public:
-	AbsoluteForm(const ThinString request_target);
+	AsteriskForm(const ThinString &str);
 
 	const ThinString &GetScheme() const;
 	const ThinString &GetUserinfo() const;
