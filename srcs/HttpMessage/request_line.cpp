@@ -20,9 +20,9 @@ RequestTarget RequestLine::ParseRequestTarget(const ThinString &str)
 		throw Error("400");
 	} else if (method_ == OPTIONS) {
 		return RequestTarget(AsteriskForm(str));
-	} else if (method_ == CONNECT)
+	} else if (method_ == CONNECT) {
 		return RequestTarget(AuthorityForm(str));
-	else if (str.at(0) == '/') {
+	} else if (str.at(0) == '/') {
 		return RequestTarget(OriginForm(str));
 	} else {
 		return RequestTarget(AbsoluteForm(str));
