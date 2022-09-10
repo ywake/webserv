@@ -47,8 +47,13 @@ bool RequestTarget::operator!=(const RequestTarget &rhs) const
 	return !(*this == rhs);
 }
 
+const RequestFormData &RequestTarget::GetRequestFormData() const
+{
+	return form_data_;
+}
+
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target)
 {
-	os << "\n" << request_target_.form_data_;
+	os << "\n" << request_target.GetRequestFormData();
 	return os;
 }

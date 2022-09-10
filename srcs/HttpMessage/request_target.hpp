@@ -22,6 +22,8 @@ class RequestTarget
 	RequestTarget &operator=(const RequestTarget &other);
 	bool		   operator==(const RequestTarget &rhs) const;
 	bool		   operator!=(const RequestTarget &rhs) const;
+
+	const RequestFormData &GetRequestFormData() const;
 };
 
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target);
