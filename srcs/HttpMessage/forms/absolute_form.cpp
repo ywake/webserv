@@ -40,5 +40,5 @@ const ThinString &AbsoluteForm::GetPath() const
 
 const ThinString &AbsoluteForm::GetQuery() const
 {
-	return uri_.GetScheme();
+	return uri_.GetQuery();
 }
