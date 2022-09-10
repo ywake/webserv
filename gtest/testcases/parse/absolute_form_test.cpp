@@ -80,4 +80,7 @@ TEST(uri_parse, invalid_absolute_form)
 
 	// scheme is not http or https
 	EXPECT_THROW(AbsoluteForm("ftp://example.com"), Error);
+
+	// hierpart path-rootless
+	EXPECT_THROW(AbsoluteForm("http:path/index.html"), Error);
 }
