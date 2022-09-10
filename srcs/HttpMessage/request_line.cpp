@@ -24,12 +24,12 @@ void RequestLine::ParseRequestTarget(const ThinString &str)
 		request_target_ = RequestTarget(AuthorityForm(str));
 		break;
 	default:
-		ParseRequestTargetForRegularMeshods(str);
+		ParseRequestTargetForRegularMethods(str);
 		break;
 	}
 }
 // TODO 関数名が微妙
-void RequestLine::ParseRequestTargetForRegularMeshods(const ThinString &str)
+void RequestLine::ParseRequestTargetForRegularMethods(const ThinString &str)
 {
 	// TODO 空文字列のハンドリングをする責任が誰にあるのか微妙
 	// そもそもここに空文字列が来ることはないかもだけど。

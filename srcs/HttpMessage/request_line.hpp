@@ -25,7 +25,7 @@ class RequestLine
 
   private:
 	void ParseRequestTarget(const ThinString &str);
-	void ParseRequestTargetForRegularMeshods(const ThinString &str);
+	void ParseRequestTargetForRegularMethods(const ThinString &str);
 };
 
 #endif
