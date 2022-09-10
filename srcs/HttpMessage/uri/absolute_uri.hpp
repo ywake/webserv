@@ -1,5 +1,5 @@
-#ifndef ABOSLUTE_URI_HPP
-#define ABOSLUTE_URI_HPP
+#ifndef ABSOLUTE_URI_HPP
+#define ABSOLUTE_URI_HPP
 
 #include <string>
 
