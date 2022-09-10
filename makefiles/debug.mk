@@ -15,7 +15,7 @@ $(SAN_OBJDIR)%.o: $(SRCDIR)%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
 	@printf "$(END)"
 
-sani: CXXFLAGS += -fsanitize=address
+sani: CXXFLAGS += -fsanitize=address -g3
 sani: $(SAN_OBJDIRS) $(SAN_OBJS)
 	$(CXX) $(CXXFLAGS) $(SAN_OBJS) -o $(NAME) $(LIBS)
 
