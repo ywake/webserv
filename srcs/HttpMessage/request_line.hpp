@@ -24,8 +24,7 @@ class RequestLine
 	bool operator==(const RequestLine &rhs) const;
 
   private:
-	void ParseRequestTarget(const ThinString &str);
-	void ParseRequestTargetForRegularMethods(const ThinString &str);
+	RequestTarget ParseRequestTarget(const ThinString &str);
 };
 
 #endif

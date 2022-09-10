@@ -14,33 +14,18 @@ RequestLine::RequestLine(const std::string &request_line)
 	(void)request_line;
 }
 
-void RequestLine::ParseRequestTarget(const ThinString &str)
+RequestTarget RequestLine::ParseRequestTarget(const ThinString &str)
 {
-	switch (method_) {
-	case OPTIONS:
-		request_target_ = RequestTarget(AsteriskForm(str));
-		break;
-	case CONNECT:
-		request_target_ = RequestTarget(AuthorityForm(str));
-		break;
-	default:
-		ParseRequestTargetForRegularMethods(str);
-		break;
-	}
-}
-
-// TODO 関数名が微妙
-void RequestLine::ParseRequestTargetForRegularMethods(const ThinString &str)
-{
-	// TODO 空文字列のハンドリングをする責任が誰にあるのか微妙
-	// そもそもここに空文字列が来ることはないかもだけど。
-	// elseでabsoluteFormに入れば自動的に弾かれるけど、そもそも空文字列でabsoluteformに入るべきなのかが分からない
 	if (str.empty()) {
 		throw Error("400");
-	} else if (str.at(0) == '/') {
-		request_target_ = RequestTarget(OriginForm(str));
+	} else if (method_ == OPTIONS) {
+		return RequestTarget(AsteriskForm(str));
+	} else if (method_ == CONNECT)
+		return RequestTarget(AuthorityForm(str));
+	else if (str.at(0) == '/') {
+		return RequestTarget(OriginForm(str));
 	} else {
-		request_target_ = RequestTarget(AbsoluteForm(str));
+		return RequestTarget(AbsoluteForm(str));
 	}
 }
 
