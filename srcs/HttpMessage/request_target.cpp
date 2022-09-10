@@ -49,6 +49,16 @@ RequestTarget::RequestTarget(RequestForm form_type, RequestFormData request_targ
 	: form_type_(form_type), form_data_(request_target)
 {}
 
+RequestTarget &RequestTarget::operator=(const RequestTarget &other)
+{
+	if (this == &other) {
+		return *this;
+	}
+	form_type_ = other.form_type_;
+	form_data_ = other.form_data_;
+	return *this;
+}
+
 bool RequestTarget::operator==(const RequestTarget &rhs) const
 {
 	return form_type_ == rhs.form_type_ && form_data_ == rhs.form_data_;

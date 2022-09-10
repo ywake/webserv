@@ -28,6 +28,7 @@ class RequestTarget
 	RequestTarget(std::string uri);
 	RequestTarget(RequestForm form_type, RequestFormData request_target);
 
+	RequestTarget			  &operator=(const RequestTarget &other);
 	bool					   operator==(const RequestTarget &rhs) const;
 	bool					   operator!=(const RequestTarget &rhs) const;
 	RequestTarget::RequestForm SpecifyForm(const std::string &uri);
