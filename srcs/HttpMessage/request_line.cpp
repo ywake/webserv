@@ -18,10 +18,10 @@ RequestTarget RequestLine::ParseRequestTarget(const ThinString &str)
 {
 	if (str.empty()) {
 		throw Error("400");
-	} else if (method_ == OPTIONS) {
-		return RequestTarget(AsteriskForm(str));
 	} else if (method_ == CONNECT) {
 		return RequestTarget(AuthorityForm(str));
+	} else if (method_ == OPTIONS && str == "*") {
+		return RequestTarget(AsteriskForm(str));
 	} else if (str.at(0) == '/') {
 		return RequestTarget(OriginForm(str));
 	} else {
