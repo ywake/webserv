@@ -8,10 +8,13 @@
 AbsoluteForm::AbsoluteForm(const ThinString request_target) : uri_(request_target)
 {
 	bool is_pathrootless = !GetPath().empty() && GetPath().at(0) != '/';
-	if (is_pathrootless || GetScheme() != "http" || GetHost().empty()) {
+	bool is_http_family	 = GetScheme() == "http" || GetScheme() == "https";
+	if (is_pathrootless || !is_http_family || GetHost().empty()) {
 		throw Error("400");
 	}
 }
+
+AbsoluteForm::AbsoluteForm(const AbsoluteUri uri) : uri_(uri) {}
 
 const ThinString &AbsoluteForm::GetScheme() const
 {
@@ -41,4 +44,28 @@ const ThinString &AbsoluteForm::GetPath() const
 const ThinString &AbsoluteForm::GetQuery() const
 {
 	return uri_.GetQuery();
+}
+
+bool AbsoluteForm::operator==(const AbsoluteForm &rhs) const
+{
+	if (this == &rhs) {
+		return true;
+	}
+	return uri_ == rhs.GetUri();
+}
+
+bool AbsoluteForm::operator!=(const AbsoluteForm &rhs) const
+{
+	return !(rhs == *this);
+}
+
+const AbsoluteUri &AbsoluteForm::GetUri() const
+{
+	return uri_;
+}
+
+std::ostream &operator<<(std::ostream &os, const AbsoluteForm &form)
+{
+	os << form.GetUri();
+	return os;
 }

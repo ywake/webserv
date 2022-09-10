@@ -64,14 +64,14 @@ TEST(uri_abnf, hier_part_path_absolute)
 }
 
 // path-rootless = segment-nz *("/" segment )
-// ApacheやNginxがエラーで処理するため、エラーとする
-// カレントディレクトリが未定義になるので、エラーとする
 TEST(uri_abnf, hier_part_path_rootless)
 {
-	EXPECT_THROW(HierPart("example.com"), Error);
-	EXPECT_THROW(HierPart("example.com/"), Error);
-	EXPECT_THROW(HierPart("example.com/index.html"), Error);
-	EXPECT_THROW(HierPart("example.com//index.html"), Error);
+	EXPECT_EQ(HierPart("example.com"), HierPart(Authority(), "example.com"));
+	EXPECT_EQ(HierPart("example.com/"), HierPart(Authority(), "example.com/"));
+	EXPECT_EQ(HierPart("example.com/index.html"), HierPart(Authority(), "example.com/index.html"));
+	EXPECT_EQ(
+		HierPart("example.com//index.html"), HierPart(Authority(), "example.com//index.html")
+	);
 }
 
 // path-empty = 0<pchar>

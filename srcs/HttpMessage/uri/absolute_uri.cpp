@@ -13,6 +13,12 @@ AbsoluteUri::AbsoluteUri(const ThinString &str)
 	TrySetQuery(hier_query.second);
 }
 
+AbsoluteUri::AbsoluteUri(
+	const ThinString &scheme, const HierPart &hier_part, const ThinString &query
+)
+	: scheme_(scheme), hier_part_(hier_part), query_(query)
+{}
+
 void AbsoluteUri::TrySetScheme(const ThinString &scheme)
 {
 	if (!ABNF::IsScheme(scheme)) {
@@ -42,4 +48,26 @@ const HierPart &AbsoluteUri::GetHierPart() const
 const ThinString &AbsoluteUri::GetQuery() const
 {
 	return query_;
+}
+
+bool AbsoluteUri::operator==(const AbsoluteUri &rhs) const
+{
+	if (this == &rhs) {
+		return true;
+	}
+	return scheme_ == rhs.GetScheme() && hier_part_ == rhs.GetHierPart() &&
+		   query_ == rhs.GetQuery();
+}
+
+bool AbsoluteUri::operator!=(const AbsoluteUri &rhs) const
+{
+	return !(rhs == *this);
+}
+
+std::ostream &operator<<(std::ostream &os, const AbsoluteUri &uri)
+{
+	os << "scheme: " << uri.GetScheme() << std::endl;
+	os << "hier_part: " << uri.GetHierPart() << std::endl;
+	os << "query: " << uri.GetQuery() << std::endl;
+	return os;
 }
