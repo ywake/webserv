@@ -16,6 +16,7 @@ class AbsoluteUri
 
   public:
 	AbsoluteUri(const ThinString &str);
+	AbsoluteUri(const ThinString &scheme, const HierPart &hier_part, const ThinString &query);
 
   private:
 	void TrySetScheme(const ThinString &scheme);
@@ -25,6 +26,11 @@ class AbsoluteUri
 	const ThinString &GetScheme() const;
 	const HierPart   &GetHierPart() const;
 	const ThinString &GetQuery() const;
+
+	bool operator==(const AbsoluteUri &rhs) const;
+	bool operator!=(const AbsoluteUri &rhs) const;
 };
+
+std::ostream &operator<<(std::ostream &os, const AbsoluteUri &uri);
 
 #endif

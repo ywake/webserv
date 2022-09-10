@@ -11,6 +11,7 @@ class AbsoluteForm : public ITargetForm
 
   public:
 	AbsoluteForm(const ThinString request_target);
+	AbsoluteForm(const AbsoluteUri uri);
 
 	const ThinString &GetScheme() const;
 	const ThinString &GetUserinfo() const;
@@ -18,6 +19,13 @@ class AbsoluteForm : public ITargetForm
 	const ThinString &GetPort() const;
 	const ThinString &GetPath() const;
 	const ThinString &GetQuery() const;
+
+	bool operator==(const AbsoluteForm &rhs) const;
+	bool operator!=(const AbsoluteForm &rhs) const;
+
+	const AbsoluteUri &GetUri() const;
 };
+
+std::ostream &operator<<(std::ostream &os, const AbsoluteForm &form);
 
 #endif

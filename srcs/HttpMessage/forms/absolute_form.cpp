@@ -13,6 +13,8 @@ AbsoluteForm::AbsoluteForm(const ThinString request_target) : uri_(request_targe
 	}
 }
 
+AbsoluteForm::AbsoluteForm(const AbsoluteUri uri) : uri_(uri) {}
+
 const ThinString &AbsoluteForm::GetScheme() const
 {
 	return uri_.GetScheme();
@@ -41,4 +43,28 @@ const ThinString &AbsoluteForm::GetPath() const
 const ThinString &AbsoluteForm::GetQuery() const
 {
 	return uri_.GetQuery();
+}
+
+bool AbsoluteForm::operator==(const AbsoluteForm &rhs) const
+{
+	if (this == &rhs) {
+		return true;
+	}
+	return uri_ == rhs.GetUri();
+}
+
+bool AbsoluteForm::operator!=(const AbsoluteForm &rhs) const
+{
+	return !(rhs == *this);
+}
+
+const AbsoluteUri &AbsoluteForm::GetUri() const
+{
+	return uri_;
+}
+
+std::ostream &operator<<(std::ostream &os, const AbsoluteForm &form)
+{
+	os << form.GetUri();
+	return os;
 }
