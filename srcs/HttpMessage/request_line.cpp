@@ -31,7 +31,9 @@ void RequestLine::ParseRequestTarget(const ThinString &str)
 
 void RequestLine::ParseRequestTargetForRegularMeshods(const ThinString &str)
 {
-	// TODO 空文字列の処理
+	// TODO 空文字列のハンドリングをする責任が誰にあるのか微妙
+	// そもそもここに空文字列が来ることはないかもだけど。
+	// elseでabsoluteFormに入れば自動的に弾かれるけど、そもそも空文字列でabsoluteformに入るべきなのかが分からない
 	if (str.empty()) {
 		throw Error("400");
 	} else if (str.at(0) == '/') {
