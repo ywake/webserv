@@ -25,10 +25,9 @@ RequestLine::RequestLine(const ThinString &request_line)
 		throw Error("400");
 	}
 
-	std::vector<ThinString> array			   = Split(request_line, " ");
-	bool					is_invalid_size	   = array.size() != 3;
-	bool					is_invalid_version = !IsHttpVersion(array[2]);
-	if (is_invalid_size || is_invalid_version) {
+	std::vector<ThinString> array			= Split(request_line, " ");
+	bool					is_invalid_size = array.size() != 3;
+	if (is_invalid_size || !IsHttpVersion(array[2])) {
 		throw Error("400");
 	}
 	method_			= array[0];

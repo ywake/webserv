@@ -72,23 +72,23 @@ TEST(request_line, ok_case)
 TEST(request_line, error_case)
 {
 	EXPECT_THROW(RequestLine(""), Error);
-	EXPECT_THROW(RequestLine(" "), Error); // ng
+	EXPECT_THROW(RequestLine(" "), Error);
 	EXPECT_THROW(RequestLine("  "), Error);
 	EXPECT_THROW(RequestLine("   "), Error);
 	EXPECT_THROW(RequestLine("    "), Error);
 	EXPECT_THROW(RequestLine("GET"), Error);
-	EXPECT_THROW(RequestLine("GET "), Error); // ng
+	EXPECT_THROW(RequestLine("GET "), Error);
 	EXPECT_THROW(RequestLine("GET  "), Error);
 	EXPECT_THROW(RequestLine("GET   "), Error);
-	EXPECT_THROW(RequestLine(" GET"), Error); // ng
+	EXPECT_THROW(RequestLine(" GET"), Error);
 	EXPECT_THROW(RequestLine(" GET "), Error);
 	EXPECT_THROW(RequestLine(" GET  "), Error);
 	EXPECT_THROW(RequestLine(" GET   "), Error);
-	EXPECT_THROW(RequestLine("GET /"), Error); // ng
+	EXPECT_THROW(RequestLine("GET /"), Error);
 	EXPECT_THROW(RequestLine("GET  /"), Error);
 	EXPECT_THROW(RequestLine(" GET /"), Error);
 	EXPECT_THROW(RequestLine("GET / "), Error);
-	EXPECT_THROW(RequestLine("GET HTTP/1.1"), Error); // ng
+	EXPECT_THROW(RequestLine("GET HTTP/1.1"), Error);
 	EXPECT_THROW(RequestLine("GET  HTTP/1.1 "), Error);
 	EXPECT_THROW(RequestLine("GET  HTTP/1.1"), Error);
 	EXPECT_THROW(RequestLine("GET   HTTP/1.1"), Error);
