@@ -1,5 +1,6 @@
 #include "request_target.hpp"
 #include "absolute_form.hpp"
+#include "asterisk_form.hpp"
 #include "authority_form.hpp"
 #include "error.hpp"
 #include "origin_form.hpp"
@@ -43,6 +44,30 @@ RequestTarget::RequestTarget(std::string uri) : form_data_()
 	default:
 		break;
 	}
+}
+
+RequestTarget::RequestTarget(const OriginForm &form)
+{
+	form_type_ = ORIGIN;
+	SetFormData(&form);
+}
+
+RequestTarget::RequestTarget(const AbsoluteForm &form)
+{
+	form_type_ = ABSOLUTE;
+	SetFormData(&form);
+}
+
+RequestTarget::RequestTarget(const AuthorityForm &form)
+{
+	form_type_ = AUTHORITY;
+	SetFormData(&form);
+}
+
+RequestTarget::RequestTarget(const AsteriskForm &form)
+{
+	form_type_ = ASTERISK;
+	SetFormData(&form);
 }
 
 RequestTarget::RequestTarget(RequestForm form_type, RequestFormData request_target)

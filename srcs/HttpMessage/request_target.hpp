@@ -1,7 +1,11 @@
 #ifndef REQUEST_TARGET_HPP
 #define REQUEST_TARGET_HPP
 
+#include "absolute_form.hpp"
+#include "asterisk_form.hpp"
+#include "authority_form.hpp"
 #include "i_target_form.hpp"
+#include "origin_form.hpp"
 #include "request_form_data.hpp"
 
 class RequestTarget
@@ -25,6 +29,10 @@ class RequestTarget
 
   public:
 	RequestTarget();
+	RequestTarget(const OriginForm &form);
+	RequestTarget(const AbsoluteForm &form);
+	RequestTarget(const AuthorityForm &form);
+	RequestTarget(const AsteriskForm &form);
 	RequestTarget(std::string uri);
 	RequestTarget(RequestForm form_type, RequestFormData request_target);
 
