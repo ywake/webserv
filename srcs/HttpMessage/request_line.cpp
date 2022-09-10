@@ -18,10 +18,10 @@ void RequestLine::ParseRequestTarget(const ThinString &str)
 {
 	switch (method_) {
 	case OPTIONS:
-		request_target_ = RequestTarget(AuthorityForm(str));
+		request_target_ = RequestTarget(AsteriskForm(str));
 		break;
 	case CONNECT:
-		request_target_ = RequestTarget(AsteriskForm(str));
+		request_target_ = RequestTarget(AuthorityForm(str));
 		break;
 	default:
 		ParseRequestTargetForRegularMeshods(str);
