@@ -3,7 +3,7 @@
 #include "parse_path.hpp"
 
 static const char  *k2slash		= "//";
-static const size_t k2slashSize = sizeof(k2slash) - 1;
+static const size_t k2slashSize = sizeof("//") - 1;
 
 HierPart::HierPart() : authority_(), path_() {}
 
