@@ -2,6 +2,7 @@
 #include "http_message_headers.hpp"
 
 #include "gtest.h"
+#include "request_line.hpp"
 #include <algorithm>
 #include <cctype>
 
@@ -33,3 +34,38 @@ TEST(start_line, whitespace)
 	ASSERT_EQ(error, Error("400"));
 }
 */
+
+TEST(request_line, error_case)
+{
+	EXPECT_THROW(RequestLine(""), Error);
+	EXPECT_THROW(RequestLine(" "), Error);
+	EXPECT_THROW(RequestLine("GET"), Error);
+	EXPECT_THROW(RequestLine("GET "), Error);
+	EXPECT_THROW(RequestLine("GET  "), Error);
+	EXPECT_THROW(RequestLine("GET   "), Error);
+	EXPECT_THROW(RequestLine(" GET"), Error);
+	EXPECT_THROW(RequestLine(" GET "), Error);
+	EXPECT_THROW(RequestLine(" GET  "), Error);
+	EXPECT_THROW(RequestLine(" GET   "), Error);
+	EXPECT_THROW(RequestLine("GET /"), Error);
+	EXPECT_THROW(RequestLine("GET  /"), Error);
+	EXPECT_THROW(RequestLine(" GET /"), Error);
+	EXPECT_THROW(RequestLine("GET / "), Error);
+	EXPECT_THROW(RequestLine("GET HTTP/1.1"), Error);
+	EXPECT_THROW(RequestLine("GET  HTTP/1.1 "), Error);
+	EXPECT_THROW(RequestLine("GET  HTTP/1.1"), Error);
+	EXPECT_THROW(RequestLine("GET   HTTP/1.1"), Error);
+	EXPECT_THROW(RequestLine("GET  HTTP/1.1 "), Error);
+	EXPECT_THROW(RequestLine(" GET HTTP/1.1"), Error);
+	EXPECT_THROW(RequestLine(" GET HTTP/1.1 "), Error);
+	EXPECT_THROW(RequestLine(" GET  HTTP/1.1 "), Error);
+	EXPECT_THROW(RequestLine("GET / HTTP/1.1 "), Error);
+	EXPECT_THROW(RequestLine("GET  / HTTP/1.1"), Error);
+	EXPECT_THROW(RequestLine("GET /  HTTP/1.1"), Error);
+	EXPECT_THROW(RequestLine("GET / HTTP/1.1 "), Error);
+	EXPECT_THROW(RequestLine(" GET / HTTP/1.1"), Error);
+	EXPECT_THROW(RequestLine(" GET / HTTP/1.1 "), Error);
+	EXPECT_THROW(RequestLine(" GET  / HTTP/1.1 "), Error);
+	EXPECT_THROW(RequestLine(" GET  /  HTTP/1.1 "), Error);
+	EXPECT_THROW(RequestLine(" GET /  HTTP/1.1 "), Error);
+}
