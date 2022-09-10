@@ -3,6 +3,7 @@
 #include "absolute_form.hpp"
 #include "asterisk_form.hpp"
 #include "authority_form.hpp"
+#include "error.hpp"
 #include "origin_form.hpp"
 
 RequestLine::RequestLine() : method_(), request_target_(), http_version_() {}
@@ -23,7 +24,20 @@ void RequestLine::ParseRequestTarget(const ThinString &str)
 		request_target_ = RequestTarget(AsteriskForm(str));
 		break;
 	default:
+		ParseRequestTargetForRegularMeshods(str);
 		break;
+	}
+}
+
+void RequestLine::ParseRequestTargetForRegularMeshods(const ThinString &str)
+{
+	// TODO 空文字列の処理
+	if (str.empty()) {
+		throw Error("400");
+	} else if (str.at(0) == '/') {
+		request_target_ = RequestTarget(OriginForm(str));
+	} else {
+		request_target_ = RequestTarget(AbsoluteForm(str));
 	}
 }
 
