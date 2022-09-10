@@ -28,7 +28,7 @@ void RequestLine::ParseRequestTarget(const ThinString &str)
 		break;
 	}
 }
-
+// TODO 関数名が微妙
 void RequestLine::ParseRequestTargetForRegularMeshods(const ThinString &str)
 {
 	// TODO 空文字列のハンドリングをする責任が誰にあるのか微妙
