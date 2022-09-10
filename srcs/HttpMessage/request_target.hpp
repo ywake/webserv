@@ -16,7 +16,6 @@ class RequestTarget
   public:
 	RequestTarget();
 	RequestTarget(const ITargetForm &form);
-	RequestTarget(std::string uri);
 	RequestTarget(RequestFormData request_target);
 
 	RequestTarget &operator=(const RequestTarget &other);

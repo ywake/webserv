@@ -1,94 +1,78 @@
-#include "error.hpp"
 #include "gtest.h"
+
+#include "error.hpp"
 #include "request_form_data.hpp"
 #include "request_target.hpp"
 #include "result.hpp"
 
-static Result<RequestTarget> test_actualy(std::string input)
-{
-	RequestTarget act;
-	Error		  err;
-	try {
-		act = RequestTarget(input);
-	} catch (const Error &e) {
-		err = e;
-	}
-	return Result<RequestTarget>(act, err);
-}
+// RequestLineで空文字列は別分岐になるが、ここでもテストするか？
+// TEST(uri_parse, empty)
+// {
+// 	ASSERT_THROW(RequestTarget(AbsoluteForm(""), Error("400"));
+// }
 
-TEST(uri_parse, empty)
-{
-	Result<RequestTarget> act = test_actualy("");
-	ASSERT_EQ(act.err, Error("400"));
-}
-
-void test_specify_form(const std::string &request_line, RequestTarget::RequestForm form)
-{
-	RequestTarget req;
-	ASSERT_EQ(req.SpecifyForm(request_line), form);
-}
-
-TEST(uri_parse, specify_form)
-{
-	test_specify_form("/where?q=now", RequestTarget::ORIGIN);
-	test_specify_form("http://www.example.org/pub/WWW/TheProject.html", RequestTarget::ABSOLUTE);
-	test_specify_form("www.example.com:80", RequestTarget::AUTHORITY);
-	test_specify_form("*", RequestTarget::ASTERISK);
-}
-
-void test_form(
-	RequestTarget::RequestForm form,
-	const std::string		  &input,
-	const RequestFormData	  &uri,
-	const Error				&err = Error()
-)
-{
-	RequestTarget		  exp(form, uri);
-	Result<RequestTarget> act = test_actualy(input);
-	EXPECT_EQ(act.Val(), exp);
-	EXPECT_EQ(act.err, err);
-}
+// TEST(uri_parse, specify_form)
+// {
+// 	test_specify_form("/where?q=now");
+// 	test_specify_form("http://www.example.org/pub/WWW/TheProject.html", RequestTarget::ABSOLUTE);
+// 	test_specify_form("www.example.com:80", RequestTarget::AUTHORITY);
+// 	test_specify_form("*", RequestTarget::ASTERISK);
+// }
 
 TEST(uri_parse, parse_origin_form)
 {
-	test_form(RequestTarget::ORIGIN, "/", RequestFormData("", "", "", "", "/"));
-	test_form(RequestTarget::ORIGIN, "/?", RequestFormData("", "", "", "", "/", ""));
-	test_form(RequestTarget::ORIGIN, "/where", RequestFormData("", "", "", "", "/where"));
-	test_form(
-		RequestTarget::ORIGIN, "/where?q=now", RequestFormData("", "", "", "", "/where", "q=now")
+	EXPECT_EQ(RequestTarget(OriginForm("/")), RequestTarget(RequestFormData("", "", "", "", "/")));
+	EXPECT_EQ(
+		RequestTarget(OriginForm("/?")), RequestTarget(RequestFormData("", "", "", "", "/", ""))
 	);
-	test_form(
-		RequestTarget::ORIGIN,
-		"/where/is/this?q=now",
-		RequestFormData("", "", "", "", "/where/is/this", "q=now")
+	EXPECT_EQ(
+		RequestTarget(OriginForm("/where")),
+		RequestTarget(RequestFormData("", "", "", "", "/where"))
 	);
-	test_form(
-		RequestTarget::ORIGIN,
-		"/where/is/this?q=now???",
-		RequestFormData("", "", "", "", "/where/is/this", "q=now???")
+	EXPECT_EQ(
+		RequestTarget(OriginForm("/where?q=now")),
+		RequestTarget(RequestFormData("", "", "", "", "/where", "q=now"))
 	);
-	test_form(RequestTarget::ORIGIN, "//", RequestFormData("", "", "", "", "//"));
-	test_form(RequestTarget::ORIGIN, "/a//", RequestFormData("", "", "", "", "/a//"));
-	test_form(RequestTarget::ORIGIN, "///", RequestFormData("", "", "", "", "///"));
-	test_form(RequestTarget::ORIGIN, "/a///", RequestFormData("", "", "", "", "/a///"));
-	test_form(
-		RequestTarget::ORIGIN,
-		"/where/is/this///",
-		RequestFormData("", "", "", "", "/where/is/this///")
+	EXPECT_EQ(
+		RequestTarget(OriginForm("/where/is/this?q=now")),
+		RequestTarget(RequestFormData("", "", "", "", "/where/is/this", "q=now"))
+	);
+	EXPECT_EQ(
+		RequestTarget(OriginForm("/where/is/this?q=now???")),
+		RequestTarget(RequestFormData("", "", "", "", "/where/is/this", "q=now???"))
+	);
+	EXPECT_EQ(
+		RequestTarget(OriginForm("//")), RequestTarget(RequestFormData("", "", "", "", "//"))
+	);
+	EXPECT_EQ(
+		RequestTarget(OriginForm("/a//")), RequestTarget(RequestFormData("", "", "", "", "/a//"))
+	);
+	EXPECT_EQ(
+		RequestTarget(OriginForm("///")), RequestTarget(RequestFormData("", "", "", "", "///"))
+	);
+	EXPECT_EQ(
+		RequestTarget(OriginForm("/a///")), RequestTarget(RequestFormData("", "", "", "", "/a///"))
+	);
+	EXPECT_EQ(
+		RequestTarget(OriginForm("/where/is/this///")),
+		RequestTarget(RequestFormData("", "", "", "", "/where/is/this///"))
 	);
 
 	// Error Case
-	test_form(RequestTarget::UNDEFINED, "", RequestFormData(), Error("400"));
-	test_form(RequestTarget::UNDEFINED, "/where/is/this>", RequestFormData(), Error("400"));
-	test_form(RequestTarget::UNDEFINED, "/where?#", RequestFormData(), Error("400"));
-	test_form(RequestTarget::UNDEFINED, "/where???#", RequestFormData(), Error("400"));
+	EXPECT_THROW(RequestTarget(OriginForm("")), Error);
+	EXPECT_THROW(RequestTarget(OriginForm("/where/is/this>")), Error);
+	EXPECT_THROW(RequestTarget(OriginForm("/where?#")), Error);
+	EXPECT_THROW(RequestTarget(OriginForm("/where???#")), Error);
 }
 
 TEST(uri_parse, absolute_form)
 {
-	test_form(RequestTarget::ABSOLUTE, "a://a", RequestFormData("a", "", "a"));
+	EXPECT_EQ(
+		RequestTarget(AbsoluteForm("http://a")), RequestTarget(RequestFormData("http", "", "a"))
+	);
 
-	test_form(RequestTarget::UNDEFINED, "a://", RequestFormData(), Error("400"));
+	EXPECT_THROW(RequestTarget(AbsoluteForm("a://a")), Error);	 // scheme
+	EXPECT_THROW(RequestTarget(AbsoluteForm("http://")), Error); // no-host
 }
 
 // a://
