@@ -9,7 +9,9 @@ class RequestLine
 	enum Methods {
 		GET,
 		POST,
-		DELETE
+		DELETE,
+		CONNECT,
+		OPTIONS
 	};
 	Methods		  method_;
 	RequestTarget request_target_;
@@ -18,6 +20,8 @@ class RequestLine
 	RequestLine();
 	RequestLine(const std::string &request_line);
 	RequestLine(Methods method, RequestTarget request_target, std::string http_version);
+
+	void ParseRequestTarget(const ThinString &str);
 
 	bool operator==(const RequestLine &rhs) const;
 };
