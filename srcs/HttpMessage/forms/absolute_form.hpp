@@ -20,4 +20,4 @@ class AbsoluteForm : public ITargetForm
 	const ThinString &GetQuery() const;
 };
 
-#endif // ABSOLUTE_FORM_HPP
+#endif
