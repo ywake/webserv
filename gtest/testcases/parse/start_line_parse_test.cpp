@@ -35,6 +35,48 @@ TEST(start_line, whitespace)
 }
 */
 
+TEST(request_line, ok_case)
+{
+	EXPECT_EQ(
+		RequestLine("GET / HTTP/1.1"), RequestLine(RequestLine::GET, OriginForm("/"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("POST / HTTP/1.1"), RequestLine(RequestLine::POST, OriginForm("/"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("DELETE / HTTP/1.1"),
+		RequestLine(RequestLine::DELETE, OriginForm("/"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("OPTIONS / HTTP/1.1"),
+		RequestLine(RequestLine::OPTIONS, OriginForm("/"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("GET http://a/b HTTP/1.1"),
+		RequestLine(RequestLine::GET, AbsoluteForm("http://a/b"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("POST http://a/b HTTP/1.1"),
+		RequestLine(RequestLine::POST, AbsoluteForm("http://a/b"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("DELETE http://a/b HTTP/1.1"),
+		RequestLine(RequestLine::DELETE, AbsoluteForm("http://a/b"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("OPTIONS http://a/b HTTP/1.1"),
+		RequestLine(RequestLine::OPTIONS, AbsoluteForm("http://a/b"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("CONNECT a:1 HTTP/1.1"),
+		RequestLine(RequestLine::CONNECT, AuthorityForm("a:1"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("OPTIONS * HTTP/1.1"),
+		RequestLine(RequestLine::OPTIONS, AsteriskForm("*"), "HTTP/1.1")
+	);
+}
+
 TEST(request_line, error_case)
 {
 	EXPECT_THROW(RequestLine(""), Error);
