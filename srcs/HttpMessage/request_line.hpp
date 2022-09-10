@@ -1,30 +1,33 @@
 #ifndef REQUEST_LINE_HPP
 #define REQUEST_LINE_HPP
 #include "request_target.hpp"
-#include <string>
+#include "thin_string.hpp"
 
 class RequestLine
 {
+  private:
+	static const int kMaxRequestLineLength = 8192;
+	static const int kMaxMethodLength	   = 7;
+
   public:
-	enum Methods {
-		GET,
-		POST,
-		DELETE,
-		CONNECT,
-		OPTIONS
-	};
-	Methods		  method_;
+	ThinString	  method_;
 	RequestTarget request_target_;
-	std::string	  http_version_;
+	ThinString	  http_version_;
 
 	RequestLine();
-	RequestLine(const std::string &request_line);
-	RequestLine(Methods method, RequestTarget request_target, std::string http_version);
+	RequestLine(const ThinString &request_line);
+	RequestLine(
+		const ThinString	 &method,
+		const RequestTarget &request_target,
+		const ThinString	 &http_version
+	);
 
 	bool operator==(const RequestLine &rhs) const;
 
+	static bool IsHttpVersion(const ThinString &str);
+
   private:
-	RequestTarget ParseRequestTarget(const ThinString &str);
+	RequestTarget TryConstructRequestTarget(const ThinString &str);
 };
 
 #endif
