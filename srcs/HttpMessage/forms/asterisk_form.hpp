@@ -6,6 +6,9 @@
 
 class AsteriskForm : public ITargetForm
 {
+  private:
+	ThinString asterisk_;
+
   public:
 	AsteriskForm(const ThinString &str);
 

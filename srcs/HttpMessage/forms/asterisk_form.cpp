@@ -8,6 +8,7 @@ AsteriskForm::AsteriskForm(const ThinString &str)
 	if (str != "*") {
 		throw Error("400");
 	}
+	asterisk_ = str;
 }
 
 const ThinString &AsteriskForm::GetScheme() const
@@ -32,7 +33,7 @@ const ThinString &AsteriskForm::GetPort() const
 
 const ThinString &AsteriskForm::GetPath() const
 {
-	return kEmpty;
+	return asterisk_;
 }
 
 const ThinString &AsteriskForm::GetQuery() const
