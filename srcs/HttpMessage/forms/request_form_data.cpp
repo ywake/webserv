@@ -32,6 +32,20 @@ RequestFormData::RequestFormData(
 // 	return uri;
 // }
 
+RequestFormData &RequestFormData::operator=(const RequestFormData &other)
+{
+	if (this == &other) {
+		return *this;
+	}
+	scheme_	  = other.scheme_;
+	userinfo_ = other.userinfo_;
+	host_	  = other.host_;
+	port_	  = other.port_;
+	path_	  = other.path_;
+	query_	  = other.query_;
+	return *this;
+}
+
 bool RequestFormData::operator==(const RequestFormData &rhs) const
 {
 	if (this == &rhs) {
