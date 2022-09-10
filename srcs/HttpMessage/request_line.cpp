@@ -28,6 +28,7 @@ void RequestLine::ParseRequestTarget(const ThinString &str)
 		break;
 	}
 }
+
 // TODO 関数名が微妙
 void RequestLine::ParseRequestTargetForRegularMethods(const ThinString &str)
 {
