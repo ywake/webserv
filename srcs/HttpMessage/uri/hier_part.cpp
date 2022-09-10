@@ -9,14 +9,14 @@ HierPart::HierPart() : authority_(), path_() {}
 
 // hier-part    = "//" authority path-abempty
 //              / path-absolute
-//              / path-rootless ; Not support
+//              / path-rootless
 //              / path-empty
 HierPart::HierPart(const ThinString &hier_part) : authority_()
 {
 	if (hier_part.substr(0, k2slashSize) == k2slash) {
 		ParseAuthorityPath(hier_part);
 	} else {
-		TrySetPath(hier_part);
+		ParsePath(hier_part);
 	}
 }
 
@@ -33,15 +33,19 @@ void HierPart::ParseAuthorityPath(const ThinString &hier_part)
 	ThinString::ThinStrPair authority_path =
 		after_2slash.DivideBy("/", ThinString::kKeepDelimRight);
 	authority_ = Authority(authority_path.first);
-	TrySetPath(authority_path.second);
-}
-
-void HierPart::TrySetPath(const ThinString &hier_part)
-{
 	if (!ABNF::IsPathAbempty(hier_part)) {
 		throw Error("400");
 	}
 	path_ = hier_part;
+}
+
+void HierPart::ParsePath(const ThinString &hier_part)
+{
+	if (ABNF::IsPathAbempty(hier_part) || ABNF::IsPathRootless(hier_part)) {
+		path_ = hier_part;
+	} else {
+		throw Error("400");
+	}
 }
 
 HierPart &HierPart::operator=(const HierPart &other)

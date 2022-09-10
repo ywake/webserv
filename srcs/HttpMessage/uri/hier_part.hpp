@@ -10,7 +10,7 @@ class HierPart
 	Authority  authority_;
 	ThinString path_;
 	void	   ParseAuthorityPath(const ThinString &hier_part);
-	void	   TrySetPath(const ThinString &hier_part);
+	void	   ParsePath(const ThinString &hier_part);
 
   public:
 	HierPart();
