@@ -81,6 +81,9 @@ TEST(request_line, error_case)
 {
 	EXPECT_THROW(RequestLine(""), Error);
 	EXPECT_THROW(RequestLine(" "), Error);
+	EXPECT_THROW(RequestLine("  "), Error);
+	EXPECT_THROW(RequestLine("   "), Error);
+	EXPECT_THROW(RequestLine("    "), Error);
 	EXPECT_THROW(RequestLine("GET"), Error);
 	EXPECT_THROW(RequestLine("GET "), Error);
 	EXPECT_THROW(RequestLine("GET  "), Error);
