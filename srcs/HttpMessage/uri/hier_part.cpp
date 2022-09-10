@@ -26,7 +26,7 @@ HierPart::HierPart(const Authority &authority, const ThinString &path)
 
 HierPart::HierPart(const HierPart &other) : authority_(other.authority_), path_(other.path_) {}
 
-void HierPart::ParseAuthorityPath(ThinString hier_part)
+void HierPart::ParseAuthorityPath(const ThinString &hier_part)
 {
 	size_t					authority_start_idx = k2slashSize;
 	ThinString				after_2slash		= hier_part.substr(authority_start_idx);
@@ -36,7 +36,7 @@ void HierPart::ParseAuthorityPath(ThinString hier_part)
 	TrySetPath(authority_path.second);
 }
 
-void HierPart::TrySetPath(ThinString hier_part)
+void HierPart::TrySetPath(const ThinString &hier_part)
 {
 	if (!ABNF::IsPathAbempty(hier_part)) {
 		throw Error("400");
