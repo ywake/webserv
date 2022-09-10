@@ -33,10 +33,10 @@ void HierPart::ParseAuthorityPath(const ThinString &hier_part)
 	ThinString::ThinStrPair authority_path =
 		after_2slash.DivideBy("/", ThinString::kKeepDelimRight);
 	authority_ = Authority(authority_path.first);
-	if (!ABNF::IsPathAbempty(hier_part)) {
+	if (!ABNF::IsPathAbempty(authority_path.second)) {
 		throw Error("400");
 	}
-	path_ = hier_part;
+	path_ = authority_path.second;
 }
 
 void HierPart::ParsePath(const ThinString &hier_part)
