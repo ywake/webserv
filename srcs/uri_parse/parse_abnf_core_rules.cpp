@@ -14,6 +14,16 @@ namespace ABNF
 		return std::isdigit(c) || ('A' <= c && c <= 'F') || ('a' <= c && c <= 'f');
 	}
 
+	bool IsHexDigitOnly(const ThinString &str)
+	{
+		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
+			if (!IsHexDigit(*itr)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	bool IsTchar(const char c)
 	{
 		return std::isdigit(c) || std::isalpha(c) || std::strchr(kTcharUniqSet, c);

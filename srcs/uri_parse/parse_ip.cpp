@@ -62,7 +62,7 @@ namespace ABNF
 	// h16           = 1*4HEXDIG
 	bool IsH16(const ThinString &str)
 	{
-		if (!IsHexDigitAll(str)) {
+		if (!IsHexDigitOnly(str)) {
 			return false;
 		}
 		return str.size() >= 1 && str.size() <= 4;
@@ -91,7 +91,7 @@ namespace ABNF
 		if (trimed_v.empty() || trimed_dot.empty()) {
 			return false;
 		}
-		return IsHexDigitAll(trimed_v) && IsRegularURICharAll(trimed_dot, kIpvFutureUniqSet);
+		return IsHexDigitOnly(trimed_v) && IsRegularUriCharOnly(trimed_dot, kIpvFutureUniqSet);
 	}
 
 	// IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
@@ -134,7 +134,7 @@ namespace ABNF
 	bool IsRegName(const ThinString &str)
 	{
 		StringAry tokens = TokenizePchar(str);
-		return IsRegularURITokenAll(tokens, "");
+		return IsRegularUriTokenOnly(tokens, "");
 	}
 
 } // namespace ABNF
