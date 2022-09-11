@@ -1,0 +1,172 @@
+#include "gtest.h"
+#include "parse_abnf_core_rules.hpp"
+
+TEST(uri_abnf, is_tchar_uniq)
+{
+	EXPECT_TRUE(ABNF::IsTchar('!'));
+	EXPECT_TRUE(ABNF::IsTchar('#'));
+	EXPECT_TRUE(ABNF::IsTchar('$'));
+	EXPECT_TRUE(ABNF::IsTchar('%'));
+	EXPECT_TRUE(ABNF::IsTchar('&'));
+	EXPECT_TRUE(ABNF::IsTchar('\''));
+	EXPECT_TRUE(ABNF::IsTchar('*'));
+	EXPECT_TRUE(ABNF::IsTchar('+'));
+	EXPECT_TRUE(ABNF::IsTchar('-'));
+	EXPECT_TRUE(ABNF::IsTchar('.'));
+	EXPECT_TRUE(ABNF::IsTchar('^'));
+	EXPECT_TRUE(ABNF::IsTchar('_'));
+	EXPECT_TRUE(ABNF::IsTchar('`'));
+	EXPECT_TRUE(ABNF::IsTchar('|'));
+	EXPECT_TRUE(ABNF::IsTchar('~'));
+}
+
+TEST(uri_abnf, is_tchar_digit)
+{
+	for (int i = 0; i < 10; i++) {
+		EXPECT_TRUE(ABNF::IsTchar('0' + i));
+	}
+}
+
+TEST(uri_abnf, is_tchar_alpha)
+{
+	for (int i = 0; i < 26; i++) {
+		EXPECT_TRUE(ABNF::IsTchar('a' + i));
+	}
+	for (int i = 0; i < 26; i++) {
+		EXPECT_TRUE(ABNF::IsTchar('A' + i));
+	}
+}
+
+TEST(uri_abnf, is_tchar_uniq_false)
+{
+	EXPECT_FALSE(ABNF::IsTchar('"'));
+	EXPECT_FALSE(ABNF::IsTchar('('));
+	EXPECT_FALSE(ABNF::IsTchar(')'));
+	EXPECT_FALSE(ABNF::IsTchar(','));
+	EXPECT_FALSE(ABNF::IsTchar('/'));
+	EXPECT_FALSE(ABNF::IsTchar(':'));
+	EXPECT_FALSE(ABNF::IsTchar(';'));
+	EXPECT_FALSE(ABNF::IsTchar('<'));
+	EXPECT_FALSE(ABNF::IsTchar('='));
+	EXPECT_FALSE(ABNF::IsTchar('>'));
+	EXPECT_FALSE(ABNF::IsTchar('?'));
+	EXPECT_FALSE(ABNF::IsTchar('@'));
+	EXPECT_FALSE(ABNF::IsTchar('['));
+	EXPECT_FALSE(ABNF::IsTchar('\\'));
+	EXPECT_FALSE(ABNF::IsTchar(']'));
+	EXPECT_FALSE(ABNF::IsTchar('{'));
+	EXPECT_FALSE(ABNF::IsTchar('}'));
+}
+
+TEST(uri_abnf, is_tchar_only)
+{
+	EXPECT_TRUE(ABNF::IsTcharOnly("!#$%&'*+-.^_`|~"));
+	EXPECT_TRUE(ABNF::IsTcharOnly("0123456789"));
+	EXPECT_TRUE(ABNF::IsTcharOnly("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"));
+	EXPECT_TRUE(ABNF::IsTcharOnly(
+		"!#$%&'*+-.^_`|~0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	));
+	EXPECT_TRUE(ABNF::IsTcharOnly(
+		"MIk.!uOjDGqH4d'$~m`|FYsJA&CPR^c%b2+59S7xwUK0fovVQ6a#*npZN-l_Bz13LrheTtWyXiEg8"
+	));
+	EXPECT_TRUE(ABNF::IsTcharOnly(
+		"3.75~0K*JGMZAieS94qc_UaB#p1oR!b'%dTLwOIjXn^m|&Fklh8Q-$+CxYf`t6EVszPvNDruWH2gy"
+	));
+}
+
+TEST(uri_abnf, is_tchar_only_false)
+{
+	EXPECT_FALSE(ABNF::IsTcharOnly(""));
+	EXPECT_FALSE(ABNF::IsTcharOnly("["));
+	EXPECT_FALSE(ABNF::IsTcharOnly("1]"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("[1]"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789\""));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789("));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789)"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789,"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789/"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789:"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789;"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789<"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789="));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789>"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789?"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789@"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789["));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789\\"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789]"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789{"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("0123456789}"));
+
+	EXPECT_FALSE(ABNF::IsTcharOnly("\"0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("(0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(")0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(",0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("/0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(":0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(";0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("<0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("=0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(">0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("?0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("@0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("[0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("\\0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("]0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("{0123456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("}0123456789"));
+
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234\"56789\""));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234(56789("));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234)56789)"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234,56789,"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234/56789/"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234:56789:"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234;56789;"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234<56789<"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234=56789="));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234>56789>"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234?56789?"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234@56789@"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234[56789["));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234\\56789\\"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234]56789]"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234{56789{"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("01234}56789}"));
+
+	EXPECT_FALSE(ABNF::IsTcharOnly("\"0123\"456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("(01234(56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(")01234)56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(",01234,56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("/01234/56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(":01234:56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(";01234;56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("<01234<56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("=01234=56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(">01234>56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("?01234?56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("@01234@56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("[01234[56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("\\0123\\456789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("]01234]56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("{01234{56789"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("}01234}56789"));
+
+	EXPECT_FALSE(ABNF::IsTcharOnly("\"0123\"456789\""));
+	EXPECT_FALSE(ABNF::IsTcharOnly("(01234(56789("));
+	EXPECT_FALSE(ABNF::IsTcharOnly(")01234)56789)"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(",01234,56789,"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("/01234/56789/"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(":01234:56789:"));
+	EXPECT_FALSE(ABNF::IsTcharOnly(";01234;56789;"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("<01234<56789<"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("=01234=56789="));
+	EXPECT_FALSE(ABNF::IsTcharOnly(">01234>56789>"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("?01234?56789?"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("@01234@56789@"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("[01234[56789["));
+	EXPECT_FALSE(ABNF::IsTcharOnly("\\0123\\456789\\"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("]01234]56789]"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("{01234{56789{"));
+	EXPECT_FALSE(ABNF::IsTcharOnly("}01234}56789}"));
+}
