@@ -5,6 +5,7 @@
 #include "authority_form.hpp"
 #include "error.hpp"
 #include "origin_form.hpp"
+#include "parse_abnf_core_rules.hpp"
 #include "webserv_utils.hpp"
 
 RequestLine::RequestLine() : method_(), request_target_(), http_version_() {}
@@ -33,7 +34,7 @@ RequestLine::RequestLine(const ThinString &request_line)
 	};
 	std::vector<ThinString> tokens			= Split(request_line, " ");
 	bool					is_invalid_size = tokens.size() != kValidNumOfTokens;
-	if (is_invalid_size || !IsHttpVersion(tokens[kVersionIdx])) {
+	if (is_invalid_size || !IsMethod(tokens[kMthodIdx]) || !IsHttpVersion(tokens[kVersionIdx])) {
 		throw Error("400");
 	}
 	method_			= tokens[kMthodIdx];
@@ -65,6 +66,11 @@ RequestLine::RequestLine(
 static bool IsOneDigit(const ThinString &str)
 {
 	return str.len() == 1 && std::isdigit(str.at(0));
+}
+
+bool RequestLine::IsMethod(const ThinString &str)
+{
+	return ABNF::IsTcharOnly(str);
 }
 
 // HTTP-version = HTTP-name "/" DIGIT "." DIGIT

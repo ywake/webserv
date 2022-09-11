@@ -16,6 +16,7 @@ class RequestLine
 
 	RequestLine();
 	RequestLine(const ThinString &request_line);
+
 	RequestLine(
 		const ThinString	 &method,
 		const RequestTarget &request_target,
@@ -25,6 +26,7 @@ class RequestLine
 	bool operator==(const RequestLine &rhs) const;
 
 	static bool IsHttpVersion(const ThinString &str);
+	static bool IsMethod(const ThinString &str);
 
   private:
 	RequestTarget TryConstructRequestTarget(const ThinString &str);
