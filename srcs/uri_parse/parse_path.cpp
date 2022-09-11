@@ -1,10 +1,10 @@
 #include "parse_path.hpp"
 
-#include "ThinString.hpp"
 #include "parse_define.hpp"
 #include "parse_path_relative.hpp"
 #include "parse_path_utils.hpp"
 #include "parse_uri_utils.hpp"
+#include "thin_string.hpp"
 
 namespace ABNF
 {
@@ -12,10 +12,7 @@ namespace ABNF
 
 	bool IsPathAbempty(const ThinString &str)
 	{
-		if (str.empty()) {
-			return true;
-		}
-		return IsPathAbsolute(str);
+		return IsPathEmpty(str) || IsPathAbsolute(str);
 	}
 
 	// absolute-path = "/" [ segment-nz *( "/" segment ) ] -> start with "//"

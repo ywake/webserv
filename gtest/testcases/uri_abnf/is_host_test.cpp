@@ -26,7 +26,7 @@ TEST(uri_abnf, is_host_regname)
 {
 	EXPECT_TRUE(ABNF::IsHost("localhost"));
 	EXPECT_TRUE(ABNF::IsHost("127.0.01"));
+	EXPECT_TRUE(ABNF::IsHost("")); // HTTP要件ではfalse
 
 	EXPECT_FALSE(ABNF::IsHost("aiu@eo"));
-	EXPECT_FALSE(ABNF::IsHost("")); // HTTP要件
 }

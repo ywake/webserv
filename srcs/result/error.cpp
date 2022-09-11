@@ -21,7 +21,7 @@ Error &Error::operator=(const Error &rhs)
 	if (this == &rhs) {
 		return *this;
 	}
-	this->is_err_ = rhs.is_err_;
+	this->is_err_  = rhs.is_err_;
 	this->err_msg_ = rhs.err_msg_;
 	return *this;
 }

@@ -9,22 +9,21 @@
 
 class Server
 {
-	typedef struct sockaddr Sockaddr;
+	typedef struct sockaddr			Sockaddr;
 	typedef struct sockaddr_storage SockaddrStorage;
-	typedef struct addrinfo AddrInfo;
+	typedef struct addrinfo			AddrInfo;
 
   private:
   public:
 	std::string port_;
-	int listen_fd_;
-	Server(std::string port = "80")
-		: port_(port)
+	int			listen_fd_;
+	Server(std::string port = "80") : port_(port)
 	{
 		log("server start", port);
 		AddrInfo *lst;
-		AddrInfo hints = {};
+		AddrInfo  hints = {};
 
-		hints.ai_flags = AI_PASSIVE | AI_ADDRCONFIG | AI_NUMERICSERV;
+		hints.ai_flags	  = AI_PASSIVE | AI_ADDRCONFIG | AI_NUMERICSERV;
 		hints.ai_socktype = SOCK_STREAM;
 		getaddrinfo(NULL, port_.c_str(), &hints, &lst);
 

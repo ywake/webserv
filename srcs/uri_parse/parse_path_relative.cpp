@@ -1,8 +1,8 @@
 #include "parse_path_relative.hpp"
 
-#include "ThinString.hpp"
 #include "parse_path_utils.hpp"
 #include "parse_uri_utils.hpp"
+#include "thin_string.hpp"
 
 namespace ABNF
 {
@@ -24,7 +24,7 @@ namespace ABNF
 	// pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
 	bool IsPchar(const ThinString &token)
 	{
-		return IsRegularURIToken(token, kPcharUniqSet);
+		return IsRegularUriToken(token, kPcharUniqSet);
 	}
 
 } // namespace ABNF

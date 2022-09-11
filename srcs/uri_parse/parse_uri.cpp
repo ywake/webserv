@@ -1,18 +1,18 @@
 #ifndef URI_HPP
 #define URI_HPP
 
-#include "ThinString.hpp"
 #include "parse_authority.hpp"
 #include "parse_define.hpp"
 #include "parse_path.hpp"
 #include "parse_path_relative.hpp"
 #include "parse_path_utils.hpp"
+#include "thin_string.hpp"
 #include <cstring>
 
 namespace ABNF
 {
 	static const char *kSchemeUniqSet = "+-.";
-	static const char *kQueryUniqSet = "/?";
+	static const char *kQueryUniqSet  = "/?";
 
 	// scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
 	bool IsScheme(const ThinString &str)
@@ -26,25 +26,6 @@ namespace ABNF
 			}
 		}
 		return true;
-	}
-
-	// hier-part    = "//" authority path-abempty
-	//              / path-absolute
-	//              / path-rootless ; Not support
-	//              / path-empty
-	bool IsHierPart(const ThinString &str)
-	{
-		if (IsPathEmpty(str)) {
-			return true;
-		} else if (str.find("//") == 0) {
-			ThinString after_2slash = str.substr(2);
-			ThinString::ThinStrPair authority_path =
-				after_2slash.DivideBy("/", ThinString::kKeepDelimRight);
-			return IsAuthority(authority_path.first) && IsPathAbempty(authority_path.second);
-		} else if (IsPathAbsolute(str)) {
-			return true;
-		}
-		return false;
 	}
 
 	// query         = *( pchar / "/" / "?" )

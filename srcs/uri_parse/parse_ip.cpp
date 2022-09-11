@@ -1,19 +1,19 @@
 #include "parse_ip.hpp"
 
-#include "ThinString.hpp"
 #include "parse_abnf_core_rules.hpp"
 #include "parse_define.hpp"
 #include "parse_ip_utils.hpp"
 #include "parse_path_utils.hpp"
 #include "parse_uri_utils.hpp"
 #include "result.hpp"
+#include "thin_string.hpp"
 #include "webserv_utils.hpp"
 
 namespace ABNF
 {
-	static const std::size_t kNumOfIpv6TokenMax = 15;
-	static const std::size_t kIpv6BytesMax = 16;
-	static const char *kIpvFutureUniqSet = ":";
+	static const size_t kNumOfIpv6TokenMax = 15;
+	static const size_t kIpv6BytesMax	   = 16;
+	static const char  *kIpvFutureUniqSet  = ":";
 
 	// IP-literal = "[" ( IPv6address / IPvFuture  ) "]"
 	bool IsIPLiteral(const ThinString &str)
@@ -62,7 +62,7 @@ namespace ABNF
 	// h16           = 1*4HEXDIG
 	bool IsH16(const ThinString &str)
 	{
-		if (!IsHexDigitAll(str)) {
+		if (!IsHexDigitOnly(str)) {
 			return false;
 		}
 		return str.size() >= 1 && str.size() <= 4;
@@ -86,18 +86,18 @@ namespace ABNF
 		if (strs.second.empty() || strs.second.at(0) != '.') {
 			return false;
 		}
-		ThinString trimed_v = strs.first.substr(1);
+		ThinString trimed_v	  = strs.first.substr(1);
 		ThinString trimed_dot = strs.second.substr(1);
 		if (trimed_v.empty() || trimed_dot.empty()) {
 			return false;
 		}
-		return IsHexDigitAll(trimed_v) && IsRegularURICharAll(trimed_dot, kIpvFutureUniqSet);
+		return IsHexDigitOnly(trimed_v) && IsRegularUriCharOnly(trimed_dot, kIpvFutureUniqSet);
 	}
 
 	// IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
 	bool IsIPv4address(const ThinString &str)
 	{
-		StringAry array = Split(str, ".");
+		StringAry				 array			 = Split(str, ".");
 		static const std::size_t kNumOfDecOctets = 4;
 		if (array.size() != kNumOfDecOctets) {
 			return false;
@@ -120,8 +120,8 @@ namespace ABNF
 		if (str.empty()) {
 			return false;
 		}
-		static const std::size_t max_len = sizeof("255") - 1;
-		bool is_start_with_digit = std::isdigit(str.at(0));
+		static const std::size_t max_len			 = sizeof("255") - 1;
+		bool					 is_start_with_digit = std::isdigit(str.at(0));
 		if (!is_start_with_digit || str.len() > max_len) {
 			return false;
 		}
@@ -134,7 +134,7 @@ namespace ABNF
 	bool IsRegName(const ThinString &str)
 	{
 		StringAry tokens = TokenizePchar(str);
-		return IsRegularURITokenAll(tokens, "");
+		return IsRegularUriTokenOnly(tokens, "");
 	}
 
 } // namespace ABNF
