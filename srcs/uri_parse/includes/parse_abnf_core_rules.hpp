@@ -4,6 +4,7 @@
 namespace ABNF
 {
 	bool IsHexDigit(const char c);
+	bool IsTchar(const char c);
 
 } // namespace ABNF
 
