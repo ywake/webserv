@@ -1,10 +1,8 @@
 #include "fdset.hpp"
 #include "debug.hpp"
 
-FdSet::FdSet()
-	: ready_fds_(1024) {}
-FdSet::FdSet(const FdSet &copy)
-	: ready_fds_(copy.ready_fds_) {}
+FdSet::FdSet() : ready_fds_(1024) {}
+FdSet::FdSet(const FdSet &copy) : ready_fds_(copy.ready_fds_) {}
 const FdSet &FdSet::operator=(const FdSet &other)
 {
 	if (this == &other) {

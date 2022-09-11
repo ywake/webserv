@@ -22,7 +22,7 @@ TEST(field_line, post_with_no_field_line)
 	RequestMessage exp(
 		RequestLine(
 			RequestLine::POST,
-			RequestTarget(RequestTarget::ORIGIN, URI("", "", "", "", "/", "", "")),
+			RequestTarget(RequestTarget::ORIGIN, Uri("", "", "", "", "/", "", "")),
 			"1.1"
 		),
 		FieldLines(),
@@ -43,7 +43,7 @@ TEST(field_line, post_with_single_field_line)
 	RequestMessage exp(
 		RequestLine(
 			RequestLine::POST,
-			RequestTarget(RequestTarget::ORIGIN, URI("", "", "", "", "/", "", "")),
+			RequestTarget(RequestTarget::ORIGIN, Uri("", "", "", "", "/", "", "")),
 			"1.1"
 		),
 		field_lines,
@@ -66,7 +66,7 @@ TEST(field_line, post_with_multi_field_lines)
 	RequestMessage exp(
 		RequestLine(
 			RequestLine::POST,
-			RequestTarget(RequestTarget::ORIGIN, URI("", "", "", "", "/", "", "")),
+			RequestTarget(RequestTarget::ORIGIN, Uri("", "", "", "", "/", "", "")),
 			"1.1"
 		),
 		field_lines,

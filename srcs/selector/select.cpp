@@ -2,16 +2,14 @@
 
 #include "select.hpp"
 
-Select::Select()
-	: nfds_()
+Select::Select() : nfds_()
 {
 	FD_ZERO(&read_set_);
 }
 
 Select::~Select() {}
 
-Select::Select(Select const &copy)
-	: nfds_(copy.nfds_), read_set_(copy.read_set_) {}
+Select::Select(Select const &copy) : nfds_(copy.nfds_), read_set_(copy.read_set_) {}
 
 //[TODO]
 Select &Select::operator=(Select const &other)
@@ -19,9 +17,9 @@ Select &Select::operator=(Select const &other)
 	if (this == &other) {
 		return *this;
 	}
-	read_set_ = other.read_set_;
+	read_set_  = other.read_set_;
 	ready_set_ = other.ready_set_;
-	nfds_ = other.nfds_;
+	nfds_	   = other.nfds_;
 	return *this;
 }
 

@@ -8,10 +8,10 @@
 class EventResult
 {
   public:
-	int fd_;
+	int		fd_;
 	Server *server_;
-	State state_;
-	bool is_persistence_;
+	State	state_;
+	bool	is_persistence_;
 	EventResult();
 	EventResult(int fd, Server *server, State state, bool is_persistence = false);
 	EventResult(const EventResult &copy);

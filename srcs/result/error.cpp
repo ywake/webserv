@@ -21,7 +21,7 @@ Error &Error::operator=(const Error &rhs)
 	if (this == &rhs) {
 		return *this;
 	}
-	this->is_err_ = rhs.is_err_;
+	this->is_err_  = rhs.is_err_;
 	this->err_msg_ = rhs.err_msg_;
 	return *this;
 }
@@ -34,4 +34,11 @@ bool Error::operator==(const Error &rhs) const
 bool Error::operator!=(const Error &rhs) const
 {
 	return !(*this == rhs);
+}
+
+std::ostream &operator<<(std::ostream &os, const Error &error)
+{
+	std::string title = error.IsErr() ? "Error!" : "Success";
+	os << title << "(" + error.Err() + ")";
+	return os;
 }

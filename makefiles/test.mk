@@ -34,15 +34,23 @@ $(BUILDDIR)gtest/%.o: gtest/%.cpp
 	@printf "$(END)"
 
 $(TEST_TARGET): $(TARGET_OBJDIRS) $(TARGET_OBJS)
-	ar -rcs $@ $(TARGET_OBJS)
+	@ar -rcs $@ $(TARGET_OBJS)
 
 $(TESTER)	: $(GTESTLIB) $(TEST_TARGET) $(TESTCASE_OBJDIRS) $(TESTCASE_OBJS)
 	clang++ $(GTEST_FLAGS) $(GTEST_INCLUDES) $(GTESTLIB) $(TESTCASE_OBJS) $(TEST_TARGET) $(GTEST_LIBS) -o $@
+	@$(RM) $(TEST_TARGET)
 
 GTEST_OPT	:= $(subst $() ,*:*,$(filter-out gtest,$(MAKECMDGOALS)))
 gtest		: $(TESTER) FORCE
-	./$< --gtest_filter='*$(GTEST_OPT)*'
-	@rm $(TEST_TARGET)
+	./$< --gtest_filter='*$(GTEST_OPT)*' || ($(MAKE) check; ! :)
+	@$(MAKE) check
+
+check:
+	@printf "$(RED)$(BOLD)\n"
+	@WARN_FILE=$$(find $(TESTCASE_DIR) -type f | grep -v '_test\.cpp') \
+		&& printf "Some files are not included.\n$(END)$(RED)%s\n" $$WARN_FILE \
+		||:
+	@printf "$(END)"
 
 %:;@:
 

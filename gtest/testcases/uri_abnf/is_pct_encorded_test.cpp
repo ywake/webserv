@@ -1,6 +1,6 @@
 #include "gtest.h"
 
-#include "uri_abnf.hpp"
+#include "parse_uri_relative.hpp"
 
 // "%" HEXDIG HEXDIG
 TEST(uri_abnf, IsPctEncoded_hex)

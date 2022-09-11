@@ -3,7 +3,7 @@
 // segment-nz    = 1*pchar
 #include "gtest.h"
 
-#include "uri_abnf.hpp"
+#include "parse_path.hpp"
 
 TEST(uri_abnf, is_path_absolute_true_case)
 {
@@ -12,6 +12,7 @@ TEST(uri_abnf, is_path_absolute_true_case)
 	EXPECT_TRUE(ABNF::IsPathAbsolute("/aaa/"));
 	EXPECT_TRUE(ABNF::IsPathAbsolute("/aaa/ZZZ"));
 	EXPECT_TRUE(ABNF::IsPathAbsolute("/aaa/ZZZ/"));
+	EXPECT_TRUE(ABNF::IsPathAbsolute("/aaa//ZZZ/"));
 }
 
 TEST(uri_abnf, is_path_absolute_false_case)
