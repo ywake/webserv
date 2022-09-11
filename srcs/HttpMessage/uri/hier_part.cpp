@@ -2,7 +2,7 @@
 #include "error.hpp"
 #include "parse_path.hpp"
 
-static const char  *k2slash		= "//";
+static const char  *k2slash     = "//";
 static const size_t k2slashSize = sizeof("//") - 1;
 
 HierPart::HierPart() : authority_(), path_() {}
@@ -28,8 +28,8 @@ HierPart::HierPart(const HierPart &other) : authority_(other.authority_), path_(
 
 void HierPart::ParseAuthorityPath(const ThinString &hier_part)
 {
-	size_t					authority_start_idx = k2slashSize;
-	ThinString				after_2slash		= hier_part.substr(authority_start_idx);
+	size_t                  authority_start_idx = k2slashSize;
+	ThinString              after_2slash        = hier_part.substr(authority_start_idx);
 	ThinString::ThinStrPair authority_path =
 		after_2slash.DivideBy("/", ThinString::kKeepDelimRight);
 	authority_ = Authority(authority_path.first);
@@ -54,7 +54,7 @@ HierPart &HierPart::operator=(const HierPart &other)
 		return *this;
 	}
 	authority_ = other.authority_;
-	path_	   = other.path_;
+	path_      = other.path_;
 	return *this;
 }
 

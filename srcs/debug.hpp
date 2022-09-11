@@ -1,5 +1,5 @@
-#ifndef LOG_HPP
-#define LOG_HPP
+#ifndef DEBUG_H
+#define DEBUG_H
 
 #include <iomanip>
 #include <iostream>
@@ -14,4 +14,4 @@ void log(T title, U contents)
 	}
 }
 
-#endif
+#endif /* DEBUG_H */

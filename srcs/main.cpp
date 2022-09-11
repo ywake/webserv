@@ -20,14 +20,14 @@ typedef Select Selector; //これインターフェースとやってること�
 
 int main()
 {
-	EventPool			pool;
+	EventPool           pool;
 	std::vector<Server> servers;
 
 	servers.push_back(Server("8080"));
 	servers.push_back(Server("8880"));
 	ServersInit(pool, servers);
 	while (true) {
-		Selector	 selector;
+		Selector     selector;
 		Result<void> ret = pool.MonitorFds(&selector);
 		if (ret.IsErr()) {
 			log("monitor", ret.Err());

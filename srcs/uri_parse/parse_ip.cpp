@@ -15,7 +15,7 @@
 namespace ABNF
 {
 	static const size_t kNumOfIpv6TokenMax = 15;
-	static const size_t kIpv6BytesMax	   = 16;
+	static const size_t kIpv6BytesMax      = 16;
 
 	// IP-literal = "[" ( IPv6address / IPvFuture  ) "]"
 	bool IsIPLiteral(const ThinString &str)
@@ -88,7 +88,7 @@ namespace ABNF
 		if (strs.second.empty() || strs.second.at(0) != '.') {
 			return false;
 		}
-		ThinString trimed_v	  = strs.first.substr(1);
+		ThinString trimed_v   = strs.first.substr(1);
 		ThinString trimed_dot = strs.second.substr(1);
 		return IsHexDigitOnly(trimed_v) && IsRegularUriCharOnly(trimed_dot, IPV_FUTURE_UNIQ_SET);
 	}
@@ -96,7 +96,7 @@ namespace ABNF
 	// IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
 	bool IsIPv4address(const ThinString &str)
 	{
-		StringAry				 array			 = Split(str, ".");
+		StringAry                array           = Split(str, ".");
 		static const std::size_t kNumOfDecOctets = 4;
 		if (array.size() != kNumOfDecOctets) {
 			return false;
@@ -119,8 +119,8 @@ namespace ABNF
 		if (str.empty()) {
 			return false;
 		}
-		static const std::size_t max_len			 = sizeof("255") - 1;
-		bool					 is_start_with_digit = std::isdigit(str.at(0));
+		static const std::size_t max_len             = sizeof("255") - 1;
+		bool                     is_start_with_digit = std::isdigit(str.at(0));
 		if (!is_start_with_digit || str.len() > max_len) {
 			return false;
 		}

@@ -13,12 +13,14 @@
 #include "result.hpp"
 #include "state.hpp"
 
-class EventPool {
+class EventPool
+{
   public:
 	typedef std::queue<Event> Events;
 
   private:
-	class Pool : public std::deque<Event> {
+	class Pool : public std::deque<Event>
+	{
 	  public:
 		void Push(const Event &event)
 		{
@@ -32,19 +34,19 @@ class EventPool {
 			return ret;
 		}
 	};
-	typedef Pool::iterator	  iterator;
-	Pool					  wait_pool_;
-	Pool					  ready_pool_;
-	std::map<State, State>	  state_chain_;
+	typedef Pool::iterator    iterator;
+	Pool                      wait_pool_;
+	Pool                      ready_pool_;
+	std::map<State, State>    state_chain_;
 	std::map<State, Callback> callback_;
-	FdSet					  ready;
+	FdSet                     ready;
 
   public:
 	EventPool() : wait_pool_(), ready_pool_(), state_chain_(), callback_(), ready()
 	{
 		state_chain_[ACCEPT] = SERVE;
-		state_chain_[SERVE]	 = CLOSE;
-		state_chain_[CLOSE]	 = END;
+		state_chain_[SERVE]  = CLOSE;
+		state_chain_[CLOSE]  = END;
 
 		callback_[ACCEPT] = OnAccept;
 		callback_[SERVE]  = OnServe;
@@ -98,8 +100,8 @@ class EventPool {
 	void RunReadyEvents()
 	{
 		while (!ready_pool_.empty()) {
-			Event		event = ready_pool_.Pop();
-			EventResult res	  = event.Run();
+			Event       event = ready_pool_.Pop();
+			EventResult res   = event.Run();
 			AddEvent(res);
 			if (res.is_persistence_) {
 				AddEvent(event);

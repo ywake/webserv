@@ -16,14 +16,14 @@ namespace ABNF
 	bool IsAuthority(const ThinString &str)
 	{
 		ThinString::ThinStrPair userinfo_hostport_pair = str.DivideBy("@", ThinString::kAlignRight);
-		ThinString				userinfo			   = userinfo_hostport_pair.first;
-		ThinString				hostport			   = userinfo_hostport_pair.second;
+		ThinString              userinfo               = userinfo_hostport_pair.first;
+		ThinString              hostport               = userinfo_hostport_pair.second;
 		if (!IsUserInfo(userinfo)) {
 			return false;
 		}
 		ThinString::ThinStrPair host_port_pair = hostport.DivideBy(":");
-		ThinString				host		   = host_port_pair.first;
-		ThinString				port		   = host_port_pair.second;
+		ThinString              host           = host_port_pair.first;
+		ThinString              port           = host_port_pair.second;
 		return IsHost(host) && IsPort(port);
 	}
 
