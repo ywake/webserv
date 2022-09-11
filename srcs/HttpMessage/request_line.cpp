@@ -10,7 +10,7 @@
 RequestLine::RequestLine() : method_(), request_target_(), http_version_() {}
 
 /**
- * @brief
+ * @brief request-line = method SP request-target SP HTTP-version
  * @details メソッドの文字列長が長いときはパース時点でエラーにする
  * @details それ以外のメソッドのとき、実装しているメソッドかどうかはパースのあとで判定する
  * TODO: 文字列長の確認
@@ -25,14 +25,20 @@ RequestLine::RequestLine(const ThinString &request_line)
 		throw Error("400");
 	}
 
-	std::vector<ThinString> array			= Split(request_line, " ");
-	bool					is_invalid_size = array.size() != 3;
-	if (is_invalid_size || !IsHttpVersion(array[2])) {
+	enum {
+		kMthodIdx = 0,
+		kTargetIdx,
+		kVersionIdx,
+		kValidNumOfTokens
+	};
+	std::vector<ThinString> tokens			= Split(request_line, " ");
+	bool					is_invalid_size = tokens.size() != kValidNumOfTokens;
+	if (is_invalid_size || !IsHttpVersion(tokens[kVersionIdx])) {
 		throw Error("400");
 	}
-	method_			= array[0];
-	request_target_ = TryConstructRequestTarget(array[1]);
-	http_version_	= array[2];
+	method_			= tokens[kMthodIdx];
+	request_target_ = TryConstructRequestTarget(tokens[kTargetIdx]);
+	http_version_	= tokens[kVersionIdx];
 }
 
 RequestTarget RequestLine::TryConstructRequestTarget(const ThinString &str)
@@ -61,19 +67,16 @@ static bool IsOneDigit(const ThinString &str)
 	return str.len() == 1 && std::isdigit(str.at(0));
 }
 
+// HTTP-version = HTTP-name "/" DIGIT "." DIGIT
 bool RequestLine::IsHttpVersion(const ThinString &str)
 {
-	ThinString::ThinStrPair http_version_pair = str.DivideBy("/");
-	ThinString				http			  = http_version_pair.first;
+	ThinString::ThinStrPair http_version_pair = str.DivideBy("/", ThinString::kKeepDelimLeft);
 	ThinString				version			  = http_version_pair.second;
-	if (http != "HTTP") {
-		return false;
-	}
-
-	ThinString::ThinStrPair major_minor_pair = version.DivideBy(".", ThinString::kAlignRight);
-	ThinString				major			 = major_minor_pair.first;
-	ThinString				minor			 = major_minor_pair.second;
-	return IsOneDigit(major) && IsOneDigit(minor);
+	ThinString::ThinStrPair major_minor_pair  = version.DivideBy(".", ThinString::kAlignRight);
+	ThinString				http			  = http_version_pair.first;
+	ThinString				major			  = major_minor_pair.first;
+	ThinString				minor			  = major_minor_pair.second;
+	return http == "HTTP/" && IsOneDigit(major) && IsOneDigit(minor);
 }
 
 bool RequestLine::operator==(const RequestLine &rhs) const
