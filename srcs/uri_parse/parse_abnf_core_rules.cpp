@@ -36,6 +36,7 @@ namespace ABNF
 				return false;
 			}
 		}
-		return true;
+		return true
+		// return !str.empty();;
 	}
 } // namespace ABNF
