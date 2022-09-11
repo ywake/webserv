@@ -4,15 +4,18 @@
 #include "parse_define.hpp"
 #include <cstring>
 
+// const char *にするとsizeofで長さが取れないのでdefineする
+#define UNRESERVED_UNIQ_SET "-._~"
+#define SUB_DELIMS_UNIQ_SET "!$&'()*+,;="
+
 namespace ABNF
 {
-	static const char *kUnreservedUniqSet = "-._~";
-	static const char *kSubDelimsUniqSet  = "!$&'()*+,;=";
 
 	// unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
 	bool IsUnreserved(const char c)
 	{
-		return std::isalpha(c) || std::isdigit(c) || std::strchr(kUnreservedUniqSet, c);
+		return std::isalpha(c) || std::isdigit(c) ||
+			   std::memchr(UNRESERVED_UNIQ_SET, c, sizeof(UNRESERVED_UNIQ_SET) - 1);
 	}
 
 	// pct-encoded   = "%" HEXDIG HEXDIG
@@ -26,6 +29,6 @@ namespace ABNF
 	//              / "*" / "+" / "," / ";" / "="
 	bool IsSubDelims(const char c)
 	{
-		return std::strchr(kSubDelimsUniqSet, c);
+		return std::memchr(SUB_DELIMS_UNIQ_SET, c, sizeof(SUB_DELIMS_UNIQ_SET) - 1);
 	}
 } // namespace ABNF

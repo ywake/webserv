@@ -56,6 +56,7 @@ TEST(uri_abnf, is_tchar_uniq_false)
 	EXPECT_FALSE(ABNF::IsTchar(']'));
 	EXPECT_FALSE(ABNF::IsTchar('{'));
 	EXPECT_FALSE(ABNF::IsTchar('}'));
+	EXPECT_FALSE(ABNF::IsTchar('\0'));
 }
 
 TEST(uri_abnf, is_tchar_only)

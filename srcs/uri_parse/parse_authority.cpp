@@ -6,9 +6,11 @@
 #include "parse_uri_utils.hpp"
 #include "thin_string.hpp"
 
+// const char *にするとsizeofで長さが取れないのでdefineする
+#define USER_INFO_UNIQ_SET ":"
+
 namespace ABNF
 {
-	static const char *kUserInfoUniqSet = ":";
 
 	// authority = [ userinfo "@" ] host [ ":" port ]
 	bool IsAuthority(const ThinString &str)
@@ -29,7 +31,7 @@ namespace ABNF
 	bool IsUserInfo(const ThinString &str)
 	{
 		StringAry tokens = TokenizePchar(str);
-		return IsRegularUriTokenOnly(tokens, kUserInfoUniqSet);
+		return IsRegularUriTokenOnly(tokens, USER_INFO_UNIQ_SET);
 	}
 
 	// host = IP-literal / IPv4address / reg-name

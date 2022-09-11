@@ -77,4 +77,5 @@ TEST(uri_abnf, IsUnreserved_false_sign)
 	ASSERT_FALSE(ABNF::IsUnreserved('{'));
 	ASSERT_FALSE(ABNF::IsUnreserved('|'));
 	ASSERT_FALSE(ABNF::IsUnreserved('}'));
+	ASSERT_FALSE(ABNF::IsUnreserved('\0'));
 }

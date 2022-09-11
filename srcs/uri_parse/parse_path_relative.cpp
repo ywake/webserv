@@ -4,11 +4,11 @@
 #include "parse_uri_utils.hpp"
 #include "thin_string.hpp"
 
+// const char *にするとsizeofで長さが取れないのでdefineする
+#define PCHAR_UNIQ_SET ":@"
+
 namespace ABNF
 {
-
-	static const char *kPcharUniqSet = ":@";
-
 	// segment       = *pchar
 	bool IsSegment(const ThinString &str)
 	{
@@ -24,7 +24,7 @@ namespace ABNF
 	// pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
 	bool IsPchar(const ThinString &token)
 	{
-		return IsRegularUriToken(token, kPcharUniqSet);
+		return IsRegularUriToken(token, PCHAR_UNIQ_SET);
 	}
 
 } // namespace ABNF
