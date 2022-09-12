@@ -72,12 +72,19 @@ TEST(thin_string, substr)
 
 TEST(thin_string, find)
 {
-	ThinString str;
+	ThinString  str;
+	std::string std;
 
 	str = ThinString("0123456789ABCDEF", 3, 10);
 	EXPECT_EQ(str.find("345"), 0);
 	str = ThinString("aaa/bbb", 3, 10);
 	EXPECT_EQ(str.find("/"), 0);
+	std = "a";
+	str = std;
+	EXPECT_EQ(str.find('\0'), std.find('\0'));
+	std += '\0';
+	str = std;
+	EXPECT_EQ(str.find('\0'), std.find('\0'));
 }
 
 TEST(thin_string, operator_equal)
