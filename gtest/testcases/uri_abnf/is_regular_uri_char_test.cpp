@@ -3,7 +3,7 @@
 
 static const std::string kNgSet = "\"/:<>?@[\\]{}"; //適当 漏れありそう
 
-TEST(uri_abnf, is_regular_uri_true)
+TEST(uri_abnf, is_regular_uri_char_true)
 {
 	EXPECT_TRUE(ABNF::IsRegularUriChar('\0', std::string("\0", 1)));
 	EXPECT_TRUE(ABNF::IsRegularUriChar('"', kNgSet));
@@ -52,7 +52,7 @@ TEST(uri_abnf, is_regular_uri_true)
 	EXPECT_TRUE(ABNF::IsRegularUriChar('=', ""));
 }
 
-TEST(uri_abnf, is_regular_uri_false)
+TEST(uri_abnf, is_regular_uri_char_false)
 {
 	EXPECT_FALSE(ABNF::IsRegularUriChar('\0', ""));
 	EXPECT_FALSE(ABNF::IsRegularUriChar('"', ""));
@@ -69,7 +69,7 @@ TEST(uri_abnf, is_regular_uri_false)
 	EXPECT_FALSE(ABNF::IsRegularUriChar('}', ""));
 }
 
-TEST(uri_abnf, is_regular_uri_only_true)
+TEST(uri_abnf, is_regular_uri_char_only_true)
 {
 	EXPECT_TRUE(ABNF::IsRegularUriCharOnly(std::string("\0", 1), std::string("\0", 1)));
 	EXPECT_TRUE(ABNF::IsRegularUriCharOnly("\"", kNgSet));
@@ -89,7 +89,7 @@ TEST(uri_abnf, is_regular_uri_only_true)
 	EXPECT_TRUE(ABNF::IsRegularUriCharOnly("0123456789", ""));
 }
 
-TEST(uri_abnf, is_regular_uri_only_false)
+TEST(uri_abnf, is_regular_uri_char_only_false)
 {
 	EXPECT_FALSE(ABNF::IsRegularUriCharOnly("", std::string("\0", 1)));
 	EXPECT_FALSE(ABNF::IsRegularUriCharOnly(ThinString(), std::string("\0", 1)));
