@@ -6,10 +6,10 @@
 
 namespace ABNF
 {
-	bool IsRegularUriChar(const char c, const char *additional_char_set);
-	bool IsRegularUriCharOnly(const ThinString &str, const char *additional_char_set);
-	bool IsRegularUriToken(const ThinString &token, const char *additional_char_set);
-	bool IsRegularUriTokenOnly(const StringAry &tokens, const char *additional_char_set);
+	bool IsRegularUriChar(const char c, const ThinString &additional_char_set);
+	bool IsRegularUriCharOnly(const ThinString &str, const ThinString &additional_char_set);
+	bool IsRegularUriToken(const ThinString &token, const ThinString &additional_char_set);
+	bool IsRegularUriTokenOnly(const StringAry &tokens, const ThinString &additional_char_set);
 } // namespace ABNF
 
 #endif

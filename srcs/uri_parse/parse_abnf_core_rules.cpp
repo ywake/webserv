@@ -2,13 +2,10 @@
 #include "thin_string.hpp"
 
 #include <cctype>
-#include <cstring>
-
-// const char *にするとsizeofで長さが取れないのでdefineする
-#define TCHAR_UNIQ_SET "!#$%&'*+-.^_`|~"
 
 namespace ABNF
 {
+	static const ThinString kTcharUniqSet = "!#$%&'*+-.^_`|~";
 
 	// HEXDIG
 	bool IsHexDigit(const char c)
@@ -31,8 +28,7 @@ namespace ABNF
 
 	bool IsTchar(const char c)
 	{
-		return std::isdigit(c) || std::isalpha(c) ||
-			   std::memchr(TCHAR_UNIQ_SET, c, sizeof(TCHAR_UNIQ_SET) - 1);
+		return std::isdigit(c) || std::isalpha(c) || kTcharUniqSet.find(c) != ThinString::npos;
 	}
 
 	bool IsTcharOnly(const ThinString &str)

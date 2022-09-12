@@ -9,13 +9,11 @@
 #include "thin_string.hpp"
 #include "webserv_utils.hpp"
 
-// const char *にするとsizeofで長さが取れないのでdefineする
-#define IPV_FUTURE_UNIQ_SET ":"
-
 namespace ABNF
 {
-	static const size_t kNumOfIpv6TokenMax = 15;
-	static const size_t kIpv6BytesMax      = 16;
+	static const size_t     kNumOfIpv6TokenMax = 15;
+	static const size_t     kIpv6BytesMax      = 16;
+	static const ThinString kIpvFutureUniqSet  = ":";
 
 	// IP-literal = "[" ( IPv6address / IPvFuture  ) "]"
 	bool IsIPLiteral(const ThinString &str)
@@ -90,7 +88,7 @@ namespace ABNF
 		}
 		ThinString trimed_v   = strs.first.substr(1);
 		ThinString trimed_dot = strs.second.substr(1);
-		return IsHexDigitOnly(trimed_v) && IsRegularUriCharOnly(trimed_dot, IPV_FUTURE_UNIQ_SET);
+		return IsHexDigitOnly(trimed_v) && IsRegularUriCharOnly(trimed_dot, kIpvFutureUniqSet);
 	}
 
 	// IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet

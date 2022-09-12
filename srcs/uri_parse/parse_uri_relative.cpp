@@ -2,20 +2,16 @@
 
 #include "parse_abnf_core_rules.hpp"
 #include "parse_define.hpp"
-#include <cstring>
-
-// const char *にするとsizeofで長さが取れないのでdefineする
-#define UNRESERVED_UNIQ_SET "-._~"
-#define SUB_DELIMS_UNIQ_SET "!$&'()*+,;="
 
 namespace ABNF
 {
+	static const ThinString &kUnreservedUniqSet = "-._~";
+	static const ThinString &kSubDelimsUniqSet  = "!$&'()*+,;=";
 
 	// unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
 	bool IsUnreserved(const char c)
 	{
-		return std::isalpha(c) || std::isdigit(c) ||
-			   std::memchr(UNRESERVED_UNIQ_SET, c, sizeof(UNRESERVED_UNIQ_SET) - 1);
+		return std::isalpha(c) || std::isdigit(c) || kUnreservedUniqSet.find(c) != ThinString::npos;
 	}
 
 	// pct-encoded   = "%" HEXDIG HEXDIG
@@ -29,6 +25,6 @@ namespace ABNF
 	//              / "*" / "+" / "," / ";" / "="
 	bool IsSubDelims(const char c)
 	{
-		return std::memchr(SUB_DELIMS_UNIQ_SET, c, sizeof(SUB_DELIMS_UNIQ_SET) - 1);
+		return kSubDelimsUniqSet.find(c) != ThinString::npos;
 	}
 } // namespace ABNF
