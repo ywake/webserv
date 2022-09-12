@@ -63,11 +63,6 @@ RequestLine::RequestLine(
 	: method_(method), request_target_(request_target), http_version_(http_version)
 {}
 
-static bool IsOneDigit(const ThinString &str)
-{
-	return str.len() == 1 && std::isdigit(str.at(0));
-}
-
 bool RequestLine::IsMethod(const ThinString &str)
 {
 	return ABNF::IsTcharOnly(str);
@@ -77,12 +72,20 @@ bool RequestLine::IsMethod(const ThinString &str)
 bool RequestLine::IsHttpVersion(const ThinString &str)
 {
 	ThinString::ThinStrPair http_version_pair = str.DivideBy("/", ThinString::kKeepDelimLeft);
-	ThinString              version           = http_version_pair.second;
-	ThinString::ThinStrPair major_minor_pair  = version.DivideBy(".", ThinString::kAlignRight);
 	ThinString              http              = http_version_pair.first;
-	ThinString              major             = major_minor_pair.first;
-	ThinString              minor             = major_minor_pair.second;
-	return http == "HTTP/" && IsOneDigit(major) && IsOneDigit(minor);
+	ThinString              version           = http_version_pair.second;
+	return http == "HTTP/" && IsVersion(version);
+}
+
+// DIGIT "." DIGIT
+bool RequestLine::IsVersion(const ThinString &str)
+{
+	static const std::size_t kVersionLen = 3;
+	static const std::size_t kMajorIdx   = 0;
+	static const std::size_t kDotIdx     = 1;
+	static const std::size_t kMinorIdx   = 2;
+	return str.size() == kVersionLen && std::isdigit(str.at(kMajorIdx)) && str.at(kDotIdx) == '.' &&
+		   std::isdigit(str.at(kMinorIdx));
 }
 
 bool RequestLine::operator==(const RequestLine &rhs) const

@@ -27,6 +27,7 @@ class RequestLine
 
 	static bool IsHttpVersion(const ThinString &str);
 	static bool IsMethod(const ThinString &str);
+	static bool IsVersion(const ThinString &str);
 
   private:
 	RequestTarget TryConstructRequestTarget(const ThinString &str);
