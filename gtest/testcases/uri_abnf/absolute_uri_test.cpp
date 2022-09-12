@@ -25,6 +25,8 @@ TEST(absolute_uri, ok)
 TEST(absolute_uri, invalid)
 {
 	// no : after scheme
+	EXPECT_THROW(AbsoluteUri(""), Error);
+	EXPECT_THROW(AbsoluteUri("a"), Error);
 	EXPECT_THROW(AbsoluteUri("http//www.google.com/"), Error);
 	// no-scheme
 	EXPECT_THROW(AbsoluteUri("://www.google.com/"), Error);
