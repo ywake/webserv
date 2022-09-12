@@ -12,6 +12,9 @@
 
 class ThinString
 {
+  public:
+	static const std::size_t npos = std::string::npos;
+
   private:
 	typedef std::set<std::string>                      StringSet;
 	typedef std::map<const std::string *, std::size_t> ReferenceCount;
