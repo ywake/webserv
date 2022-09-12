@@ -5,8 +5,8 @@
 
 namespace ABNF
 {
-	static const ThinString &kUnreservedUniqSet = "-._~";
-	static const ThinString &kSubDelimsUniqSet  = "!$&'()*+,;=";
+	static const ThinString kUnreservedUniqSet = "-._~";
+	static const ThinString kSubDelimsUniqSet  = "!$&'()*+,;=";
 
 	// unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
 	bool IsUnreserved(const char c)

@@ -10,8 +10,8 @@
 
 namespace ABNF
 {
-	static const ThinString &kSchemeUniqSet = "+-.";
-	static const ThinString &kQueryUniqSet  = "/?";
+	static const ThinString kSchemeUniqSet = "+-.";
+	static const ThinString kQueryUniqSet  = "/?";
 
 	// scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
 	bool IsScheme(const ThinString &str)
