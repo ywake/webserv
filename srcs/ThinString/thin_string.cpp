@@ -19,8 +19,11 @@ ThinString::ThinString(const std::string &str, std::size_t start, std::size_t le
 ThinString::ThinString(const char *str, std::size_t start, std::size_t length)
 	: start_(start), length_(length)
 {
-	std::string s = str;
-	init(s);
+	if (str == NULL) {
+		init("");
+	} else {
+		init(str);
+	}
 }
 
 ThinString::ThinString(const ThinString &other, std::size_t start, std::size_t length)
