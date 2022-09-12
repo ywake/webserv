@@ -7,22 +7,22 @@ ThinString::StringSet      ThinString::base_set_        = ThinString::StringSet(
 
 ThinString::ThinString() : base_(), start_(0), length_(0)
 {
-	init("");
+	Init("");
 }
 
 ThinString::ThinString(const std::string &str, std::size_t start, std::size_t length)
 	: start_(start), length_(length)
 {
-	init(str);
+	Init(str);
 }
 
 ThinString::ThinString(const char *str, std::size_t start, std::size_t length)
 	: start_(start), length_(length)
 {
 	if (str == NULL) {
-		init("");
+		Init("");
 	} else {
-		init(str);
+		Init(str);
 	}
 }
 
@@ -51,7 +51,7 @@ ThinString::~ThinString()
 	}
 }
 
-void ThinString::init(const std::string &str)
+void ThinString::Init(const std::string &str)
 {
 	StringSet::iterator node = base_set_.insert(str).first;
 	base_                    = &*node;
