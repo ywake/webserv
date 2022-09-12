@@ -131,7 +131,7 @@ namespace ABNF
 	bool IsRegName(const ThinString &str)
 	{
 		StringAry tokens = TokenizePchar(str);
-		return IsRegularUriTokenOnly(tokens, "");
+		return tokens.empty() || IsRegularUriTokenOnly(tokens, "");
 	}
 
 } // namespace ABNF

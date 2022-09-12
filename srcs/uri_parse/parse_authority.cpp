@@ -29,7 +29,7 @@ namespace ABNF
 	bool IsUserInfo(const ThinString &str)
 	{
 		StringAry tokens = TokenizePchar(str);
-		return IsRegularUriTokenOnly(tokens, kUserInfoUniqSet);
+		return tokens.empty() || IsRegularUriTokenOnly(tokens, kUserInfoUniqSet);
 	}
 
 	// host = IP-literal / IPv4address / reg-name
