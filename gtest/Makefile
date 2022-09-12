@@ -31,4 +31,4 @@ $(SRCDIR): $(LIBDIR)
 	python3 $(LIBDIR)/googletest/scripts/fuse_gtest_files.py $(DIR)
 
 $(OBJS)	: $(SRCDIR)
-	clang++ -c -std=c++11 $(LIBDIR)/googletest/src/gtest_main.cc $(SRCDIR)/gtest-all.cc -I$(DIR)
+	c++ -c -std=c++11 $(LIBDIR)/googletest/src/gtest_main.cc $(SRCDIR)/gtest-all.cc -I$(DIR)
