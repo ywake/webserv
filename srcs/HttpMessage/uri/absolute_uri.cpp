@@ -5,7 +5,7 @@
 // absolute-URI  = scheme ":" hier-part [ "?" query ]
 AbsoluteUri::AbsoluteUri(const ThinString &str)
 {
-	if (str.find(":") == std::string::npos) {
+	if (str.find(":") == ThinString::npos) {
 		throw Error("400");
 	}
 	ThinString::ThinStrPair scheme_hier = str.DivideBy(":");

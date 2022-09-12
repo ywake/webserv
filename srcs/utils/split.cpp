@@ -14,7 +14,7 @@ std::vector<ThinString> Split(const ThinString &str, const std::string delim)
 	std::size_t offset = 0;
 	while (true) {
 		std::size_t pos = str.find(delim, offset);
-		if (pos == std::string::npos) {
+		if (pos == ThinString::npos) {
 			split.push_back(str.substr(offset));
 			break;
 		}

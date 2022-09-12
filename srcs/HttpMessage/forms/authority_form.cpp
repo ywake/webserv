@@ -8,7 +8,7 @@ AuthorityForm::AuthorityForm() : authority_() {}
 // authority-form = uri-host ":" port
 AuthorityForm::AuthorityForm(const ThinString &str) : authority_(str)
 {
-	if (authority_.GetHost().empty() || str.find(":") == std::string::npos) {
+	if (authority_.GetHost().empty() || str.find(":") == ThinString::npos) {
 		throw Error("400");
 	}
 }

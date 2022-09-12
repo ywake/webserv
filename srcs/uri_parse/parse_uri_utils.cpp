@@ -11,8 +11,7 @@ namespace ABNF
 	// unreserved / pct-encoded / sub-delims
 	bool IsRegularUriChar(const char c, const ThinString &additional_char_set)
 	{
-		return IsUnreserved(c) || IsSubDelims(c) ||
-			   additional_char_set.find(c) != std::string::npos;
+		return IsUnreserved(c) || IsSubDelims(c) || additional_char_set.find(c) != ThinString::npos;
 	}
 
 	bool IsRegularUriCharOnly(const ThinString &str, const ThinString &additional_char_set)

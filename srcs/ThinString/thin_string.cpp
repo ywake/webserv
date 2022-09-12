@@ -95,7 +95,7 @@ std::size_t ThinString::find(const std::string &str, std::size_t pos) const
 	std::size_t    offset = std::min(pos, length_);
 	const_iterator itr    = std::search(begin() + offset, end(), str.begin(), str.end());
 	if (itr == end()) {
-		return std::string::npos;
+		return ThinString::npos;
 	}
 	return itr - begin();
 }
@@ -146,7 +146,7 @@ ThinString::ThinStrPair
 ThinString::DivideBy(const std::string &delim, unsigned int delim_flag) const
 {
 	std::size_t delim_pos     = find(delim);
-	bool        has_no_second = delim.empty() || delim_pos == std::string::npos;
+	bool        has_no_second = delim.empty() || delim_pos == ThinString::npos;
 	if (has_no_second) {
 		if (delim_flag & kAlignRight) {
 			return ThinStrPair("", *this);
@@ -162,7 +162,7 @@ ThinString::DivideBy(const std::string &delim, unsigned int delim_flag) const
 std::size_t ThinString::MeasureUntil(const std::string &delim) const
 {
 	std::size_t pos = find(delim);
-	return pos == std::string::npos ? size() : pos;
+	return pos == ThinString::npos ? size() : pos;
 }
 
 ThinString::const_iterator ThinString::begin() const
