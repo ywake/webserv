@@ -107,8 +107,7 @@ std::size_t ThinString::find(const char *s, std::size_t pos) const
 
 std::size_t ThinString::find(char ch, std::size_t pos) const
 {
-	char s[2] = {ch};
-	return find(std::string(s), pos);
+	return find(std::string(&ch, 1), pos);
 }
 
 ThinString ThinString::substr(std::size_t pos, std::size_t size) const
