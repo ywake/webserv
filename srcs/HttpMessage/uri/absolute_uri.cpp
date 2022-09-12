@@ -2,7 +2,7 @@
 #include "error.hpp"
 #include "parse_uri.hpp"
 
-// TODO anbf
+// absolute-URI  = scheme ":" hier-part [ "?" query ]
 AbsoluteUri::AbsoluteUri(const ThinString &str)
 {
 	ThinString::ThinStrPair scheme_hier = str.DivideBy(":");
