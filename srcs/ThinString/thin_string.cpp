@@ -1,9 +1,10 @@
 #include "thin_string.hpp"
+#include "static_initializer.hpp"
 
 #include <cstring>
 
-ThinString::ReferenceCount ThinString::reference_count_ = ThinString::ReferenceCount();
-ThinString::StringSet      ThinString::base_set_        = ThinString::StringSet();
+ThinString::ReferenceCount *ThinString::reference_count_;
+ThinString::StringSet      *ThinString::base_set_;
 
 ThinString::ThinString() : base_(), start_(0), length_(0)
 {
@@ -34,28 +35,31 @@ ThinString::ThinString(const ThinString &other, std::size_t start, std::size_t l
 ThinString::ThinString(const std::string *base, std::size_t start, std::size_t length)
 	: base_(base), start_(start), length_(length)
 {
-	reference_count_[base_]++;
+	(*reference_count_)[base_]++;
 }
 
 ThinString::~ThinString()
 {
-	ReferenceCount::iterator ref_it = reference_count_.find(base_);
+	ReferenceCount::iterator ref_it = reference_count_->find(base_);
 
 	if (--ref_it->second == 0) {
-		StringSet::iterator set_itr = base_set_.find(*base_);
-		if (set_itr != base_set_.end()) {
-			base_set_.erase(set_itr);
+		StringSet::iterator set_itr = base_set_->find(*base_);
+		if (set_itr != base_set_->end()) {
+			base_set_->erase(set_itr);
 		}
-		reference_count_.erase(ref_it);
+		reference_count_->erase(ref_it);
 		base_ = NULL;
 	}
 }
 
 void ThinString::Init(const std::string &str)
 {
-	StringSet::iterator node = base_set_.insert(str).first;
+	static const StaticInitializer<StringSet>      InitBaseSet(&base_set_);
+	static const StaticInitializer<ReferenceCount> InitReferenceCount(&reference_count_);
+
+	StringSet::iterator node = base_set_->insert(str).first;
 	base_                    = &*node;
-	reference_count_[base_]++;
+	(*reference_count_)[base_]++;
 	start_  = std::min(start_, base_->size());
 	length_ = std::min(length_, base_->size() - start_);
 }
@@ -186,7 +190,7 @@ ThinString &ThinString::operator=(const ThinString &rhs)
 	start_  = rhs.start_;
 	length_ = rhs.length_;
 	base_   = rhs.base_;
-	reference_count_[base_]++;
+	(*reference_count_)[base_]++;
 	return *this;
 }
 

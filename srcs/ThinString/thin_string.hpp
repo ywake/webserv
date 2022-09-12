@@ -30,11 +30,11 @@ class ThinString
 	} DelimFlag;
 
   private:
-	static ReferenceCount reference_count_;
-	static StringSet      base_set_;
-	const std::string    *base_;
-	std::size_t           start_;
-	std::size_t           length_;
+	static ReferenceCount *reference_count_;
+	static StringSet      *base_set_;
+	const std::string     *base_;
+	std::size_t            start_;
+	std::size_t            length_;
 
   public:
 	ThinString();
