@@ -17,8 +17,8 @@ class Authority
 	Authority(const Authority &other);
 
 	Authority &operator=(const Authority &other);
-	bool	   operator==(const Authority &other) const;
-	bool	   operator!=(const Authority &other) const;
+	bool       operator==(const Authority &other) const;
+	bool       operator!=(const Authority &other) const;
 
 	const ThinString &GetUserinfo() const;
 	const ThinString &GetHost() const;

@@ -24,16 +24,16 @@ class RequestFormData
 	);
 
 	RequestFormData(
-		const char *scheme	 = "",
+		const char *scheme   = "",
 		const char *userinfo = "",
-		const char *host	 = "",
-		const char *port	 = "",
-		const char *path	 = "",
-		const char *query	 = ""
+		const char *host     = "",
+		const char *port     = "",
+		const char *path     = "",
+		const char *query    = ""
 	);
 
 	RequestFormData &operator=(const RequestFormData &other);
-	bool			 operator==(const RequestFormData &rhs) const;
+	bool             operator==(const RequestFormData &rhs) const;
 
 	static RequestFormData ConstructFromOrigin(ThinString origin_form);
 };

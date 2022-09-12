@@ -17,8 +17,8 @@ class ISelector
 
   public:
 	virtual Result<void> Import(iterator begin, iterator end) = 0;
-	virtual Result<void> Run()								  = 0;
-	virtual void		 Export(FdSet &ready)				  = 0;
+	virtual Result<void> Run()                                = 0;
+	virtual void         Export(FdSet &ready)                 = 0;
 };
 
 #endif

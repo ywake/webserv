@@ -19,7 +19,7 @@ Select &Select::operator=(Select const &other)
 	}
 	read_set_  = other.read_set_;
 	ready_set_ = other.ready_set_;
-	nfds_	   = other.nfds_;
+	nfds_      = other.nfds_;
 	return *this;
 }
 

@@ -19,9 +19,9 @@ RequestLine::RequestLine() : method_(), request_target_(), http_version_() {}
 RequestLine::RequestLine(const ThinString &request_line)
 	: method_(), request_target_(), http_version_()
 {
-	bool	   line_is_too_long	  = request_line.len() > kMaxRequestLineLength;
-	ThinString method_str		  = request_line.substr(0, kMaxMethodLength + 1);
-	bool	   method_is_too_long = method_str.find(' ') > kMaxMethodLength;
+	bool       line_is_too_long   = request_line.len() > kMaxRequestLineLength;
+	ThinString method_str         = request_line.substr(0, kMaxMethodLength + 1);
+	bool       method_is_too_long = method_str.find(' ') > kMaxMethodLength;
 	if (line_is_too_long || method_is_too_long) {
 		throw Error("400");
 	}
@@ -32,14 +32,14 @@ RequestLine::RequestLine(const ThinString &request_line)
 		kVersionIdx,
 		kValidNumOfTokens
 	};
-	std::vector<ThinString> tokens			= Split(request_line, " ");
-	bool					is_invalid_size = tokens.size() != kValidNumOfTokens;
+	std::vector<ThinString> tokens          = Split(request_line, " ");
+	bool                    is_invalid_size = tokens.size() != kValidNumOfTokens;
 	if (is_invalid_size || !IsMethod(tokens[kMthodIdx]) || !IsHttpVersion(tokens[kVersionIdx])) {
 		throw Error("400");
 	}
-	method_			= tokens[kMthodIdx];
+	method_         = tokens[kMthodIdx];
 	request_target_ = TryConstructRequestTarget(tokens[kTargetIdx]);
-	http_version_	= tokens[kVersionIdx];
+	http_version_   = tokens[kVersionIdx];
 }
 
 RequestTarget RequestLine::TryConstructRequestTarget(const ThinString &str)
@@ -77,11 +77,11 @@ bool RequestLine::IsMethod(const ThinString &str)
 bool RequestLine::IsHttpVersion(const ThinString &str)
 {
 	ThinString::ThinStrPair http_version_pair = str.DivideBy("/", ThinString::kKeepDelimLeft);
-	ThinString				version			  = http_version_pair.second;
+	ThinString              version           = http_version_pair.second;
 	ThinString::ThinStrPair major_minor_pair  = version.DivideBy(".", ThinString::kAlignRight);
-	ThinString				http			  = http_version_pair.first;
-	ThinString				major			  = major_minor_pair.first;
-	ThinString				minor			  = major_minor_pair.second;
+	ThinString              http              = http_version_pair.first;
+	ThinString              major             = major_minor_pair.first;
+	ThinString              minor             = major_minor_pair.second;
 	return http == "HTTP/" && IsOneDigit(major) && IsOneDigit(minor);
 }
 

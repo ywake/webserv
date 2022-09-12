@@ -37,12 +37,12 @@ RequestFormData &RequestFormData::operator=(const RequestFormData &other)
 	if (this == &other) {
 		return *this;
 	}
-	scheme_	  = other.scheme_;
+	scheme_   = other.scheme_;
 	userinfo_ = other.userinfo_;
-	host_	  = other.host_;
-	port_	  = other.port_;
-	path_	  = other.path_;
-	query_	  = other.query_;
+	host_     = other.host_;
+	port_     = other.port_;
+	path_     = other.path_;
+	query_    = other.query_;
 	return *this;
 }
 

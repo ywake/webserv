@@ -19,8 +19,8 @@ class RequestTarget
 	RequestTarget(RequestFormData request_target);
 
 	RequestTarget &operator=(const RequestTarget &other);
-	bool		   operator==(const RequestTarget &rhs) const;
-	bool		   operator!=(const RequestTarget &rhs) const;
+	bool           operator==(const RequestTarget &rhs) const;
+	bool           operator!=(const RequestTarget &rhs) const;
 
 	const RequestFormData &GetRequestFormData() const;
 };

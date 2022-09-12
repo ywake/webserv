@@ -6,7 +6,7 @@
 std::vector<ThinString> Split(const ThinString &str, const std::string delim)
 {
 	std::vector<ThinString> split;
-	std::size_t				delim_length = delim.length();
+	std::size_t             delim_length = delim.length();
 	if (delim_length == 0) {
 		split.push_back(str);
 		return split;

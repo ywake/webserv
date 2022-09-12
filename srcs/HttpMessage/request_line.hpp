@@ -7,20 +7,20 @@ class RequestLine
 {
   private:
 	static const int kMaxRequestLineLength = 8192;
-	static const int kMaxMethodLength	   = 7;
+	static const int kMaxMethodLength      = 7;
 
   public:
-	ThinString	  method_;
+	ThinString    method_;
 	RequestTarget request_target_;
-	ThinString	  http_version_;
+	ThinString    http_version_;
 
 	RequestLine();
 	RequestLine(const ThinString &request_line);
 
 	RequestLine(
-		const ThinString	 &method,
+		const ThinString    &method,
 		const RequestTarget &request_target,
-		const ThinString	 &http_version
+		const ThinString    &http_version
 	);
 
 	bool operator==(const RequestLine &rhs) const;

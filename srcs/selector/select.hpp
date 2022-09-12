@@ -8,7 +8,7 @@
 class Select : public ISelector
 {
   private:
-	int	   nfds_;
+	int    nfds_;
 	fd_set read_set_;
 	fd_set ready_set_;
 
@@ -16,10 +16,10 @@ class Select : public ISelector
 	Select();
 	~Select();
 	Select(Select const &copy);
-	Select	   &operator=(Select const &other);
+	Select      &operator=(Select const &other);
 	Result<void> Import(iterator begin, iterator end);
 	Result<void> Run();
-	void		 Export(FdSet &ready);
+	void         Export(FdSet &ready);
 };
 
 #endif

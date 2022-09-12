@@ -10,7 +10,7 @@ namespace ABNF
 
 		for (ThinString::const_iterator itr = str.begin(); itr != str.end();) {
 			std::size_t start_index = itr - str.begin();
-			std::size_t token_len	= 0;
+			std::size_t token_len   = 0;
 			if (*itr == '/') {
 				token_len = sizeof(char);
 			} else {
@@ -30,7 +30,7 @@ namespace ABNF
 		StringAry tokens;
 		for (std::string::const_iterator itr = str.begin(); itr != str.end();) {
 			std::size_t token_start = itr - str.begin();
-			std::size_t token_len	= *itr == '%' ? kPctEncodingSize : sizeof(char);
+			std::size_t token_len   = *itr == '%' ? kPctEncodingSize : sizeof(char);
 			tokens.push_back(str.substr(token_start, token_len));
 			itr += tokens.back().size();
 		}

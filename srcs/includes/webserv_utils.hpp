@@ -7,6 +7,6 @@
 #include <vector>
 
 std::vector<ThinString> Split(const ThinString &str, const std::string delim);
-Result<long>			StrToLong(const std::string &str);
+Result<long>            StrToLong(const std::string &str);
 
 #endif

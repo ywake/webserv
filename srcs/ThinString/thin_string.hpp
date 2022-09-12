@@ -13,25 +13,25 @@
 class ThinString
 {
   private:
-	typedef std::set<std::string>					   StringSet;
+	typedef std::set<std::string>                      StringSet;
 	typedef std::map<const std::string *, std::size_t> ReferenceCount;
 
   public:
-	typedef std::string::const_iterator		  const_iterator;
+	typedef std::string::const_iterator       const_iterator;
 	typedef std::pair<ThinString, ThinString> ThinStrPair;
 	typedef enum {
-		kAlignLeft		= 0 << 0,
-		kAlignRight		= 1 << 0,
-		kKeepDelimLeft	= 1 << 1,
+		kAlignLeft      = 0 << 0,
+		kAlignRight     = 1 << 0,
+		kKeepDelimLeft  = 1 << 1,
 		kKeepDelimRight = 1 << 2
 	} DelimFlag;
 
   private:
 	static ReferenceCount reference_count_;
-	static StringSet	  base_set_;
-	const std::string	  *base_;
-	std::size_t			  start_;
-	std::size_t			  length_;
+	static StringSet      base_set_;
+	const std::string    *base_;
+	std::size_t           start_;
+	std::size_t           length_;
 
   public:
 	ThinString();
@@ -49,7 +49,7 @@ class ThinString
 	CreateRightSide(const std::string &delim, std::size_t start, unsigned int delim_side) const;
 
   public:
-	bool		empty() const;
+	bool        empty() const;
 	std::size_t len() const;
 	std::size_t size() const;
 	const char &at(size_t n) const;
@@ -59,7 +59,7 @@ class ThinString
 	std::size_t find(const char *s, std::size_t pos = 0) const;
 	std::size_t find(char ch, std::size_t pos = 0) const;
 
-	ThinString	substr(std::size_t pos = 0, std::size_t size = ~0UL) const;
+	ThinString  substr(std::size_t pos = 0, std::size_t size = ~0UL) const;
 	std::string ToString() const;
 	ThinStrPair DivideBy(const std::string &delim, unsigned int delim_flag = kAlignLeft) const;
 	std::size_t MeasureUntil(const std::string &delim) const;
