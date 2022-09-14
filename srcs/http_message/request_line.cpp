@@ -42,6 +42,7 @@ RequestLine::RequestLine(const ThinString &request_line)
 	http_version_   = tokens[kVersionIdx];
 }
 
+// TODO methodを定数で定義したい
 RequestTarget RequestLine::TryConstructRequestTarget(const ThinString &str)
 {
 	if (str.empty()) {
