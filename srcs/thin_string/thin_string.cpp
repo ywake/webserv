@@ -172,6 +172,16 @@ std::size_t ThinString::MeasureUntil(const std::string &delim) const
 	return pos == ThinString::npos ? size() : pos;
 }
 
+// TODO test
+bool ThinString::EndWith(const std::string &delim)
+{
+	if (delim.size() > this->size()) {
+		return false;
+	}
+	std::size_t start = this->size() - delim.size();
+	return this->substr(start) == delim;
+}
+
 ThinString::const_iterator ThinString::begin() const
 {
 	return base_->begin() + start_;

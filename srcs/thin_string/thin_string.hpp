@@ -66,6 +66,7 @@ class ThinString
 	std::string ToString() const;
 	ThinStrPair DivideBy(const std::string &delim, unsigned int delim_flag = kAlignLeft) const;
 	std::size_t MeasureUntil(const std::string &delim) const;
+	bool        EndWith(const std::string &delim);
 
 	const_iterator begin() const;
 	const_iterator end() const;
