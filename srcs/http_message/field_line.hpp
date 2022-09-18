@@ -10,6 +10,7 @@
 class FieldLines
 {
   private:
+	// TODO　外に出す
 	class Token
 	{
 	  public:
