@@ -74,6 +74,17 @@ bool FieldLines::IsObsFold(const ThinString &str)
 	return http_abnf::IsOws(ows) && http_abnf::IsRws(rws);
 }
 
+bool FieldLines::IsValidTokenOrder(const Tokens &tokens)
+{
+	(void)tokens;
+	return false;
+}
+
+void FieldLines::ParseFieldLines(const StringAry &lines)
+{
+	(void)lines;
+}
+
 void FieldLines::ReplaceObsFoldWithSpace(Tokens &tokens)
 {
 	for (Tokens::iterator it = tokens.begin(); it != tokens.end(); it++) {
@@ -99,4 +110,22 @@ FieldLines::StringAry FieldLines::ParseTokensToLines(Tokens &tokens)
 		lines.push_back(line);
 	}
 	return lines;
+}
+
+FieldLines::Token::Token() : s_(), id_() {}
+FieldLines::Token::Token(const ThinString &str, TokenId id) : s_(str), id_(id) {}
+
+FieldLines::Token::TokenId FieldLines::Token::GetId() const
+{
+	return id_;
+}
+
+const ThinString &FieldLines::Token::GetStr() const
+{
+	return s_;
+}
+
+std::size_t FieldLines::Token::GetLen() const
+{
+	return s_.size();
 }

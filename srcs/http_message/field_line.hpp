@@ -27,7 +27,7 @@ class FieldLines
 
 	  public:
 		Token();
-		Token(const ThinString &str, TokenId Id);
+		Token(const ThinString &str, TokenId id);
 		TokenId           GetId() const;
 		const ThinString &GetStr() const;
 		std::size_t       GetLen() const;
@@ -42,11 +42,13 @@ class FieldLines
 
   private:
 	Tokens    TokenizeLines(const ThinString &str);
+	bool      IsValidTokenOrder(const Tokens &tokens);
+	void      ReplaceObsFoldWithSpace(Tokens &tokens);
+	StringAry ParseTokensToLines(Tokens &tokens);
 	bool      IsObsFold(const ThinString &str);
 	Token     CreateCrLfOrObsFoldToken(const ThinString &str);
 	Token     CreateNormalToken(const ThinString &str);
-	void      ReplaceObsFoldWithSpace(Tokens &tokens);
-	StringAry ParseTokensToLines(Tokens &tokens);
+	void      ParseFieldLines(const StringAry &lines);
 };
 
 /*
