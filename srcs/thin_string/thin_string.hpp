@@ -61,11 +61,13 @@ class ThinString
 	std::size_t find(const std::string &str, std::size_t pos = 0) const;
 	std::size_t find(const char *s, std::size_t pos = 0) const;
 	std::size_t find(char ch, std::size_t pos = 0) const;
+	std::size_t FindNotOf(const std::string &str, std::size_t pos = 0) const;
 
 	ThinString  substr(std::size_t pos = 0, std::size_t size = ~0UL) const;
 	std::string ToString() const;
 	ThinStrPair DivideBy(const std::string &delim, unsigned int delim_flag = kAlignLeft) const;
 	std::size_t MeasureUntil(const std::string &delim) const;
+	std::size_t MeasureUntilNotOf(const std::string &char_set) const;
 	bool        EndWith(const std::string &delim);
 
 	const_iterator begin() const;
