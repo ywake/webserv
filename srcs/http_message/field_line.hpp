@@ -20,7 +20,9 @@ class FieldLines
 			kCrLfTk,
 			kObsFoldTk
 		};
-
+	// TODO　外に出す
+	class Token
+	{
 	  private:
 		ThinString s_;
 		TokenId    id_;

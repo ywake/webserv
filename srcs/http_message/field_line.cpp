@@ -42,16 +42,16 @@ FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str)
 FieldLines::Token FieldLines::CreateNormalToken(const ThinString &str)
 {
 	std::size_t token_len = str.MeasureUntil(kCrLf);
-	return Token(str.substr(0, token_len), Token::kNormalTk);
+	return Token(str.substr(0, token_len), kNormalTk);
 }
 
 FieldLines::Token FieldLines::CreateCrLfOrObsFoldToken(const ThinString &str)
 {
 	if (IsObsFold(str.substr(0, kCrLf.size() + 1))) {
 		std::size_t ws_len = str.substr(kCrLf.size()).MeasureUntilNotOf(kWhiteSpaces);
-		return Token(str.substr(0, kCrLf.size() + ws_len), Token::kObsFoldTk);
+		return Token(str.substr(0, kCrLf.size() + ws_len), kObsFoldTk);
 	} else {
-		return Token(kCrLf, Token::kCrLfTk);
+		return Token(kCrLf, kCrLfTk);
 	}
 }
 
@@ -88,8 +88,8 @@ void FieldLines::ParseFieldLines(const StringAry &lines)
 void FieldLines::ReplaceObsFoldWithSpace(Tokens &tokens)
 {
 	for (Tokens::iterator it = tokens.begin(); it != tokens.end(); it++) {
-		if (it->GetId() == Token::kObsFoldTk) {
-			*it = Token(kSingleSpace, Token::kNormalTk);
+		if (it->GetId() == kObsFoldTk) {
+			*it = Token(kSingleSpace, kNormalTk);
 		}
 	}
 }
@@ -100,11 +100,11 @@ FieldLines::StringAry FieldLines::ParseTokensToLines(Tokens &tokens)
 
 	while (!tokens.empty()) {
 		std::string line;
-		while (!tokens.empty() && tokens.front().GetId() != Token::kCrLfTk) {
+		while (!tokens.empty() && tokens.front().GetId() != kCrLfTk) {
 			line += tokens.front().GetStr().ToString();
 			tokens.pop_front();
 		}
-		if (tokens.front().GetId() == Token::kCrLfTk) {
+		if (tokens.front().GetId() == kCrLfTk) {
 			tokens.pop_front();
 		}
 		lines.push_back(line);
