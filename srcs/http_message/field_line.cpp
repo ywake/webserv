@@ -87,10 +87,14 @@ FieldLines::StringAry FieldLines::ParseTokensToLines(Tokens &tokens)
 {
 	StringAry lines;
 
-	for (; !tokens.empty(); tokens.pop_front()) {
+	while (!tokens.empty()) {
 		std::string line;
-		for (; tokens.front().GetId() != Token::kCrLfTk; tokens.pop_front()) {
+		while (!tokens.empty() && tokens.front().GetId() != Token::kCrLfTk) {
 			line += tokens.front().GetStr().ToString();
+			tokens.pop_front();
+		}
+		if (tokens.front().GetId() == Token::kCrLfTk) {
+			tokens.pop_front();
 		}
 		lines.push_back(line);
 	}
