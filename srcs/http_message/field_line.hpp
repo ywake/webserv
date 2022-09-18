@@ -10,16 +10,12 @@
 class FieldLines
 {
   private:
-	// TODO　外に出す
-	class Token
-	{
-	  public:
-		enum TokenId {
-			kEmpty,
-			kNormalTk,
-			kCrLfTk,
-			kObsFoldTk
-		};
+	enum TokenId {
+		kEmpty,
+		kNormalTk,
+		kCrLfTk,
+		kObsFoldTk
+	};
 	// TODO　外に出す
 	class Token
 	{
@@ -52,7 +48,7 @@ class FieldLines
 	Token     CreateNormalToken(const ThinString &str);
 	void      ParseFieldLines(const StringAry &lines);
 };
-
+// TODO BNFミスってる
 /*
   field-lines   = *( one-line )
   one-line      = *(field-line obs-fold ) field-line CRLF

@@ -76,8 +76,23 @@ bool FieldLines::IsObsFold(const ThinString &str)
 
 bool FieldLines::IsValidTokenOrder(const Tokens &tokens)
 {
-	(void)tokens;
-	return false;
+	if (tokens.empty()) {
+		return false;
+	}
+	const bool is_start_with_obsfold = tokens.front().GetId() == kObsFoldTk;
+	const bool is_end_with_crlf      = tokens.back().GetId() == kCrLfTk;
+	if (is_start_with_obsfold || !is_end_with_crlf) {
+		return false;
+	}
+	for (Tokens::const_iterator now = tokens.begin(), next = ++tokens.begin(); next != tokens.end();
+		 now++, next++) {
+		const bool has_empty_line = now->GetId() == kCrLfTk && next->GetId() != kNormalTk;
+		const bool is_            = now->GetId() == kObsFoldTk && next->GetId() != kNormalTk;
+		if (has_empty_line || is_) {
+			return false;
+		}
+	}
+	return true;
 }
 
 void FieldLines::ParseFieldLines(const StringAry &lines)
