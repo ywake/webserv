@@ -117,7 +117,7 @@ std::size_t ThinString::find(char ch, std::size_t pos) const
 	return find(std::string(&ch, 1), pos);
 }
 
-std::size_t ThinString::FindNotOf(const std::string &char_set, std::size_t pos = 0) const
+std::size_t ThinString::FindNotOf(const std::string &char_set, std::size_t pos) const
 {
 	std::size_t offset = std::min(pos, length_);
 	for (const_iterator itr = begin() + offset; itr != end(); itr++) {
