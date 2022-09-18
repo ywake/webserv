@@ -2,6 +2,7 @@
 #include "error.hpp"
 #include "parse_uri.hpp"
 
+// TODO refactor like isObsFold
 // absolute-URI  = scheme ":" hier-part [ "?" query ]
 AbsoluteUri::AbsoluteUri(const ThinString &str)
 {
