@@ -5,6 +5,7 @@
 
 static const std::string kCrLf        = "\r\n";
 static const std::string kWhiteSpaces = " \t";
+static const std::string kSingleSpace = " ";
 
 FieldLines::FieldLines(const ThinString &str)
 {
@@ -15,7 +16,7 @@ FieldLines::FieldLines(const ThinString &str)
 	if (!IsValidTokenOrder(tokens)) {
 		throw Error("400");
 	}
-	JoinTokensSeparatedByObsFold(tokens);
+	ReplaceObsFoldWithSpace(tokens);
 	StringAry lines = ParseTokensToLines(tokens);
 	ParseFieldLines(lines);
 }
@@ -70,4 +71,27 @@ bool FieldLines::IsObsFold(const ThinString &str)
 	ThinString ows = str.substr(0, crlf_pos);
 	ThinString rws = str.substr(crlf_pos + kCrLf.size());
 	return http_abnf::IsOws(ows) && http_abnf::IsRws(rws);
+}
+
+void FieldLines::ReplaceObsFoldWithSpace(Tokens &tokens)
+{
+	for (Tokens::iterator it = tokens.begin(); it != tokens.end(); it++) {
+		if (it->GetId() == Token::kObsFoldTk) {
+			*it = Token(kSingleSpace, Token::kNormalTk);
+		}
+	}
+}
+
+FieldLines::StringAry FieldLines::ParseTokensToLines(Tokens &tokens)
+{
+	StringAry lines;
+
+	for (; !tokens.empty(); tokens.pop_front()) {
+		std::string line;
+		for (; tokens.front().GetId() != Token::kCrLfTk; tokens.pop_front()) {
+			line += tokens.front().GetStr().ToString();
+		}
+		lines.push_back(line);
+	}
+	return lines;
 }

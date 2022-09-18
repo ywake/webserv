@@ -44,6 +44,8 @@ class FieldLines
 	bool      IsObsFold(const ThinString &str);
 	Token     CreateCrLfOrObsFoldToken(const ThinString &str);
 	Token     CreateNormalToken(const ThinString &str);
+	void      ReplaceObsFoldWithSpace(Tokens &tokens);
+	StringAry ParseTokensToLines(Tokens &tokens);
 };
 
 /*
