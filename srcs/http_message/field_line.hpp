@@ -1,5 +1,6 @@
 #ifndef FIELD_LINE_HPP
 #define FIELD_LINE_HPP
+#include <list>
 #include <map>
 #include <string>
 #include <vector>
@@ -32,15 +33,17 @@ class FieldLines
 	};
 
   private:
-	typedef std::vector<Token>      Tokens;
+	typedef std::list<Token>        Tokens;
 	typedef std::vector<ThinString> StringAry;
 
   public:
 	FieldLines(const ThinString &str);
 
   private:
-	Tokens TokenizeLines(const ThinString &str);
-	bool   IsObsFold(const ThinString &str);
+	Tokens    TokenizeLines(const ThinString &str);
+	bool      IsObsFold(const ThinString &str);
+	Token     CreateCrLfOrObsFoldToken(const ThinString &str);
+	Token     CreateNormalToken(const ThinString &str);
 };
 
 /*

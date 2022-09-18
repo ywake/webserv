@@ -1,8 +1,10 @@
 #include "field_line.hpp"
 #include "error.hpp"
 #include "http_abnf_space.hpp"
+#include <list>
 
-static const std::string kCrLf = "\r\n";
+static const std::string kCrLf        = "\r\n";
+static const std::string kWhiteSpaces = " \t";
 
 FieldLines::FieldLines(const ThinString &str)
 {
@@ -33,6 +35,22 @@ FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str)
 		remained = remained.substr(token.GetLen());
 	}
 	return tokens;
+}
+
+FieldLines::Token FieldLines::CreateNormalToken(const ThinString &str)
+{
+	std::size_t token_len = str.MeasureUntil(kCrLf);
+	return Token(str.substr(0, token_len), Token::kNormalTk);
+}
+
+FieldLines::Token FieldLines::CreateCrLfOrObsFoldToken(const ThinString &str)
+{
+	if (IsObsFold(str.substr(0, kCrLf.size() + 1))) {
+		std::size_t ws_len = str.substr(kCrLf.size()).MeasureUntilNotOf(kWhiteSpaces);
+		return Token(str.substr(0, kCrLf.size() + ws_len), Token::kObsFoldTk);
+	} else {
+		return Token(kCrLf, Token::kCrLfTk);
+	}
 }
 
 //                       ↓ 無かったらerror
