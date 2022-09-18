@@ -3,6 +3,7 @@
 #include "http_abnf_space.hpp"
 #include <list>
 
+// TODO ThinString
 static const std::string kCrLf        = "\r\n";
 static const std::string kWhiteSpaces = " \t";
 static const std::string kSingleSpace = " ";
