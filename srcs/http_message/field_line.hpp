@@ -10,7 +10,7 @@
 
 class FieldLiness
 {
-  private:
+  public:
 	enum TokenId {
 		kEmpty,
 		kNormalTk,
@@ -18,16 +18,17 @@ class FieldLiness
 		kObsFoldTk
 	};
 
-  private:
+  public:
 	typedef BasicToken<TokenId>     Token;
 	typedef std::list<Token>        Tokens;
 	typedef std::vector<ThinString> StringAry;
 
   public:
-	FieldLines(const ThinString &str);
+	FieldLiness();
+	FieldLiness(const ThinString &str);
+	Tokens TokenizeLines(const ThinString &str) const;
 
   private:
-	Tokens    TokenizeLines(const ThinString &str) const;
 	bool      IsValidTokenOrder(const Tokens &tokens) const;
 	void      ReplaceObsFoldWithSpace(Tokens &tokens) const;
 	StringAry ParseTokensToLines(Tokens &tokens) const;

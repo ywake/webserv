@@ -25,6 +25,8 @@ static const std::string kCrLf        = "\r\n";
 static const std::string kWhiteSpaces = " \t";
 static const std::string kSingleSpace = " ";
 
+FieldLiness::FieldLiness() {}
+
 FieldLiness::FieldLiness(const ThinString &str)
 {
 	if (str.empty()) {
@@ -57,9 +59,26 @@ FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
 	return tokens;
 }
 
+// [message1: Hello, World!]
+// ↓
+// [message2: Hello
+//	World!]
+// ↓
+// [message3: Hello, World!]
 FieldLiness::Token FieldLiness::CreateNormalToken(const ThinString &str) const
 {
-	std::size_t token_len = str.MeasureUntil(kCrLf);
+	std::size_t token_len = 0;
+	while (true) {
+		token_len = str.FindAfter(kCrLf, token_len);
+		if (token_len == std::string::npos) {
+			token_len = str.size();
+			break;
+		}
+		if (!IsStartWithObsFold(str.substr(token_len))) {
+			break;
+		}
+		token_len += kCrLf.size();
+	}
 	return Token(str.substr(0, token_len), kNormalTk);
 }
 

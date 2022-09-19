@@ -27,5 +27,14 @@ class BasicToken
 	{
 		return s_.size();
 	}
+
+	bool operator==(const BasicToken &rhs) const
+	{
+		return id_ == rhs.id_ && s_ == rhs.s_;
+	}
+	bool operator!=(const BasicToken &rhs) const
+	{
+		return !(*this == rhs);
+	}
 };
 #endif
