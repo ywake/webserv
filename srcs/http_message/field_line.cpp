@@ -47,8 +47,7 @@ FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
 
 	for (ThinString remained = str; remained.size();) {
 		Token token;
-		if (remained.substr(0, kCrLf.size()) == kCrLf &&
-			!IsStartWithObsFold(str.substr(0, kCrLf.size() + 1))) {
+		if (remained.StartWith(kCrLf) && !StartWithObsFold(remained)) {
 			token = Token(kCrLf, kCrLfTk);
 		} else {
 			token = CreateNormalToken(remained);
@@ -84,7 +83,7 @@ FieldLiness::Token FieldLiness::CreateNormalToken(const ThinString &str) const
 
 FieldLiness::Token FieldLiness::CreateCrLfToken(const ThinString &str) const
 {
-	if (IsStartWithObsFold(str.substr(0, kCrLf.size() + 1))) {
+	if (StartWithObsFold(str.substr(0, kCrLf.size() + 1))) {
 		std::size_t ws_len = str.substr(kCrLf.size()).MeasureUntilNotOf(kWhiteSpaces);
 		return Token(str.substr(0, kCrLf.size() + ws_len), kObsFoldTk);
 	} else {
@@ -93,7 +92,7 @@ FieldLiness::Token FieldLiness::CreateCrLfToken(const ThinString &str) const
 }
 
 // obs-fold = OWS CRLF RWS
-bool FieldLiness::IsStartWithObsFold(const ThinString &str) const
+bool FieldLiness::StartWithObsFold(const ThinString &str) const
 {
 	std::size_t crlf_pos = str.find(kCrLf);
 	if (crlf_pos == ThinString::npos) {
