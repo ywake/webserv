@@ -40,7 +40,7 @@ class FieldLiness
 	Token     CreateFieldLineToken(const ThinString &str) const;
 	void      ParseFieldLines(const Tokens &tokens);
 };
-// TODO BNFミスってる
+
 /*
   field-line    = field-name ":" OWS field-value OWS
 
