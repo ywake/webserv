@@ -130,7 +130,7 @@ FieldLines::StringAry FieldLines::ParseTokensToLines(Tokens &tokens)
 FieldLines::Token::Token() : s_(), id_() {}
 FieldLines::Token::Token(const ThinString &str, TokenId id) : s_(str), id_(id) {}
 
-FieldLines::Token::TokenId FieldLines::Token::GetId() const
+FieldLines::TokenId FieldLines::Token::GetId() const
 {
 	return id_;
 }
