@@ -1,5 +1,5 @@
-#ifndef FIELD_LINE_HPP
-#define FIELD_LINE_HPP
+#ifndef FIELD_LINESS_HPP
+#define FIELD_LINESS_HPP
 #include <list>
 #include <map>
 #include <string>
