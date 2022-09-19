@@ -30,12 +30,10 @@ class FieldLiness
 
   private:
 	bool      IsValidTokenOrder(const Tokens &tokens) const;
-	void      ReplaceObsFoldWithSpace(Tokens &tokens) const;
 	StringAry ParseTokensToLines(Tokens &tokens) const;
 	bool      StartWithObsFold(const ThinString &str) const;
-	Token     CreateCrLfToken(const ThinString &str) const;
 	Token     CreateFieldLineToken(const ThinString &str) const;
-	void      ParseFieldLines(const StringAry &lines);
+	void      ParseFieldLines(const Tokens &tokens);
 };
 // TODO BNFミスってる
 /*

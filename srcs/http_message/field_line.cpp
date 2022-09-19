@@ -29,9 +29,7 @@ FieldLiness::FieldLiness(const ThinString &str)
 	if (!IsValidTokenOrder(tokens)) {
 		throw Error("400");
 	}
-	ReplaceObsFoldWithSpace(tokens);
-	StringAry lines = ParseTokensToLines(tokens);
-	ParseFieldLines(lines);
+	ParseFieldLines(tokens);
 }
 
 FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
@@ -74,16 +72,6 @@ FieldLiness::Token FieldLiness::CreateFieldLineToken(const ThinString &str) cons
 	return Token(str.substr(0, token_len), kFieldLineTk);
 }
 
-FieldLiness::Token FieldLiness::CreateCrLfToken(const ThinString &str) const
-{
-	if (StartWithObsFold(str.substr(0, kCrLf.size() + 1))) {
-		std::size_t ws_len = str.substr(kCrLf.size()).MeasureUntilNotOf(kWhiteSpaces);
-		return Token(str.substr(0, kCrLf.size() + ws_len), kObsFoldTk);
-	} else {
-		return Token(kCrLf, kCrLfTk);
-	}
-}
-
 // obs-fold = OWS CRLF RWS
 bool FieldLiness::StartWithObsFold(const ThinString &str) const
 {
@@ -99,52 +87,48 @@ bool FieldLiness::StartWithObsFold(const ThinString &str) const
 bool FieldLiness::IsValidTokenOrder(const Tokens &tokens) const
 {
 	if (tokens.empty()) {
-		return false;
+		return true;
 	}
-	const bool is_start_with_obsfold = tokens.front().GetId() == kObsFoldTk;
-	const bool is_end_with_crlf      = tokens.back().GetId() == kCrLfTk;
-	if (is_start_with_obsfold || !is_end_with_crlf) {
+	if (tokens.back().GetId() != kCrLfTk) {
 		return false;
 	}
 	for (Tokens::const_iterator now = tokens.begin(), next = ++tokens.begin(); next != tokens.end();
 		 now++, next++) {
-		const bool has_empty_line = now->GetId() == kCrLfTk && next->GetId() != kFieldLineTk;
-		const bool is_            = now->GetId() == kObsFoldTk && next->GetId() != kFieldLineTk;
-		if (has_empty_line || is_) {
+		const bool has_empty_line = now->GetId() == kCrLfTk && next->GetId() == kCrLfTk;
+		if (has_empty_line) {
 			return false;
 		}
 	}
 	return true;
 }
 
-void FieldLiness::ParseFieldLines(const StringAry &lines)
+void FieldLiness::ParseFieldLines(const Tokens &tokens)
 {
-	(void)lines;
+	(void)tokens;
 }
 
-void FieldLiness::ReplaceObsFoldWithSpace(Tokens &tokens) const
-{
-	for (Tokens::iterator it = tokens.begin(); it != tokens.end(); it++) {
-		if (it->GetId() == kObsFoldTk) {
-			*it = Token(kSingleSpace, kFieldLineTk);
-		}
-	}
-}
+// FieldLiness::Token FieldLiness::CreateCrLfToken(const ThinString &str) const
+// {
+// 	if (StartWithObsFold(str.substr(0, kCrLf.size() + 1))) {
+// 		std::size_t ws_len = str.substr(kCrLf.size()).MeasureUntilNotOf(kWhiteSpaces);
+// 		return Token(str.substr(0, kCrLf.size() + ws_len), kObsFoldTk);
+// 	} else {
+// 		return Token(kCrLf, kCrLfTk);
+// 	}
+// }
 
-FieldLiness::StringAry FieldLiness::ParseTokensToLines(Tokens &tokens) const
-{
-	StringAry lines;
-
-	while (!tokens.empty()) {
-		std::string line;
-		while (!tokens.empty() && tokens.front().GetId() != kCrLfTk) {
-			line += tokens.front().GetStr().ToString();
-			tokens.pop_front();
-		}
-		if (tokens.front().GetId() == kCrLfTk) {
-			tokens.pop_front();
-		}
-		lines.push_back(line);
-	}
-	return lines;
-}
+// std::string &FieldLiness::operator[](std::string field_name)
+// {
+// 	for (std::string::iterator it = field_name.begin(); it != field_name.end(); it++) {
+// 		*it = std::tolower(*it);
+// 	}
+// 	return field_lines_[field_name];
+// }
+// void FieldLiness::ReplaceObsFoldWithSpace(Tokens &tokens) const
+// {
+// 	for (Tokens::iterator it = tokens.begin(); it != tokens.end(); it++) {
+// 		if (it->GetId() == kObsFoldTk) {
+// 			*it = Token(kSingleSpace, kFieldLineTk);
+// 		}
+// 	}
+// }
