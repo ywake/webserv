@@ -3,6 +3,23 @@
 #include "http_abnf_space.hpp"
 #include <list>
 
+// STR CRLF STR OBSFOLD STR CRLF STR CRLF
+//                                     ↑ 無かったらerror
+
+// STR [CRLF] STR [OBSFOLD] STR [CRLF] STR [CRLF]
+
+// STR [CRLF]
+// STR [OBSFOLD] STR [CRLF]
+// STR [CRLF]
+
+// A : STR
+// A : STR [OBSFOLD] STR
+// A : STR
+
+// A : STR
+// A : STR SP STR
+// A : STR
+
 // TODO ThinString
 static const std::string kCrLf        = "\r\n";
 static const std::string kWhiteSpaces = " \t";
@@ -28,8 +45,9 @@ FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str) const
 
 	for (ThinString remained = str; remained.size();) {
 		Token token;
-		if (remained.substr(0, kCrLf.size()) == kCrLf) {
-			token = CreateCrLfOrObsFoldToken(remained);
+		if (remained.substr(0, kCrLf.size()) == kCrLf &&
+			!IsObsFold(str.substr(0, kCrLf.size() + 1))) {
+			token = Token(kCrLf, kCrLfTk);
 		} else {
 			token = CreateNormalToken(remained);
 		}
@@ -54,13 +72,6 @@ FieldLines::Token FieldLines::CreateCrLfToken(const ThinString &str) const
 		return Token(kCrLf, kCrLfTk);
 	}
 }
-
-//                       ↓ 無かったらerror
-// STR CRLF STR OBSFOLD STR CRLF STR CRLF
-// ↓　　　　　　　　　　　　　　　　　　↑ 無かったらerror
-// STR CRLF STR +  SP + STR CRLF STR CRLF
-// ↓
-// STR STR STR
 
 // obs-fold = OWS CRLF RWS
 bool FieldLines::IsObsFold(const ThinString &str) const
