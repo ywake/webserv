@@ -3,22 +3,15 @@
 #include "http_abnf_space.hpp"
 #include <list>
 
-// STR CRLF STR OBSFOLD STR CRLF STR CRLF
-//                                     ↑ 無かったらerror
+// [KEY:VAL] [CRLF] [KEY:VAL OBSFOLD VAL] [CRLF] [KEY:VAL] [CRLF]
 
-// STR [CRLF] STR [OBSFOLD] STR [CRLF] STR [CRLF]
+// KEY : VAL
+// KEY : VAL [OBSFOLD] VAL
+// KEY : VAL
 
-// STR [CRLF]
-// STR [OBSFOLD] STR [CRLF]
-// STR [CRLF]
-
-// A : STR
-// A : STR [OBSFOLD] STR
-// A : STR
-
-// A : STR
-// A : STR SP STR
-// A : STR
+// KEY : VAL
+// KEY : VAL SP VAL
+// KEY : VAL
 
 // TODO ThinString
 static const std::string kCrLf        = "\r\n";
