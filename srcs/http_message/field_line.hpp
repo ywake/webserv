@@ -27,13 +27,13 @@ class FieldLines
 	FieldLines(const ThinString &str);
 
   private:
-	Tokens    TokenizeLines(const ThinString &str);
-	bool      IsValidTokenOrder(const Tokens &tokens);
-	void      ReplaceObsFoldWithSpace(Tokens &tokens);
-	StringAry ParseTokensToLines(Tokens &tokens);
-	bool      IsObsFold(const ThinString &str);
-	Token     CreateCrLfOrObsFoldToken(const ThinString &str);
-	Token     CreateNormalToken(const ThinString &str);
+	Tokens    TokenizeLines(const ThinString &str) const;
+	bool      IsValidTokenOrder(const Tokens &tokens) const;
+	void      ReplaceObsFoldWithSpace(Tokens &tokens) const;
+	StringAry ParseTokensToLines(Tokens &tokens) const;
+	bool      IsObsFold(const ThinString &str) const;
+	Token     CreateCrLfToken(const ThinString &str) const;
+	Token     CreateNormalToken(const ThinString &str) const;
 	void      ParseFieldLines(const StringAry &lines);
 };
 // TODO BNFミスってる

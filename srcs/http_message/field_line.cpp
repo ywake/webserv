@@ -22,7 +22,7 @@ FieldLines::FieldLines(const ThinString &str)
 	ParseFieldLines(lines);
 }
 
-FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str)
+FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str) const
 {
 	Tokens tokens;
 
@@ -39,13 +39,13 @@ FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str)
 	return tokens;
 }
 
-FieldLines::Token FieldLines::CreateNormalToken(const ThinString &str)
+FieldLines::Token FieldLines::CreateNormalToken(const ThinString &str) const
 {
 	std::size_t token_len = str.MeasureUntil(kCrLf);
 	return Token(str.substr(0, token_len), kNormalTk);
 }
 
-FieldLines::Token FieldLines::CreateCrLfOrObsFoldToken(const ThinString &str)
+FieldLines::Token FieldLines::CreateCrLfToken(const ThinString &str) const
 {
 	if (IsObsFold(str.substr(0, kCrLf.size() + 1))) {
 		std::size_t ws_len = str.substr(kCrLf.size()).MeasureUntilNotOf(kWhiteSpaces);
@@ -63,7 +63,7 @@ FieldLines::Token FieldLines::CreateCrLfOrObsFoldToken(const ThinString &str)
 // STR STR STR
 
 // obs-fold = OWS CRLF RWS
-bool FieldLines::IsObsFold(const ThinString &str)
+bool FieldLines::IsObsFold(const ThinString &str) const
 {
 	std::size_t crlf_pos = str.find(kCrLf);
 	if (crlf_pos == ThinString::npos) {
@@ -74,7 +74,7 @@ bool FieldLines::IsObsFold(const ThinString &str)
 	return http_abnf::IsOws(ows) && http_abnf::IsRws(rws);
 }
 
-bool FieldLines::IsValidTokenOrder(const Tokens &tokens)
+bool FieldLines::IsValidTokenOrder(const Tokens &tokens) const
 {
 	if (tokens.empty()) {
 		return false;
@@ -100,7 +100,7 @@ void FieldLines::ParseFieldLines(const StringAry &lines)
 	(void)lines;
 }
 
-void FieldLines::ReplaceObsFoldWithSpace(Tokens &tokens)
+void FieldLines::ReplaceObsFoldWithSpace(Tokens &tokens) const
 {
 	for (Tokens::iterator it = tokens.begin(); it != tokens.end(); it++) {
 		if (it->GetId() == kObsFoldTk) {
@@ -109,7 +109,7 @@ void FieldLines::ReplaceObsFoldWithSpace(Tokens &tokens)
 	}
 }
 
-FieldLines::StringAry FieldLines::ParseTokensToLines(Tokens &tokens)
+FieldLines::StringAry FieldLines::ParseTokensToLines(Tokens &tokens) const
 {
 	StringAry lines;
 
