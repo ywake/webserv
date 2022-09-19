@@ -218,6 +218,14 @@ bool ThinString::EndWith(const std::string &delim) const
 	return this->substr(start) == delim;
 }
 
+bool ThinString::StartWith(const std::string &delim) const
+{
+	if (delim.size() > this->size()) {
+		return false;
+	}
+	return this->substr(0, delim.size()) == delim;
+}
+
 ThinString::const_iterator ThinString::begin() const
 {
 	return base_->begin() + start_;
