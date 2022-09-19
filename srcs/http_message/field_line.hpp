@@ -31,7 +31,7 @@ class FieldLines
 	bool      IsValidTokenOrder(const Tokens &tokens) const;
 	void      ReplaceObsFoldWithSpace(Tokens &tokens) const;
 	StringAry ParseTokensToLines(Tokens &tokens) const;
-	bool      IsObsFold(const ThinString &str) const;
+	bool      IsStartWithObsFold(const ThinString &str) const;
 	Token     CreateCrLfToken(const ThinString &str) const;
 	Token     CreateNormalToken(const ThinString &str) const;
 	void      ParseFieldLines(const StringAry &lines);

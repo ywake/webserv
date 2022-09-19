@@ -46,7 +46,7 @@ FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str) const
 	for (ThinString remained = str; remained.size();) {
 		Token token;
 		if (remained.substr(0, kCrLf.size()) == kCrLf &&
-			!IsObsFold(str.substr(0, kCrLf.size() + 1))) {
+			!IsStartWithObsFold(str.substr(0, kCrLf.size() + 1))) {
 			token = Token(kCrLf, kCrLfTk);
 		} else {
 			token = CreateNormalToken(remained);
@@ -65,7 +65,7 @@ FieldLines::Token FieldLines::CreateNormalToken(const ThinString &str) const
 
 FieldLines::Token FieldLines::CreateCrLfToken(const ThinString &str) const
 {
-	if (IsObsFold(str.substr(0, kCrLf.size() + 1))) {
+	if (IsStartWithObsFold(str.substr(0, kCrLf.size() + 1))) {
 		std::size_t ws_len = str.substr(kCrLf.size()).MeasureUntilNotOf(kWhiteSpaces);
 		return Token(str.substr(0, kCrLf.size() + ws_len), kObsFoldTk);
 	} else {
@@ -74,14 +74,14 @@ FieldLines::Token FieldLines::CreateCrLfToken(const ThinString &str) const
 }
 
 // obs-fold = OWS CRLF RWS
-bool FieldLines::IsObsFold(const ThinString &str) const
+bool FieldLines::IsStartWithObsFold(const ThinString &str) const
 {
 	std::size_t crlf_pos = str.find(kCrLf);
 	if (crlf_pos == ThinString::npos) {
 		return false;
 	}
 	ThinString ows = str.substr(0, crlf_pos);
-	ThinString rws = str.substr(crlf_pos + kCrLf.size());
+	ThinString rws = str.substr(crlf_pos + kCrLf.size(), 1);
 	return http_abnf::IsOws(ows) && http_abnf::IsRws(rws);
 }
 
