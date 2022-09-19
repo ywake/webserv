@@ -62,6 +62,9 @@ class ThinString
 	std::size_t find(const char *s, std::size_t pos = 0) const;
 	std::size_t find(char ch, std::size_t pos = 0) const;
 	std::size_t FindNotOf(const std::string &str, std::size_t pos = 0) const;
+	std::size_t FindAfter(const std::string &str, std::size_t start_pos) const;
+	std::size_t FindAfter(const char *s, std::size_t start_pos) const;
+	std::size_t FindAfter(char ch, std::size_t start_pos) const;
 
 	ThinString  substr(std::size_t pos = 0, std::size_t size = ~0UL) const;
 	std::string ToString() const;

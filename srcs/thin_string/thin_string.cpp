@@ -117,6 +117,25 @@ std::size_t ThinString::find(char ch, std::size_t pos) const
 	return find(std::string(&ch, 1), pos);
 }
 
+std::size_t ThinString::FindAfter(const std::string &str, std::size_t start_pos) const
+{
+	std::size_t found_pos = substr(start_pos).find(str);
+	if (found_pos == ThinString::npos) {
+		return ThinString::npos;
+	}
+	return found_pos + start_pos;
+}
+
+std::size_t ThinString::FindAfter(const char *s, std::size_t start_pos) const
+{
+	return FindAfter(std::string(s), start_pos);
+}
+
+std::size_t ThinString::FindAfter(char ch, std::size_t start_pos) const
+{
+	return FindAfter(std::string(&ch, 1), start_pos);
+}
+
 std::size_t ThinString::FindNotOf(const std::string &char_set, std::size_t pos) const
 {
 	std::size_t offset = std::min(pos, length_);
