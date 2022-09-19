@@ -10,6 +10,9 @@
 
 class FieldLiness
 {
+  private:
+	std::map<const ThinString, ThinString> field_lines_;
+
   public:
 	enum TokenId {
 		kEmpty,
@@ -27,6 +30,8 @@ class FieldLiness
 	FieldLiness();
 	FieldLiness(const ThinString &str);
 	Tokens TokenizeLines(const ThinString &str) const;
+
+	// std::string &operator[](std::string field_name);
 
   private:
 	bool      IsValidTokenOrder(const Tokens &tokens) const;
