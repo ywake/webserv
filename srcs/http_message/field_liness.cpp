@@ -118,6 +118,14 @@ void FieldLiness::StoreFieldLines(const Lines &lines)
 	}
 }
 
+std::string &FieldLiness::operator[](std::string field_name)
+{
+	for (std::string::iterator it = field_name.begin(); it != field_name.end(); it++) {
+		*it = std::tolower(*it);
+	}
+	return field_lines_[field_name];
+}
+
 // FieldLiness::Token FieldLiness::CreateCrLfToken(const ThinString &str) const
 // {
 // 	if (StartWithObsFold(str.substr(0, kCrLf.size() + 1))) {
@@ -128,13 +136,6 @@ void FieldLiness::StoreFieldLines(const Lines &lines)
 // 	}
 // }
 
-// std::string &FieldLiness::operator[](std::string field_name)
-// {
-// 	for (std::string::iterator it = field_name.begin(); it != field_name.end(); it++) {
-// 		*it = std::tolower(*it);
-// 	}
-// 	return field_lines_[field_name];
-// }
 // void FieldLiness::ReplaceObsFoldWithSpace(Tokens &tokens) const
 // {
 // 	for (Tokens::iterator it = tokens.begin(); it != tokens.end(); it++) {

@@ -33,7 +33,7 @@ class FieldLiness
 	FieldLiness(const ThinString &str);
 	Tokens TokenizeLines(const ThinString &str) const;
 
-	// std::string &operator[](std::string field_name);
+	std::string &operator[](std::string field_name);
 
   private:
 	bool      IsValidTokenOrder(const Tokens &tokens) const;
