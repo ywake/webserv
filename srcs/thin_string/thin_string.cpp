@@ -190,7 +190,7 @@ std::size_t ThinString::MeasureUntilNotOf(const std::string &char_set) const
 }
 
 // TODO test
-bool ThinString::EndWith(const std::string &delim)
+bool ThinString::EndWith(const std::string &delim) const
 {
 	if (delim.size() > this->size()) {
 		return false;
