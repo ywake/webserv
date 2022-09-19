@@ -4,6 +4,14 @@
 static const std::string kCrLf = "\r\n";
 
 FieldLine::FieldLine() : field_name_(), field_value_() {}
+const ThinString &FieldLine::GetFieldName() const
+{
+	return field_value_;
+}
+const ThinString &FieldLine::GetFieldValue() const
+{
+	return field_name_;
+}
 
 // obs-fold = OWS CRLF RWS
 bool FieldLine::StartWithObsFold(const ThinString &str)
