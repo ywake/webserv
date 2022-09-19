@@ -13,7 +13,7 @@ class FieldLiness
   public:
 	enum TokenId {
 		kEmpty,
-		kNormalTk,
+		kFieldLineTk,
 		kCrLfTk,
 		kObsFoldTk
 	};
@@ -34,7 +34,7 @@ class FieldLiness
 	StringAry ParseTokensToLines(Tokens &tokens) const;
 	bool      StartWithObsFold(const ThinString &str) const;
 	Token     CreateCrLfToken(const ThinString &str) const;
-	Token     CreateNormalToken(const ThinString &str) const;
+	Token     CreateFieldLineToken(const ThinString &str) const;
 	void      ParseFieldLines(const StringAry &lines);
 };
 // TODO BNFミスってる

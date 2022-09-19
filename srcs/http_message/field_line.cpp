@@ -50,7 +50,7 @@ FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
 		if (remained.StartWith(kCrLf) && !StartWithObsFold(remained)) {
 			token = Token(kCrLf, kCrLfTk);
 		} else {
-			token = CreateNormalToken(remained);
+			token = CreateFieldLineToken(remained);
 		}
 		tokens.push_back(token);
 		remained = remained.substr(token.GetLen());
@@ -64,7 +64,7 @@ FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
 //	World!]
 // ↓
 // [message3: Hello, World!]
-FieldLiness::Token FieldLiness::CreateNormalToken(const ThinString &str) const
+FieldLiness::Token FieldLiness::CreateFieldLineToken(const ThinString &str) const
 {
 	std::size_t token_len = 0;
 	while (true) {
@@ -73,12 +73,12 @@ FieldLiness::Token FieldLiness::CreateNormalToken(const ThinString &str) const
 			token_len = str.size();
 			break;
 		}
-		if (!IsStartWithObsFold(str.substr(token_len))) {
+		if (!StartWithObsFold(str.substr(token_len))) {
 			break;
 		}
 		token_len += kCrLf.size();
 	}
-	return Token(str.substr(0, token_len), kNormalTk);
+	return Token(str.substr(0, token_len), kFieldLineTk);
 }
 
 FieldLiness::Token FieldLiness::CreateCrLfToken(const ThinString &str) const
@@ -115,8 +115,8 @@ bool FieldLiness::IsValidTokenOrder(const Tokens &tokens) const
 	}
 	for (Tokens::const_iterator now = tokens.begin(), next = ++tokens.begin(); next != tokens.end();
 		 now++, next++) {
-		const bool has_empty_line = now->GetId() == kCrLfTk && next->GetId() != kNormalTk;
-		const bool is_            = now->GetId() == kObsFoldTk && next->GetId() != kNormalTk;
+		const bool has_empty_line = now->GetId() == kCrLfTk && next->GetId() != kFieldLineTk;
+		const bool is_            = now->GetId() == kObsFoldTk && next->GetId() != kFieldLineTk;
 		if (has_empty_line || is_) {
 			return false;
 		}
@@ -133,7 +133,7 @@ void FieldLiness::ReplaceObsFoldWithSpace(Tokens &tokens) const
 {
 	for (Tokens::iterator it = tokens.begin(); it != tokens.end(); it++) {
 		if (it->GetId() == kObsFoldTk) {
-			*it = Token(kSingleSpace, kNormalTk);
+			*it = Token(kSingleSpace, kFieldLineTk);
 		}
 	}
 }
