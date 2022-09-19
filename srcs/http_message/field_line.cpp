@@ -25,7 +25,7 @@ static const std::string kCrLf        = "\r\n";
 static const std::string kWhiteSpaces = " \t";
 static const std::string kSingleSpace = " ";
 
-FieldLines::FieldLines(const ThinString &str)
+FieldLiness::FieldLiness(const ThinString &str)
 {
 	if (str.empty()) {
 		return;
@@ -39,7 +39,7 @@ FieldLines::FieldLines(const ThinString &str)
 	ParseFieldLines(lines);
 }
 
-FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str) const
+FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
 {
 	Tokens tokens;
 
@@ -57,13 +57,13 @@ FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str) const
 	return tokens;
 }
 
-FieldLines::Token FieldLines::CreateNormalToken(const ThinString &str) const
+FieldLiness::Token FieldLiness::CreateNormalToken(const ThinString &str) const
 {
 	std::size_t token_len = str.MeasureUntil(kCrLf);
 	return Token(str.substr(0, token_len), kNormalTk);
 }
 
-FieldLines::Token FieldLines::CreateCrLfToken(const ThinString &str) const
+FieldLiness::Token FieldLiness::CreateCrLfToken(const ThinString &str) const
 {
 	if (IsStartWithObsFold(str.substr(0, kCrLf.size() + 1))) {
 		std::size_t ws_len = str.substr(kCrLf.size()).MeasureUntilNotOf(kWhiteSpaces);
@@ -74,7 +74,7 @@ FieldLines::Token FieldLines::CreateCrLfToken(const ThinString &str) const
 }
 
 // obs-fold = OWS CRLF RWS
-bool FieldLines::IsStartWithObsFold(const ThinString &str) const
+bool FieldLiness::IsStartWithObsFold(const ThinString &str) const
 {
 	std::size_t crlf_pos = str.find(kCrLf);
 	if (crlf_pos == ThinString::npos) {
@@ -85,7 +85,7 @@ bool FieldLines::IsStartWithObsFold(const ThinString &str) const
 	return http_abnf::IsOws(ows) && http_abnf::IsRws(rws);
 }
 
-bool FieldLines::IsValidTokenOrder(const Tokens &tokens) const
+bool FieldLiness::IsValidTokenOrder(const Tokens &tokens) const
 {
 	if (tokens.empty()) {
 		return false;
@@ -106,12 +106,12 @@ bool FieldLines::IsValidTokenOrder(const Tokens &tokens) const
 	return true;
 }
 
-void FieldLines::ParseFieldLines(const StringAry &lines)
+void FieldLiness::ParseFieldLines(const StringAry &lines)
 {
 	(void)lines;
 }
 
-void FieldLines::ReplaceObsFoldWithSpace(Tokens &tokens) const
+void FieldLiness::ReplaceObsFoldWithSpace(Tokens &tokens) const
 {
 	for (Tokens::iterator it = tokens.begin(); it != tokens.end(); it++) {
 		if (it->GetId() == kObsFoldTk) {
@@ -120,7 +120,7 @@ void FieldLines::ReplaceObsFoldWithSpace(Tokens &tokens) const
 	}
 }
 
-FieldLines::StringAry FieldLines::ParseTokensToLines(Tokens &tokens) const
+FieldLiness::StringAry FieldLiness::ParseTokensToLines(Tokens &tokens) const
 {
 	StringAry lines;
 

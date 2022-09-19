@@ -8,7 +8,7 @@
 #include "basic_token.hpp"
 #include "thin_string.hpp"
 
-class FieldLines
+class FieldLiness
 {
   private:
 	enum TokenId {
