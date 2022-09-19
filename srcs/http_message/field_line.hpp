@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "basic_token.hpp"
 #include "thin_string.hpp"
 
 class FieldLines
@@ -16,22 +17,9 @@ class FieldLines
 		kCrLfTk,
 		kObsFoldTk
 	};
-	// TODO　外に出す
-	class Token
-	{
-	  private:
-		ThinString s_;
-		TokenId    id_;
-
-	  public:
-		Token();
-		Token(const ThinString &str, TokenId id);
-		TokenId           GetId() const;
-		const ThinString &GetStr() const;
-		std::size_t       GetLen() const;
-	};
 
   private:
+	typedef BasicToken<TokenId>     Token;
 	typedef std::list<Token>        Tokens;
 	typedef std::vector<ThinString> StringAry;
 

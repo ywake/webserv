@@ -126,21 +126,3 @@ FieldLines::StringAry FieldLines::ParseTokensToLines(Tokens &tokens)
 	}
 	return lines;
 }
-
-FieldLines::Token::Token() : s_(), id_() {}
-FieldLines::Token::Token(const ThinString &str, TokenId id) : s_(str), id_(id) {}
-
-FieldLines::TokenId FieldLines::Token::GetId() const
-{
-	return id_;
-}
-
-const ThinString &FieldLines::Token::GetStr() const
-{
-	return s_;
-}
-
-std::size_t FieldLines::Token::GetLen() const
-{
-	return s_.size();
-}
