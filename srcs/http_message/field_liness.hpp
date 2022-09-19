@@ -6,12 +6,13 @@
 #include <vector>
 
 #include "basic_token.hpp"
+#include "field_line.hpp"
 #include "thin_string.hpp"
 
 class FieldLiness
 {
   private:
-	std::map<const ThinString, ThinString> field_lines_;
+	std::map<const std::string, std::string> field_lines_;
 
   public:
 	enum TokenId {
@@ -24,6 +25,7 @@ class FieldLiness
   public:
 	typedef BasicToken<TokenId>     Token;
 	typedef std::list<Token>        Tokens;
+	typedef std::list<FieldLine>    Lines;
 	typedef std::vector<ThinString> StringAry;
 
   public:
@@ -37,7 +39,8 @@ class FieldLiness
 	bool      IsValidTokenOrder(const Tokens &tokens) const;
 	StringAry ParseTokensToLines(Tokens &tokens) const;
 	Token     CreateFieldLineToken(const ThinString &str) const;
-	void      ParseFieldLines(const Tokens &tokens);
+	Lines     ParseFieldLines(const Tokens &tokens) const;
+	void      StoreFieldLines(const Lines &lines);
 };
 
 /*

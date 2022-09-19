@@ -1,6 +1,7 @@
 #include "field_liness.hpp"
 #include "error.hpp"
 #include "field_line.hpp"
+
 #include <list>
 
 // [KEY:VAL] [CRLF] [KEY:VAL OBSFOLD VAL] [CRLF] [KEY:VAL] [CRLF]
@@ -29,7 +30,8 @@ FieldLiness::FieldLiness(const ThinString &str)
 	if (!IsValidTokenOrder(tokens)) {
 		throw Error("400");
 	}
-	ParseFieldLines(tokens);
+	Lines lines = ParseFieldLines(tokens);
+	StoreFieldLines(lines);
 }
 
 FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
@@ -90,9 +92,30 @@ bool FieldLiness::IsValidTokenOrder(const Tokens &tokens) const
 	return true;
 }
 
-void FieldLiness::ParseFieldLines(const Tokens &tokens)
+FieldLiness::Lines FieldLiness::ParseFieldLines(const Tokens &tokens) const
 {
-	(void)tokens;
+	Lines lines;
+
+	for (Tokens::const_iterator it = tokens.begin(); it != tokens.end(); it++) {
+		if (it->GetId() == kCrLfTk) {
+			continue;
+		}
+		lines.push_back(FieldLine(it->GetStr()));
+	}
+	return lines;
+}
+
+void FieldLiness::StoreFieldLines(const Lines &lines)
+{
+	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
+		const std::string name  = it->GetFieldName().ToString();
+		const std::string value = it->GetFieldValue().ToString();
+		if (field_lines_.count(name) == 0) {
+			field_lines_[name] = value;
+		} else {
+			field_lines_[name] += ", " + value;
+		}
+	}
 }
 
 // FieldLiness::Token FieldLiness::CreateCrLfToken(const ThinString &str) const
