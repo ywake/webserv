@@ -30,6 +30,10 @@ TEST(FieldLiness, TokenizeLines)
 		std::list<FieldLiness::Token>({FieldLiness::Token("\r\n", FieldLiness::kCrLfTk)})
 	);
 	EXPECT_EQ(
+		field_lines.TokenizeLines("\r\n "),
+		std::list<FieldLiness::Token>({FieldLiness::Token("\r\n ", FieldLiness::kFieldLineTk)})
+	);
+	EXPECT_EQ(
 		field_lines.TokenizeLines("key: value\r\n"
 								  "\r\n"
 								  "\r\n"),
