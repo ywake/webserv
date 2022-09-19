@@ -12,6 +12,7 @@ class FieldLine
   public:
 	FieldLine();
 	FieldLine(const ThinString &line);
+	static bool StartWithObsFold(const ThinString &str);
 };
 
 /*

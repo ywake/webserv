@@ -1,6 +1,6 @@
 #include "field_liness.hpp"
 #include "error.hpp"
-#include "http_abnf_space.hpp"
+#include "field_line.hpp"
 #include <list>
 
 // [KEY:VAL] [CRLF] [KEY:VAL OBSFOLD VAL] [CRLF] [KEY:VAL] [CRLF]
@@ -38,7 +38,7 @@ FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
 
 	for (ThinString remained = str; remained.size();) {
 		Token token;
-		if (remained.StartWith(kCrLf) && !StartWithObsFold(remained)) {
+		if (remained.StartWith(kCrLf) && !FieldLine::StartWithObsFold(remained)) {
 			token = Token(kCrLf, kCrLfTk);
 		} else {
 			token = CreateFieldLineToken(remained);
@@ -64,24 +64,12 @@ FieldLiness::Token FieldLiness::CreateFieldLineToken(const ThinString &str) cons
 			token_len = str.size();
 			break;
 		}
-		if (!StartWithObsFold(str.substr(token_len))) {
+		if (!FieldLine::StartWithObsFold(str.substr(token_len))) {
 			break;
 		}
 		token_len += kCrLf.size();
 	}
 	return Token(str.substr(0, token_len), kFieldLineTk);
-}
-
-// obs-fold = OWS CRLF RWS
-bool FieldLiness::StartWithObsFold(const ThinString &str) const
-{
-	std::size_t crlf_pos = str.find(kCrLf);
-	if (crlf_pos == ThinString::npos) {
-		return false;
-	}
-	ThinString ows = str.substr(0, crlf_pos);
-	ThinString rws = str.substr(crlf_pos + kCrLf.size(), 1);
-	return http_abnf::IsOws(ows) && http_abnf::IsRws(rws);
 }
 
 bool FieldLiness::IsValidTokenOrder(const Tokens &tokens) const

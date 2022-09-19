@@ -36,7 +36,6 @@ class FieldLiness
   private:
 	bool      IsValidTokenOrder(const Tokens &tokens) const;
 	StringAry ParseTokensToLines(Tokens &tokens) const;
-	bool      StartWithObsFold(const ThinString &str) const;
 	Token     CreateFieldLineToken(const ThinString &str) const;
 	void      ParseFieldLines(const Tokens &tokens);
 };
