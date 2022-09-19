@@ -18,7 +18,7 @@ class FieldLiness
 		kEmpty,
 		kFieldLineTk,
 		kCrLfTk,
-		kObsFoldTk
+		kObsFoldTk // TODO後で消す
 	};
 
   public:
