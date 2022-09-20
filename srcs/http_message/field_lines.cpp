@@ -106,6 +106,14 @@ FieldLines::Lines FieldLines::ParseFieldLines(const Tokens &tokens) const
 	return lines;
 }
 
+/*
+TODO どっちでパースするか
+[1]	value validation
+	name結合可能？
+	field_lines_[name] += ", " + value
+	データ構造はmap<name, std::set>
+	TRはcase insensitive
+*/
 void FieldLines::StoreFieldLines(const Lines &lines)
 {
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {

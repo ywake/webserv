@@ -28,3 +28,12 @@ const ThinString &FieldLine::GetFieldValue() const
 {
 	return field_name_;
 }
+
+// STR ":" OWS STR OBSFOLD STR OWS
+// name = STR
+
+// value =  OWS STR OBSFOLD STR OWS
+// value =  OWS STR SP STR OWS
+// value =  STR SP STR
+
+// value = uniq_validate(STR SP STR)
