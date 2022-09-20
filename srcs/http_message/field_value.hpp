@@ -25,7 +25,9 @@ class FieldValue
   public:
 	FieldValue();
 	FieldValue(const ThinString &str);
-	Tokens            Tokenize(const ThinString &str) const;
+	Tokens Tokenize(const ThinString &str) const;
+	Token  CreateFieldContentToken(const ThinString &str) const;
+
 	FieldValue       &operator=(const FieldValue &other);
 	const ThinString &GetValue() const;
 };
