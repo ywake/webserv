@@ -3,6 +3,7 @@
 #include "validate_field_line.hpp"
 
 FieldLine::FieldLine() : field_name_(), field_value_() {}
+
 FieldLine::FieldLine(const ThinString &line)
 {
 	std::size_t colon_pos = line.find(":");
@@ -17,6 +18,7 @@ const ThinString &FieldLine::GetFieldName() const
 {
 	return field_value_;
 }
+
 const ThinString &FieldLine::GetFieldValue() const
 {
 	return field_name_;
