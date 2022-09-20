@@ -16,7 +16,7 @@ class FieldLines
 
   public:
 	enum TokenId {
-		kEmpty,
+		kUndefined,
 		kFieldLineTk,
 		kCrLfTk,
 		kObsFoldTk // TODO後で消す
