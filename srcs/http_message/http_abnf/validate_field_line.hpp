@@ -1,5 +1,5 @@
-#ifndef VALIDATE_SPACE_HPP
-#define VALIDATE_SPACE_HPP
+#ifndef VALIDATE_FIELD_LINE_HPP
+#define VALIDATE_FIELD_LINE_HPP
 #include "thin_string.hpp"
 
 namespace http_abnf
