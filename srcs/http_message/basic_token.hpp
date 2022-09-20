@@ -1,6 +1,7 @@
 #ifndef BASIC_TOKEN_HPP
 #define BASIC_TOKEN_HPP
 #include "thin_string.hpp"
+#include <iostream>
 
 template <typename TokenId>
 class BasicToken
@@ -37,4 +38,12 @@ class BasicToken
 		return !(*this == rhs);
 	}
 };
+
+template <typename TokenId>
+std::ostream &operator<<(std::ostream &os, const BasicToken<TokenId> &token)
+{
+	os << "<" << token.GetId() << ":" << token.GetStr() << ">";
+	return os;
+}
+
 #endif
