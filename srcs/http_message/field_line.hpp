@@ -14,8 +14,6 @@ class FieldLine
 	FieldLine(const ThinString &line);
 	const ThinString &GetFieldName() const;
 	const ThinString &GetFieldValue() const;
-
-	static bool StartWithObsFold(const ThinString &str);
 };
 
 /*

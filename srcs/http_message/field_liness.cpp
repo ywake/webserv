@@ -1,6 +1,7 @@
 #include "field_liness.hpp"
 #include "error.hpp"
 #include "field_line.hpp"
+#include "validate_field_line.hpp"
 
 #include <list>
 
@@ -40,7 +41,7 @@ FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
 
 	for (ThinString remained = str; remained.size();) {
 		Token token;
-		if (remained.StartWith(kCrLf) && !FieldLine::StartWithObsFold(remained)) {
+		if (remained.StartWith(kCrLf) && !http_abnf::StartWithObsFold(remained)) {
 			token = Token(kCrLf, kCrLfTk);
 		} else {
 			token = CreateFieldLineToken(remained);
@@ -66,7 +67,7 @@ FieldLiness::Token FieldLiness::CreateFieldLineToken(const ThinString &str) cons
 			token_len = str.size();
 			break;
 		}
-		if (!FieldLine::StartWithObsFold(str.substr(token_len))) {
+		if (!http_abnf::StartWithObsFold(str.substr(token_len))) {
 			break;
 		}
 		token_len += kCrLf.size();
