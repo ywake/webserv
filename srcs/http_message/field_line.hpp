@@ -1,13 +1,14 @@
 #ifndef FIELD_LINE_HPP
 #define FIELD_LINE_HPP
 
+#include "field_value.hpp"
 #include "thin_string.hpp"
 
 class FieldLine
 {
   private:
 	ThinString field_name_;
-	ThinString field_value_;
+	FieldValue field_value_;
 
   public:
 	FieldLine();

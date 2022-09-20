@@ -1,5 +1,6 @@
 #include "field_line.hpp"
 #include "error.hpp"
+#include "field_value.hpp"
 #include "validate_field_line.hpp"
 
 FieldLine::FieldLine() : field_name_(), field_value_() {}
@@ -16,12 +17,12 @@ FieldLine::FieldLine(const ThinString &line)
 		throw Error("400");
 	}
 	field_name_  = name;
-	field_value_ = value;
+	field_value_ = FieldValue(value);
 }
 
 const ThinString &FieldLine::GetFieldName() const
 {
-	return field_value_;
+	return field_value_.GetValue();
 }
 
 const ThinString &FieldLine::GetFieldValue() const
