@@ -20,9 +20,9 @@ static const std::string kCrLf        = "\r\n";
 static const std::string kWhiteSpaces = " \t";
 static const std::string kSingleSpace = " ";
 
-FieldLiness::FieldLiness() {}
+FieldLines::FieldLines() {}
 
-FieldLiness::FieldLiness(const ThinString &str)
+FieldLines::FieldLines(const ThinString &str)
 {
 	if (str.empty()) {
 		return;
@@ -35,7 +35,7 @@ FieldLiness::FieldLiness(const ThinString &str)
 	StoreFieldLines(lines);
 }
 
-FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
+FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str) const
 {
 	Tokens tokens;
 
@@ -58,7 +58,7 @@ FieldLiness::Tokens FieldLiness::TokenizeLines(const ThinString &str) const
 //	World!]
 // ↓
 // [message3: Hello, World!]
-FieldLiness::Token FieldLiness::CreateFieldLineToken(const ThinString &str) const
+FieldLines::Token FieldLines::CreateFieldLineToken(const ThinString &str) const
 {
 	std::size_t token_len = 0;
 	while (true) {
@@ -75,7 +75,7 @@ FieldLiness::Token FieldLiness::CreateFieldLineToken(const ThinString &str) cons
 	return Token(str.substr(0, token_len), kFieldLineTk);
 }
 
-bool FieldLiness::IsValidTokenOrder(const Tokens &tokens) const
+bool FieldLines::IsValidTokenOrder(const Tokens &tokens) const
 {
 	if (tokens.empty()) {
 		return true;
@@ -93,7 +93,7 @@ bool FieldLiness::IsValidTokenOrder(const Tokens &tokens) const
 	return true;
 }
 
-FieldLiness::Lines FieldLiness::ParseFieldLines(const Tokens &tokens) const
+FieldLines::Lines FieldLines::ParseFieldLines(const Tokens &tokens) const
 {
 	Lines lines;
 
@@ -106,7 +106,7 @@ FieldLiness::Lines FieldLiness::ParseFieldLines(const Tokens &tokens) const
 	return lines;
 }
 
-void FieldLiness::StoreFieldLines(const Lines &lines)
+void FieldLines::StoreFieldLines(const Lines &lines)
 {
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
 		const std::string name  = it->GetFieldName().ToString();
@@ -119,7 +119,7 @@ void FieldLiness::StoreFieldLines(const Lines &lines)
 	}
 }
 
-std::string &FieldLiness::operator[](std::string field_name)
+std::string &FieldLines::operator[](std::string field_name)
 {
 	for (std::string::iterator it = field_name.begin(); it != field_name.end(); it++) {
 		*it = std::tolower(*it);
@@ -127,12 +127,12 @@ std::string &FieldLiness::operator[](std::string field_name)
 	return field_lines_[field_name];
 }
 
-bool FieldLiness::operator==(const FieldLiness &rhs) const
+bool FieldLines::operator==(const FieldLines &rhs) const
 {
 	return field_lines_ == rhs.field_lines_;
 }
 
-bool FieldLiness::operator!=(const FieldLiness &rhs) const
+bool FieldLines::operator!=(const FieldLines &rhs) const
 {
 	return !(*this == rhs);
 }

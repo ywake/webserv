@@ -9,7 +9,7 @@
 #include "field_line.hpp"
 #include "thin_string.hpp"
 
-class FieldLiness
+class FieldLines
 {
   private:
 	std::map<const std::string, std::string> field_lines_;
@@ -29,12 +29,12 @@ class FieldLiness
 	typedef std::vector<ThinString> StringAry;
 
   public:
-	FieldLiness();
-	FieldLiness(const ThinString &str);
+	FieldLines();
+	FieldLines(const ThinString &str);
 	Tokens TokenizeLines(const ThinString &str) const;
 
-	bool         operator==(const FieldLiness &rhs) const;
-	bool         operator!=(const FieldLiness &rhs) const;
+	bool         operator==(const FieldLines &rhs) const;
+	bool         operator!=(const FieldLines &rhs) const;
 	std::string &operator[](std::string field_name);
 
   private:
