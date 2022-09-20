@@ -1,4 +1,5 @@
 #include "thin_string.hpp"
+#include "validate_http_char.hpp"
 
 static const std::string kWhiteSpaces = " \t";
 static const std::string kCrLf        = "\r\n";
@@ -40,6 +41,11 @@ namespace http_abnf
 			};
 		}
 		return true;
+	}
+
+	bool IsFieldName(const ThinString &str)
+	{
+		return IsToken(str);
 	}
 
 } // namespace http_abnf

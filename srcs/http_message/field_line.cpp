@@ -12,6 +12,11 @@ FieldLine::FieldLine(const ThinString &line)
 	}
 	ThinString name  = line.substr(0, colon_pos);
 	ThinString value = line.substr(colon_pos + 1);
+	if (!http_abnf::IsFieldName(name)) {
+		throw Error("400");
+	}
+	field_name_  = name;
+	field_value_ = value;
 }
 
 const ThinString &FieldLine::GetFieldName() const
