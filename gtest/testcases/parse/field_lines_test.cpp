@@ -2,7 +2,7 @@
 
 #include <list>
 
-#include "field_liness.hpp"
+#include "field_lines.hpp"
 
 TEST(FieldLines, TokenizeLines)
 {
