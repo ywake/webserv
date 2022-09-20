@@ -33,6 +33,8 @@ class FieldLiness
 	FieldLiness(const ThinString &str);
 	Tokens TokenizeLines(const ThinString &str) const;
 
+	bool         operator==(const FieldLiness &rhs) const;
+	bool         operator!=(const FieldLiness &rhs) const;
 	std::string &operator[](std::string field_name);
 
   private:

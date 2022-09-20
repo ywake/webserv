@@ -127,6 +127,15 @@ std::string &FieldLiness::operator[](std::string field_name)
 	return field_lines_[field_name];
 }
 
+bool FieldLiness::operator==(const FieldLiness &rhs) const
+{
+	return field_lines_ == rhs.field_lines_;
+}
+
+bool FieldLiness::operator!=(const FieldLiness &rhs) const
+{
+	return !(*this == rhs);
+}
 // FieldLiness::Token FieldLiness::CreateCrLfToken(const ThinString &str) const
 // {
 // 	if (StartWithObsFold(str.substr(0, kCrLf.size() + 1))) {
