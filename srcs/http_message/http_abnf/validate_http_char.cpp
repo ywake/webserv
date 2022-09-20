@@ -11,7 +11,8 @@ namespace http_abnf
 		return std::isdigit(c) || std::isalpha(c) || kTcharUniqSet.find(c) != ThinString::npos;
 	}
 
-	bool IsTcharOnly(const ThinString &str)
+	// token = 1*tchar
+	bool IsToken(const ThinString &str)
 	{
 		if (str.empty()) {
 			return false;

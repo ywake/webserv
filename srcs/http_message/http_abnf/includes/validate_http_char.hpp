@@ -6,7 +6,7 @@
 namespace http_abnf
 {
 	bool IsTchar(const char c);
-	bool IsTcharOnly(const ThinString &str);
+	bool IsToken(const ThinString &str);
 } // namespace http_abnf
 
 #endif

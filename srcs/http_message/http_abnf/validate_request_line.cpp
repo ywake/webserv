@@ -6,7 +6,7 @@ namespace http_abnf
 
 	bool IsMethod(const ThinString &str)
 	{
-		return IsTcharOnly(str);
+		return IsToken(str);
 	}
 
 	// HTTP-version = HTTP-name "/" DIGIT "." DIGIT
