@@ -11,17 +11,17 @@ FieldValue::FieldValue(const ThinString &str) : field_value_()
 	if (str.empty()) {
 		return;
 	}
-	if (IsFieldVchar(str.at(0)) && !IsFieldVchar(str.at(str.size() - 1)) &&
-		!StartWithObsFold(str) && !EndWithObsFold(str)) {
-		throw Error(str);
-	}
-	Tokens tokens = Tokenize(str);
-	for (itr; itr++) {
-		if (!IsValidToken(itr)) {
-			throw Error(str);
-		}
-	}
-	fieldvalue_ = str;
+	// if (!IsFieldVchar(str.front()) && !IsFieldVchar(str.back()) &&
+	// 	!http_abnf::StartWithObsFold(str) && !http_abnf::EndWithObsFold(str)) {
+	// 	throw Error(str);
+	// }
+	// Tokens tokens = Tokenize(str);
+	// for (itr; itr++) {
+	// 	if (!IsValidToken(itr)) {
+	// 		throw Error(str);
+	// 	}
+	// }
+	// fieldvalue_ = str;
 }
 
 FieldValue::Tokens FieldValue::Tokenize(const ThinString &str) const
@@ -43,7 +43,7 @@ FieldValue::Tokens FieldValue::Tokenize(const ThinString &str) const
 
 FieldValue::Token FieldValue::CreateFieldContentToken(const ThinString &str) const
 {
-	std::size_t token_len = str.FindNotOf(kCrLf);
+	std::size_t token_len = str.FindNotOf(kCrLf); // TODO bug
 	if (token_len == ThinString::npos) {
 		token_len = str.size();
 	}
@@ -61,4 +61,5 @@ FieldValue &FieldValue::operator=(const FieldValue &other)
 		return *this;
 	}
 	field_value_ = other.field_value_;
+	return *this;
 }
