@@ -21,4 +21,11 @@ namespace ABNF
 		}
 		return true;
 	}
+
+	// VCHAR          =  %x21-7E
+	bool IsVchar(char c)
+	{
+		return 0x21 <= c && c <= 0x7e;
+	}
+
 } // namespace ABNF
