@@ -119,15 +119,11 @@ void FieldLines::StoreFieldLines(const Lines &lines)
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
 		const std::string name  = it->GetFieldName().ToString();
 		const std::string value = it->GetFieldValue().ToString();
-		if (field_lines_.count(name) == 0) {
-			field_lines_[name] = value;
-		} else {
-			field_lines_[name] += ", " + value;
-		}
+		field_lines_[name].push_back(value);
 	}
 }
 
-std::string &FieldLines::operator[](std::string field_name)
+FieldLines::Values &FieldLines::operator[](std::string field_name)
 {
 	for (std::string::iterator it = field_name.begin(); it != field_name.end(); it++) {
 		*it = std::tolower(*it);

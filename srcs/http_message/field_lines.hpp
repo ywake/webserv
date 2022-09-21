@@ -11,9 +11,6 @@
 
 class FieldLines
 {
-  private:
-	std::map<const std::string, std::string> field_lines_;
-
   public:
 	enum TokenId {
 		kUndefined,
@@ -23,19 +20,25 @@ class FieldLines
 	};
 
   public:
+	typedef std::list<std::string> Values;
+
+  public:
 	typedef BasicToken<TokenId>     Token;
 	typedef std::list<Token>        Tokens;
 	typedef std::list<FieldLine>    Lines;
 	typedef std::vector<ThinString> StringAry;
+
+  private:
+	std::map<const std::string, Values> field_lines_;
 
   public:
 	FieldLines();
 	FieldLines(const ThinString &str);
 	Tokens TokenizeLines(const ThinString &str) const;
 
-	bool         operator==(const FieldLines &rhs) const;
-	bool         operator!=(const FieldLines &rhs) const;
-	std::string &operator[](std::string field_name);
+	bool    operator==(const FieldLines &rhs) const;
+	bool    operator!=(const FieldLines &rhs) const;
+	Values &operator[](std::string field_name);
 
   private:
 	bool      IsValidTokenOrder(const Tokens &tokens) const;

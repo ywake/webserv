@@ -2,14 +2,15 @@
 #include "http_message_headers.hpp"
 #include <algorithm>
 #include <cctype>
+#include <string>
 
 TEST(field_line, case_insensitive)
 {
 	FieldLines field;
-	field["Content-Length"] = "11";
-	EXPECT_EQ(field["content-length"], "11");
-	field["Content-Length"] = "12";
-	EXPECT_EQ(field["content-length"], "12");
+	field["Content-Length"].push_back(std::string("11"));
+	EXPECT_EQ(field["content-length"], FieldLines::Values({"11"}));
+	field["Content-Length"].push_back(std::string("12"));
+	EXPECT_EQ(field["content-length"], FieldLines::Values({"11", "12"}));
 }
 
 /*
