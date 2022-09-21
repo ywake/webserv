@@ -33,6 +33,11 @@ namespace http_abnf
 		return IsOws(ows) && IsRws(rws);
 	}
 
+	bool EndWithObsFold(const ThinString &str)
+	{
+		return str.TrimRight(kWhiteSpaces).EndWith(kCrLf);
+	}
+
 	static bool IsWhiteSpaceOnly(const ThinString &str)
 	{
 		for (std::size_t i = 0; i < str.size(); i++) {

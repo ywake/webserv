@@ -7,6 +7,7 @@ namespace http_abnf
 	bool IsOws(const ThinString &str);
 	bool IsRws(const ThinString &str);
 	bool StartWithObsFold(const ThinString &str);
+	bool EndWithObsFold(const ThinString &str);
 	bool IsFieldName(const ThinString &str);
 } // namespace http_abnf
 
