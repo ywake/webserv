@@ -8,6 +8,7 @@ static const std::string kWhiteSpaces = " \t";
 
 FieldLine::FieldLine() : field_name_(), field_value_() {}
 
+// TODO test
 FieldLine::FieldLine(const ThinString &line)
 {
 	std::size_t colon_pos = line.find(":");

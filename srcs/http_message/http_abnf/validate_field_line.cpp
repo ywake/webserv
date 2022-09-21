@@ -12,18 +12,21 @@ namespace http_abnf
 {
 	static bool IsWhiteSpaceOnly(const ThinString &str);
 
+	// TODO test
 	// *( SP / HTAB )
 	bool IsOws(const ThinString &str)
 	{
 		return str.empty() || IsWhiteSpaceOnly(str);
 	}
 
+	// TODO test
 	//  1*( SP / HTAB )
 	bool IsRws(const ThinString &str)
 	{
 		return !str.empty() && IsWhiteSpaceOnly(str);
 	}
 
+	// TODO test
 	// obs-fold = OWS CRLF RWS
 	bool StartWithObsFold(const ThinString &str)
 	{
@@ -36,6 +39,7 @@ namespace http_abnf
 		return IsOws(ows) && IsRws(rws);
 	}
 
+	// TODO test
 	bool EndWithObsFold(const ThinString &str)
 	{
 		return str.TrimRight(kWhiteSpaces).EndWith(kCrLf);
