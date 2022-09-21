@@ -53,4 +53,18 @@ namespace http_abnf
 		return IsToken(str);
 	}
 
+	/*
+	  field-value   = *(field-content / obs-fold)
+
+	  field-content = field-vchar [ 1*( SP / HTAB / field-vchar ) field-vchar ]
+	  field-vchar   = VCHAR / obs-text
+	  obs-text      = %x80-FF
+
+	  obs-fold      = OWS CRLF RWS
+	*/
+	bool IsFieldValue(const ThinString &str)
+	{
+		return str.empty();
+	}
+
 } // namespace http_abnf
