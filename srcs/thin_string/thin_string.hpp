@@ -70,6 +70,9 @@ class ThinString
 
 	ThinString  substr(std::size_t pos = 0, std::size_t size = ~0UL) const;
 	std::string ToString() const;
+	ThinString  TrimLeft(const std::string &char_set) const;
+	ThinString  TrimRight(const std::string &char_set) const;
+
 	ThinStrPair DivideBy(const std::string &delim, unsigned int delim_flag = kAlignLeft) const;
 	std::size_t MeasureUntil(const std::string &delim) const;
 	std::size_t MeasureUntilNotOf(const std::string &char_set) const;

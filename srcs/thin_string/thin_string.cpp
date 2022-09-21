@@ -162,6 +162,24 @@ std::size_t ThinString::RFindNotOf(const std::string &char_set, std::size_t pos)
 	return ThinString::npos;
 }
 
+ThinString ThinString::TrimLeft(const std::string &char_set) const
+{
+	std::size_t start = FindNotOf(char_set);
+	if (start == ThinString::npos) {
+		return "";
+	}
+	return substr(start);
+}
+
+ThinString ThinString::TrimRight(const std::string &char_set) const
+{
+	std::size_t end = RFindNotOf(char_set);
+	if (end == ThinString::npos) {
+		return "";
+	}
+	return substr(0, end + 1);
+}
+
 ThinString ThinString::substr(std::size_t pos, std::size_t size) const
 {
 	std::size_t offset     = std::min(pos, length_);

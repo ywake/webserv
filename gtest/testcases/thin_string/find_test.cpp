@@ -212,3 +212,30 @@ TEST(thin_string, r_itr)
 	EXPECT_EQ(*--ThinString("012345").rend(), '0');
 	EXPECT_EQ(*(ThinString("012345").rend() - 2), '1');
 }
+
+TEST(thin_string, trim_left)
+{
+	EXPECT_EQ(ThinString("").TrimLeft(""), "");
+	EXPECT_EQ(ThinString("abcdef012345").TrimLeft("abcdef"), "012345");
+	EXPECT_EQ(ThinString("abc").TrimLeft("123"), "abc");
+	EXPECT_EQ(ThinString("a").TrimLeft("a"), "");
+	EXPECT_EQ(ThinString("aaab").TrimLeft("a"), "b");
+	EXPECT_EQ(ThinString("aaab").TrimLeft("aa"), "b");
+	EXPECT_EQ(ThinString("aaab").TrimLeft("aaa"), "b");
+	EXPECT_EQ(ThinString("aaab").TrimLeft("ba"), "");
+	EXPECT_EQ(ThinString("aaab").TrimLeft("b"), "aaab");
+}
+
+TEST(thin_string, trim_right)
+{
+	EXPECT_EQ(ThinString("").TrimRight(""), "");
+	EXPECT_EQ(ThinString("abcdef012345").TrimRight("012345"), "abcdef");
+	EXPECT_EQ(ThinString("abc").TrimRight("123"), "abc");
+	EXPECT_EQ(ThinString("a").TrimRight("a"), "");
+	EXPECT_EQ(ThinString("baaa").TrimRight("a"), "b");
+	EXPECT_EQ(ThinString("baaa").TrimRight("aa"), "b");
+	EXPECT_EQ(ThinString("baaa").TrimRight("aaa"), "b");
+	EXPECT_EQ(ThinString("baaa").TrimRight("ba"), "");
+	EXPECT_EQ(ThinString("baaa").TrimRight("ab"), "");
+	EXPECT_EQ(ThinString("baaa").TrimRight("b"), "baaa");
+}
