@@ -1,7 +1,6 @@
 #ifndef FIELD_LINE_HPP
 #define FIELD_LINE_HPP
 
-#include "field_value.hpp"
 #include "thin_string.hpp"
 
 class FieldLine

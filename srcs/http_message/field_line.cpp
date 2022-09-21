@@ -1,6 +1,5 @@
 #include "field_line.hpp"
 #include "error.hpp"
-#include "field_value.hpp"
 #include "validate_field_line.hpp"
 
 static const std::string kCrLf        = "\r\n";
