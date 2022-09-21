@@ -8,13 +8,16 @@ class FieldLine
 {
   private:
 	ThinString field_name_;
-	FieldValue field_value_;
+	ThinString field_value_;
 
   public:
 	FieldLine();
 	FieldLine(const ThinString &line);
 	const ThinString &GetFieldName() const;
 	const ThinString &GetFieldValue() const;
+
+  private:
+	ThinString TrimOws(const ThinString &value);
 };
 
 /*
