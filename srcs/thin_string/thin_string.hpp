@@ -20,8 +20,9 @@ class ThinString
 	typedef std::map<const std::string *, std::size_t> ReferenceCount;
 
   public:
-	typedef std::string::const_iterator       const_iterator;
-	typedef std::pair<ThinString, ThinString> ThinStrPair;
+	typedef std::string::const_iterator         const_iterator;
+	typedef std::string::const_reverse_iterator r_const_iterator;
+	typedef std::pair<ThinString, ThinString>   ThinStrPair;
 	typedef enum {
 		kAlignLeft      = 0 << 0,
 		kAlignRight     = 1 << 0,
@@ -62,6 +63,7 @@ class ThinString
 	std::size_t find(const char *s, std::size_t pos = 0) const;
 	std::size_t find(char ch, std::size_t pos = 0) const;
 	std::size_t FindNotOf(const std::string &str, std::size_t pos = 0) const;
+	std::size_t RFindNotOf(const std::string &char_set, std::size_t pos = npos) const;
 	std::size_t FindAfter(const std::string &str, std::size_t start_pos) const;
 	std::size_t FindAfter(const char *s, std::size_t start_pos) const;
 	std::size_t FindAfter(char ch, std::size_t start_pos) const;
@@ -74,8 +76,10 @@ class ThinString
 	bool        EndWith(const std::string &delim) const;
 	bool        StartWith(const std::string &delim) const;
 
-	const_iterator begin() const;
-	const_iterator end() const;
+	const_iterator   begin() const;
+	const_iterator   end() const;
+	r_const_iterator rbegin() const;
+	r_const_iterator rend() const;
 
 	ThinString &operator=(const ThinString &rhs);
 	// ThinString &operator+=(const ThinString &rhs);

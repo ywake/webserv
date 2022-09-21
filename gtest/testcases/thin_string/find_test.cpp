@@ -185,3 +185,30 @@ TEST(thin_string, MeasureUntil)
 	str = ThinString("this is awesome test case.", 3, 10);
 	EXPECT_EQ(str.MeasureUntil("case"), str.len());
 }
+
+TEST(thin_string, rfind_not_of)
+{
+	EXPECT_EQ(ThinString("012345").RFindNotOf("5"), 4);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("4"), 5);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("45"), 3);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("12345"), 0);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("01", 1), std::string::npos);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("01", 2), 2);
+	EXPECT_EQ(ThinString("").RFindNotOf(""), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("", 1), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("0"), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("0", 1), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("0", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("0", 2), std::string::npos);
+}
+
+TEST(thin_string, r_itr)
+{
+	EXPECT_EQ(*ThinString("012345").rbegin(), '5');
+	EXPECT_EQ(*++ThinString("012345").rbegin(), '4');
+	EXPECT_EQ(*(ThinString("012345").rbegin() + 2), '3');
+	EXPECT_EQ(*--ThinString("012345").rend(), '0');
+	EXPECT_EQ(*(ThinString("012345").rend() - 2), '1');
+}
