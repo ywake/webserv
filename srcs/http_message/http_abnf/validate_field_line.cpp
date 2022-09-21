@@ -1,8 +1,11 @@
+#include "validate_field_line.hpp"
+#include "parse_abnf_core_rules.hpp"
 #include "thin_string.hpp"
 #include "validate_http_char.hpp"
 
-static const std::string kWhiteSpaces = " \t";
-static const std::string kCrLf        = "\r\n";
+static const std::string kWhiteSpaces    = " \t";
+static const std::string kCrLf           = "\r\n";
+static const std::size_t kObsFoldMinSize = 3;
 
 // TODO test
 namespace http_abnf
@@ -55,16 +58,40 @@ namespace http_abnf
 
 	/*
 	  field-value   = *(field-content / obs-fold)
-
 	  field-content = field-vchar [ 1*( SP / HTAB / field-vchar ) field-vchar ]
-	  field-vchar   = VCHAR / obs-text
-	  obs-text      = %x80-FF
-
-	  obs-fold      = OWS CRLF RWS
 	*/
 	bool IsFieldValue(const ThinString &str)
 	{
-		return str.empty();
+		if (str.empty()) {
+			return true;
+		}
+		const bool is_valid_start = IsFieldVchar(str.at(0)) || StartWithObsFold(str);
+		const bool is_valid_end   = IsFieldVchar(str.at(str.size() - 1)) || EndWithObsFold(str);
+		if (!is_valid_start || !is_valid_end) {
+			return false;
+		}
+		for (std::size_t i = 0; i < str.size();) {
+			if (IsFieldVchar(str.at(i)) || kWhiteSpaces.find(str.at(i)) != ThinString::npos) {
+				i++;
+			} else if (str.at(i) == '\r' && StartWithObsFold(str.substr(i, kObsFoldMinSize))) {
+				i += kObsFoldMinSize;
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// field-vchar = VCHAR / obs-text
+	bool IsFieldVchar(unsigned char c)
+	{
+		return ABNF::IsVchar(c) || IsObsText(c);
+	}
+
+	// obs-text = %x80-FF
+	bool IsObsText(unsigned char c)
+	{
+		return 0x80 <= c;
 	}
 
 } // namespace http_abnf

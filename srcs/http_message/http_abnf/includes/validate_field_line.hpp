@@ -10,6 +10,8 @@ namespace http_abnf
 	bool EndWithObsFold(const ThinString &str);
 	bool IsFieldName(const ThinString &str);
 	bool IsFieldValue(const ThinString &str);
+	bool IsFieldVchar(unsigned char c);
+	bool IsObsText(unsigned char c);
 } // namespace http_abnf
 
 #endif
