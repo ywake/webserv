@@ -7,7 +7,10 @@ static const std::string kWhiteSpaces = " \t";
 
 FieldLine::FieldLine() : field_name_(), field_value_() {}
 
-// TODO test
+FieldLine::FieldLine(const std::string &field_name, const std::string &field_value)
+	: field_name_(field_name), field_value_(field_value)
+{}
+
 FieldLine::FieldLine(const ThinString &line)
 {
 	std::size_t colon_pos = line.find(":");
@@ -20,7 +23,7 @@ FieldLine::FieldLine(const ThinString &line)
 		throw Error("400");
 	}
 	ThinString trimed_ows = TrimOws(value);
-	if (http_abnf::IsFieldValue(trimed_ows)) {
+	if (!http_abnf::IsFieldValue(trimed_ows)) {
 		throw Error("400");
 	}
 	field_name_  = name;
@@ -45,12 +48,28 @@ ThinString FieldLine::TrimOws(const ThinString &value)
 
 const ThinString &FieldLine::GetFieldName() const
 {
-	return field_value_;
+	return field_name_;
 }
 
 const ThinString &FieldLine::GetFieldValue() const
 {
-	return field_name_;
+	return field_value_;
+}
+
+bool FieldLine::operator==(const FieldLine &rhs) const
+{
+	return field_name_ == rhs.GetFieldName() && field_value_ == rhs.GetFieldValue();
+}
+
+bool FieldLine::operator!=(const FieldLine &rhs) const
+{
+	return !(*this == rhs);
+}
+
+std::ostream &operator<<(std::ostream &os, const FieldLine &field_line)
+{
+	os << "\"" << field_line.GetFieldName() << "\":\"" << field_line.GetFieldValue() << "\"";
+	return os;
 }
 
 // STR ":" OWS STR OBSFOLD STR OWS

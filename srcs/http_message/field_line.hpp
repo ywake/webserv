@@ -2,6 +2,7 @@
 #define FIELD_LINE_HPP
 
 #include "thin_string.hpp"
+#include <iostream>
 
 class FieldLine
 {
@@ -11,13 +12,19 @@ class FieldLine
 
   public:
 	FieldLine();
+	FieldLine(const std::string &field_name, const std::string &field_value);
 	FieldLine(const ThinString &line);
 	const ThinString &GetFieldName() const;
 	const ThinString &GetFieldValue() const;
 
+	bool operator==(const FieldLine &rhs) const;
+	bool operator!=(const FieldLine &rhs) const;
+
   private:
 	ThinString TrimOws(const ThinString &value);
 };
+
+std::ostream &operator<<(std::ostream &os, const FieldLine &field_line);
 
 /*
   field-line    = field-name ":" OWS field-value OWS
