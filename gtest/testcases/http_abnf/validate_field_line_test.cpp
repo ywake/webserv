@@ -51,3 +51,15 @@ TEST(field_line, is_rws_false)
 	EXPECT_FALSE(http_abnf::IsRws("  \r"));
 	EXPECT_FALSE(http_abnf::IsRws("  \n"));
 }
+
+TEST(field_line, is_field_vchar)
+{
+	for (int c = 0x00; c <= 0xFF; c++) {
+		// std::cout << "c = " << (unsigned char)c << std::endl;
+		if ((0x21 <= c && c <= 0x7E) || (0x80 <= c && c <= 0xFF)) {
+			EXPECT_TRUE(http_abnf::IsFieldVchar(c));
+		} else {
+			EXPECT_FALSE(http_abnf::IsFieldVchar(c));
+		}
+	}
+}
