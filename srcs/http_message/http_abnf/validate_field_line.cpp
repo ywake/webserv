@@ -12,14 +12,12 @@ namespace http_abnf
 {
 	static bool IsWhiteSpaceOnly(const ThinString &str);
 
-	// TODO test
 	// *( SP / HTAB )
 	bool IsOws(const ThinString &str)
 	{
 		return str.empty() || IsWhiteSpaceOnly(str);
 	}
 
-	// TODO test
 	//  1*( SP / HTAB )
 	bool IsRws(const ThinString &str)
 	{
