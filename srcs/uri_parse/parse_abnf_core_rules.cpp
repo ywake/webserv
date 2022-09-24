@@ -1,12 +1,8 @@
 #include "parse_abnf_core_rules.hpp"
 #include "thin_string.hpp"
 
-#include <cctype>
-
 namespace ABNF
 {
-	static const ThinString kTcharUniqSet = "!#$%&'*+-.^_`|~";
-
 	// HEXDIG
 	bool IsHexDigit(const char c)
 	{
@@ -26,21 +22,10 @@ namespace ABNF
 		return true;
 	}
 
-	bool IsTchar(const char c)
+	// VCHAR          =  %x21-7E
+	bool IsVchar(char c)
 	{
-		return std::isdigit(c) || std::isalpha(c) || kTcharUniqSet.find(c) != ThinString::npos;
+		return 0x21 <= c && c <= 0x7e;
 	}
 
-	bool IsTcharOnly(const ThinString &str)
-	{
-		if (str.empty()) {
-			return false;
-		}
-		for (ThinString::const_iterator itr = str.begin(); itr != str.end(); itr++) {
-			if (!IsTchar(*itr)) {
-				return false;
-			}
-		}
-		return true;
-	}
 } // namespace ABNF

@@ -185,3 +185,121 @@ TEST(thin_string, MeasureUntil)
 	str = ThinString("this is awesome test case.", 3, 10);
 	EXPECT_EQ(str.MeasureUntil("case"), str.len());
 }
+
+TEST(thin_string, mesure_until_not_of)
+{
+	EXPECT_EQ(ThinString("").MeasureUntilNotOf(""), 0);
+	EXPECT_EQ(ThinString("").MeasureUntilNotOf("a"), 0);
+	EXPECT_EQ(ThinString("a").MeasureUntilNotOf(""), 0);
+	EXPECT_EQ(ThinString("aaabbb").MeasureUntilNotOf("a"), 3);
+	EXPECT_EQ(ThinString("aaabbb").MeasureUntilNotOf("c"), 0);
+	EXPECT_EQ(ThinString("aaabbbc").MeasureUntilNotOf("ab"), 6);
+	EXPECT_EQ(ThinString("aaabbb").MeasureUntilNotOf("ab"), 6);
+}
+
+TEST(thin_string, find_not_of)
+{
+	EXPECT_EQ(ThinString("012345").FindNotOf("0"), 1);
+	EXPECT_EQ(ThinString("012345").FindNotOf("1"), 0);
+	EXPECT_EQ(ThinString("012345").FindNotOf("01"), 2);
+	EXPECT_EQ(ThinString("012345").FindNotOf("10"), 2);
+	EXPECT_EQ(ThinString("012345").FindNotOf("01234"), 5);
+	EXPECT_EQ(ThinString("012345").FindNotOf("43210"), 5);
+	EXPECT_EQ(ThinString("012345").FindNotOf("45", 4), std::string::npos);
+	EXPECT_EQ(ThinString("012345").FindNotOf("45", 3), 3);
+	EXPECT_EQ(ThinString("").FindNotOf(""), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("", 1), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("0"), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("0", 1), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("0", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("0", 2), std::string::npos);
+}
+
+TEST(thin_string, rfind_not_of)
+{
+	EXPECT_EQ(ThinString("012345").RFindNotOf("5"), 4);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("4"), 5);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("45"), 3);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("54"), 3);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("12345"), 0);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("54321"), 0);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("01", 1), std::string::npos);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("01", 2), 2);
+	EXPECT_EQ(ThinString("").RFindNotOf(""), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("", 1), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("0"), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("0", 1), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("0", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").RFindNotOf("0", 2), std::string::npos);
+}
+
+TEST(thin_string, r_itr)
+{
+	EXPECT_EQ(*ThinString("012345").rbegin(), '5');
+	EXPECT_EQ(*++ThinString("012345").rbegin(), '4');
+	EXPECT_EQ(*(ThinString("012345").rbegin() + 2), '3');
+	EXPECT_EQ(*--ThinString("012345").rend(), '0');
+	EXPECT_EQ(*(ThinString("012345").rend() - 2), '1');
+}
+
+TEST(thin_string, trim_left)
+{
+	EXPECT_EQ(ThinString("").TrimLeft(""), "");
+	EXPECT_EQ(ThinString("abcdef012345").TrimLeft("abcdef"), "012345");
+	EXPECT_EQ(ThinString("abc").TrimLeft("123"), "abc");
+	EXPECT_EQ(ThinString("a").TrimLeft("a"), "");
+	EXPECT_EQ(ThinString("aaab").TrimLeft("a"), "b");
+	EXPECT_EQ(ThinString("aaab").TrimLeft("aa"), "b");
+	EXPECT_EQ(ThinString("aaab").TrimLeft("aaa"), "b");
+	EXPECT_EQ(ThinString("aaab").TrimLeft("ba"), "");
+	EXPECT_EQ(ThinString("aaab").TrimLeft("b"), "aaab");
+}
+
+TEST(thin_string, trim_right)
+{
+	EXPECT_EQ(ThinString("").TrimRight(""), "");
+	EXPECT_EQ(ThinString("abcdef012345").TrimRight("012345"), "abcdef");
+	EXPECT_EQ(ThinString("abc").TrimRight("123"), "abc");
+	EXPECT_EQ(ThinString("a").TrimRight("a"), "");
+	EXPECT_EQ(ThinString("baaa").TrimRight("a"), "b");
+	EXPECT_EQ(ThinString("baaa").TrimRight("aa"), "b");
+	EXPECT_EQ(ThinString("baaa").TrimRight("aaa"), "b");
+	EXPECT_EQ(ThinString("baaa").TrimRight("ba"), "");
+	EXPECT_EQ(ThinString("baaa").TrimRight("ab"), "");
+	EXPECT_EQ(ThinString("baaa").TrimRight("b"), "baaa");
+}
+
+TEST(thin_string, end_with)
+{
+	EXPECT_TRUE(ThinString("").EndWith(""));
+	EXPECT_TRUE(ThinString("a").EndWith("a"));
+	EXPECT_TRUE(ThinString("abc").EndWith("abc"));
+	EXPECT_TRUE(ThinString("abc012").EndWith("012"));
+	EXPECT_TRUE(ThinString("abcabc").EndWith("c"));
+	EXPECT_TRUE(ThinString("a").EndWith(""));
+
+	EXPECT_FALSE(ThinString("").EndWith("a"));
+	EXPECT_FALSE(ThinString("abc").EndWith("a"));
+	EXPECT_FALSE(ThinString("abc").EndWith("a"));
+	EXPECT_FALSE(ThinString("abcabc").EndWith("ab"));
+}
+
+TEST(thin_string, start_with)
+{
+	EXPECT_TRUE(ThinString("").StartWith(""));
+	EXPECT_TRUE(ThinString("a").StartWith("a"));
+	EXPECT_TRUE(ThinString("abc").StartWith("abc"));
+	EXPECT_TRUE(ThinString("abc").StartWith("a"));
+	EXPECT_TRUE(ThinString("abc").StartWith("a"));
+	EXPECT_TRUE(ThinString("abcabc").StartWith("ab"));
+	EXPECT_TRUE(ThinString("a").StartWith(""));
+
+	EXPECT_FALSE(ThinString("abc012").StartWith("012"));
+	EXPECT_FALSE(ThinString("abcabc").StartWith("c"));
+	EXPECT_FALSE(ThinString("").StartWith("a"));
+	EXPECT_FALSE(ThinString("abcabc").StartWith("bc"));
+}

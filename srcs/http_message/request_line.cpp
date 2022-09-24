@@ -6,6 +6,7 @@
 #include "error.hpp"
 #include "origin_form.hpp"
 #include "parse_abnf_core_rules.hpp"
+#include "validate_request_line.hpp"
 #include "webserv_utils.hpp"
 
 RequestLine::RequestLine() : method_(), request_target_(), http_version_() {}
@@ -34,7 +35,8 @@ RequestLine::RequestLine(const ThinString &request_line)
 	};
 	std::vector<ThinString> tokens          = Split(request_line, " ");
 	bool                    is_invalid_size = tokens.size() != kValidNumOfTokens;
-	if (is_invalid_size || !IsMethod(tokens[kMthodIdx]) || !IsHttpVersion(tokens[kVersionIdx])) {
+	if (is_invalid_size || !http_abnf::IsMethod(tokens[kMthodIdx]) ||
+		!http_abnf::IsHttpVersion(tokens[kVersionIdx])) {
 		throw Error("400");
 	}
 	method_         = tokens[kMthodIdx];
@@ -63,31 +65,6 @@ RequestLine::RequestLine(
 )
 	: method_(method), request_target_(request_target), http_version_(http_version)
 {}
-
-bool RequestLine::IsMethod(const ThinString &str)
-{
-	return ABNF::IsTcharOnly(str);
-}
-
-// HTTP-version = HTTP-name "/" DIGIT "." DIGIT
-bool RequestLine::IsHttpVersion(const ThinString &str)
-{
-	ThinString::ThinStrPair http_version_pair = str.DivideBy("/", ThinString::kKeepDelimLeft);
-	ThinString              http              = http_version_pair.first;
-	ThinString              version           = http_version_pair.second;
-	return http == "HTTP/" && IsVersion(version);
-}
-
-// DIGIT "." DIGIT
-bool RequestLine::IsVersion(const ThinString &str)
-{
-	static const std::size_t kVersionLen = 3;
-	static const std::size_t kMajorIdx   = 0;
-	static const std::size_t kDotIdx     = 1;
-	static const std::size_t kMinorIdx   = 2;
-	return str.size() == kVersionLen && std::isdigit(str.at(kMajorIdx)) && str.at(kDotIdx) == '.' &&
-		   std::isdigit(str.at(kMinorIdx));
-}
 
 bool RequestLine::operator==(const RequestLine &rhs) const
 {

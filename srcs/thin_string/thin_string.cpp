@@ -117,6 +117,69 @@ std::size_t ThinString::find(char ch, std::size_t pos) const
 	return find(std::string(&ch, 1), pos);
 }
 
+std::size_t ThinString::FindAfter(const std::string &str, std::size_t start_pos) const
+{
+	std::size_t found_pos = substr(start_pos).find(str);
+	if (found_pos == ThinString::npos) {
+		return ThinString::npos;
+	}
+	return found_pos + start_pos;
+}
+
+std::size_t ThinString::FindAfter(const char *s, std::size_t start_pos) const
+{
+	return FindAfter(std::string(s), start_pos);
+}
+
+std::size_t ThinString::FindAfter(char ch, std::size_t start_pos) const
+{
+	return FindAfter(std::string(&ch, 1), start_pos);
+}
+
+std::size_t ThinString::FindNotOf(const std::string &char_set, std::size_t pos) const
+{
+	std::size_t offset = std::min(pos, length_);
+	for (const_iterator itr = begin() + offset; itr != end(); itr++) {
+		if (char_set.find(*itr) == std::string::npos) {
+			return itr - begin();
+		}
+	}
+	return ThinString::npos;
+}
+
+std::size_t ThinString::RFindNotOf(const std::string &char_set, std::size_t pos) const
+{
+	std::size_t back_idx         = length_ == 0 ? 0 : length_ - 1;
+	std::size_t start_pos        = std::min(pos, back_idx);
+	std::size_t offset_from_back = back_idx - start_pos;
+
+	std::size_t i = 0;
+	for (r_const_iterator itr = rbegin() + offset_from_back; itr != rend(); itr++, i++) {
+		if (char_set.find(*itr) == std::string::npos) {
+			return start_pos - i;
+		}
+	}
+	return ThinString::npos;
+}
+
+ThinString ThinString::TrimLeft(const std::string &char_set) const
+{
+	std::size_t start = FindNotOf(char_set);
+	if (start == ThinString::npos) {
+		return "";
+	}
+	return substr(start);
+}
+
+ThinString ThinString::TrimRight(const std::string &char_set) const
+{
+	std::size_t end = RFindNotOf(char_set);
+	if (end == ThinString::npos) {
+		return "";
+	}
+	return substr(0, end + 1);
+}
+
 ThinString ThinString::substr(std::size_t pos, std::size_t size) const
 {
 	std::size_t offset     = std::min(pos, length_);
@@ -172,6 +235,29 @@ std::size_t ThinString::MeasureUntil(const std::string &delim) const
 	return pos == ThinString::npos ? size() : pos;
 }
 
+std::size_t ThinString::MeasureUntilNotOf(const std::string &char_set) const
+{
+	std::size_t pos = FindNotOf(char_set);
+	return pos == ThinString::npos ? size() : pos;
+}
+
+bool ThinString::EndWith(const std::string &delim) const
+{
+	if (delim.size() > this->size()) {
+		return false;
+	}
+	std::size_t start = this->size() - delim.size();
+	return this->substr(start) == delim;
+}
+
+bool ThinString::StartWith(const std::string &delim) const
+{
+	if (delim.size() > this->size()) {
+		return false;
+	}
+	return this->substr(0, delim.size()) == delim;
+}
+
 ThinString::const_iterator ThinString::begin() const
 {
 	return base_->begin() + start_;
@@ -180,6 +266,16 @@ ThinString::const_iterator ThinString::begin() const
 ThinString::const_iterator ThinString::end() const
 {
 	return this->begin() + length_;
+}
+
+ThinString::r_const_iterator ThinString::rbegin() const
+{
+	return base_->rend() - (start_ + length_);
+}
+
+ThinString::r_const_iterator ThinString::rend() const
+{
+	return this->rbegin() + length_;
 }
 
 ThinString &ThinString::operator=(const ThinString &rhs)

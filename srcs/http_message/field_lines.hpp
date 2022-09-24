@@ -1,33 +1,72 @@
 #ifndef FIELD_LINES_HPP
 #define FIELD_LINES_HPP
+#include <iostream>
+#include <list>
 #include <map>
 #include <string>
+#include <vector>
+
+#include "basic_token.hpp"
+#include "field_line.hpp"
+#include "thin_string.hpp"
 
 class FieldLines
 {
   private:
-	std::map<const std::string, std::string> field_lines_;
+	enum TokenId {
+		kUndefined,
+		kFieldLineTk,
+		kCrLfTk
+	};
 
   public:
-	FieldLines() : field_lines_() {}
+	typedef std::list<std::string>              Values;
+	typedef std::map<const std::string, Values> Headers;
 
-	std::string &operator[](std::string field_name)
-	{
-		for (std::string::iterator it = field_name.begin(); it != field_name.end(); it++) {
-			*it = std::tolower(*it);
-		}
-		return field_lines_[field_name];
-	}
+  private:
+	typedef BasicToken<TokenId>     Token;
+	typedef std::list<Token>        Tokens;
+	typedef std::list<FieldLine>    Lines;
+	typedef std::vector<ThinString> StringAry;
 
-	bool operator==(const FieldLines &rhs) const
-	{
-		return field_lines_ == rhs.field_lines_;
-	}
+  private:
+	Headers field_lines_;
 
-	bool operator!=(const FieldLines &rhs) const
-	{
-		return !(*this == rhs);
-	}
+  public:
+	FieldLines();
+	FieldLines(const ThinString &str);
+	FieldLines(const Headers &field_lines);
+
+	bool    operator==(const FieldLines &rhs) const;
+	bool    operator!=(const FieldLines &rhs) const;
+	Values &operator[](const std::string &field_name);
+
+	const Headers &GetMap() const;
+
+  private:
+	Tokens    TokenizeLines(const ThinString &str) const;
+	bool      IsValidTokenOrder(const Tokens &tokens) const;
+	StringAry ParseTokensToLines(Tokens &tokens) const;
+	Token     CreateFieldLineToken(const ThinString &str) const;
+	Lines     ParseFieldLines(const Tokens &tokens) const;
+	void      StoreFieldLines(const Lines &lines);
 };
+
+std::ostream &operator<<(std::ostream &out, const FieldLines &field_lines);
+
+/*
+  field-line    = field-name ":" OWS field-value OWS
+
+  field-name    = token
+
+  field-value   = *(field-content / obs-fold)
+  field-content = field-vchar [ 1*( SP / HTAB / field-vchar ) field-vchar ]
+  field-vchar   = VCHAR / obs-text
+  obs-text      = %x80-FF
+
+  obs-fold      = OWS CRLF RWS
+  ; obs-foldのみの連続も可能で、SP一つと同等に扱う RFC2616 2.2
+
+*/
 
 #endif

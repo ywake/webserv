@@ -5,9 +5,8 @@
 namespace ABNF
 {
 	bool IsHexDigit(const char c);
-	bool IsTchar(const char c);
 	bool IsHexDigitOnly(const ThinString &str);
-	bool IsTcharOnly(const ThinString &str);
+	bool IsVchar(char c);
 } // namespace ABNF
 
 #endif
