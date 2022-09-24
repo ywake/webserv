@@ -1,5 +1,6 @@
 #ifndef FIELD_LINES_HPP
 #define FIELD_LINES_HPP
+#include <iostream>
 #include <list>
 #include <map>
 #include <string>
@@ -11,42 +12,47 @@
 
 class FieldLines
 {
-  public:
+  private:
 	enum TokenId {
 		kUndefined,
 		kFieldLineTk,
-		kCrLfTk,
-		kObsFoldTk // TODO後で消す
+		kCrLfTk
 	};
 
   public:
-	typedef std::list<std::string> Values;
+	typedef std::list<std::string>              Values;
+	typedef std::map<const std::string, Values> Headers;
 
-  public:
+  private:
 	typedef BasicToken<TokenId>     Token;
 	typedef std::list<Token>        Tokens;
 	typedef std::list<FieldLine>    Lines;
 	typedef std::vector<ThinString> StringAry;
 
   private:
-	std::map<const std::string, Values> field_lines_;
+	Headers field_lines_;
 
   public:
 	FieldLines();
 	FieldLines(const ThinString &str);
-	Tokens TokenizeLines(const ThinString &str) const;
+	FieldLines(const Headers &field_lines);
 
 	bool    operator==(const FieldLines &rhs) const;
 	bool    operator!=(const FieldLines &rhs) const;
 	Values &operator[](const std::string &field_name);
 
+	const Headers &GetMap() const;
+
   private:
+	Tokens    TokenizeLines(const ThinString &str) const;
 	bool      IsValidTokenOrder(const Tokens &tokens) const;
 	StringAry ParseTokensToLines(Tokens &tokens) const;
 	Token     CreateFieldLineToken(const ThinString &str) const;
 	Lines     ParseFieldLines(const Tokens &tokens) const;
 	void      StoreFieldLines(const Lines &lines);
 };
+
+std::ostream &operator<<(std::ostream &out, const FieldLines &field_lines);
 
 /*
   field-line    = field-name ":" OWS field-value OWS

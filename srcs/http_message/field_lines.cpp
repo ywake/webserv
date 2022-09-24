@@ -36,6 +36,10 @@ FieldLines::FieldLines(const ThinString &str)
 	StoreFieldLines(lines);
 }
 
+FieldLines::FieldLines(const std::map<const std::string, Values> &field_lines)
+	: field_lines_(field_lines)
+{}
+
 FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str) const
 {
 	Tokens tokens;
@@ -81,7 +85,7 @@ bool FieldLines::IsValidTokenOrder(const Tokens &tokens) const
 	if (tokens.empty()) {
 		return true;
 	}
-	if (tokens.back().GetId() != kCrLfTk) {
+	if (tokens.front().GetId() == kCrLfTk || tokens.back().GetId() != kCrLfTk) {
 		return false;
 	}
 	for (Tokens::const_iterator now = tokens.begin(), next = ++tokens.begin(); next != tokens.end();
@@ -156,3 +160,21 @@ bool FieldLines::operator!=(const FieldLines &rhs) const
 // 		}
 // 	}
 // }
+
+const FieldLines::Headers &FieldLines::GetMap() const
+{
+	return field_lines_;
+}
+
+std::ostream &operator<<(std::ostream &os, const FieldLines &field_lines)
+{
+	FieldLines::Headers headers = field_lines.GetMap();
+	for (FieldLines::Headers::const_iterator it = headers.begin(); it != headers.end(); it++) {
+		const std::string        name   = it->first;
+		const FieldLines::Values values = it->second;
+		for (FieldLines::Values::const_iterator it = values.begin(); it != values.end(); it++) {
+			os << name << ": " << *it << "\n";
+		}
+	}
+	return os;
+}

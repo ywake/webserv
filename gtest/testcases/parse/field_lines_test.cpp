@@ -2,103 +2,96 @@
 
 #include <list>
 
+#include "error.hpp"
 #include "field_lines.hpp"
 
-TEST(FieldLines, TokenizeLines)
+TEST(field_lines, test)
 {
 	FieldLines field_lines;
 
 	EXPECT_EQ(
-		field_lines.TokenizeLines("key: value\r\n"
-								  "key2: value2\r\n"
+		FieldLines("key: value\r\n"
+				   "key2: value2\r\n"
+				   " value2\r\n"
+				   "\tvalue2\r\n"),
+		FieldLines(FieldLines::Headers(
+			{{"key", FieldLines::Values({"value"})},
+			 {"key2",
+			  FieldLines::Values({"value2\r\n"
 								  " value2\r\n"
-								  "\tvalue2\r\n"),
-		std::list<FieldLines::Token>(
-			{{FieldLines::Token("key: value", FieldLines::kFieldLineTk),
-			  FieldLines::Token("\r\n", FieldLines::kCrLfTk),
-			  FieldLines::Token(
-				  "key2: value2\r\n"
-				  " value2\r\n"
-				  "\tvalue2",
-				  FieldLines::kFieldLineTk
-			  ),
-			  FieldLines::Token("\r\n", FieldLines::kCrLfTk)}}
-		)
+								  "\tvalue2"})}}
+		))
+	);
+
+	EXPECT_EQ(
+		FieldLines("a:\r\n"), FieldLines(FieldLines::Headers({{"a", FieldLines::Values({""})}}))
 	);
 	EXPECT_EQ(
-		field_lines.TokenizeLines("\r\n"),
-		std::list<FieldLines::Token>({FieldLines::Token("\r\n", FieldLines::kCrLfTk)})
+		FieldLines("key: value\r\n"
+				   "key: value2  \r\n"),
+		FieldLines(FieldLines::Headers({{"key", FieldLines::Values({"value", "value2"})}}))
 	);
 	EXPECT_EQ(
-		field_lines.TokenizeLines("\r\n "),
-		std::list<FieldLines::Token>({FieldLines::Token("\r\n ", FieldLines::kFieldLineTk)})
-	);
-	EXPECT_EQ(
-		field_lines.TokenizeLines("key: value\r\n"
-								  "\r\n"
-								  "\r\n"),
-		std::list<FieldLines::Token>(
-			{FieldLines::Token("key: value", FieldLines::kFieldLineTk),
-			 FieldLines::Token("\r\n", FieldLines::kCrLfTk),
-			 FieldLines::Token("\r\n", FieldLines::kCrLfTk),
-			 FieldLines::Token("\r\n", FieldLines::kCrLfTk)}
-		)
-	);
-	EXPECT_EQ(
-		field_lines.TokenizeLines("key\r\n"
-								  " : value\r\n"),
-		std::list<FieldLines::Token>(
-			{FieldLines::Token("key\r\n : value", FieldLines::kFieldLineTk),
-			 FieldLines::Token("\r\n", FieldLines::kCrLfTk)}
-		)
-	);
-	EXPECT_EQ(
-		field_lines.TokenizeLines("key\r\n"
-								  "\t: value\r\n"),
-		std::list<FieldLines::Token>(
-			{FieldLines::Token("key\r\n\t: value", FieldLines::kFieldLineTk),
-			 FieldLines::Token("\r\n", FieldLines::kCrLfTk)}
-		)
-	);
-	EXPECT_EQ(
-		field_lines.TokenizeLines("key\r\n"
-								  " : value"),
-		std::list<FieldLines::Token>(
-			{FieldLines::Token("key\r\n : value", FieldLines::kFieldLineTk)}
-		)
-	);
-	EXPECT_EQ(
-		field_lines.TokenizeLines("key\r\n"
-								  "\t: value"),
-		std::list<FieldLines::Token>(
-			{FieldLines::Token("key\r\n\t: value", FieldLines::kFieldLineTk)}
-		)
-	);
-	EXPECT_EQ(
-		field_lines.TokenizeLines("key: value\r\n"
+		FieldLines("key: value\r\n"
+				   " \r\n"
+				   "\t\r\n"),
+		FieldLines(FieldLines::Headers(
+			{{"key",
+			  FieldLines::Values({"value\r\n"
 								  " \r\n"
-								  "\t\r\n"),
-		std::list<FieldLines::Token>(
-			{FieldLines::Token(
-				 "key: value\r\n"
-				 " \r\n"
-				 "\t",
-				 FieldLines::kFieldLineTk
-			 ),
-			 FieldLines::Token("\r\n", FieldLines::kCrLfTk)}
-		)
+								  "\t"})}}
+		))
 	);
 	EXPECT_EQ(
-		field_lines.TokenizeLines("key: value\r\n"
-								  " \r\n"
-								  "\t"),
-		std::list<FieldLines::Token>({
-			FieldLines::Token(
-				"key: value\r\n"
-				" \r\n"
-				"\t",
-				FieldLines::kFieldLineTk
-			),
-		})
+		FieldLines("key: value\r\n"
+				   " \r\n"
+				   "\t\r\n"),
+		FieldLines(FieldLines::Headers({{"key", FieldLines::Values({"value\r\n \r\n\t"})}}))
+	);
+}
+
+TEST(field_lines, throw_test)
+{
+	EXPECT_THROW(FieldLines(":"), Error);
+	EXPECT_THROW(FieldLines(" :"), Error);
+	EXPECT_THROW(FieldLines("\r\n"), Error);
+	EXPECT_THROW(FieldLines("a:"), Error);
+	EXPECT_THROW(
+		FieldLines("key: value\r\n"
+				   "\r\n"
+				   "\r\n"),
+		Error
+	);
+	EXPECT_THROW(
+		FieldLines("key\r\n"
+				   " : value\r\n"),
+		Error
+	);
+	EXPECT_THROW(
+		FieldLines("key\r\n"
+				   "\t: value\r\n"),
+		Error
+	);
+	EXPECT_THROW(
+		FieldLines("key\r\n"
+				   " : value"),
+		Error
+	);
+	EXPECT_THROW(
+		FieldLines("key\r\n"
+				   "\t: value"),
+		Error
+	);
+	EXPECT_THROW(
+		FieldLines("key: value\r\n"
+				   " \r\n"
+				   "\t"),
+		Error
+	);
+	EXPECT_THROW(
+		FieldLines("key: value\r\n"
+				   " \r\n"
+				   " "),
+		Error
 	);
 }
