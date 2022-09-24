@@ -62,9 +62,7 @@ class ThinString
 	std::size_t find(const std::string &str, std::size_t pos = 0) const;
 	std::size_t find(const char *s, std::size_t pos = 0) const;
 	std::size_t find(char ch, std::size_t pos = 0) const;
-	// TODO test
 	std::size_t FindNotOf(const std::string &str, std::size_t pos = 0) const;
-	// TODO test
 	std::size_t RFindNotOf(const std::string &char_set, std::size_t pos = npos) const;
 	std::size_t FindAfter(const std::string &str, std::size_t start_pos) const;
 	std::size_t FindAfter(const char *s, std::size_t start_pos) const;
@@ -82,11 +80,9 @@ class ThinString
 	bool        EndWith(const std::string &delim) const;
 	bool        StartWith(const std::string &delim) const;
 
-	const_iterator begin() const;
-	const_iterator end() const;
-	// TODO test
+	const_iterator   begin() const;
+	const_iterator   end() const;
 	r_const_iterator rbegin() const;
-	// TODO test
 	r_const_iterator rend() const;
 
 	ThinString &operator=(const ThinString &rhs);

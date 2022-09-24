@@ -186,12 +186,45 @@ TEST(thin_string, MeasureUntil)
 	EXPECT_EQ(str.MeasureUntil("case"), str.len());
 }
 
+TEST(thin_string, mesure_until_not_of)
+{
+	EXPECT_EQ(ThinString("").MeasureUntilNotOf(""), 0);
+	EXPECT_EQ(ThinString("").MeasureUntilNotOf("a"), 0);
+	EXPECT_EQ(ThinString("a").MeasureUntilNotOf(""), 0);
+	EXPECT_EQ(ThinString("aaabbb").MeasureUntilNotOf("a"), 3);
+	EXPECT_EQ(ThinString("aaabbb").MeasureUntilNotOf("c"), 0);
+	EXPECT_EQ(ThinString("aaabbbc").MeasureUntilNotOf("ab"), 6);
+	EXPECT_EQ(ThinString("aaabbb").MeasureUntilNotOf("ab"), 6);
+}
+
+TEST(thin_string, find_not_of)
+{
+	EXPECT_EQ(ThinString("012345").FindNotOf("0"), 1);
+	EXPECT_EQ(ThinString("012345").FindNotOf("1"), 0);
+	EXPECT_EQ(ThinString("012345").FindNotOf("01"), 2);
+	EXPECT_EQ(ThinString("012345").FindNotOf("10"), 2);
+	EXPECT_EQ(ThinString("012345").FindNotOf("01234"), 5);
+	EXPECT_EQ(ThinString("012345").FindNotOf("43210"), 5);
+	EXPECT_EQ(ThinString("012345").FindNotOf("45", 4), std::string::npos);
+	EXPECT_EQ(ThinString("012345").FindNotOf("45", 3), 3);
+	EXPECT_EQ(ThinString("").FindNotOf(""), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("", 1), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("0"), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("0", 1), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("0", 2), std::string::npos);
+	EXPECT_EQ(ThinString("").FindNotOf("0", 2), std::string::npos);
+}
+
 TEST(thin_string, rfind_not_of)
 {
 	EXPECT_EQ(ThinString("012345").RFindNotOf("5"), 4);
 	EXPECT_EQ(ThinString("012345").RFindNotOf("4"), 5);
 	EXPECT_EQ(ThinString("012345").RFindNotOf("45"), 3);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("54"), 3);
 	EXPECT_EQ(ThinString("012345").RFindNotOf("12345"), 0);
+	EXPECT_EQ(ThinString("012345").RFindNotOf("54321"), 0);
 	EXPECT_EQ(ThinString("012345").RFindNotOf("01", 1), std::string::npos);
 	EXPECT_EQ(ThinString("012345").RFindNotOf("01", 2), 2);
 	EXPECT_EQ(ThinString("").RFindNotOf(""), std::string::npos);
