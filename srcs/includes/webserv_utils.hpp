@@ -9,4 +9,10 @@
 std::vector<ThinString> Split(const ThinString &str, const std::string delim);
 Result<long>            StrToLong(const std::string &str);
 
+// TODO 全部 util
+namespace utils
+{
+	std::string ToLowerString(std::string s);
+}
+
 #endif

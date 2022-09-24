@@ -2,6 +2,7 @@
 #include "error.hpp"
 #include "field_line.hpp"
 #include "validate_field_line.hpp"
+#include "webserv_utils.hpp"
 
 #include <list>
 
@@ -117,18 +118,15 @@ TODO どっちでパースするか
 void FieldLines::StoreFieldLines(const Lines &lines)
 {
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
-		const std::string name  = it->GetFieldName().ToString();
+		const std::string name  = utils::ToLowerString(it->GetFieldName().ToString());
 		const std::string value = it->GetFieldValue().ToString();
 		field_lines_[name].push_back(value);
 	}
 }
 
-FieldLines::Values &FieldLines::operator[](std::string field_name)
+FieldLines::Values &FieldLines::operator[](const std::string &field_name)
 {
-	for (std::string::iterator it = field_name.begin(); it != field_name.end(); it++) {
-		*it = std::tolower(*it);
-	}
-	return field_lines_[field_name];
+	return field_lines_[utils::ToLowerString(field_name)];
 }
 
 bool FieldLines::operator==(const FieldLines &rhs) const

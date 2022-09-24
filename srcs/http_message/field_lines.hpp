@@ -38,7 +38,7 @@ class FieldLines
 
 	bool    operator==(const FieldLines &rhs) const;
 	bool    operator!=(const FieldLines &rhs) const;
-	Values &operator[](std::string field_name);
+	Values &operator[](const std::string &field_name);
 
   private:
 	bool      IsValidTokenOrder(const Tokens &tokens) const;
