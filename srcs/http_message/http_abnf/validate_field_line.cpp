@@ -7,7 +7,6 @@ static const std::string kWhiteSpaces    = " \t";
 static const std::string kCrLf           = "\r\n";
 static const std::size_t kObsFoldMinSize = 3;
 
-// TODO test
 namespace http_abnf
 {
 	static bool IsWhiteSpaceOnly(const ThinString &str);
@@ -24,7 +23,6 @@ namespace http_abnf
 		return !str.empty() && IsWhiteSpaceOnly(str);
 	}
 
-	// TODO test
 	// obs-fold = OWS CRLF RWS
 	bool StartWithObsFold(const ThinString &str)
 	{
@@ -37,9 +35,11 @@ namespace http_abnf
 		return IsOws(ows) && IsRws(rws);
 	}
 
-	// TODO test
 	bool EndWithObsFold(const ThinString &str)
 	{
+		if (!str.EndWith(" ") && !str.EndWith("\t")) {
+			return false;
+		}
 		return str.TrimRight(kWhiteSpaces).EndWith(kCrLf);
 	}
 

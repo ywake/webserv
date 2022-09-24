@@ -63,3 +63,70 @@ TEST(field_line, is_field_vchar)
 		}
 	}
 }
+
+TEST(field_line, start_with_obsFold_true)
+{
+	EXPECT_TRUE(http_abnf::StartWithObsFold("\r\n "));
+	EXPECT_TRUE(http_abnf::StartWithObsFold("\r\n\t"));
+	EXPECT_TRUE(http_abnf::StartWithObsFold("\r\n aaaa"));
+	EXPECT_TRUE(http_abnf::StartWithObsFold("\r\n\taaaa"));
+	EXPECT_TRUE(http_abnf::StartWithObsFold(" \r\n aaaa"));
+	EXPECT_TRUE(http_abnf::StartWithObsFold("\t\r\n	aaaa"));
+	EXPECT_TRUE(http_abnf::StartWithObsFold(" \t\r\n	aaaa"));
+	EXPECT_TRUE(http_abnf::StartWithObsFold(" \t \r\n	aaaa"));
+	EXPECT_TRUE(http_abnf::StartWithObsFold("\t  \t\r\n	aaaa"));
+}
+
+TEST(field_line, start_with_obsFold_false)
+{
+	EXPECT_FALSE(http_abnf::StartWithObsFold(""));
+	EXPECT_FALSE(http_abnf::StartWithObsFold(" "));
+	EXPECT_FALSE(http_abnf::StartWithObsFold("\t"));
+	EXPECT_FALSE(http_abnf::StartWithObsFold("\t "));
+	EXPECT_FALSE(http_abnf::StartWithObsFold(" \t "));
+	EXPECT_FALSE(http_abnf::StartWithObsFold("\t \t"));
+	EXPECT_FALSE(http_abnf::StartWithObsFold("\r\n"));
+	EXPECT_FALSE(http_abnf::StartWithObsFold(" \r\n"));
+	EXPECT_FALSE(http_abnf::StartWithObsFold("\t\r\n"));
+	EXPECT_FALSE(http_abnf::StartWithObsFold("a\r\n "));
+	EXPECT_FALSE(http_abnf::StartWithObsFold("a\r\n\t"));
+	EXPECT_FALSE(http_abnf::StartWithObsFold("a \r\n\t"));
+}
+
+TEST(field_line, end_with_obsFold_true)
+{
+
+	EXPECT_TRUE(http_abnf::EndWithObsFold("\r\n "));
+	EXPECT_TRUE(http_abnf::EndWithObsFold("\r\n\t"));
+	EXPECT_TRUE(http_abnf::EndWithObsFold(" \r\n "));
+	EXPECT_TRUE(http_abnf::EndWithObsFold(" \r\n\t"));
+
+	EXPECT_TRUE(http_abnf::EndWithObsFold("\r\n\r\n "));
+	EXPECT_TRUE(http_abnf::EndWithObsFold("\r\n\r\n\t"));
+	EXPECT_TRUE(http_abnf::EndWithObsFold("\r\n \r\n "));
+	EXPECT_TRUE(http_abnf::EndWithObsFold("\r\n \r\n\t"));
+
+	EXPECT_TRUE(http_abnf::EndWithObsFold("a\r\n "));
+	EXPECT_TRUE(http_abnf::EndWithObsFold("a\r\n\t"));
+	EXPECT_TRUE(http_abnf::EndWithObsFold("a \r\n\t"));
+}
+
+TEST(field_line, end_with_obsFold_false)
+{
+	EXPECT_FALSE(http_abnf::EndWithObsFold(""));
+	EXPECT_FALSE(http_abnf::EndWithObsFold(" "));
+	EXPECT_FALSE(http_abnf::EndWithObsFold("\t"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold("\t "));
+	EXPECT_FALSE(http_abnf::EndWithObsFold(" \t "));
+	EXPECT_FALSE(http_abnf::EndWithObsFold("\t \t"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold("\r\n"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold(" \r\n"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold("\t\r\n"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold("\r\n aaaa"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold("\r\n\taaaa"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold(" \r\n aaaa"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold("\t\r\n	aaaa"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold(" \t\r\n	aaaa"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold(" \t \r\n	aaaa"));
+	EXPECT_FALSE(http_abnf::EndWithObsFold("\t  \t\r\n	aaaa"));
+}

@@ -75,7 +75,6 @@ class ThinString
 
 	ThinStrPair DivideBy(const std::string &delim, unsigned int delim_flag = kAlignLeft) const;
 	std::size_t MeasureUntil(const std::string &delim) const;
-	// TODO test
 	std::size_t MeasureUntilNotOf(const std::string &char_set) const;
 	bool        EndWith(const std::string &delim) const;
 	bool        StartWith(const std::string &delim) const;
