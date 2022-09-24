@@ -79,10 +79,8 @@ class ThinString
 	std::size_t MeasureUntil(const std::string &delim) const;
 	// TODO test
 	std::size_t MeasureUntilNotOf(const std::string &char_set) const;
-	// TODO test
-	bool EndWith(const std::string &delim) const;
-	// TODO test
-	bool StartWith(const std::string &delim) const;
+	bool        EndWith(const std::string &delim) const;
+	bool        StartWith(const std::string &delim) const;
 
 	const_iterator begin() const;
 	const_iterator end() const;

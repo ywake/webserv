@@ -241,7 +241,6 @@ std::size_t ThinString::MeasureUntilNotOf(const std::string &char_set) const
 	return pos == ThinString::npos ? size() : pos;
 }
 
-// TODO test
 bool ThinString::EndWith(const std::string &delim) const
 {
 	if (delim.size() > this->size()) {

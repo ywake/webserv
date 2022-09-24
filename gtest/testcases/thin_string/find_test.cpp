@@ -239,3 +239,34 @@ TEST(thin_string, trim_right)
 	EXPECT_EQ(ThinString("baaa").TrimRight("ab"), "");
 	EXPECT_EQ(ThinString("baaa").TrimRight("b"), "baaa");
 }
+
+TEST(thin_string, end_with)
+{
+	EXPECT_TRUE(ThinString("").EndWith(""));
+	EXPECT_TRUE(ThinString("a").EndWith("a"));
+	EXPECT_TRUE(ThinString("abc").EndWith("abc"));
+	EXPECT_TRUE(ThinString("abc012").EndWith("012"));
+	EXPECT_TRUE(ThinString("abcabc").EndWith("c"));
+	EXPECT_TRUE(ThinString("a").EndWith(""));
+
+	EXPECT_FALSE(ThinString("").EndWith("a"));
+	EXPECT_FALSE(ThinString("abc").EndWith("a"));
+	EXPECT_FALSE(ThinString("abc").EndWith("a"));
+	EXPECT_FALSE(ThinString("abcabc").EndWith("ab"));
+}
+
+TEST(thin_string, start_with)
+{
+	EXPECT_TRUE(ThinString("").StartWith(""));
+	EXPECT_TRUE(ThinString("a").StartWith("a"));
+	EXPECT_TRUE(ThinString("abc").StartWith("abc"));
+	EXPECT_TRUE(ThinString("abc").StartWith("a"));
+	EXPECT_TRUE(ThinString("abc").StartWith("a"));
+	EXPECT_TRUE(ThinString("abcabc").StartWith("ab"));
+	EXPECT_TRUE(ThinString("a").StartWith(""));
+
+	EXPECT_FALSE(ThinString("abc012").StartWith("012"));
+	EXPECT_FALSE(ThinString("abcabc").StartWith("c"));
+	EXPECT_FALSE(ThinString("").StartWith("a"));
+	EXPECT_FALSE(ThinString("abcabc").StartWith("bc"));
+}
