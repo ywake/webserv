@@ -7,6 +7,15 @@ services:
       - "8081:80"
     volumes:
       - "./volume:/usr/share/nginx/html/"
+      - ./site.conf:/etc/nginx/conf.d/default.conf
+
+  php:
+    image: php:7.4-fpm-alpine
+    container_name: php
+    volumes:
+      - "./volume:/var/www/html/"
+    depends_on:
+      - nginx
 
   apache:
     image: httpd:alpine

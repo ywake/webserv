@@ -29,6 +29,8 @@ destructor.c
 !test/volume
 !test/volume/*.html
 !test/request/**
+!*.conf
+!*.php
 
 ## google test
 gtest/googletest
