@@ -166,6 +166,11 @@ const FieldLines::Headers &FieldLines::GetMap() const
 	return field_lines_;
 }
 
+bool FieldLines::Contains(const std::string &field_name) const
+{
+	return field_lines_.find(utils::ToLowerString(field_name)) != field_lines_.end();
+}
+
 std::ostream &operator<<(std::ostream &os, const FieldLines &field_lines)
 {
 	FieldLines::Headers headers = field_lines.GetMap();

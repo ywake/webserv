@@ -43,6 +43,8 @@ class FieldLines
 
 	const Headers &GetMap() const;
 
+	bool Contains(const std::string &field_name) const;
+
   private:
 	Tokens    TokenizeLines(const ThinString &str) const;
 	bool      IsValidTokenOrder(const Tokens &tokens) const;
