@@ -13,7 +13,7 @@ services:
     image: php:7.4-fpm-alpine
     container_name: php
     volumes:
-      - "./volume:/var/www/html/"
+      - "./volume:/usr/share/nginx/html/"
     depends_on:
       - nginx
 
