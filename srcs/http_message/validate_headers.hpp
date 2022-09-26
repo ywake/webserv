@@ -8,6 +8,7 @@ namespace http_headers
 	bool HasSingleHost(const FieldLines &field_lines);
 	bool IsValidTransferEncoding(const FieldLines &field_lines);
 	bool IsValidFieldLines(const FieldLines &field_lines);
+	bool IsValidContentLength(const FieldLines &field_lines);
 } // namespace http_headers
 
 #endif
