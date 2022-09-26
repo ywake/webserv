@@ -1,6 +1,7 @@
 #include "validate_headers.hpp"
 
 #include "error.hpp"
+#include "webserv_utils.hpp"
 
 namespace http_headers
 {
@@ -19,7 +20,18 @@ namespace http_headers
 	bool IsValidContentLength(const FieldLines::Values &values)
 	{
 		if (values.empty()) {
-		return true;
+			return true;
+		}
+		const bool has_single_value = ++values.begin() == values.end();
+		if (!has_single_value) {
+			return false;
+		}
+		const std::string &value = values.front();
+		if (value.empty()) {
+			return false;
+		}
+		const bool start_with_digit = std::isdigit(value.at(0));
+		return start_with_digit && utils::StrToLong(value).IsOk();
 	}
 
 	bool IsValidFieldLines(const FieldLines &field_lines)
