@@ -22,6 +22,8 @@ TEST(http_headers, is_valid_transfer_encoding)
 {
 	EXPECT_TRUE(http_headers::IsValidTransferEncoding(FieldLines("")));
 	EXPECT_TRUE(http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding:chunked\r\n")));
+	EXPECT_TRUE(http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding:gzip\r\n"
+																 "Transfer-Encoding:chunked\r\n")));
 	EXPECT_TRUE(http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding:chunked, \r\n"))
 	);
 	EXPECT_TRUE(http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding:chunked,,,,\r\n"
@@ -36,13 +38,17 @@ TEST(http_headers, is_valid_transfer_encoding)
 	EXPECT_TRUE(http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding:\r\n")));
 	EXPECT_TRUE(http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding: \r\n")));
 
-	// チャンク化転送符号法を複数回適用してはならない
 	EXPECT_TRUE(http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding: chunked\r\n"))
 	);
-	EXPECT_FALSE(
+
+	// チャンク化転送符号法を複数回適用してはならない（送信者）受信者は最後chunkedならok？
+	EXPECT_TRUE(http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding: chunked\r\n"
+																 "Transfer-Encoding: chunked\r\n"))
+	);
+	EXPECT_TRUE(
 		http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding: chunked, chunked\r\n"))
 	);
-	EXPECT_FALSE(http_headers::IsValidTransferEncoding(
+	EXPECT_TRUE(http_headers::IsValidTransferEncoding(
 		FieldLines("Transfer-Encoding: chunked, gzip, chunked\r\n")
 	));
 
@@ -53,6 +59,9 @@ TEST(http_headers, is_valid_transfer_encoding)
 	EXPECT_FALSE(
 		http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding: chunked, gzip\r\n"))
 	);
+
+	EXPECT_FALSE(http_headers::IsValidTransferEncoding(FieldLines("Transfer-Encoding: chunked, \r\n"
+	)));
 
 	// 不明な転送符号法を伴うリクエストには501でレスポンス
 	EXPECT_THROW(
