@@ -6,6 +6,7 @@ static const ThinString kEmpty = "";
 AuthorityForm::AuthorityForm() : authority_() {}
 
 // authority-form = uri-host ":" port
+// [RFC3986] the "http" scheme considers a missing authority or empty host invalid.
 AuthorityForm::AuthorityForm(const ThinString &str) : authority_(str)
 {
 	if (authority_.GetHost().empty() || str.find(":") == ThinString::npos) {
