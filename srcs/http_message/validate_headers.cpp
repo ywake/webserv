@@ -1,10 +1,27 @@
 #include "validate_headers.hpp"
+#include "validate_field_line.hpp"
 
 #include "error.hpp"
 #include "webserv_utils.hpp"
 
+static const std::string kCrLf = "\r\n";
+
 namespace http_headers
 {
+	bool HasObsFold(const ThinString &str)
+	{
+		for (ThinString remained = str;;) {
+			std::size_t crlf_pos = remained.find(kCrLf);
+			if (crlf_pos == ThinString::npos) {
+				return false;
+			}
+			remained = remained.substr(crlf_pos);
+			if (http_abnf::StartWithObsFold(remained)) {
+				return true;
+			}
+		}
+	}
+
 	bool HasSingleHost(const FieldLines &field_lines)
 	{
 		(void)field_lines;
@@ -20,13 +37,10 @@ namespace http_headers
 	bool IsValidContentLength(const std::string &value)
 	{
 		if (value.empty()) {
-			return true;
-		}
-		const bool has_single_value = value.find(",") == std::string::npos;
-		if (!has_single_value) {
 			return false;
 		}
-		if (value.empty()) {
+		const bool has_single_value = value.find(",") == std::string::npos;
+		if (!has_single_value || HasObsFold(value)) {
 			return false;
 		}
 		const bool start_with_digit = std::isdigit(value.at(0));
