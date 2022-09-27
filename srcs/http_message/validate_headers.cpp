@@ -22,11 +22,14 @@ namespace http_headers
 		if (values.empty()) {
 			return true;
 		}
-		const bool has_single_value = ++values.begin() == values.end();
+		const bool has_single_value = values.find(",") == std::string::npos;
+		// TODO:
+		// const bool has_single_value = Tokenize(values).size() == 1;
 		if (!has_single_value) {
 			return false;
 		}
-		const std::string &value = values.front();
+		// const std::string &value = values.front();
+		const std::string &value = values;
 		if (value.empty()) {
 			return false;
 		}

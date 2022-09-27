@@ -20,7 +20,7 @@ class FieldLines
 	};
 
   public:
-	typedef std::list<std::string>              Values;
+	typedef std::string                         Values;
 	typedef std::map<const std::string, Values> Headers;
 
   private:

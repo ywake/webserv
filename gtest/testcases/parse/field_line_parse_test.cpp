@@ -4,14 +4,14 @@
 #include <cctype>
 #include <string>
 
-TEST(field_line, case_insensitive)
-{
-	FieldLines field;
-	field["Content-Length"].push_back(std::string("11"));
-	EXPECT_EQ(field["content-length"], FieldLines::Values({"11"}));
-	field["Content-Length"].push_back(std::string("12"));
-	EXPECT_EQ(field["content-length"], FieldLines::Values({"11", "12"}));
-}
+// TEST(field_line, case_insensitive)
+// {
+// 	FieldLines field;
+// 	field["Content-Length"].push_back(std::string("11"));
+// 	EXPECT_EQ(field["content-length"], FieldLines::Values("11"));
+// 	field["Content-Length"].push_back(std::string("12"));
+// 	EXPECT_EQ(field["content-length"], FieldLines::Values({"11", "12"}));
+// }
 
 /*
 TEST(field_line, post_with_no_field_line)

@@ -124,7 +124,11 @@ void FieldLines::StoreFieldLines(const Lines &lines)
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
 		const std::string name  = utils::ToLowerString(it->GetFieldName().ToString());
 		const std::string value = it->GetFieldValue().ToString();
-		field_lines_[name].push_back(value);
+		if (field_lines_[name].empty()) {
+			field_lines_[name] = value;
+		} else {
+			field_lines_[name] += ", " + value;
+		}
 	}
 }
 
@@ -177,9 +181,10 @@ std::ostream &operator<<(std::ostream &os, const FieldLines &field_lines)
 	for (FieldLines::Headers::const_iterator it = headers.begin(); it != headers.end(); it++) {
 		const std::string        name   = it->first;
 		const FieldLines::Values values = it->second;
-		for (FieldLines::Values::const_iterator it = values.begin(); it != values.end(); it++) {
-			os << name << ": " << *it << "\n";
-		}
+		// for (FieldLines::Values::const_iterator it = values.begin(); it != values.end(); it++) {
+		// 	os << name << ": " << *it << "\n";
+		// }
+		os << name << ": " << values << "\n";
 	}
 	return os;
 }
