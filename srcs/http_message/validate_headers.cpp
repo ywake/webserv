@@ -17,19 +17,15 @@ namespace http_headers
 		return true;
 	}
 
-	bool IsValidContentLength(const FieldLines::Values &values)
+	bool IsValidContentLength(const std::string &value)
 	{
-		if (values.empty()) {
+		if (value.empty()) {
 			return true;
 		}
-		const bool has_single_value = values.find(",") == std::string::npos;
-		// TODO:
-		// const bool has_single_value = Tokenize(values).size() == 1;
+		const bool has_single_value = value.find(",") == std::string::npos;
 		if (!has_single_value) {
 			return false;
 		}
-		// const std::string &value = values.front();
-		const std::string &value = values;
 		if (value.empty()) {
 			return false;
 		}

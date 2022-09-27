@@ -15,21 +15,19 @@ TEST(field_lines, test)
 				   " value2\r\n"
 				   "\tvalue2\r\n"),
 		FieldLines(FieldLines::Headers(
-			{{"key", FieldLines::Values("value")},
+			{{"key", "value"},
 			 {"key2",
-			  FieldLines::Values("value2\r\n"
-								 " value2\r\n"
-								 "\tvalue2")}}
+			  "value2\r\n"
+			  " value2\r\n"
+			  "\tvalue2"}}
 		))
 	);
 
-	EXPECT_EQ(
-		FieldLines("a:\r\n"), FieldLines(FieldLines::Headers({{"a", FieldLines::Values("")}}))
-	);
+	EXPECT_EQ(FieldLines("a:\r\n"), FieldLines(FieldLines::Headers({{"a", ""}})));
 	EXPECT_EQ(
 		FieldLines("key: value\r\n"
 				   "key: value2  \r\n"),
-		FieldLines(FieldLines::Headers({{"key", FieldLines::Values("value, value2")}}))
+		FieldLines(FieldLines::Headers({{"key", "value, value2"}}))
 	);
 	EXPECT_EQ(
 		FieldLines("key: value\r\n"
@@ -37,16 +35,16 @@ TEST(field_lines, test)
 				   "\t\r\n"),
 		FieldLines(FieldLines::Headers(
 			{{"key",
-			  FieldLines::Values("value\r\n"
-								 " \r\n"
-								 "\t")}}
+			  "value\r\n"
+			  " \r\n"
+			  "\t"}}
 		))
 	);
 	EXPECT_EQ(
 		FieldLines("key: value\r\n"
 				   " \r\n"
 				   "\t\r\n"),
-		FieldLines(FieldLines::Headers({{"key", FieldLines::Values("value\r\n \r\n\t")}}))
+		FieldLines(FieldLines::Headers({{"key", "value\r\n \r\n\t"}}))
 	);
 }
 
