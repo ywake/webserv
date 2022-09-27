@@ -22,4 +22,5 @@ TEST(AuthorityFormTest, invalid_authority_form)
 {
 	EXPECT_THROW(AuthorityForm("example.com"), Error);
 	EXPECT_THROW(AuthorityForm("example.com80"), Error);
+	EXPECT_THROW(AuthorityForm("a@a:80"), Error);
 }
