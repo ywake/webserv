@@ -21,3 +21,10 @@ TEST(http_headers, is_valid_content_length)
 	EXPECT_FALSE(http_headers::IsValidContentLength(FieldLines::Values({"0a"})));
 	EXPECT_FALSE(http_headers::IsValidContentLength(FieldLines::Values({"9223372036854775808"})));
 }
+
+TEST(http_headers, is_valid_content_length_obs_fold)
+{
+	EXPECT_FALSE(http_headers::IsValidContentLength(FieldLines::Values({"\r\n 1"})));
+	EXPECT_FALSE(http_headers::IsValidContentLength(FieldLines::Values({"1\r\n "})));
+	EXPECT_FALSE(http_headers::IsValidContentLength(FieldLines::Values({"1\r\n\t"})));
+}
