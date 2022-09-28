@@ -1,7 +1,9 @@
 #include "validate_headers.hpp"
 #include "validate_field_line.hpp"
 
-#include "error.hpp"
+#include "host_port.hpp"
+#include "result.hpp"
+#include "status_code.hpp"
 #include "webserv_utils.hpp"
 
 static const std::string kCrLf = "\r\n";
@@ -60,6 +62,66 @@ namespace http_headers
 		// 	return false;
 		// }
 		return true;
+	}
+
+	bool IsValidHost(const std::string &host)
+	{
+		try {
+			http::HostPort host_port(host);
+			// find :
+			return true;
+		} catch (Error) {
+			return false;
+		}
+	}
+
+	http::StatusCode ValidateHost(const HeaderSection &field_lines)
+	{
+		if (!HasSignleHost() || !IsValidHost(host)) {
+			return http::StatusCode::kBadRequest;
+		}
+		return http::EmptyStatusCode();
+	}
+
+	http::StatusCode ValidateContentLegnth(const std::string &value)
+	{
+		if (value.empty()) {
+			return http::EmptyStatusCode();
+		}
+		const bool has_single_value = value.find(",") == std::string::npos;
+		if (!has_single_value || HasObsFold(value)) {
+			return http::StatusCode::kBadRequest;
+		}
+		const bool start_with_digit = std::isdigit(value.at(0));
+		if (!start_with_digit || utils::StrToLong(value).IsErr()) {
+			return http::StatusCode::kBadRequest;
+		}
+		return http::EmptyStatusCode();
+	}
+
+	http::StatusCode ValidateTransferEncoding(const std::string &value)
+	{
+		(void)value;
+		return http::EmptyStatusCode();
+	}
+
+	http::StatusCode ValidateHeaderSection(const HeaderSection &field_lines)
+	{
+		http::StatusCode err_code;
+
+		err_code = ValidateHost();
+		if (!err_code.empty()) {
+			return err_code;
+		}
+		err_code = ValidateContentLegnth();
+		if (!err_code.empty()) {
+			return err_code;
+		}
+		err_code = ValidateTransferEncoding();
+		if (!err_code.empty()) {
+			return err_code;
+		}
+		return http::EmptyStatusCode();
 	}
 
 } // namespace http_headers
