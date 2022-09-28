@@ -7,14 +7,14 @@
 
 TEST(field_lines, test)
 {
-	FieldLines field_lines;
+	HeaderSection field_lines;
 
 	EXPECT_EQ(
-		FieldLines("key: value\r\n"
-				   "key2: value2\r\n"
-				   " value2\r\n"
-				   "\tvalue2\r\n"),
-		FieldLines(FieldLines::Headers(
+		HeaderSection("key: value\r\n"
+					  "key2: value2\r\n"
+					  " value2\r\n"
+					  "\tvalue2\r\n"),
+		HeaderSection(HeaderSection::Headers(
 			{{"key", "value"},
 			 {"key2",
 			  "value2\r\n"
@@ -23,17 +23,17 @@ TEST(field_lines, test)
 		))
 	);
 
-	EXPECT_EQ(FieldLines("a:\r\n"), FieldLines(FieldLines::Headers({{"a", ""}})));
+	EXPECT_EQ(HeaderSection("a:\r\n"), HeaderSection(HeaderSection::Headers({{"a", ""}})));
 	EXPECT_EQ(
-		FieldLines("key: value\r\n"
-				   "key: value2  \r\n"),
-		FieldLines(FieldLines::Headers({{"key", "value, value2"}}))
+		HeaderSection("key: value\r\n"
+					  "key: value2  \r\n"),
+		HeaderSection(HeaderSection::Headers({{"key", "value, value2"}}))
 	);
 	EXPECT_EQ(
-		FieldLines("key: value\r\n"
-				   " \r\n"
-				   "\t\r\n"),
-		FieldLines(FieldLines::Headers(
+		HeaderSection("key: value\r\n"
+					  " \r\n"
+					  "\t\r\n"),
+		HeaderSection(HeaderSection::Headers(
 			{{"key",
 			  "value\r\n"
 			  " \r\n"
@@ -41,55 +41,55 @@ TEST(field_lines, test)
 		))
 	);
 	EXPECT_EQ(
-		FieldLines("key: value\r\n"
-				   " \r\n"
-				   "\t\r\n"),
-		FieldLines(FieldLines::Headers({{"key", "value\r\n \r\n\t"}}))
+		HeaderSection("key: value\r\n"
+					  " \r\n"
+					  "\t\r\n"),
+		HeaderSection(HeaderSection::Headers({{"key", "value\r\n \r\n\t"}}))
 	);
 }
 
 TEST(field_lines, throw_test)
 {
-	EXPECT_THROW(FieldLines(":"), Error);
-	EXPECT_THROW(FieldLines(" :"), Error);
-	EXPECT_THROW(FieldLines("\r\n"), Error);
-	EXPECT_THROW(FieldLines("a:"), Error);
+	EXPECT_THROW(HeaderSection(":"), Error);
+	EXPECT_THROW(HeaderSection(" :"), Error);
+	EXPECT_THROW(HeaderSection("\r\n"), Error);
+	EXPECT_THROW(HeaderSection("a:"), Error);
 	EXPECT_THROW(
-		FieldLines("key: value\r\n"
-				   "\r\n"
-				   "\r\n"),
+		HeaderSection("key: value\r\n"
+					  "\r\n"
+					  "\r\n"),
 		Error
 	);
 	EXPECT_THROW(
-		FieldLines("key\r\n"
-				   " : value\r\n"),
+		HeaderSection("key\r\n"
+					  " : value\r\n"),
 		Error
 	);
 	EXPECT_THROW(
-		FieldLines("key\r\n"
-				   "\t: value\r\n"),
+		HeaderSection("key\r\n"
+					  "\t: value\r\n"),
 		Error
 	);
 	EXPECT_THROW(
-		FieldLines("key\r\n"
-				   " : value"),
+		HeaderSection("key\r\n"
+					  " : value"),
 		Error
 	);
 	EXPECT_THROW(
-		FieldLines("key\r\n"
-				   "\t: value"),
+		HeaderSection("key\r\n"
+					  "\t: value"),
 		Error
 	);
 	EXPECT_THROW(
-		FieldLines("key: value\r\n"
-				   " \r\n"
-				   "\t"),
+		HeaderSection("key: value\r\n"
+					  " \r\n"
+					  "\t"),
 		Error
 	);
 	EXPECT_THROW(
-		FieldLines("key: value\r\n"
-				   " \r\n"
-				   " "),
+		HeaderSection("key: value\r\n"
+					  " \r\n"
+					  " "),
 		Error
 	);
 }

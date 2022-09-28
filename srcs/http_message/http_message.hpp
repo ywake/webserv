@@ -8,10 +8,10 @@ class HttpMessage
 {
   public:
   public:
-	FieldLines  field_lines_;
-	std::string message_body_;
+	HeaderSection field_lines_;
+	std::string   message_body_;
 
-	HttpMessage(FieldLines field_lines, std::string message_body)
+	HttpMessage(HeaderSection field_lines, std::string message_body)
 		: field_lines_(field_lines), message_body_(message_body)
 	{}
 

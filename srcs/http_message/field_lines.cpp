@@ -21,9 +21,9 @@ static const std::string kCrLf        = "\r\n";
 static const std::string kWhiteSpaces = " \t";
 static const std::string kSingleSpace = " ";
 
-FieldLines::FieldLines() {}
+HeaderSection::HeaderSection() {}
 
-FieldLines::FieldLines(const ThinString &str)
+HeaderSection::HeaderSection(const ThinString &str)
 {
 	if (str.empty()) {
 		return;
@@ -36,11 +36,11 @@ FieldLines::FieldLines(const ThinString &str)
 	StoreFieldLines(lines);
 }
 
-FieldLines::FieldLines(const std::map<const std::string, Values> &field_lines)
+HeaderSection::HeaderSection(const std::map<const std::string, Values> &field_lines)
 	: field_lines_(field_lines)
 {}
 
-FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str) const
+HeaderSection::Tokens HeaderSection::TokenizeLines(const ThinString &str) const
 {
 	Tokens tokens;
 
@@ -63,7 +63,7 @@ FieldLines::Tokens FieldLines::TokenizeLines(const ThinString &str) const
 //	World!]
 // ↓
 // [message3: Hello, World!]
-FieldLines::Token FieldLines::CreateFieldLineToken(const ThinString &str) const
+HeaderSection::Token HeaderSection::CreateFieldLineToken(const ThinString &str) const
 {
 	std::size_t token_len = 0;
 	while (true) {
@@ -80,7 +80,7 @@ FieldLines::Token FieldLines::CreateFieldLineToken(const ThinString &str) const
 	return Token(str.substr(0, token_len), kFieldLineTk);
 }
 
-bool FieldLines::IsValidTokenOrder(const Tokens &tokens) const
+bool HeaderSection::IsValidTokenOrder(const Tokens &tokens) const
 {
 	if (tokens.empty()) {
 		return true;
@@ -98,7 +98,7 @@ bool FieldLines::IsValidTokenOrder(const Tokens &tokens) const
 	return true;
 }
 
-FieldLines::Lines FieldLines::ParseFieldLines(const Tokens &tokens) const
+HeaderSection::Lines HeaderSection::ParseFieldLines(const Tokens &tokens) const
 {
 	Lines lines;
 
@@ -119,7 +119,7 @@ TODO どっちでパースするか
 	データ構造はmap<name, std::set>
 	TRはcase insensitive
 */
-void FieldLines::StoreFieldLines(const Lines &lines)
+void HeaderSection::StoreFieldLines(const Lines &lines)
 {
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
 		const std::string name  = utils::ToLowerString(it->GetFieldName().ToString());
@@ -132,17 +132,17 @@ void FieldLines::StoreFieldLines(const Lines &lines)
 	}
 }
 
-std::string &FieldLines::operator[](const std::string &field_name)
+std::string &HeaderSection::operator[](const std::string &field_name)
 {
 	return field_lines_[utils::ToLowerString(field_name)];
 }
 
-bool FieldLines::operator==(const FieldLines &rhs) const
+bool HeaderSection::operator==(const HeaderSection &rhs) const
 {
 	return field_lines_ == rhs.field_lines_;
 }
 
-bool FieldLines::operator!=(const FieldLines &rhs) const
+bool HeaderSection::operator!=(const HeaderSection &rhs) const
 {
 	return !(*this == rhs);
 }
@@ -165,20 +165,20 @@ bool FieldLines::operator!=(const FieldLines &rhs) const
 // 	}
 // }
 
-const FieldLines::Headers &FieldLines::GetMap() const
+const HeaderSection::Headers &HeaderSection::GetMap() const
 {
 	return field_lines_;
 }
 
-bool FieldLines::Contains(const std::string &field_name) const
+bool HeaderSection::Contains(const std::string &field_name) const
 {
 	return field_lines_.find(utils::ToLowerString(field_name)) != field_lines_.end();
 }
 
-std::ostream &operator<<(std::ostream &os, const FieldLines &field_lines)
+std::ostream &operator<<(std::ostream &os, const HeaderSection &field_lines)
 {
-	FieldLines::Headers headers = field_lines.GetMap();
-	for (FieldLines::Headers::const_iterator it = headers.begin(); it != headers.end(); it++) {
+	HeaderSection::Headers headers = field_lines.GetMap();
+	for (HeaderSection::Headers::const_iterator it = headers.begin(); it != headers.end(); it++) {
 		const std::string name   = it->first;
 		const std::string values = it->second;
 		os << name << ": " << values << "\n";
