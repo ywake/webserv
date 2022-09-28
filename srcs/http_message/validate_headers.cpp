@@ -22,13 +22,13 @@ namespace http_headers
 		}
 	}
 
-	bool HasSingleHost(const FieldLines &field_lines)
+	bool HasSingleHost(const HeaderSection &field_lines)
 	{
 		(void)field_lines;
 		return true;
 	}
 
-	bool IsValidTransferEncoding(const FieldLines &field_lines)
+	bool IsValidTransferEncoding(const HeaderSection &field_lines)
 	{
 		(void)field_lines;
 		return true;
@@ -47,7 +47,7 @@ namespace http_headers
 		return start_with_digit && utils::StrToLong(value).IsOk();
 	}
 
-	bool IsValidFieldLines(const FieldLines &field_lines)
+	bool IsValidFieldLines(const HeaderSection &field_lines)
 	{
 		HasSingleHost(field_lines);
 		// bool has_content_length    = field_lines.Contains("content-length");

@@ -8,7 +8,7 @@ class ResponseMessage : public HttpMessage
   public:
 	StatusLine status_line_;
 
-	ResponseMessage(StatusLine &status_line, FieldLines &field_lines, std::string &message_body)
+	ResponseMessage(StatusLine &status_line, HeaderSection &field_lines, std::string &message_body)
 		: HttpMessage(field_lines, message_body), status_line_(status_line)
 	{}
 
