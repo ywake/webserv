@@ -11,8 +11,8 @@ class Result
   public:
 	Error err;
 	Result() : val(), err(){};
-	Result(T v) : val(v), err(){};
-	Result(T v, Error e) : val(v), err(e){};
+	Result(const T &v) : val(v), err(){};
+	Result(const T &v, Error e) : val(v), err(e){};
 	Result(Error e) : err(e){};
 	bool IsOk()
 	{
