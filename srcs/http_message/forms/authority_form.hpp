@@ -14,7 +14,7 @@ class AuthorityForm : public ITargetForm
 	AuthorityForm();
 	AuthorityForm(const ThinString &str);
 	AuthorityForm(const Authority &authority);
-	AuthorityForm(const AuthorityForm &str);
+	AuthorityForm(const AuthorityForm &other);
 	AuthorityForm    &operator=(const AuthorityForm &other);
 	bool              operator==(const AuthorityForm &other) const;
 	bool              operator!=(const AuthorityForm &other) const;
