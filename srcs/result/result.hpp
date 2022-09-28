@@ -6,10 +6,10 @@ template <typename T>
 class Result
 {
   private:
-	T val;
+	T     val;
+	Error err;
 
   public:
-	Error err;
 	Result() : val(), err(){};
 	Result(const T &v) : val(v), err(){};
 	Result(const T &v, Error e) : val(v), err(e){};
@@ -36,11 +36,11 @@ template <typename T>
 class Result<T &>
 {
   private:
-	T  default_;
-	T &val;
+	T     default_;
+	T    &val;
+	Error err;
 
   public:
-	Error err;
 	Result() : default_(), val(default_), err(){};
 	Result(const T &v) : val(v), err(){};
 	Result(const T &v, Error e) : val(v), err(e){};
@@ -66,8 +66,10 @@ class Result<T &>
 template <>
 class Result<void>
 {
-  public:
+  private:
 	Error err;
+
+  public:
 	Result() : err(){};
 	Result(Error e) : err(e){};
 	bool IsOk()
