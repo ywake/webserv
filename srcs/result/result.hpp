@@ -6,29 +6,29 @@ template <typename T>
 class Result
 {
   private:
-	T     val;
-	Error err;
+	T     val_;
+	Error err_;
 
   public:
-	Result() : val(), err(){};
-	Result(const T &v) : val(v), err(){};
-	Result(const T &v, const Error &e) : val(v), err(e){};
-	Result(const Error &e) : err(e){};
+	Result() : val_(), err_(){};
+	Result(const T &v) : val_(v), err_(){};
+	Result(const T &v, const Error &e) : val_(v), err_(e){};
+	Result(const Error &e) : err_(e){};
 	bool IsOk()
 	{
-		return !err.IsErr();
+		return !err_.IsErr();
 	}
 	bool IsErr()
 	{
-		return err.IsErr();
+		return err_.IsErr();
 	}
 	T Val()
 	{
-		return val;
+		return val_;
 	}
 	std::string Err()
 	{
-		return err.Err();
+		return err_.Err();
 	}
 };
 
@@ -37,29 +37,29 @@ class Result<T &>
 {
   private:
 	T     default_;
-	T    &val;
-	Error err;
+	T    &val_;
+	Error err_;
 
   public:
-	Result() : default_(), val(default_), err(){};
-	Result(const T &v) : val(v), err(){};
-	Result(const T &v, const Error &e) : val(v), err(e){};
-	Result(const Error &e) : default_(), val(default_), err(e){};
+	Result() : default_(), val_(default_), err_(){};
+	Result(const T &v) : val_(v), err_(){};
+	Result(const T &v, const Error &e) : val_(v), err_(e){};
+	Result(const Error &e) : default_(), val_(default_), err_(e){};
 	bool IsOk()
 	{
-		return !err.IsErr();
+		return !err_.IsErr();
 	}
 	bool IsErr()
 	{
-		return err.IsErr();
+		return err_.IsErr();
 	}
 	T Val()
 	{
-		return val;
+		return val_;
 	}
 	std::string Err()
 	{
-		return err.Err();
+		return err_.Err();
 	}
 };
 
@@ -67,22 +67,22 @@ template <>
 class Result<void>
 {
   private:
-	Error err;
+	Error err_;
 
   public:
-	Result() : err(){};
-	Result(const Error &e) : err(e){};
+	Result() : err_(){};
+	Result(const Error &e) : err_(e){};
 	bool IsOk()
 	{
-		return !err.IsErr();
+		return !err_.IsErr();
 	}
 	bool IsErr()
 	{
-		return err.IsErr();
+		return err_.IsErr();
 	}
 	std::string Err()
 	{
-		return err.Err();
+		return err_.Err();
 	}
 };
 
