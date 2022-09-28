@@ -12,8 +12,8 @@ class Result
   public:
 	Result() : val(), err(){};
 	Result(const T &v) : val(v), err(){};
-	Result(const T &v, Error e) : val(v), err(e){};
-	Result(Error e) : err(e){};
+	Result(const T &v, const Error &e) : val(v), err(e){};
+	Result(const Error &e) : err(e){};
 	bool IsOk()
 	{
 		return !err.IsErr();
@@ -43,8 +43,8 @@ class Result<T &>
   public:
 	Result() : default_(), val(default_), err(){};
 	Result(const T &v) : val(v), err(){};
-	Result(const T &v, Error e) : val(v), err(e){};
-	Result(Error e) : err(e){};
+	Result(const T &v, const Error &e) : val(v), err(e){};
+	Result(const Error &e) : default_(), val(default_), err(e){};
 	bool IsOk()
 	{
 		return !err.IsErr();
@@ -71,7 +71,7 @@ class Result<void>
 
   public:
 	Result() : err(){};
-	Result(Error e) : err(e){};
+	Result(const Error &e) : err(e){};
 	bool IsOk()
 	{
 		return !err.IsErr();
