@@ -31,6 +31,38 @@ class Result
 		return err.Err();
 	}
 };
+
+template <typename T>
+class Result<T &>
+{
+  private:
+	T  default_;
+	T &val;
+
+  public:
+	Error err;
+	Result() : default_(), val(default_), err(){};
+	Result(const T &v) : val(v), err(){};
+	Result(const T &v, Error e) : val(v), err(e){};
+	Result(Error e) : err(e){};
+	bool IsOk()
+	{
+		return !err.IsErr();
+	}
+	bool IsErr()
+	{
+		return err.IsErr();
+	}
+	T Val()
+	{
+		return val;
+	}
+	std::string Err()
+	{
+		return err.Err();
+	}
+};
+
 template <>
 class Result<void>
 {
