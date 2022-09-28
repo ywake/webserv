@@ -1,5 +1,5 @@
-#ifndef FIELD_LINES_HPP
-#define FIELD_LINES_HPP
+#ifndef HEADER_SECTION_HPP
+#define HEADER_SECTION_HPP
 #include <iostream>
 #include <list>
 #include <map>

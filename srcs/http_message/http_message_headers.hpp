@@ -1,6 +1,6 @@
 #ifndef HTTP_MESSAGE_HEADERS_HPP
 #define HTTP_MESSAGE_HEADERS_HPP
-#include "field_lines.hpp"
+#include "header_section.hpp"
 #include "http_message.hpp"
 #include "http_message_headers.hpp"
 #include "request_form_data.hpp"

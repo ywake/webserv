@@ -2,7 +2,7 @@
 
 #include "validate_headers.hpp"
 
-#include "field_lines.hpp"
+#include "header_section.hpp"
 
 TEST(http_headers, is_valid_content_length)
 {

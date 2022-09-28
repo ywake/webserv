@@ -1,7 +1,7 @@
 #ifndef VALIDATION_HEADERS_HPP
 #define VALIDATION_HEADERS_HPP
 
-#include <field_lines.hpp>
+#include "header_section.hpp"
 
 namespace http_headers
 {

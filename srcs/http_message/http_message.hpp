@@ -1,6 +1,6 @@
 #ifndef HTTP_MESSAGE_HPP
 #define HTTP_MESSAGE_HPP
-#include "field_lines.hpp"
+#include "header_section.hpp"
 #include <string>
 #include <vector>
 

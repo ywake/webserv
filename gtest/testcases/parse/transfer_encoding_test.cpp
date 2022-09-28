@@ -3,7 +3,7 @@
 #include "validate_headers.hpp"
 
 #include "error.hpp"
-#include "field_lines.hpp"
+#include "header_section.hpp"
 
 // #element => [element *( OWS "," OWS element )]
 // Transfer-Encoding

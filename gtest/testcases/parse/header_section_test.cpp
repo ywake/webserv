@@ -3,7 +3,7 @@
 #include <list>
 
 #include "error.hpp"
-#include "field_lines.hpp"
+#include "header_section.hpp"
 
 TEST(field_lines, test)
 {
