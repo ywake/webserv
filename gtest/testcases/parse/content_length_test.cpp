@@ -6,13 +6,13 @@
 
 TEST(http_headers, is_valid_content_length)
 {
-	EXPECT_TRUE(http_headers::IsValidContentLength(""));
 	EXPECT_TRUE(http_headers::IsValidContentLength("0"));
 	EXPECT_TRUE(http_headers::IsValidContentLength("1"));
 	EXPECT_TRUE(http_headers::IsValidContentLength("01"));
 	EXPECT_TRUE(http_headers::IsValidContentLength("12345"));
 	EXPECT_TRUE(http_headers::IsValidContentLength("9223372036854775807"));
 
+	EXPECT_FALSE(http_headers::IsValidContentLength(""));
 	EXPECT_FALSE(http_headers::IsValidContentLength("1, "));
 	EXPECT_FALSE(http_headers::IsValidContentLength(", 1"));
 	EXPECT_FALSE(http_headers::IsValidContentLength("1, 2"));
