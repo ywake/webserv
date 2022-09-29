@@ -2,7 +2,9 @@
 
 namespace http
 {
-	HttpException::HttpException(StatusCode status_code) : std::exception() {}
+	HttpException::HttpException(StatusCode status_code)
+		: std::exception(), status_code_(status_code)
+	{}
 
 	StatusCode HttpException::GetStatusCode() const
 	{
