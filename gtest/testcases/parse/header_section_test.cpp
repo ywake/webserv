@@ -2,8 +2,8 @@
 
 #include <list>
 
-#include "error.hpp"
 #include "header_section.hpp"
+#include "http_exceptions.hpp"
 
 TEST(field_lines, test)
 {
@@ -50,46 +50,46 @@ TEST(field_lines, test)
 
 TEST(field_lines, throw_test)
 {
-	EXPECT_THROW(HeaderSection(":"), Error);
-	EXPECT_THROW(HeaderSection(" :"), Error);
-	EXPECT_THROW(HeaderSection("\r\n"), Error);
-	EXPECT_THROW(HeaderSection("a:"), Error);
+	EXPECT_THROW(HeaderSection(":"), ParseErrorException);
+	EXPECT_THROW(HeaderSection(" :"), ParseErrorException);
+	EXPECT_THROW(HeaderSection("\r\n"), ParseErrorException);
+	EXPECT_THROW(HeaderSection("a:"), ParseErrorException);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  "\r\n"
 					  "\r\n"),
-		Error
+		ParseErrorException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  " : value\r\n"),
-		Error
+		ParseErrorException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  "\t: value\r\n"),
-		Error
+		ParseErrorException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  " : value"),
-		Error
+		ParseErrorException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  "\t: value"),
-		Error
+		ParseErrorException
 	);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  " \r\n"
 					  "\t"),
-		Error
+		ParseErrorException
 	);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  " \r\n"
 					  " "),
-		Error
+		ParseErrorException
 	);
 }

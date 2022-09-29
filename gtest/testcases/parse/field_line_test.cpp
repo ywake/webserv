@@ -1,7 +1,7 @@
 #include "gtest.h"
 
-#include "error.hpp"
 #include "field_line.hpp"
+#include "http_exceptions.hpp"
 
 TEST(filed_line, field_line_test)
 {
@@ -30,9 +30,9 @@ TEST(field_line, field_name_should_be_a_token)
 	);
 	EXPECT_EQ(FieldLine("1234567890: 11"), FieldLine("1234567890", "11"));
 
-	EXPECT_THROW(FieldLine("@: 11"), Error);
-	EXPECT_THROW(FieldLine("[]: 11"), Error);
-	EXPECT_THROW(FieldLine(":aaa: 11"), Error);
+	EXPECT_THROW(FieldLine("@: 11"), ParseErrorException);
+	EXPECT_THROW(FieldLine("[]: 11"), ParseErrorException);
+	EXPECT_THROW(FieldLine(":aaa: 11"), ParseErrorException);
 }
 
 TEST(filed_line, field_value_is_field_content)

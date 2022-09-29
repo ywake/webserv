@@ -1,7 +1,7 @@
 #include "gtest.h"
 
-#include "error.hpp"
 #include "hier_part.hpp"
+#include "http_exceptions.hpp"
 #include "parse_uri.hpp"
 
 // "//" authority path-abempty
@@ -46,8 +46,8 @@ TEST(uri_abnf, hier_part_authority_and_path_abempty)
 	);
 	EXPECT_EQ(HierPart("//"), HierPart(Authority("", "", ""), ""));
 
-	EXPECT_THROW(HierPart("//example.com/\\"), Error);
-	EXPECT_THROW(HierPart("//example.com/\""), Error);
+	EXPECT_THROW(HierPart("//example.com/\\"), ParseErrorException);
+	EXPECT_THROW(HierPart("//example.com/\""), ParseErrorException);
 }
 
 // path-absolute = "/" [segment-nz *("/" segment )]

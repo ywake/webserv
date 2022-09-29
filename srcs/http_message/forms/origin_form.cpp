@@ -1,5 +1,5 @@
 #include "origin_form.hpp"
-#include "error.hpp"
+#include "http_exceptions.hpp"
 #include "parse_path.hpp"
 #include "parse_uri.hpp"
 
@@ -13,7 +13,7 @@ OriginForm::OriginForm(const ThinString &str)
 	ThinString::ThinStrPair path_query = str.DivideBy("?");
 
 	if (!ABNF::IsPathAbsolute(path_query.first) || !ABNF::IsQuery(path_query.second)) {
-		throw Error("400");
+		throw ParseErrorException();
 	}
 	path_  = path_query.first;
 	query_ = path_query.second;

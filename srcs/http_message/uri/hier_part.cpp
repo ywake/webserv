@@ -1,5 +1,5 @@
 #include "hier_part.hpp"
-#include "error.hpp"
+#include "http_exceptions.hpp"
 #include "parse_path.hpp"
 
 static const char  *k2slash     = "//";
@@ -34,7 +34,7 @@ void HierPart::ParseAuthorityPath(const ThinString &hier_part)
 		after_2slash.DivideBy("/", ThinString::kKeepDelimRight);
 	authority_ = Authority(authority_path.first);
 	if (!ABNF::IsPathAbempty(authority_path.second)) {
-		throw Error("400");
+		throw ParseErrorException();
 	}
 	path_ = authority_path.second;
 }
@@ -44,7 +44,7 @@ void HierPart::ParsePath(const ThinString &hier_part)
 	if (ABNF::IsPathAbempty(hier_part) || ABNF::IsPathRootless(hier_part)) {
 		path_ = hier_part;
 	} else {
-		throw Error("400");
+		throw ParseErrorException();
 	}
 }
 

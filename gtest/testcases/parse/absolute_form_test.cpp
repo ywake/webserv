@@ -1,7 +1,7 @@
 #include "absolute_form.hpp"
 #include "gtest.h"
 
-#include "error.hpp"
+#include "http_exceptions.hpp"
 
 TEST(uri_parse, valid_absolute_form)
 {
@@ -66,21 +66,23 @@ TEST(uri_parse, valid_absolute_form)
 TEST(uri_parse, invalid_absolute_form)
 {
 	// no-host
-	EXPECT_THROW(AbsoluteForm("http://"), Error);
-	EXPECT_THROW(AbsoluteForm("http:///index.html"), Error);
-	EXPECT_THROW(AbsoluteForm("http://:80"), Error);
-	EXPECT_THROW(AbsoluteForm("http://username:password@:80"), Error);
+	EXPECT_THROW(AbsoluteForm("http://"), ParseErrorException);
+	EXPECT_THROW(AbsoluteForm("http:///index.html"), ParseErrorException);
+	EXPECT_THROW(AbsoluteForm("http://:80"), ParseErrorException);
+	EXPECT_THROW(AbsoluteForm("http://username:password@:80"), ParseErrorException);
 
 	// no-scheme
-	EXPECT_THROW(AbsoluteForm("://example.com"), Error);
-	EXPECT_THROW(AbsoluteForm("://username:password@example.com:80/index.html?query"), Error);
+	EXPECT_THROW(AbsoluteForm("://example.com"), ParseErrorException);
+	EXPECT_THROW(
+		AbsoluteForm("://username:password@example.com:80/index.html?query"), ParseErrorException
+	);
 
 	// no-scheme and no-host
-	EXPECT_THROW(AbsoluteForm("://"), Error);
+	EXPECT_THROW(AbsoluteForm("://"), ParseErrorException);
 
 	// scheme is not http or https
-	EXPECT_THROW(AbsoluteForm("ftp://example.com"), Error);
+	EXPECT_THROW(AbsoluteForm("ftp://example.com"), ParseErrorException);
 
 	// hierpart path-rootless
-	EXPECT_THROW(AbsoluteForm("http:path/index.html"), Error);
+	EXPECT_THROW(AbsoluteForm("http:path/index.html"), ParseErrorException);
 }

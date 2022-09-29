@@ -1,7 +1,7 @@
 #include "gtest.h"
 #include "origin_form.hpp"
 
-#include "error.hpp"
+#include "http_exceptions.hpp"
 
 TEST(uri_parse, valid_origin_form)
 {
@@ -17,9 +17,9 @@ TEST(uri_parse, valid_origin_form)
 
 TEST(uri_parse, invalid_origin_form)
 {
-	EXPECT_THROW(OriginForm(""), Error);
-	EXPECT_THROW(OriginForm("index.html"), Error);
-	EXPECT_THROW(OriginForm("index.html?query=1"), Error);
-	EXPECT_THROW(OriginForm("?query=1"), Error);
-	EXPECT_THROW(OriginForm("?"), Error);
+	EXPECT_THROW(OriginForm(""), ParseErrorException);
+	EXPECT_THROW(OriginForm("index.html"), ParseErrorException);
+	EXPECT_THROW(OriginForm("index.html?query=1"), ParseErrorException);
+	EXPECT_THROW(OriginForm("?query=1"), ParseErrorException);
+	EXPECT_THROW(OriginForm("?"), ParseErrorException);
 }

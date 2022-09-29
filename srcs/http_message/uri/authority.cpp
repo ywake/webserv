@@ -1,6 +1,6 @@
 #include "authority.hpp"
 
-#include "error.hpp"
+#include "http_exceptions.hpp"
 #include "parse_authority.hpp"
 
 Authority::Authority() : userinfo_(), host_(), port_() {}
@@ -16,7 +16,7 @@ Authority::Authority(const ThinString &authority) : userinfo_(), host_(), port_(
 	ThinString host     = host_port.first;
 	ThinString port     = host_port.second;
 	if (!ABNF::IsUserInfo(userinfo) || !ABNF::IsHost(host) || !ABNF::IsPort(port)) {
-		throw Error("400");
+		throw ParseErrorException();
 	}
 	userinfo_ = userinfo;
 	host_     = host;

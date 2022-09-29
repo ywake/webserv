@@ -1,5 +1,5 @@
 #include "field_line.hpp"
-#include "error.hpp"
+#include "http_exceptions.hpp"
 #include "validate_field_line.hpp"
 
 static const std::string kCrLf        = "\r\n";
@@ -15,16 +15,16 @@ FieldLine::FieldLine(const ThinString &line)
 {
 	std::size_t colon_pos = line.find(":");
 	if (colon_pos == ThinString::npos) {
-		throw Error("400");
+		throw ParseErrorException();
 	}
 	ThinString name  = line.substr(0, colon_pos);
 	ThinString value = line.substr(colon_pos + 1);
 	if (!http_abnf::IsFieldName(name)) {
-		throw Error("400");
+		throw ParseErrorException();
 	}
 	ThinString trimed_ows = TrimOws(value);
 	if (!http_abnf::IsFieldValue(trimed_ows)) {
-		throw Error("400");
+		throw ParseErrorException();
 	}
 	field_name_  = name;
 	field_value_ = trimed_ows;
