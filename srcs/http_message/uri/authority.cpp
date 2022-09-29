@@ -16,7 +16,7 @@ Authority::Authority(const ThinString &authority) : userinfo_(), host_(), port_(
 	ThinString host     = host_port.first;
 	ThinString port     = host_port.second;
 	if (!ABNF::IsUserInfo(userinfo) || !ABNF::IsHost(host) || !ABNF::IsPort(port)) {
-		throw BadRequestException();
+		throw http::BadRequestException();
 	}
 	userinfo_ = userinfo;
 	host_     = host;

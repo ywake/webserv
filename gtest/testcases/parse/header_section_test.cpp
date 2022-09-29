@@ -50,46 +50,46 @@ TEST(field_lines, test)
 
 TEST(field_lines, throw_test)
 {
-	EXPECT_THROW(HeaderSection(":"), BadRequestException);
-	EXPECT_THROW(HeaderSection(" :"), BadRequestException);
-	EXPECT_THROW(HeaderSection("\r\n"), BadRequestException);
-	EXPECT_THROW(HeaderSection("a:"), BadRequestException);
+	EXPECT_THROW(HeaderSection(":"), http::BadRequestException);
+	EXPECT_THROW(HeaderSection(" :"), http::BadRequestException);
+	EXPECT_THROW(HeaderSection("\r\n"), http::BadRequestException);
+	EXPECT_THROW(HeaderSection("a:"), http::BadRequestException);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  "\r\n"
 					  "\r\n"),
-		BadRequestException
+		http::BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  " : value\r\n"),
-		BadRequestException
+		http::BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  "\t: value\r\n"),
-		BadRequestException
+		http::BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  " : value"),
-		BadRequestException
+		http::BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  "\t: value"),
-		BadRequestException
+		http::BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  " \r\n"
 					  "\t"),
-		BadRequestException
+		http::BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  " \r\n"
 					  " "),
-		BadRequestException
+		http::BadRequestException
 	);
 }

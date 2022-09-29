@@ -14,7 +14,7 @@ TEST(uri_abnf, authority_userinfo)
 	EXPECT_EQ(Authority("username::@"), Authority("username::", "", ""));
 	EXPECT_EQ(Authority("username:pass:xxx@"), Authority("username:pass:xxx", "", ""));
 
-	EXPECT_THROW(Authority("username:pass:xxx"), BadRequestException);
+	EXPECT_THROW(Authority("username:pass:xxx"), http::BadRequestException);
 }
 
 TEST(uri_abnf, authority_host)
@@ -29,7 +29,7 @@ TEST(uri_abnf, authority_port)
 	EXPECT_EQ(Authority(":"), Authority("", "", ""));
 	EXPECT_EQ(Authority(":80"), Authority("", "", "80"));
 
-	EXPECT_THROW(Authority(":aaa"), BadRequestException);
+	EXPECT_THROW(Authority(":aaa"), http::BadRequestException);
 }
 
 TEST(uri_abnf, authority_userinfo_host)
@@ -44,7 +44,7 @@ TEST(uri_abnf, authority_userinfo_host)
 TEST(uri_abnf, authority_host_port)
 {
 	EXPECT_EQ(Authority("host:80"), Authority("", "host", "80"));
-	EXPECT_THROW(Authority("host:aaa"), BadRequestException);
+	EXPECT_THROW(Authority("host:aaa"), http::BadRequestException);
 }
 
 TEST(uri_abnf, authority_userinfo_port)
@@ -54,10 +54,10 @@ TEST(uri_abnf, authority_userinfo_port)
 	EXPECT_EQ(Authority("username:pass:xxx@:80"), Authority("username:pass:xxx", "", "80"));
 	EXPECT_EQ(Authority("username::@:80"), Authority("username::", "", "80"));
 
-	EXPECT_THROW(Authority("username@:aaa"), BadRequestException);
-	EXPECT_THROW(Authority("username:pass:@:aaa"), BadRequestException);
-	EXPECT_THROW(Authority("username:pass:xxx@:aaa"), BadRequestException);
-	EXPECT_THROW(Authority("username::@:aaa"), BadRequestException);
+	EXPECT_THROW(Authority("username@:aaa"), http::BadRequestException);
+	EXPECT_THROW(Authority("username:pass:@:aaa"), http::BadRequestException);
+	EXPECT_THROW(Authority("username:pass:xxx@:aaa"), http::BadRequestException);
+	EXPECT_THROW(Authority("username::@:aaa"), http::BadRequestException);
 }
 
 TEST(uri_abnf, authority_userinfo_host_port)
@@ -67,9 +67,9 @@ TEST(uri_abnf, authority_userinfo_host_port)
 	EXPECT_EQ(Authority("username:pass:xxx@host:80"), Authority("username:pass:xxx", "host", "80"));
 	EXPECT_EQ(Authority("username::@host:80"), Authority("username::", "host", "80"));
 
-	EXPECT_THROW(Authority("username@host:aaa"), BadRequestException);
-	EXPECT_THROW(Authority("username:pass:@:aaa"), BadRequestException);
-	EXPECT_THROW(Authority("username:pass:xxx@:aaa"), BadRequestException);
-	EXPECT_THROW(Authority("username::@:aaa"), BadRequestException);
-	EXPECT_THROW(Authority("username::@:aaa"), BadRequestException);
+	EXPECT_THROW(Authority("username@host:aaa"), http::BadRequestException);
+	EXPECT_THROW(Authority("username:pass:@:aaa"), http::BadRequestException);
+	EXPECT_THROW(Authority("username:pass:xxx@:aaa"), http::BadRequestException);
+	EXPECT_THROW(Authority("username::@:aaa"), http::BadRequestException);
+	EXPECT_THROW(Authority("username::@:aaa"), http::BadRequestException);
 }

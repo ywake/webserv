@@ -66,23 +66,24 @@ TEST(uri_parse, valid_absolute_form)
 TEST(uri_parse, invalid_absolute_form)
 {
 	// no-host
-	EXPECT_THROW(AbsoluteForm("http://"), BadRequestException);
-	EXPECT_THROW(AbsoluteForm("http:///index.html"), BadRequestException);
-	EXPECT_THROW(AbsoluteForm("http://:80"), BadRequestException);
-	EXPECT_THROW(AbsoluteForm("http://username:password@:80"), BadRequestException);
+	EXPECT_THROW(AbsoluteForm("http://"), http::BadRequestException);
+	EXPECT_THROW(AbsoluteForm("http:///index.html"), http::BadRequestException);
+	EXPECT_THROW(AbsoluteForm("http://:80"), http::BadRequestException);
+	EXPECT_THROW(AbsoluteForm("http://username:password@:80"), http::BadRequestException);
 
 	// no-scheme
-	EXPECT_THROW(AbsoluteForm("://example.com"), BadRequestException);
+	EXPECT_THROW(AbsoluteForm("://example.com"), http::BadRequestException);
 	EXPECT_THROW(
-		AbsoluteForm("://username:password@example.com:80/index.html?query"), BadRequestException
+		AbsoluteForm("://username:password@example.com:80/index.html?query"),
+		http::BadRequestException
 	);
 
 	// no-scheme and no-host
-	EXPECT_THROW(AbsoluteForm("://"), BadRequestException);
+	EXPECT_THROW(AbsoluteForm("://"), http::BadRequestException);
 
 	// scheme is not http or https
-	EXPECT_THROW(AbsoluteForm("ftp://example.com"), BadRequestException);
+	EXPECT_THROW(AbsoluteForm("ftp://example.com"), http::BadRequestException);
 
 	// hierpart path-rootless
-	EXPECT_THROW(AbsoluteForm("http:path/index.html"), BadRequestException);
+	EXPECT_THROW(AbsoluteForm("http:path/index.html"), http::BadRequestException);
 }

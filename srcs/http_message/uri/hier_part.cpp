@@ -34,7 +34,7 @@ void HierPart::ParseAuthorityPath(const ThinString &hier_part)
 		after_2slash.DivideBy("/", ThinString::kKeepDelimRight);
 	authority_ = Authority(authority_path.first);
 	if (!ABNF::IsPathAbempty(authority_path.second)) {
-		throw BadRequestException();
+		throw http::BadRequestException();
 	}
 	path_ = authority_path.second;
 }
@@ -44,7 +44,7 @@ void HierPart::ParsePath(const ThinString &hier_part)
 	if (ABNF::IsPathAbempty(hier_part) || ABNF::IsPathRootless(hier_part)) {
 		path_ = hier_part;
 	} else {
-		throw BadRequestException();
+		throw http::BadRequestException();
 	}
 }
 

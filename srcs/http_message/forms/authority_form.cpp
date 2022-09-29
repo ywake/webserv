@@ -10,7 +10,7 @@ AuthorityForm::AuthorityForm() : host_port_() {}
 AuthorityForm::AuthorityForm(const ThinString &str) : host_port_(str)
 {
 	if (host_port_.GetHost().empty() || str.find(":") == ThinString::npos) {
-		throw BadRequestException();
+		throw http::BadRequestException();
 	}
 }
 

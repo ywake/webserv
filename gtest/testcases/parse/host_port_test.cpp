@@ -19,6 +19,6 @@ TEST(host_port_test, valid_host_port)
 
 TEST(host_port_test, invalid_host_port)
 {
-	EXPECT_THROW(HostPort(":port"), BadRequestException);
-	EXPECT_THROW(HostPort("a@a:80"), BadRequestException);
+	EXPECT_THROW(HostPort(":port"), http::BadRequestException);
+	EXPECT_THROW(HostPort("a@a:80"), http::BadRequestException);
 }

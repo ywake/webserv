@@ -46,8 +46,8 @@ TEST(uri_abnf, hier_part_authority_and_path_abempty)
 	);
 	EXPECT_EQ(HierPart("//"), HierPart(Authority("", "", ""), ""));
 
-	EXPECT_THROW(HierPart("//example.com/\\"), BadRequestException);
-	EXPECT_THROW(HierPart("//example.com/\""), BadRequestException);
+	EXPECT_THROW(HierPart("//example.com/\\"), http::BadRequestException);
+	EXPECT_THROW(HierPart("//example.com/\""), http::BadRequestException);
 }
 
 // path-absolute = "/" [segment-nz *("/" segment )]

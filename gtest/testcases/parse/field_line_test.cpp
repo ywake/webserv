@@ -30,9 +30,9 @@ TEST(field_line, field_name_should_be_a_token)
 	);
 	EXPECT_EQ(FieldLine("1234567890: 11"), FieldLine("1234567890", "11"));
 
-	EXPECT_THROW(FieldLine("@: 11"), BadRequestException);
-	EXPECT_THROW(FieldLine("[]: 11"), BadRequestException);
-	EXPECT_THROW(FieldLine(":aaa: 11"), BadRequestException);
+	EXPECT_THROW(FieldLine("@: 11"), http::BadRequestException);
+	EXPECT_THROW(FieldLine("[]: 11"), http::BadRequestException);
+	EXPECT_THROW(FieldLine(":aaa: 11"), http::BadRequestException);
 }
 
 TEST(filed_line, field_value_is_field_content)

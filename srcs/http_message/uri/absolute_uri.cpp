@@ -7,7 +7,7 @@
 AbsoluteUri::AbsoluteUri(const ThinString &str)
 {
 	if (str.find(":") == ThinString::npos) {
-		throw BadRequestException();
+		throw http::BadRequestException();
 	}
 	ThinString::ThinStrPair scheme_hier = str.DivideBy(":");
 	ThinString::ThinStrPair hier_query  = scheme_hier.second.DivideBy("?");
@@ -26,7 +26,7 @@ AbsoluteUri::AbsoluteUri(
 void AbsoluteUri::TrySetScheme(const ThinString &scheme)
 {
 	if (!ABNF::IsScheme(scheme)) {
-		throw BadRequestException();
+		throw http::BadRequestException();
 	}
 	scheme_ = scheme;
 }
@@ -34,7 +34,7 @@ void AbsoluteUri::TrySetScheme(const ThinString &scheme)
 void AbsoluteUri::TrySetQuery(const ThinString &query)
 {
 	if (!ABNF::IsQuery(query)) {
-		throw BadRequestException();
+		throw http::BadRequestException();
 	}
 	query_ = query;
 }

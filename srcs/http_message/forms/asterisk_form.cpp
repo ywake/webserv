@@ -6,7 +6,7 @@ static const ThinString kEmpty = "";
 AsteriskForm::AsteriskForm(const ThinString &str)
 {
 	if (str != "*") {
-		throw BadRequestException();
+		throw http::BadRequestException();
 	}
 	asterisk_ = str;
 }
