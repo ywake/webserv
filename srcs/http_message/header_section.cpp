@@ -1,6 +1,6 @@
 #include "header_section.hpp"
-#include "error.hpp"
 #include "field_line.hpp"
+#include "http_exceptions.hpp"
 #include "validate_field_line.hpp"
 #include "webserv_utils.hpp"
 
@@ -30,7 +30,7 @@ HeaderSection::HeaderSection(const ThinString &str)
 	}
 	Tokens tokens = TokenizeLines(str);
 	if (!IsValidTokenOrder(tokens)) {
-		throw Error("400");
+		throw BadRequestException();
 	}
 	Lines lines = ParseFieldLines(tokens);
 	StoreFieldLines(lines);

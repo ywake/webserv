@@ -1,5 +1,5 @@
 #include "authority_form.hpp"
-#include "error.hpp"
+#include "http_exceptions.hpp"
 
 static const ThinString kEmpty = "";
 
@@ -10,7 +10,7 @@ AuthorityForm::AuthorityForm() : host_port_() {}
 AuthorityForm::AuthorityForm(const ThinString &str) : host_port_(str)
 {
 	if (host_port_.GetHost().empty() || str.find(":") == ThinString::npos) {
-		throw Error("400");
+		throw BadRequestException();
 	}
 }
 

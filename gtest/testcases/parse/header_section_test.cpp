@@ -2,8 +2,8 @@
 
 #include <list>
 
-#include "error.hpp"
 #include "header_section.hpp"
+#include "http_exceptions.hpp"
 
 TEST(field_lines, test)
 {
@@ -50,46 +50,46 @@ TEST(field_lines, test)
 
 TEST(field_lines, throw_test)
 {
-	EXPECT_THROW(HeaderSection(":"), Error);
-	EXPECT_THROW(HeaderSection(" :"), Error);
-	EXPECT_THROW(HeaderSection("\r\n"), Error);
-	EXPECT_THROW(HeaderSection("a:"), Error);
+	EXPECT_THROW(HeaderSection(":"), BadRequestException);
+	EXPECT_THROW(HeaderSection(" :"), BadRequestException);
+	EXPECT_THROW(HeaderSection("\r\n"), BadRequestException);
+	EXPECT_THROW(HeaderSection("a:"), BadRequestException);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  "\r\n"
 					  "\r\n"),
-		Error
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  " : value\r\n"),
-		Error
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  "\t: value\r\n"),
-		Error
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  " : value"),
-		Error
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  "\t: value"),
-		Error
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  " \r\n"
 					  "\t"),
-		Error
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  " \r\n"
 					  " "),
-		Error
+		BadRequestException
 	);
 }

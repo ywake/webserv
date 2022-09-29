@@ -1,7 +1,7 @@
 #include "absolute_uri.hpp"
 #include "gtest.h"
 
-#include "error.hpp"
+#include "http_exceptions.hpp"
 
 // URI = scheme ":" hier-part [ "?" query ]
 TEST(absolute_uri, ok)
@@ -25,9 +25,9 @@ TEST(absolute_uri, ok)
 TEST(absolute_uri, invalid)
 {
 	// no : after scheme
-	EXPECT_THROW(AbsoluteUri(""), Error);
-	EXPECT_THROW(AbsoluteUri("a"), Error);
-	EXPECT_THROW(AbsoluteUri("http//www.google.com/"), Error);
+	EXPECT_THROW(AbsoluteUri(""), BadRequestException);
+	EXPECT_THROW(AbsoluteUri("a"), BadRequestException);
+	EXPECT_THROW(AbsoluteUri("http//www.google.com/"), BadRequestException);
 	// no-scheme
-	EXPECT_THROW(AbsoluteUri("://www.google.com/"), Error);
+	EXPECT_THROW(AbsoluteUri("://www.google.com/"), BadRequestException);
 }

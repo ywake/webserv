@@ -1,12 +1,12 @@
 #include "asterisk_form.hpp"
-#include "error.hpp"
+#include "http_exceptions.hpp"
 
 static const ThinString kEmpty = "";
 
 AsteriskForm::AsteriskForm(const ThinString &str)
 {
 	if (str != "*") {
-		throw Error("400");
+		throw BadRequestException();
 	}
 	asterisk_ = str;
 }

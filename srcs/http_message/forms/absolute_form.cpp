@@ -1,5 +1,5 @@
 #include "absolute_form.hpp"
-#include "error.hpp"
+#include "http_exceptions.hpp"
 
 // absolute-form = absolute-URI
 // http-URI = "http" "://" authority path-abempty [ "?" query ]
@@ -10,7 +10,7 @@ AbsoluteForm::AbsoluteForm(const ThinString request_target) : uri_(request_targe
 	bool is_pathrootless = !GetPath().empty() && GetPath().at(0) != '/';
 	bool is_http_family  = GetScheme() == "http" || GetScheme() == "https";
 	if (is_pathrootless || !is_http_family || GetHost().empty()) {
-		throw Error("400");
+		throw BadRequestException();
 	}
 }
 

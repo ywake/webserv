@@ -3,7 +3,7 @@
 #include "absolute_form.hpp"
 #include "asterisk_form.hpp"
 #include "authority_form.hpp"
-#include "error.hpp"
+#include "http_exceptions.hpp"
 #include "origin_form.hpp"
 #include "parse_abnf_core_rules.hpp"
 #include "validate_request_line.hpp"
@@ -24,7 +24,7 @@ RequestLine::RequestLine(const ThinString &request_line)
 	ThinString method_str         = request_line.substr(0, kMaxMethodLength + 1);
 	bool       method_is_too_long = method_str.find(' ') > kMaxMethodLength;
 	if (line_is_too_long || method_is_too_long) {
-		throw Error("400");
+		throw BadRequestException();
 	}
 
 	enum {
@@ -37,7 +37,7 @@ RequestLine::RequestLine(const ThinString &request_line)
 	bool                    is_invalid_size = tokens.size() != kValidNumOfTokens;
 	if (is_invalid_size || !http_abnf::IsMethod(tokens[kMthodIdx]) ||
 		!http_abnf::IsHttpVersion(tokens[kVersionIdx])) {
-		throw Error("400");
+		throw BadRequestException();
 	}
 	method_         = tokens[kMthodIdx];
 	request_target_ = TryConstructRequestTarget(tokens[kTargetIdx]);
@@ -48,7 +48,7 @@ RequestLine::RequestLine(const ThinString &request_line)
 RequestTarget RequestLine::TryConstructRequestTarget(const ThinString &str)
 {
 	if (str.empty()) {
-		throw Error("400");
+		throw BadRequestException();
 	} else if (method_ == "CONNECT") {
 		return RequestTarget(AuthorityForm(str));
 	} else if (method_ == "OPTIONS" && str == "*") {

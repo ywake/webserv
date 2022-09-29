@@ -1,7 +1,7 @@
 #include "validate_headers.hpp"
 #include "validate_field_line.hpp"
 
-#include "error.hpp"
+#include "http_exceptions.hpp"
 #include "webserv_utils.hpp"
 
 static const std::string kCrLf = "\r\n";
@@ -53,7 +53,7 @@ namespace http_headers
 		// bool has_content_length    = field_lines.Contains("content-length");
 		// bool has_transfer_encoding = field_lines.Contains("transfer-encoding");
 		// if (has_content_length && has_transfer_encoding) {
-		// 	throw Error("400"); // TODO 例外だったりboolだったり微妙だから後で考える
+		// 	throw BadRequestException(); // TODO 例外だったりboolだったり微妙だから後で考える
 		// } else if (has_content_length && !IsValidContentLength(field_lines)) {
 		// 	return false;
 		// } else if (has_transfer_encoding && !IsValidTransferEncoding(field_lines)) {

@@ -1,5 +1,5 @@
 #include "absolute_uri.hpp"
-#include "error.hpp"
+#include "http_exceptions.hpp"
 #include "parse_uri.hpp"
 
 // TODO refactor like isObsFold
@@ -7,7 +7,7 @@
 AbsoluteUri::AbsoluteUri(const ThinString &str)
 {
 	if (str.find(":") == ThinString::npos) {
-		throw Error("400");
+		throw BadRequestException();
 	}
 	ThinString::ThinStrPair scheme_hier = str.DivideBy(":");
 	ThinString::ThinStrPair hier_query  = scheme_hier.second.DivideBy("?");
@@ -26,7 +26,7 @@ AbsoluteUri::AbsoluteUri(
 void AbsoluteUri::TrySetScheme(const ThinString &scheme)
 {
 	if (!ABNF::IsScheme(scheme)) {
-		throw Error("400");
+		throw BadRequestException();
 	}
 	scheme_ = scheme;
 }
@@ -34,7 +34,7 @@ void AbsoluteUri::TrySetScheme(const ThinString &scheme)
 void AbsoluteUri::TrySetQuery(const ThinString &query)
 {
 	if (!ABNF::IsQuery(query)) {
-		throw Error("400");
+		throw BadRequestException();
 	}
 	query_ = query;
 }
