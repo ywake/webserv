@@ -6,7 +6,7 @@ static const ThinString kEmpty = "";
 AsteriskForm::AsteriskForm(const ThinString &str)
 {
 	if (str != "*") {
-		throw ParseErrorException();
+		throw BadRequestException();
 	}
 	asterisk_ = str;
 }

@@ -17,9 +17,9 @@ TEST(uri_parse, valid_origin_form)
 
 TEST(uri_parse, invalid_origin_form)
 {
-	EXPECT_THROW(OriginForm(""), ParseErrorException);
-	EXPECT_THROW(OriginForm("index.html"), ParseErrorException);
-	EXPECT_THROW(OriginForm("index.html?query=1"), ParseErrorException);
-	EXPECT_THROW(OriginForm("?query=1"), ParseErrorException);
-	EXPECT_THROW(OriginForm("?"), ParseErrorException);
+	EXPECT_THROW(OriginForm(""), BadRequestException);
+	EXPECT_THROW(OriginForm("index.html"), BadRequestException);
+	EXPECT_THROW(OriginForm("index.html?query=1"), BadRequestException);
+	EXPECT_THROW(OriginForm("?query=1"), BadRequestException);
+	EXPECT_THROW(OriginForm("?"), BadRequestException);
 }

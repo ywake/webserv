@@ -15,16 +15,16 @@ FieldLine::FieldLine(const ThinString &line)
 {
 	std::size_t colon_pos = line.find(":");
 	if (colon_pos == ThinString::npos) {
-		throw ParseErrorException();
+		throw BadRequestException();
 	}
 	ThinString name  = line.substr(0, colon_pos);
 	ThinString value = line.substr(colon_pos + 1);
 	if (!http_abnf::IsFieldName(name)) {
-		throw ParseErrorException();
+		throw BadRequestException();
 	}
 	ThinString trimed_ows = TrimOws(value);
 	if (!http_abnf::IsFieldValue(trimed_ows)) {
-		throw ParseErrorException();
+		throw BadRequestException();
 	}
 	field_name_  = name;
 	field_value_ = trimed_ows;

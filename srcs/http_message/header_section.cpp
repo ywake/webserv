@@ -30,7 +30,7 @@ HeaderSection::HeaderSection(const ThinString &str)
 	}
 	Tokens tokens = TokenizeLines(str);
 	if (!IsValidTokenOrder(tokens)) {
-		throw ParseErrorException();
+		throw BadRequestException();
 	}
 	Lines lines = ParseFieldLines(tokens);
 	StoreFieldLines(lines);

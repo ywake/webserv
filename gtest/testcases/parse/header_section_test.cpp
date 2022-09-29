@@ -50,46 +50,46 @@ TEST(field_lines, test)
 
 TEST(field_lines, throw_test)
 {
-	EXPECT_THROW(HeaderSection(":"), ParseErrorException);
-	EXPECT_THROW(HeaderSection(" :"), ParseErrorException);
-	EXPECT_THROW(HeaderSection("\r\n"), ParseErrorException);
-	EXPECT_THROW(HeaderSection("a:"), ParseErrorException);
+	EXPECT_THROW(HeaderSection(":"), BadRequestException);
+	EXPECT_THROW(HeaderSection(" :"), BadRequestException);
+	EXPECT_THROW(HeaderSection("\r\n"), BadRequestException);
+	EXPECT_THROW(HeaderSection("a:"), BadRequestException);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  "\r\n"
 					  "\r\n"),
-		ParseErrorException
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  " : value\r\n"),
-		ParseErrorException
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  "\t: value\r\n"),
-		ParseErrorException
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  " : value"),
-		ParseErrorException
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key\r\n"
 					  "\t: value"),
-		ParseErrorException
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  " \r\n"
 					  "\t"),
-		ParseErrorException
+		BadRequestException
 	);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  " \r\n"
 					  " "),
-		ParseErrorException
+		BadRequestException
 	);
 }

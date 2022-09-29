@@ -9,9 +9,9 @@ TEST(asterisk_form_test, valid_asterisk_form)
 
 TEST(asterisk_form_test, invalid_asterisk_form)
 {
-	EXPECT_THROW(AsteriskForm(""), ParseErrorException);
-	EXPECT_THROW(AsteriskForm("index.html"), ParseErrorException);
-	EXPECT_THROW(AsteriskForm("index.html?query=1"), ParseErrorException);
-	EXPECT_THROW(AsteriskForm("?query=1"), ParseErrorException);
-	EXPECT_THROW(AsteriskForm("?"), ParseErrorException);
+	EXPECT_THROW(AsteriskForm(""), BadRequestException);
+	EXPECT_THROW(AsteriskForm("index.html"), BadRequestException);
+	EXPECT_THROW(AsteriskForm("index.html?query=1"), BadRequestException);
+	EXPECT_THROW(AsteriskForm("?query=1"), BadRequestException);
+	EXPECT_THROW(AsteriskForm("?"), BadRequestException);
 }

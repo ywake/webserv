@@ -31,7 +31,7 @@ TEST(start_line, whitespace)
 	} catch (const Error &e) {
 		error = e;
 	}
-	ASSERT_EQ(error, ParseErrorException());
+	ASSERT_EQ(error, BadRequestException());
 }
 */
 
@@ -71,40 +71,40 @@ TEST(request_line, ok_case)
 
 TEST(request_line, error_case)
 {
-	EXPECT_THROW(RequestLine(""), ParseErrorException);
-	EXPECT_THROW(RequestLine(" "), ParseErrorException);
-	EXPECT_THROW(RequestLine("  "), ParseErrorException);
-	EXPECT_THROW(RequestLine("   "), ParseErrorException);
-	EXPECT_THROW(RequestLine("    "), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET"), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET "), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET  "), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET   "), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET"), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET "), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET  "), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET   "), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET /"), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET  /"), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET /"), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET / "), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET HTTP/1.1"), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET  HTTP/1.1 "), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET  HTTP/1.1"), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET   HTTP/1.1"), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET  HTTP/1.1 "), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET HTTP/1.1"), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET HTTP/1.1 "), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET  HTTP/1.1 "), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET / HTTP/1.1 "), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET  / HTTP/1.1"), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET /  HTTP/1.1"), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET / HTTP/1.1 "), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET / HTTP/1.1"), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET / HTTP/1.1 "), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET  / HTTP/1.1 "), ParseErrorException);
-	EXPECT_THROW(RequestLine(" GET  /  HTTP/1.1 "), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET/HTTP/1.1"), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET_/_HTTP/1.1"), ParseErrorException);
-	EXPECT_THROW(RequestLine("GET / HTTP/42.42"), ParseErrorException);
+	EXPECT_THROW(RequestLine(""), BadRequestException);
+	EXPECT_THROW(RequestLine(" "), BadRequestException);
+	EXPECT_THROW(RequestLine("  "), BadRequestException);
+	EXPECT_THROW(RequestLine("   "), BadRequestException);
+	EXPECT_THROW(RequestLine("    "), BadRequestException);
+	EXPECT_THROW(RequestLine("GET"), BadRequestException);
+	EXPECT_THROW(RequestLine("GET "), BadRequestException);
+	EXPECT_THROW(RequestLine("GET  "), BadRequestException);
+	EXPECT_THROW(RequestLine("GET   "), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET"), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET "), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET  "), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET   "), BadRequestException);
+	EXPECT_THROW(RequestLine("GET /"), BadRequestException);
+	EXPECT_THROW(RequestLine("GET  /"), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET /"), BadRequestException);
+	EXPECT_THROW(RequestLine("GET / "), BadRequestException);
+	EXPECT_THROW(RequestLine("GET HTTP/1.1"), BadRequestException);
+	EXPECT_THROW(RequestLine("GET  HTTP/1.1 "), BadRequestException);
+	EXPECT_THROW(RequestLine("GET  HTTP/1.1"), BadRequestException);
+	EXPECT_THROW(RequestLine("GET   HTTP/1.1"), BadRequestException);
+	EXPECT_THROW(RequestLine("GET  HTTP/1.1 "), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET HTTP/1.1"), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET HTTP/1.1 "), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET  HTTP/1.1 "), BadRequestException);
+	EXPECT_THROW(RequestLine("GET / HTTP/1.1 "), BadRequestException);
+	EXPECT_THROW(RequestLine("GET  / HTTP/1.1"), BadRequestException);
+	EXPECT_THROW(RequestLine("GET /  HTTP/1.1"), BadRequestException);
+	EXPECT_THROW(RequestLine("GET / HTTP/1.1 "), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET / HTTP/1.1"), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET / HTTP/1.1 "), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET  / HTTP/1.1 "), BadRequestException);
+	EXPECT_THROW(RequestLine(" GET  /  HTTP/1.1 "), BadRequestException);
+	EXPECT_THROW(RequestLine("GET/HTTP/1.1"), BadRequestException);
+	EXPECT_THROW(RequestLine("GET_/_HTTP/1.1"), BadRequestException);
+	EXPECT_THROW(RequestLine("GET / HTTP/42.42"), BadRequestException);
 }

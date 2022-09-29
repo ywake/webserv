@@ -25,9 +25,9 @@ TEST(absolute_uri, ok)
 TEST(absolute_uri, invalid)
 {
 	// no : after scheme
-	EXPECT_THROW(AbsoluteUri(""), ParseErrorException);
-	EXPECT_THROW(AbsoluteUri("a"), ParseErrorException);
-	EXPECT_THROW(AbsoluteUri("http//www.google.com/"), ParseErrorException);
+	EXPECT_THROW(AbsoluteUri(""), BadRequestException);
+	EXPECT_THROW(AbsoluteUri("a"), BadRequestException);
+	EXPECT_THROW(AbsoluteUri("http//www.google.com/"), BadRequestException);
 	// no-scheme
-	EXPECT_THROW(AbsoluteUri("://www.google.com/"), ParseErrorException);
+	EXPECT_THROW(AbsoluteUri("://www.google.com/"), BadRequestException);
 }

@@ -13,7 +13,7 @@ OriginForm::OriginForm(const ThinString &str)
 	ThinString::ThinStrPair path_query = str.DivideBy("?");
 
 	if (!ABNF::IsPathAbsolute(path_query.first) || !ABNF::IsQuery(path_query.second)) {
-		throw ParseErrorException();
+		throw BadRequestException();
 	}
 	path_  = path_query.first;
 	query_ = path_query.second;

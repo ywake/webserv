@@ -16,7 +16,7 @@ namespace http_abnf
 		ThinString host = host_port.first;
 		ThinString port = host_port.second;
 		if (!ABNF::IsHost(host) || !ABNF::IsPort(port)) {
-			throw ParseErrorException();
+			throw BadRequestException();
 		}
 		host_ = host;
 		port_ = port;

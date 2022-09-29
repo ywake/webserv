@@ -1,6 +1,6 @@
 #include "authority_form.hpp"
-#include "http_exceptions.hpp"
 #include "gtest.h"
+#include "http_exceptions.hpp"
 
 // PORTがABNFに適合しないなど、AuthorityFormのメンバに対してのテストは行っていない。(authority_test.cppに既にあるため)
 //ここではHTTP要件によってvalidになったり、invalidになったりするケースをテストする。
@@ -15,14 +15,14 @@ TEST(authority_form_test, valid_authority_form)
 
 TEST(authority_form_test, invalid_on_http)
 {
-	EXPECT_THROW(AuthorityForm(""), ParseErrorException);
-	EXPECT_THROW(AuthorityForm(":"), ParseErrorException);
-	EXPECT_THROW(AuthorityForm(":80"), ParseErrorException);
+	EXPECT_THROW(AuthorityForm(""), BadRequestException);
+	EXPECT_THROW(AuthorityForm(":"), BadRequestException);
+	EXPECT_THROW(AuthorityForm(":80"), BadRequestException);
 }
 
 TEST(authority_form_test, invalid_authority_form)
 {
-	EXPECT_THROW(AuthorityForm("example.com"), ParseErrorException);
-	EXPECT_THROW(AuthorityForm("example.com80"), ParseErrorException);
-	EXPECT_THROW(AuthorityForm("a@a:80"), ParseErrorException);
+	EXPECT_THROW(AuthorityForm("example.com"), BadRequestException);
+	EXPECT_THROW(AuthorityForm("example.com80"), BadRequestException);
+	EXPECT_THROW(AuthorityForm("a@a:80"), BadRequestException);
 }
