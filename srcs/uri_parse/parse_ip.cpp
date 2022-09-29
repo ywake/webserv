@@ -122,7 +122,7 @@ namespace ABNF
 		if (!is_start_with_digit || str.len() > max_len) {
 			return false;
 		}
-		Result<long> res = StrToLong(str.ToString());
+		Result<long> res = StrToLongDenyPadZero(str.ToString());
 		return res.IsOk() && 0 <= res.Val() && res.Val() <= 255;
 	}
 

@@ -1,5 +1,5 @@
-#ifndef FIELD_LINES_HPP
-#define FIELD_LINES_HPP
+#ifndef HEADER_SECTION_HPP
+#define HEADER_SECTION_HPP
 #include <iostream>
 #include <list>
 #include <map>
@@ -10,7 +10,7 @@
 #include "field_line.hpp"
 #include "thin_string.hpp"
 
-class FieldLines
+class HeaderSection
 {
   private:
 	enum TokenId {
@@ -20,7 +20,7 @@ class FieldLines
 	};
 
   public:
-	typedef std::list<std::string>              Values;
+	typedef std::string                         Values;
 	typedef std::map<const std::string, Values> Headers;
 
   private:
@@ -33,15 +33,17 @@ class FieldLines
 	Headers field_lines_;
 
   public:
-	FieldLines();
-	FieldLines(const ThinString &str);
-	FieldLines(const Headers &field_lines);
+	HeaderSection();
+	HeaderSection(const ThinString &str);
+	HeaderSection(const Headers &field_lines);
 
-	bool    operator==(const FieldLines &rhs) const;
-	bool    operator!=(const FieldLines &rhs) const;
+	bool    operator==(const HeaderSection &rhs) const;
+	bool    operator!=(const HeaderSection &rhs) const;
 	Values &operator[](const std::string &field_name);
 
 	const Headers &GetMap() const;
+
+	bool Contains(const std::string &field_name) const;
 
   private:
 	Tokens    TokenizeLines(const ThinString &str) const;
@@ -52,7 +54,7 @@ class FieldLines
 	void      StoreFieldLines(const Lines &lines);
 };
 
-std::ostream &operator<<(std::ostream &out, const FieldLines &field_lines);
+std::ostream &operator<<(std::ostream &out, const HeaderSection &field_lines);
 
 /*
   field-line    = field-name ":" OWS field-value OWS

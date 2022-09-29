@@ -6,49 +6,83 @@ template <typename T>
 class Result
 {
   private:
-	T val;
+	T     val_;
+	Error err_;
 
   public:
-	Error err;
-	Result() : val(), err(){};
-	Result(T v) : val(v), err(){};
-	Result(T v, Error e) : val(v), err(e){};
-	Result(Error e) : err(e){};
+	Result() : val_(), err_(){};
+	Result(const T &v) : val_(v), err_(){};
+	Result(const T &v, const Error &e) : val_(v), err_(e){};
+	Result(const Error &e) : err_(e){};
 	bool IsOk()
 	{
-		return !err.IsErr();
+		return !err_.IsErr();
 	}
 	bool IsErr()
 	{
-		return err.IsErr();
+		return err_.IsErr();
 	}
 	T Val()
 	{
-		return val;
+		return val_;
 	}
 	std::string Err()
 	{
-		return err.Err();
+		return err_.Err();
 	}
 };
-template <>
-class Result<void>
+
+template <typename T>
+class Result<T &>
 {
+  private:
+	T     default_;
+	T    &val_;
+	Error err_;
+
   public:
-	Error err;
-	Result() : err(){};
-	Result(Error e) : err(e){};
+	Result() : default_(), val_(default_), err_(){};
+	Result(const T &v) : val_(v), err_(){};
+	Result(const T &v, const Error &e) : val_(v), err_(e){};
+	Result(const Error &e) : default_(), val_(default_), err_(e){};
 	bool IsOk()
 	{
-		return !err.IsErr();
+		return !err_.IsErr();
 	}
 	bool IsErr()
 	{
-		return err.IsErr();
+		return err_.IsErr();
+	}
+	T Val()
+	{
+		return val_;
 	}
 	std::string Err()
 	{
-		return err.Err();
+		return err_.Err();
+	}
+};
+
+template <>
+class Result<void>
+{
+  private:
+	Error err_;
+
+  public:
+	Result() : err_(){};
+	Result(const Error &e) : err_(e){};
+	bool IsOk()
+	{
+		return !err_.IsErr();
+	}
+	bool IsErr()
+	{
+		return err_.IsErr();
+	}
+	std::string Err()
+	{
+		return err_.Err();
 	}
 };
 

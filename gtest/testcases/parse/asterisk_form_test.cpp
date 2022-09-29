@@ -2,12 +2,12 @@
 #include "error.hpp"
 #include "gtest.h"
 
-TEST(AsteriskFormTest, valid_asterisk_form)
+TEST(asterisk_form_test, valid_asterisk_form)
 {
 	EXPECT_NO_THROW(AsteriskForm("*"));
 }
 
-TEST(AsteriskFormTest, invalid_asterisk_form)
+TEST(asterisk_form_test, invalid_asterisk_form)
 {
 	EXPECT_THROW(AsteriskForm(""), Error);
 	EXPECT_THROW(AsteriskForm("index.html"), Error);

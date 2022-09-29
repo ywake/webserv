@@ -9,14 +9,14 @@ class RequestMessage : public HttpMessage
   public:
 	RequestLine request_line_;
 
-	RequestMessage() : HttpMessage(FieldLines(), "") {}
+	RequestMessage() : HttpMessage(HeaderSection(), "") {}
 
 	RequestMessage(const std::string &str) : HttpMessage(str)
 	{
 		// parse
 	}
 
-	RequestMessage(RequestLine request_line, FieldLines field_lines, std::string message_body)
+	RequestMessage(RequestLine request_line, HeaderSection field_lines, std::string message_body)
 		: HttpMessage(field_lines, message_body), request_line_(request_line)
 	{}
 
