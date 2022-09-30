@@ -52,8 +52,8 @@ class HeaderSection
 	StringAry ParseTokensToLines(Tokens &tokens) const;
 	Token     CreateFieldLineToken(const ThinString &str) const;
 	Lines     ParseFieldLines(const Tokens &tokens) const;
-	void      StoreFieldLines(const Lines &lines);
-	Values    ParseEachHeader(const std::string &name, const ThinString &value);
+	void      ParseEachHeaders(const Lines &lines);
+	Values    ParseEachHeaderValue(const std::string &name, const ThinString &value);
 };
 
 std::ostream &operator<<(std::ostream &out, const HeaderSection &field_lines);

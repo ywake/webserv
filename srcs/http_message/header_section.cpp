@@ -33,7 +33,7 @@ HeaderSection::HeaderSection(const ThinString &str)
 		throw http::BadRequestException();
 	}
 	Lines lines = ParseFieldLines(tokens);
-	StoreFieldLines(lines);
+	ParseEachHeaders(lines);
 }
 
 HeaderSection::HeaderSection(const Headers &field_lines) : field_lines_(field_lines) {}
@@ -117,19 +117,19 @@ TODO どっちでパースするか
 	データ構造はmap<name, std::set>
 	TRはcase insensitive
 */
-void HeaderSection::StoreFieldLines(const Lines &lines)
+void HeaderSection::ParseEachHeaders(const Lines &lines)
 {
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
 		const std::string &name       = utils::ToLowerString(it->GetFieldName().ToString());
 		const ThinString  &value      = it->GetFieldValue();
-		Values             new_values = ParseEachHeader(name, value);
+		Values             new_values = ParseEachHeaderValue(name, value);
 		Values            &old_values = field_lines_[name];
 		old_values.splice(old_values.end(), new_values);
 	}
 }
 
 HeaderSection::Values
-HeaderSection::ParseEachHeader(const std::string &name, const ThinString &value)
+HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &value)
 {
 	Values values;
 
