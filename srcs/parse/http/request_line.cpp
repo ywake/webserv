@@ -35,8 +35,8 @@ RequestLine::RequestLine(const ThinString &request_line)
 	};
 	std::vector<ThinString> tokens          = Split(request_line, " ");
 	bool                    is_invalid_size = tokens.size() != kValidNumOfTokens;
-	if (is_invalid_size || !http_abnf::IsMethod(tokens[kMthodIdx]) ||
-		!http_abnf::IsHttpVersion(tokens[kVersionIdx])) {
+	if (is_invalid_size || !http::abnf::IsMethod(tokens[kMthodIdx]) ||
+		!http::abnf::IsHttpVersion(tokens[kVersionIdx])) {
 		throw http::BadRequestException();
 	}
 	method_         = tokens[kMthodIdx];

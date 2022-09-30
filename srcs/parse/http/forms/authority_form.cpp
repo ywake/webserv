@@ -16,7 +16,7 @@ AuthorityForm::AuthorityForm(const ThinString &str) : host_port_(str)
 
 AuthorityForm::AuthorityForm(const AuthorityForm &other) : host_port_(other.host_port_) {}
 
-AuthorityForm::AuthorityForm(const http_abnf::HostPort &host_port) : host_port_(host_port) {}
+AuthorityForm::AuthorityForm(const http::abnf::HostPort &host_port) : host_port_(host_port) {}
 
 AuthorityForm &AuthorityForm::operator=(const AuthorityForm &other)
 {

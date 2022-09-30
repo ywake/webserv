@@ -46,7 +46,7 @@ HeaderSection::Tokens HeaderSection::TokenizeLines(const ThinString &str) const
 
 	for (ThinString remained = str; remained.size();) {
 		Token token;
-		if (remained.StartWith(kCrLf) && !http_abnf::StartWithObsFold(remained)) {
+		if (remained.StartWith(kCrLf) && !http::abnf::StartWithObsFold(remained)) {
 			token = Token(kCrLf, kCrLfTk);
 		} else {
 			token = CreateFieldLineToken(remained);
@@ -72,7 +72,7 @@ HeaderSection::Token HeaderSection::CreateFieldLineToken(const ThinString &str) 
 			token_len = str.size();
 			break;
 		}
-		if (!http_abnf::StartWithObsFold(str.substr(token_len))) {
+		if (!http::abnf::StartWithObsFold(str.substr(token_len))) {
 			break;
 		}
 		token_len += kCrLf.size();
@@ -132,7 +132,7 @@ void HeaderSection::ParseEachHeaders(const Lines &lines)
 
 void ParseHost(HeaderSection::Values &values, const ThinString &value)
 {
-	http_abnf::HostPort host_port(value);
+	http::abnf::HostPort host_port(value);
 	(void)host_port;
 	values.push_back(value.ToString());
 }
@@ -140,7 +140,7 @@ void ParseHost(HeaderSection::Values &values, const ThinString &value)
 void ParseContentLength(HeaderSection::Values &values, const ThinString &value)
 {
 	std::string str = value.ToString();
-	if (http_headers::IsValidContentLength(str)) {
+	if (http::headers::IsValidContentLength(str)) {
 		values.push_back(HeaderValue(str));
 	} else {
 		throw http::BadRequestException();

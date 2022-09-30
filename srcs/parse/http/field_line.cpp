@@ -19,11 +19,11 @@ FieldLine::FieldLine(const ThinString &line)
 	}
 	ThinString name  = line.substr(0, colon_pos);
 	ThinString value = line.substr(colon_pos + 1);
-	if (!http_abnf::IsFieldName(name)) {
+	if (!http::abnf::IsFieldName(name)) {
 		throw http::BadRequestException();
 	}
 	ThinString trimed_ows = TrimOws(value);
-	if (!http_abnf::IsFieldValue(trimed_ows)) {
+	if (!http::abnf::IsFieldValue(trimed_ows)) {
 		throw http::BadRequestException();
 	}
 	field_name_  = name;
@@ -39,7 +39,7 @@ ThinString FieldLine::TrimOws(const ThinString &value)
 	}
 	ThinString trimed_ows          = trimed_left.substr(0, end_idx + 1);
 	ThinString trimed_with_obsfold = trimed_left.substr(0, end_idx + 2);
-	if (http_abnf::EndWithObsFold(trimed_with_obsfold)) {
+	if (http::abnf::EndWithObsFold(trimed_with_obsfold)) {
 		return trimed_with_obsfold;
 	} else {
 		return trimed_ows;
