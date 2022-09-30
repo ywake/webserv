@@ -61,8 +61,11 @@ namespace http
 		};
 
 	  private:
-		static const std::map<const Code, const std::string> reason_phrase_;
-		const Code                                           code_;
+		typedef std::map<const Code, std::string> ReasonPhrase;
+
+	  private:
+		static const ReasonPhrase reason_phrase_;
+		const Code                code_;
 
 	  public:
 		StatusCode(Code code = kUndefinedCode);
@@ -71,6 +74,9 @@ namespace http
 		bool               empty();
 		Code               GetCode() const;
 		const std::string &GetReasonPhrase() const;
+
+	  private:
+		static ReasonPhrase InitReasonPhrase();
 	};
 } // namespace http
 
