@@ -1,9 +1,7 @@
 #include "field_line.hpp"
 #include "http_exceptions.hpp"
+#include "parse_http_utils.hpp"
 #include "validate_field_line.hpp"
-
-static const std::string kCrLf        = "\r\n";
-static const std::string kWhiteSpaces = " \t";
 
 FieldLine::FieldLine() : field_name_(), field_value_() {}
 
@@ -22,28 +20,12 @@ FieldLine::FieldLine(const ThinString &line)
 	if (!http::abnf::IsFieldName(name)) {
 		throw http::BadRequestException();
 	}
-	ThinString trimed_ows = TrimOws(value);
+	ThinString trimed_ows = http::TrimOws(value);
 	if (!http::abnf::IsFieldValue(trimed_ows)) {
 		throw http::BadRequestException();
 	}
 	field_name_  = name;
 	field_value_ = trimed_ows;
-}
-
-ThinString FieldLine::TrimOws(const ThinString &value)
-{
-	ThinString  trimed_left = value.TrimLeft(kWhiteSpaces);
-	std::size_t end_idx     = trimed_left.RFindNotOf(kWhiteSpaces);
-	if (end_idx == ThinString::npos) {
-		return "";
-	}
-	ThinString trimed_ows          = trimed_left.substr(0, end_idx + 1);
-	ThinString trimed_with_obsfold = trimed_left.substr(0, end_idx + 2);
-	if (http::abnf::EndWithObsFold(trimed_with_obsfold)) {
-		return trimed_with_obsfold;
-	} else {
-		return trimed_ows;
-	}
 }
 
 const ThinString &FieldLine::GetFieldName() const
