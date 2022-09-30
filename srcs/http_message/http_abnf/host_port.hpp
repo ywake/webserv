@@ -24,8 +24,7 @@ namespace http_abnf
 		bool      operator==(const HostPort &other) const;
 		bool      operator!=(const HostPort &other) const;
 	};
+	std::ostream &operator<<(std::ostream &os, const HostPort &host_port);
 } // namespace http_abnf
-
-std::ostream &operator<<(std::ostream &os, const http_abnf::HostPort &host_port);
 
 #endif

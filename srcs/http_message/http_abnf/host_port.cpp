@@ -57,11 +57,11 @@ namespace http_abnf
 		return !(*this == other);
 	}
 
-} // namespace http_abnf
+	std::ostream &operator<<(std::ostream &os, const HostPort &host_port)
+	{
+		os << "host    :" << host_port.GetHost() << std::endl;
+		os << "port    :" << host_port.GetPort() << std::endl;
+		return os;
+	}
 
-std::ostream &operator<<(std::ostream &os, const http_abnf::HostPort &host_port)
-{
-	os << "host    :" << host_port.GetHost() << std::endl;
-	os << "port    :" << host_port.GetPort() << std::endl;
-	return os;
-}
+} // namespace http_abnf
