@@ -3,8 +3,10 @@
 #include "host_port.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
+#include "parse_http_utils.hpp"
 #include "validate_field_line.hpp"
 #include "validate_headers.hpp"
+#include "validate_http_char.hpp"
 #include "webserv_utils.hpp"
 
 #include <list>
@@ -129,37 +131,65 @@ void HeaderSection::ParseEachHeaders(const Lines &lines)
 	}
 }
 
-void ParseHost(HeaderSection::Values &values, const ThinString &value)
+HeaderSection::Values ParseHost(const ThinString &value)
 {
+	HeaderSection::Values values;
+
 	http::abnf::HostPort host_port(value);
 	(void)host_port;
 	values.push_back(value.ToString());
+
+	return values;
 }
 
-void ParseContentLength(HeaderSection::Values &values, const ThinString &value)
+HeaderSection::Values ParseContentLength(const ThinString &value)
 {
-	std::string str = value.ToString();
+	HeaderSection::Values values;
+	std::string           str = value.ToString();
+
 	if (http::headers::IsValidContentLength(str)) {
 		values.push_back(HeaderValue(str));
 	} else {
 		throw http::BadRequestException();
 	}
+
+	return values;
+}
+
+// Connection
+// 	= #connection-option
+// connection-option
+// 	= token
+HeaderSection::Values ParseConnection(const ThinString &value)
+{
+	HeaderSection::Values   values;
+	std::vector<ThinString> list = http::ParseList(value);
+
+	for (std::vector<ThinString>::const_iterator it = list.begin(); it != list.end(); it++) {
+		if (http::abnf::IsToken(*it)) {
+			// valueも大文字小文字を無視
+			values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
+		} else {
+			throw http::BadRequestException();
+		}
+	}
+
+	return values;
 }
 
 HeaderSection::Values
 HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &value)
 {
-	Values values;
-
 	if (name == "host") {
-		ParseHost(values, value);
+		return ParseHost(value);
 	} else if (name == "content-length") {
-		ParseContentLength(values, value);
+		return ParseContentLength(value);
 	} else if (name == "transfer-encoding") {
 	} else if (name == "connection") {
-	} else {
-		values.push_back(HeaderValue(value.ToString()));
+		return ParseConnection(value);
 	}
+	Values values;
+	values.push_back(HeaderValue(value.ToString()));
 	return values;
 }
 

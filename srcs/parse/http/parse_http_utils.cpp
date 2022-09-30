@@ -24,7 +24,7 @@ namespace http
 		}
 	}
 
-	std::vector<ThinString> ParseList(const std::string &str)
+	std::vector<ThinString> ParseList(const ThinString &str)
 	{
 		typedef std::vector<ThinString> List;
 

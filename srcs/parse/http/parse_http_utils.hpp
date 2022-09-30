@@ -5,7 +5,8 @@
 
 namespace http
 {
-	ThinString TrimOws(const ThinString &value);
+	ThinString              TrimOws(const ThinString &value);
+	std::vector<ThinString> ParseList(const ThinString &str);
 
 } // namespace http
 

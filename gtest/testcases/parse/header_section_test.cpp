@@ -110,3 +110,27 @@ TEST(header_section, content_length)
 	// error case
 	EXPECT_THROW(HeaderSection("Content-Length:\r\n"), http::BadRequestException);
 }
+
+TEST(header_section, connection)
+{
+	EXPECT_EQ(
+		HeaderSection("connection: close\r\n"),
+		HeaderSection(HeaderSection::Headers({{"connection", {HeaderValue("close")}}}))
+	);
+	EXPECT_EQ(
+		HeaderSection("Connection:close\r\n"),
+		HeaderSection(HeaderSection::Headers({{"connection", {HeaderValue("close")}}}))
+	);
+	EXPECT_EQ(
+		HeaderSection("Connection: close, aaa,bbb\r\n"),
+		HeaderSection(HeaderSection::Headers(
+			{{"connection", {HeaderValue("close"), HeaderValue("aaa"), HeaderValue("bbb")}}}
+		))
+	);
+
+	// error case
+	EXPECT_THROW(HeaderSection("Connection:\r\n"), http::BadRequestException);
+	EXPECT_THROW(HeaderSection("Connection: close,\r\n"), http::BadRequestException);
+	EXPECT_THROW(HeaderSection("Connection: close,,,,aaa\r\n"), http::BadRequestException);
+	EXPECT_THROW(HeaderSection("Connection: a@b\r\n"), http::BadRequestException);
+}
