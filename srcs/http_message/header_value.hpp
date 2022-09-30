@@ -22,6 +22,8 @@ class HeaderValue
 
 	bool operator==(const HeaderValue &rhs) const;
 	bool operator!=(const HeaderValue &rhs) const;
+
+	const std::string &GetValue() const;
 };
 
 std::ostream &operator<<(std::ostream &os, const HeaderValue &field_value);

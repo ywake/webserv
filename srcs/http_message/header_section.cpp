@@ -1,7 +1,9 @@
 #include "header_section.hpp"
 #include "field_line.hpp"
+#include "host_port.hpp"
 #include "http_exceptions.hpp"
 #include "validate_field_line.hpp"
+#include "validate_headers.hpp"
 #include "webserv_utils.hpp"
 
 #include <list>
@@ -128,6 +130,16 @@ void HeaderSection::ParseEachHeaders(const Lines &lines)
 	}
 }
 
+void ParseContentLength(HeaderSection::Values &values, const ThinString &value)
+{
+	std::string str = value.ToString();
+	if (http_headers::IsValidContentLength(str)) {
+		values.push_back(HeaderValue(str));
+	} else {
+		throw http::BadRequestException();
+	}
+}
+
 HeaderSection::Values
 HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &value)
 {
@@ -135,6 +147,7 @@ HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &v
 
 	if (name == "host") {
 	} else if (name == "content-length") {
+		ParseContentLength(values, value);
 	} else if (name == "transfer-encoding") {
 	} else if (name == "connection") {
 	} else {

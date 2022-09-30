@@ -5,29 +5,31 @@
 #include "header_section.hpp"
 #include "http_exceptions.hpp"
 
-TEST(field_lines, test)
+TEST(header_section, general)
 {
-	HeaderSection field_lines;
-
 	EXPECT_EQ(
 		HeaderSection("key: value\r\n"
 					  "key2: value2\r\n"
 					  " value2\r\n"
 					  "\tvalue2\r\n"),
 		HeaderSection(HeaderSection::Headers(
-			{{"key", "value"},
+			{{"key", {HeaderValue("value")}},
 			 {"key2",
-			  "value2\r\n"
-			  " value2\r\n"
-			  "\tvalue2"}}
+			  {HeaderValue("value2\r\n"
+						   " value2\r\n"
+						   "\tvalue2")}}}
 		))
 	);
 
-	EXPECT_EQ(HeaderSection("a:\r\n"), HeaderSection(HeaderSection::Headers({{"a", ""}})));
+	EXPECT_EQ(
+		HeaderSection("a:\r\n"), HeaderSection(HeaderSection::Headers({{"a", {HeaderValue("")}}}))
+	);
 	EXPECT_EQ(
 		HeaderSection("key: value\r\n"
 					  "key: value2  \r\n"),
-		HeaderSection(HeaderSection::Headers({{"key", "value, value2"}}))
+		HeaderSection(
+			HeaderSection::Headers({{"key", {HeaderValue("value"), HeaderValue("value2")}}})
+		)
 	);
 	EXPECT_EQ(
 		HeaderSection("key: value\r\n"
@@ -35,20 +37,20 @@ TEST(field_lines, test)
 					  "\t\r\n"),
 		HeaderSection(HeaderSection::Headers(
 			{{"key",
-			  "value\r\n"
-			  " \r\n"
-			  "\t"}}
+			  {HeaderValue("value\r\n"
+						   " \r\n"
+						   "\t")}}}
 		))
 	);
 	EXPECT_EQ(
 		HeaderSection("key: value\r\n"
 					  " \r\n"
 					  "\t\r\n"),
-		HeaderSection(HeaderSection::Headers({{"key", "value\r\n \r\n\t"}}))
+		HeaderSection(HeaderSection::Headers({{"key", {HeaderValue("value\r\n \r\n\t")}}}))
 	);
 }
 
-TEST(field_lines, throw_test)
+TEST(header_section, throw_test)
 {
 	EXPECT_THROW(HeaderSection(":"), http::BadRequestException);
 	EXPECT_THROW(HeaderSection(" :"), http::BadRequestException);
@@ -92,4 +94,19 @@ TEST(field_lines, throw_test)
 					  " "),
 		http::BadRequestException
 	);
+}
+
+TEST(header_section, content_length)
+{
+	EXPECT_EQ(
+		HeaderSection("content-length:11\r\n"),
+		HeaderSection(HeaderSection::Headers({{"content-length", {HeaderValue("11")}}}))
+	);
+	EXPECT_EQ(
+		HeaderSection("Content-Length:11\r\n"),
+		HeaderSection(HeaderSection::Headers({{"content-length", {HeaderValue("11")}}}))
+	);
+
+	// error case
+	EXPECT_THROW(HeaderSection("Content-Length:\r\n"), http::BadRequestException);
 }
