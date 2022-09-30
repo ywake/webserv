@@ -8,7 +8,7 @@
 
 #include "basic_token.hpp"
 #include "field_line.hpp"
-#include "field_value.hpp"
+#include "header_value.hpp"
 #include "thin_string.hpp"
 
 class HeaderSection
@@ -21,8 +21,8 @@ class HeaderSection
 	};
 
   public:
-	typedef std::list<HeaderValue>                              Values;
-	typedef std::map<const std::string, std::list<HeaderValue>> Headers;
+	typedef std::list<HeaderValue>                               Values;
+	typedef std::map<const std::string, std::list<HeaderValue> > Headers;
 
   private:
 	typedef BasicToken<TokenId>     Token;

@@ -1,5 +1,5 @@
-#ifndef FIELD_VALUE_HPP
-#define FIELD_VALUE_HPP
+#ifndef HEADER_VALUE_HPP
+#define HEADER_VALUE_HPP
 
 #include <list>
 #include <map>
