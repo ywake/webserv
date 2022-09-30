@@ -130,6 +130,13 @@ void HeaderSection::ParseEachHeaders(const Lines &lines)
 	}
 }
 
+void ParseHost(HeaderSection::Values &values, const ThinString &value)
+{
+	http_abnf::HostPort host_port(value);
+	(void)host_port;
+	values.push_back(value.ToString());
+}
+
 void ParseContentLength(HeaderSection::Values &values, const ThinString &value)
 {
 	std::string str = value.ToString();
@@ -146,6 +153,7 @@ HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &v
 	Values values;
 
 	if (name == "host") {
+		ParseHost(values, value);
 	} else if (name == "content-length") {
 		ParseContentLength(values, value);
 	} else if (name == "transfer-encoding") {
