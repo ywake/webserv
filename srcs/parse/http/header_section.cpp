@@ -1,6 +1,7 @@
 #include "header_section.hpp"
 #include "field_line.hpp"
 #include "host_port.hpp"
+#include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "validate_field_line.hpp"
 #include "validate_headers.hpp"
@@ -19,8 +20,6 @@
 // KEY : VAL
 
 // TODO ThinString
-static const std::string kCrLf        = "\r\n";
-static const std::string kWhiteSpaces = " \t";
 static const std::string kSingleSpace = " ";
 
 HeaderSection::HeaderSection() {}
@@ -46,8 +45,8 @@ HeaderSection::Tokens HeaderSection::TokenizeLines(const ThinString &str) const
 
 	for (ThinString remained = str; remained.size();) {
 		Token token;
-		if (remained.StartWith(kCrLf) && !http::abnf::StartWithObsFold(remained)) {
-			token = Token(kCrLf, kCrLfTk);
+		if (remained.StartWith(http::kCrLf) && !http::abnf::StartWithObsFold(remained)) {
+			token = Token(http::kCrLf, kCrLfTk);
 		} else {
 			token = CreateFieldLineToken(remained);
 		}
@@ -67,7 +66,7 @@ HeaderSection::Token HeaderSection::CreateFieldLineToken(const ThinString &str) 
 {
 	std::size_t token_len = 0;
 	while (true) {
-		token_len = str.FindAfter(kCrLf, token_len);
+		token_len = str.FindAfter(http::kCrLf, token_len);
 		if (token_len == std::string::npos) {
 			token_len = str.size();
 			break;
@@ -75,7 +74,7 @@ HeaderSection::Token HeaderSection::CreateFieldLineToken(const ThinString &str) 
 		if (!http::abnf::StartWithObsFold(str.substr(token_len))) {
 			break;
 		}
-		token_len += kCrLf.size();
+		token_len += http::kCrLf.size();
 	}
 	return Token(str.substr(0, token_len), kFieldLineTk);
 }

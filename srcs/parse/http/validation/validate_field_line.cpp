@@ -1,10 +1,9 @@
 #include "validate_field_line.hpp"
+#include "http_define.hpp"
 #include "parse_abnf_core_rules.hpp"
 #include "thin_string.hpp"
 #include "validate_http_char.hpp"
 
-static const std::string kWhiteSpaces    = " \t";
-static const std::string kCrLf           = "\r\n";
 static const std::size_t kObsFoldMinSize = 3;
 
 namespace http
