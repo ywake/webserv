@@ -8,6 +8,7 @@
 
 #include "basic_token.hpp"
 #include "field_line.hpp"
+#include "header_value.hpp"
 #include "thin_string.hpp"
 
 class HeaderSection
@@ -20,8 +21,8 @@ class HeaderSection
 	};
 
   public:
-	typedef std::string                         Values;
-	typedef std::map<const std::string, Values> Headers;
+	typedef std::list<HeaderValue>                               Values;
+	typedef std::map<const std::string, std::list<HeaderValue> > Headers;
 
   private:
 	typedef BasicToken<TokenId>     Token;
@@ -51,7 +52,8 @@ class HeaderSection
 	StringAry ParseTokensToLines(Tokens &tokens) const;
 	Token     CreateFieldLineToken(const ThinString &str) const;
 	Lines     ParseFieldLines(const Tokens &tokens) const;
-	void      StoreFieldLines(const Lines &lines);
+	void      ParseEachHeaders(const Lines &lines);
+	Values    ParseEachHeaderValue(const std::string &name, const ThinString &value);
 };
 
 std::ostream &operator<<(std::ostream &out, const HeaderSection &field_lines);

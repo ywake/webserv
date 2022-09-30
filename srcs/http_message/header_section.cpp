@@ -33,12 +33,10 @@ HeaderSection::HeaderSection(const ThinString &str)
 		throw http::BadRequestException();
 	}
 	Lines lines = ParseFieldLines(tokens);
-	StoreFieldLines(lines);
+	ParseEachHeaders(lines);
 }
 
-HeaderSection::HeaderSection(const std::map<const std::string, Values> &field_lines)
-	: field_lines_(field_lines)
-{}
+HeaderSection::HeaderSection(const Headers &field_lines) : field_lines_(field_lines) {}
 
 HeaderSection::Tokens HeaderSection::TokenizeLines(const ThinString &str) const
 {
@@ -119,20 +117,33 @@ TODO どっちでパースするか
 	データ構造はmap<name, std::set>
 	TRはcase insensitive
 */
-void HeaderSection::StoreFieldLines(const Lines &lines)
+void HeaderSection::ParseEachHeaders(const Lines &lines)
 {
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
-		const std::string name  = utils::ToLowerString(it->GetFieldName().ToString());
-		const std::string value = it->GetFieldValue().ToString();
-		if (field_lines_[name].empty()) {
-			field_lines_[name] = value;
-		} else {
-			field_lines_[name] += ", " + value;
-		}
+		const std::string &name       = utils::ToLowerString(it->GetFieldName().ToString());
+		const ThinString  &value      = it->GetFieldValue();
+		Values             new_values = ParseEachHeaderValue(name, value);
+		Values            &old_values = field_lines_[name];
+		old_values.splice(old_values.end(), new_values);
 	}
 }
 
-std::string &HeaderSection::operator[](const std::string &field_name)
+HeaderSection::Values
+HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &value)
+{
+	Values values;
+
+	if (name == "host") {
+	} else if (name == "content-length") {
+	} else if (name == "transfer-encoding") {
+	} else if (name == "connection") {
+	} else {
+		values.push_back(HeaderValue(value.ToString()));
+	}
+	return values;
+}
+
+HeaderSection::Values &HeaderSection::operator[](const std::string &field_name)
 {
 	return field_lines_[utils::ToLowerString(field_name)];
 }
@@ -179,8 +190,8 @@ std::ostream &operator<<(std::ostream &os, const HeaderSection &field_lines)
 {
 	HeaderSection::Headers headers = field_lines.GetMap();
 	for (HeaderSection::Headers::const_iterator it = headers.begin(); it != headers.end(); it++) {
-		const std::string name   = it->first;
-		const std::string values = it->second;
+		const std::string &name   = it->first;
+		const HeaderValue &values = it->second.front(); // TODO fix
 		os << name << ": " << values << "\n";
 	}
 	return os;
