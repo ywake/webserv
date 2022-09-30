@@ -30,6 +30,10 @@ class FieldValue
 
 	bool empty() const;
 	void push_back(const FieldLine &field_line);
+
+	bool operator==(const FieldValue &rhs) const;
+	bool operator!=(const FieldValue &rhs) const;
 };
 
+std::ostream &operator<<(std::ostream &os, const FieldValue &field_value);
 #endif

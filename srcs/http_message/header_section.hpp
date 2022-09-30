@@ -8,6 +8,7 @@
 
 #include "basic_token.hpp"
 #include "field_line.hpp"
+#include "field_value.hpp"
 #include "thin_string.hpp"
 
 class HeaderSection
@@ -20,8 +21,7 @@ class HeaderSection
 	};
 
   public:
-	typedef std::string                         Values;
-	typedef std::map<const std::string, Values> Headers;
+	typedef std::map<const std::string, FieldValue> Headers;
 
   private:
 	typedef BasicToken<TokenId>     Token;
@@ -37,9 +37,9 @@ class HeaderSection
 	HeaderSection(const ThinString &str);
 	HeaderSection(const Headers &field_lines);
 
-	bool    operator==(const HeaderSection &rhs) const;
-	bool    operator!=(const HeaderSection &rhs) const;
-	Values &operator[](const std::string &field_name);
+	bool        operator==(const HeaderSection &rhs) const;
+	bool        operator!=(const HeaderSection &rhs) const;
+	FieldValue &operator[](const std::string &field_name);
 
 	const Headers &GetMap() const;
 
