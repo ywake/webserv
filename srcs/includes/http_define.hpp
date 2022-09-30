@@ -5,8 +5,10 @@
 
 namespace http
 {
-	extern const std::string kCrLf;
-	extern const std::string kWhiteSpaces;
+	// extern const std::string kCrLf;
+	// extern const std::string kWhiteSpaces;
+	static const std::string kCrLf        = "\r\n";
+	static const std::string kWhiteSpaces = " \t";
 
 } // namespace http
 
