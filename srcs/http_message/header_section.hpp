@@ -21,7 +21,8 @@ class HeaderSection
 	};
 
   public:
-	typedef std::map<const std::string, FieldValue> Headers;
+	typedef std::list<HeaderValue>                              Values;
+	typedef std::map<const std::string, std::list<HeaderValue>> Headers;
 
   private:
 	typedef BasicToken<TokenId>     Token;
@@ -37,9 +38,9 @@ class HeaderSection
 	HeaderSection(const ThinString &str);
 	HeaderSection(const Headers &field_lines);
 
-	bool        operator==(const HeaderSection &rhs) const;
-	bool        operator!=(const HeaderSection &rhs) const;
-	FieldValue &operator[](const std::string &field_name);
+	bool    operator==(const HeaderSection &rhs) const;
+	bool    operator!=(const HeaderSection &rhs) const;
+	Values &operator[](const std::string &field_name);
 
 	const Headers &GetMap() const;
 
@@ -52,6 +53,7 @@ class HeaderSection
 	Token     CreateFieldLineToken(const ThinString &str) const;
 	Lines     ParseFieldLines(const Tokens &tokens) const;
 	void      StoreFieldLines(const Lines &lines);
+	Values    ParseEachHeader(const std::string &name, const ThinString &value);
 };
 
 std::ostream &operator<<(std::ostream &out, const HeaderSection &field_lines);

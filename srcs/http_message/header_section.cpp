@@ -120,12 +120,29 @@ TODO どっちでパースするか
 void HeaderSection::StoreFieldLines(const Lines &lines)
 {
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
-		const std::string name = utils::ToLowerString(it->GetFieldName().ToString());
-		field_lines_[name].push_back(*it); // TODO tolower
+		const std::string &name   = utils::ToLowerString(it->GetFieldName().ToString());
+		const ThinString  &value  = it->GetFieldValue();
+		Values            &values = field_lines_[name];
+		values.splice(values.end(), ParseEachHeader(name, value));
 	}
 }
 
-FieldValue &HeaderSection::operator[](const std::string &field_name)
+HeaderSection::Values
+HeaderSection::ParseEachHeader(const std::string &name, const ThinString &value)
+{
+	Values values;
+
+	if (name == "host") {
+	} else if (name == "content-length") {
+	} else if (name == "transfer-encoding") {
+	} else if (name == "connection") {
+	} else {
+		values.push_back(HeaderValue(value.ToString()));
+	}
+	return values;
+}
+
+HeaderSection::Values &HeaderSection::operator[](const std::string &field_name)
 {
 	return field_lines_[utils::ToLowerString(field_name)];
 }
@@ -173,7 +190,7 @@ std::ostream &operator<<(std::ostream &os, const HeaderSection &field_lines)
 	HeaderSection::Headers headers = field_lines.GetMap();
 	for (HeaderSection::Headers::const_iterator it = headers.begin(); it != headers.end(); it++) {
 		const std::string &name   = it->first;
-		const FieldValue  &values = it->second;
+		const HeaderValue &values = it->second.front(); // TODO fix
 		os << name << ": " << values << "\n";
 	}
 	return os;

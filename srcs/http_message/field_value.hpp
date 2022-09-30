@@ -7,33 +7,22 @@
 
 #include "field_line.hpp"
 
-class FieldValue
+class HeaderValue
 {
   private:
-	class FieldValueElem
-	{
-	  private:
-		std::string value_;
-		// std::map<std::string, std::string> param_;
-
-	  public:
-		FieldValueElem(const std::string &value);
-		~FieldValueElem();
-	};
-
-  private:
-	std::list<FieldValueElem> values_;
+	std::string value_;
+	// std::map<std::string, std::string> param_;
 
   public:
-	FieldValue();
-	~FieldValue();
+	HeaderValue(const std::string &value = "");
+	~HeaderValue();
 
 	bool empty() const;
 	void push_back(const FieldLine &field_line);
 
-	bool operator==(const FieldValue &rhs) const;
-	bool operator!=(const FieldValue &rhs) const;
+	bool operator==(const HeaderValue &rhs) const;
+	bool operator!=(const HeaderValue &rhs) const;
 };
 
-std::ostream &operator<<(std::ostream &os, const FieldValue &field_value);
+std::ostream &operator<<(std::ostream &os, const HeaderValue &field_value);
 #endif

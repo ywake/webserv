@@ -1,42 +1,22 @@
 #include "field_value.hpp"
 
-FieldValue::FieldValueElem::FieldValueElem(const std::string &value) : value_(value) {}
+HeaderValue::HeaderValue(const std::string &str) : value_(str) {}
 
-FieldValue::FieldValueElem::~FieldValueElem() {}
+HeaderValue::~HeaderValue() {}
 
-FieldValue::FieldValue() {}
-
-FieldValue::~FieldValue() {}
-
-bool FieldValue::empty() const
-{
-	return values_.empty();
-}
-
-void FieldValue::push_back(const FieldLine &field_line)
-{
-	ThinString name = field_line.GetFieldName();
-	if (name == "host") {
-	} else if (name == "content-length") {
-	} else if (name == "transfer-encoding") {
-	} else if (name == "connection") {
-	} else {
-		values_.push_back(FieldValueElem(field_line.GetFieldValue().ToString()));
-	}
-}
 // TODO
-bool FieldValue::operator==(const FieldValue &rhs) const
+bool HeaderValue::operator==(const HeaderValue &rhs) const
 {
 	(void)rhs;
 	return false;
 }
 
-bool FieldValue::operator!=(const FieldValue &rhs) const
+bool HeaderValue::operator!=(const HeaderValue &rhs) const
 {
 	return !(*this == rhs);
 }
 
-std::ostream &operator<<(std::ostream &os, const FieldValue &field_value)
+std::ostream &operator<<(std::ostream &os, const HeaderValue &field_value)
 {
 	(void)field_value;
 	return os;
