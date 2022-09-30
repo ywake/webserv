@@ -25,7 +25,7 @@ namespace http
 	{
 		try {
 			return reason_phrase_.at(code_);
-		} catch (const std::exception &e) {
+		} catch (const std::out_of_range &e) {
 			return reason_phrase_.at(kUndefinedCode);
 		}
 	}
