@@ -120,10 +120,11 @@ TODO どっちでパースするか
 void HeaderSection::StoreFieldLines(const Lines &lines)
 {
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
-		const std::string &name   = utils::ToLowerString(it->GetFieldName().ToString());
-		const ThinString  &value  = it->GetFieldValue();
-		Values            &values = field_lines_[name];
-		values.splice(values.end(), ParseEachHeader(name, value));
+		const std::string &name       = utils::ToLowerString(it->GetFieldName().ToString());
+		const ThinString  &value      = it->GetFieldValue();
+		Values             new_values = ParseEachHeader(name, value);
+		Values            &old_values = field_lines_[name];
+		old_values.splice(old_values.end(), new_values);
 	}
 }
 
