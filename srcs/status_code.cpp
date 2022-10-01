@@ -1,5 +1,5 @@
 #include "status_code.hpp"
-#include <stdexpect>
+#include <stdexcept>
 
 namespace http
 {
