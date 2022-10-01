@@ -218,7 +218,7 @@ HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &v
 
 HeaderSection::Values &HeaderSection::operator[](const std::string &field_name)
 {
-	return field_lines_[utils::ToLowerString(field_name)];
+	return field_lines_.at(utils::ToLowerString(field_name));
 }
 
 bool HeaderSection::operator==(const HeaderSection &rhs) const
