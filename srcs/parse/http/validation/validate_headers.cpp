@@ -41,10 +41,6 @@ namespace http
 			if (value.empty()) {
 				return false;
 			}
-			const bool has_single_value = value.find(",") == std::string::npos;
-			if (!has_single_value || HasObsFold(value)) {
-				return false;
-			}
 			const bool start_with_digit = std::isdigit(value.at(0));
 			return start_with_digit && utils::StrToLong(value).IsOk();
 		}
