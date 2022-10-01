@@ -96,6 +96,31 @@ TEST(header_section, throw_test)
 	);
 }
 
+TEST(header_section, host)
+{
+	EXPECT_EQ(
+		HeaderSection("host: localhost\r\n"),
+		HeaderSection(HeaderSection::Headers({{"host", {HeaderValue("localhost")}}}))
+	);
+	EXPECT_EQ(
+		HeaderSection("Host: localhost\r\n"),
+		HeaderSection(HeaderSection::Headers({{"host", {HeaderValue("localhost")}}}))
+	);
+	EXPECT_EQ(
+		HeaderSection("Host: localhost:8080\r\n"),
+		HeaderSection(HeaderSection::Headers({{"host", {HeaderValue("localhost:8080")}}}))
+	);
+	EXPECT_EQ(
+		HeaderSection("Host: localhost:\r\n"),
+		HeaderSection(HeaderSection::Headers({{"host", {HeaderValue("localhost:")}}}))
+	);
+
+	// error case
+	EXPECT_THROW(HeaderSection("Host: \r\n"), http::BadRequestException);
+	EXPECT_THROW(HeaderSection("Host: localhost:8080:8080\r\n"), http::BadRequestException);
+	EXPECT_THROW(HeaderSection("Host: localhost, example\r\n"), http::BadRequestException);
+}
+
 TEST(header_section, content_length)
 {
 	EXPECT_EQ(
