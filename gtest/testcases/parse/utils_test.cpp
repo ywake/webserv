@@ -33,4 +33,11 @@ TEST(http_utils, parse_list)
 		http::ParseList("abc, \"def, ghi\"", false),
 		std::vector<ThinString>({"abc", "\"def, ghi\""})
 	);
+
+	EXPECT_EQ(http::ParseList(" abc "), std::vector<ThinString>({" abc "}));
+	EXPECT_EQ(http::ParseList(" abc"), std::vector<ThinString>({" abc"}));
+	EXPECT_EQ(http::ParseList("abc "), std::vector<ThinString>({"abc "}));
+	EXPECT_EQ(http::ParseList(" abc , def "), std::vector<ThinString>({" abc", "def "}));
+	EXPECT_EQ(http::ParseList(" abc , def , ghi "), std::vector<ThinString>({" abc", "def", "ghi "}));
+	EXPECT_EQ(http::ParseList(" abc , def , ghi , jkl , mno "), std::vector<ThinString>({" abc", "def", "ghi", "jkl", "mno "}));
 }

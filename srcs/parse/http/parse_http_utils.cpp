@@ -5,6 +5,7 @@
 #include "thin_string.hpp"
 #include "validate_field_line.hpp"
 #include "webserv_utils.hpp"
+#include "parse_http_utils.hpp"
 
 std::vector<ThinString> TokenizeList(const ThinString &str)
 {
@@ -30,13 +31,22 @@ namespace http
 {
 	ThinString TrimOws(const ThinString &value)
 	{
-		ThinString  trimed_left = value.TrimLeft(kWhiteSpaces);
-		std::size_t end_idx     = trimed_left.RFindNotOf(kWhiteSpaces);
+		return TrimRight(TrimLeft(value));
+	}
+
+	ThinString TrimLeft(const ThinString &value)
+	{
+		return value.TrimLeft(kWhiteSpaces);
+	}
+
+	ThinString TrimRight(const ThinString &value)
+	{
+		std::size_t end_idx = value.RFindNotOf(kWhiteSpaces);
 		if (end_idx == ThinString::npos) {
 			return "";
 		}
-		ThinString trimed_ows          = trimed_left.substr(0, end_idx + 1);
-		ThinString trimed_with_obsfold = trimed_left.substr(0, end_idx + 2);
+		ThinString trimed_ows          = value.substr(0, end_idx + 1);
+		ThinString trimed_with_obsfold = value.substr(0, end_idx + 2);
 		if (abnf::EndWithObsFold(trimed_with_obsfold)) {
 			return trimed_with_obsfold;
 		} else {
@@ -56,7 +66,13 @@ namespace http
 		}
 		List parsed;
 		for (List::const_iterator it = splitted.begin(); it != splitted.end(); ++it) {
-			ThinString trimmed = TrimOws(*it);
+			ThinString trimmed = *it;
+			if (it != splitted.begin()) {
+				trimmed = TrimLeft(*it);
+			}
+			if (it != splitted.end() - 1) {
+				trimmed = TrimRight(trimmed);
+			}
 			parsed.push_back(trimmed);
 		}
 
