@@ -156,6 +156,23 @@ HeaderSection::Values ParseContentLength(const ThinString &value)
 	return values;
 }
 
+HeaderSection::Values ParseTransferEncoding(const ThinString &value)
+{
+	HeaderSection::Values   values;
+	std::vector<ThinString> list = http::ParseList(value);
+
+	for (std::vector<ThinString>::const_iterator it = list.begin(); it != list.end(); it++) {
+		if (http::abnf::IsToken(*it)) {
+			// valueも大文字小文字を無視
+			values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
+		} else {
+			throw http::NotImplementedException();
+		}
+	}
+
+	return values;
+}
+
 // Connection
 // 	= #connection-option
 // connection-option
@@ -185,6 +202,7 @@ HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &v
 	} else if (name == "content-length") {
 		return ParseContentLength(value);
 	} else if (name == "transfer-encoding") {
+		return ParseTransferEncoding(value);
 	} else if (name == "connection") {
 		return ParseConnection(value);
 	}
