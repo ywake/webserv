@@ -159,3 +159,38 @@ TEST(header_section, connection)
 	EXPECT_THROW(HeaderSection("Connection: close,,,,aaa\r\n"), http::BadRequestException);
 	EXPECT_THROW(HeaderSection("Connection: a@b\r\n"), http::BadRequestException);
 }
+
+TEST(header_section, transfer_encoding)
+{
+	EXPECT_EQ(
+		HeaderSection("transfer-encoding: chunked\r\n"),
+		HeaderSection(HeaderSection::Headers({{"transfer-encoding", {HeaderValue("chunked")}}}))
+	);
+	EXPECT_EQ(
+		HeaderSection("Transfer-Encoding: gzip, chunked\r\n"),
+		HeaderSection(HeaderSection::Headers(
+			{{"transfer-encoding", {HeaderValue("gzip"), HeaderValue("chunked")}}}
+		))
+	);
+	EXPECT_EQ(
+		HeaderSection("Transfer-Encoding: gzip , chunked\r\n"),
+		HeaderSection(HeaderSection::Headers(
+			{{"transfer-encoding", {HeaderValue("gzip"), HeaderValue("chunked")}}}
+		))
+	);
+	EXPECT_EQ(
+		HeaderSection("Transfer-Encoding: gzip,chunked\r\n"),
+		HeaderSection(HeaderSection::Headers(
+			{{"transfer-encoding", {HeaderValue("gzip"), HeaderValue("chunked")}}}
+		))
+	);
+	EXPECT_EQ(
+		HeaderSection("Transfer-Encoding: gzip ,chunked\r\n"),
+		HeaderSection(HeaderSection::Headers(
+			{{"transfer-encoding", {HeaderValue("gzip"), HeaderValue("chunked")}}}
+		))
+	);
+
+	// error case
+	EXPECT_THROW(HeaderSection("Transfer-Encoding:\r\n"), http::BadRequestException);
+}

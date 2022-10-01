@@ -168,6 +168,8 @@ HeaderSection::Values ParseTransferEncoding(const ThinString &value)
 		if (http::abnf::IsToken(*it)) {
 			// valueも大文字小文字を無視
 			values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
+		} else if (*it == "") {
+			throw http::BadRequestException();
 		} else {
 			throw http::NotImplementedException();
 		}
