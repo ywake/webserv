@@ -42,6 +42,15 @@ class HeaderSection
 	bool    operator!=(const HeaderSection &rhs) const;
 	Values &operator[](const std::string &field_name);
 
+	/**
+	 * @exception std::out_of_range
+	 */
+	Values &at(const std::string &field_name);
+	/**
+	 * @exception std::out_of_range
+	 */
+	const Values &at(const std::string &field_name) const;
+
 	const Headers &GetMap() const;
 
 	bool Contains(const std::string &field_name) const;

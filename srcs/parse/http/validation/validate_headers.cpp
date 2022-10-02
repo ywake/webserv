@@ -23,11 +23,16 @@ namespace http
 				}
 			}
 		}
-
 		bool HasSingleHost(const HeaderSection &field_lines)
 		{
-			(void)field_lines;
-			return true;
+			try {
+				HeaderSection::Values values = field_lines.at("host");
+				if (values.size() == 1) {
+					return true;
+				}
+			} catch (const std::out_of_range &e) {
+			}
+			return false;
 		}
 
 		bool IsValidTransferEncoding(const HeaderSection &field_lines)
@@ -47,7 +52,9 @@ namespace http
 
 		bool IsValidHeaderSection(const HeaderSection &field_lines)
 		{
-			HasSingleHost(field_lines);
+			if (!HasSingleHost(field_lines)) {
+				return false;
+			}
 			// bool has_content_length    = field_lines.Contains("content-length");
 			// bool has_transfer_encoding = field_lines.Contains("transfer-encoding");
 			// if (has_content_length && has_transfer_encoding) {

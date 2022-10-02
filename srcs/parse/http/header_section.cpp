@@ -10,6 +10,7 @@
 #include "webserv_utils.hpp"
 
 #include <list>
+#include <stdexcept>
 
 // [KEY:VAL] [CRLF] [KEY:VAL OBSFOLD VAL] [CRLF] [KEY:VAL] [CRLF]
 
@@ -216,7 +217,18 @@ HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &v
 	return values;
 }
 
+// TODO: こっちはexception出さないように
 HeaderSection::Values &HeaderSection::operator[](const std::string &field_name)
+{
+	return field_lines_.at(utils::ToLowerString(field_name));
+}
+
+HeaderSection::Values &HeaderSection::at(const std::string &field_name)
+{
+	return field_lines_.at(utils::ToLowerString(field_name));
+}
+
+const HeaderSection::Values &HeaderSection::at(const std::string &field_name) const
 {
 	return field_lines_.at(utils::ToLowerString(field_name));
 }
