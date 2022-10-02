@@ -192,5 +192,7 @@ TEST(header_section, transfer_encoding)
 	);
 
 	// error case
-	EXPECT_THROW(HeaderSection("Transfer-Encoding:\r\n"), http::BadRequestException);
+	EXPECT_THROW(HeaderSection("Transfer-Encoding:\r\n"), http::NotImplementedException);
+	// error case
+	EXPECT_THROW(HeaderSection("Transfer-Encoding: chunked,\r\n"), http::NotImplementedException);
 }

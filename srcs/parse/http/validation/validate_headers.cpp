@@ -37,8 +37,27 @@ namespace http
 
 		bool IsValidTransferEncoding(const HeaderSection &field_lines)
 		{
-			(void)field_lines;
-			return true;
+			try {
+				HeaderSection::Values values = field_lines.at("transfer-encoding");
+				if (values.back().GetValue() != "chunked") {
+					return false;
+				}
+				size_t chunked_count = 0;
+				for (HeaderSection::Values::iterator it = values.begin(); it != values.end();
+					 ++it) {
+					if (it->GetValue() != "chunked") {
+						throw http::NotImplementedException();
+					} else {
+						chunked_count++;
+					}
+					if (chunked_count > 1) {
+						return false;
+					}
+				}
+				return true;
+			} catch (const std::out_of_range &e) {
+				return true;
+			}
 		}
 
 		bool IsValidContentLength(const std::string &value)
@@ -53,6 +72,9 @@ namespace http
 		bool IsValidHeaderSection(const HeaderSection &field_lines)
 		{
 			if (!HasSingleHost(field_lines)) {
+				return false;
+			}
+			if (!IsValidTransferEncoding(field_lines)) {
 				return false;
 			}
 			// bool has_content_length    = field_lines.Contains("content-length");

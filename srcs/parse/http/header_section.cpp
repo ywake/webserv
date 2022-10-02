@@ -170,7 +170,7 @@ HeaderSection::Values ParseTransferEncoding(const ThinString &value)
 			// valueも大文字小文字を無視
 			values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
 		} else if (*it == "") {
-			throw http::BadRequestException();
+			throw http::NotImplementedException();
 		} else {
 			throw http::NotImplementedException();
 		}
