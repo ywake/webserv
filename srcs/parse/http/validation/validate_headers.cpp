@@ -69,24 +69,25 @@ namespace http
 			return start_with_digit && utils::StrToLong(value).IsOk();
 		}
 
-		bool IsValidHeaderSection(const HeaderSection &field_lines)
+		// TODO 例外だったりboolだったり微妙だから後で考える
+		// -> 400と501の区別が必要なので例外にする
+		/**
+		 * @brief
+		 *
+		 * @throw http::BadRequestException / http::NotImplementedException
+		 */
+		void ValidateHeaderSection(const HeaderSection &field_lines)
 		{
 			if (!HasSingleHost(field_lines)) {
-				return false;
+				throw http::BadRequestException();
 			}
-			if (!IsValidTransferEncoding(field_lines)) {
-				return false;
+			bool has_content_length    = field_lines.Contains("content-length");
+			bool has_transfer_encoding = field_lines.Contains("transfer-encoding");
+			if (has_content_length && has_transfer_encoding) {
+				throw http::BadRequestException();
+			} else if (has_transfer_encoding && !IsValidTransferEncoding(field_lines)) {
+				throw http::BadRequestException();
 			}
-			// bool has_content_length    = field_lines.Contains("content-length");
-			// bool has_transfer_encoding = field_lines.Contains("transfer-encoding");
-			// if (has_content_length && has_transfer_encoding) {
-			// 	throw BadRequestException(); // TODO 例外だったりboolだったり微妙だから後で考える
-			// } else if (has_content_length && !IsValidContentLength(field_lines)) {
-			// 	return false;
-			// } else if (has_transfer_encoding && !IsValidTransferEncoding(field_lines)) {
-			// 	return false;
-			// }
-			return true;
 		}
 
 	} // namespace headers

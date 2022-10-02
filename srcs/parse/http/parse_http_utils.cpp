@@ -2,10 +2,10 @@
 #include <vector>
 
 #include "http_define.hpp"
+#include "parse_http_utils.hpp"
 #include "thin_string.hpp"
 #include "validate_field_line.hpp"
 #include "webserv_utils.hpp"
-#include "parse_http_utils.hpp"
 
 std::vector<ThinString> TokenizeList(const ThinString &str)
 {

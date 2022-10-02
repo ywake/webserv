@@ -7,9 +7,9 @@ namespace http
 {
 	namespace headers
 	{
+		void ValidateHeaderSection(const HeaderSection &field_lines);
 		bool HasSingleHost(const HeaderSection &field_lines);
 		bool IsValidTransferEncoding(const HeaderSection &field_lines);
-		bool IsValidHeaderSection(const HeaderSection &field_lines);
 		bool IsValidContentLength(const std::string &values);
 	} // namespace headers
 } // namespace http
