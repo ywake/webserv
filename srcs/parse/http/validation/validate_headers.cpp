@@ -45,7 +45,7 @@ namespace http
 			return start_with_digit && utils::StrToLong(value).IsOk();
 		}
 
-		bool IsValidFieldLines(const HeaderSection &field_lines)
+		bool IsValidHeaderSection(const HeaderSection &field_lines)
 		{
 			HasSingleHost(field_lines);
 			// bool has_content_length    = field_lines.Contains("content-length");
