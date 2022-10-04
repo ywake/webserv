@@ -2,6 +2,7 @@
 #define PARSE_HTTP_UTILS_HPP
 
 #include "thin_string.hpp"
+#include <vector>
 
 namespace http
 {
