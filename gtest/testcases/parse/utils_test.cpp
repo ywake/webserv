@@ -16,21 +16,24 @@ TEST(http_utils, trim_ows)
 // [TODO] 一旦クオート未対応で進める。要相談。
 TEST(http_utils, parse_list)
 {
+	EXPECT_EQ(http::ParseList(""), std::vector<ThinString>({""}));
+	EXPECT_EQ(http::ParseList(","), std::vector<ThinString>({"", ""}));
+	EXPECT_EQ(http::ParseList(",,"), std::vector<ThinString>({"", "", ""}));
 	EXPECT_EQ(http::ParseList("abc,def"), std::vector<ThinString>({"abc", "def"}));
 	EXPECT_EQ(http::ParseList("abc, def"), std::vector<ThinString>({"abc", "def"}));
 	EXPECT_EQ(http::ParseList("abc , def"), std::vector<ThinString>({"abc", "def"}));
 	EXPECT_EQ(http::ParseList("abc ,def"), std::vector<ThinString>({"abc", "def"}));
 	EXPECT_EQ(http::ParseList("abc, def, ghi"), std::vector<ThinString>({"abc", "def", "ghi"}));
-	//EXPECT_EQ(
+	// EXPECT_EQ(
 	//	http::ParseList("abc, \"def, ghi\""), std::vector<ThinString>({"abc", "\"def", "ghi\""})
 	//);
-	// ignore_quote = false
+	//  ignore_quote = false
 	EXPECT_EQ(
 		http::ParseList("abc, def, ghi", false), std::vector<ThinString>({"abc", "def", "ghi"})
 	);
 	EXPECT_EQ(http::ParseList("abc, def,", false), std::vector<ThinString>({"abc", "def", ""}));
 	EXPECT_EQ(http::ParseList(",abc, def", false), std::vector<ThinString>({"", "abc", "def"}));
-	//EXPECT_EQ(
+	// EXPECT_EQ(
 	//	http::ParseList("abc, \"def, ghi\"", false),
 	//	std::vector<ThinString>({"abc", "\"def, ghi\""})
 	//);
@@ -39,6 +42,11 @@ TEST(http_utils, parse_list)
 	EXPECT_EQ(http::ParseList(" abc"), std::vector<ThinString>({" abc"}));
 	EXPECT_EQ(http::ParseList("abc "), std::vector<ThinString>({"abc "}));
 	EXPECT_EQ(http::ParseList(" abc , def "), std::vector<ThinString>({" abc", "def "}));
-	EXPECT_EQ(http::ParseList(" abc , def , ghi "), std::vector<ThinString>({" abc", "def", "ghi "}));
-	EXPECT_EQ(http::ParseList(" abc , def , ghi , jkl , mno "), std::vector<ThinString>({" abc", "def", "ghi", "jkl", "mno "}));
+	EXPECT_EQ(
+		http::ParseList(" abc , def , ghi "), std::vector<ThinString>({" abc", "def", "ghi "})
+	);
+	EXPECT_EQ(
+		http::ParseList(" abc , def , ghi , jkl , mno "),
+		std::vector<ThinString>({" abc", "def", "ghi", "jkl", "mno "})
+	);
 }

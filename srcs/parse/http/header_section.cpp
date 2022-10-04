@@ -136,12 +136,11 @@ HeaderSection::Values ParseHost(const ThinString &value)
 {
 	HeaderSection::Values values;
 
-	if (value == "") {
+	if (value.empty()) {
 		throw http::BadRequestException();
 	}
 	(void)http::abnf::HostPort(value);
 	values.push_back(value.ToString());
-
 	return values;
 }
 
@@ -150,12 +149,10 @@ HeaderSection::Values ParseContentLength(const ThinString &value)
 	HeaderSection::Values values;
 	std::string           str = value.ToString();
 
-	if (http::headers::IsValidContentLength(str)) {
-		values.push_back(HeaderValue(str));
-	} else {
+	if (!http::headers::IsValidContentLength(str)) {
 		throw http::BadRequestException();
 	}
-
+	values.push_back(HeaderValue(str));
 	return values;
 }
 
@@ -165,16 +162,12 @@ HeaderSection::Values ParseTransferEncoding(const ThinString &value)
 	std::vector<ThinString> list = http::ParseList(value);
 
 	for (std::vector<ThinString>::const_iterator it = list.begin(); it != list.end(); it++) {
-		if (http::abnf::IsToken(*it)) {
-			// valueも大文字小文字を無視
-			values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
-		} else if (*it == "") {
-			throw http::NotImplementedException();
-		} else {
+		if (!http::abnf::IsToken(*it)) {
 			throw http::NotImplementedException();
 		}
+		// valueも大文字小文字を無視
+		values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
 	}
-
 	return values;
 }
 
@@ -186,14 +179,12 @@ HeaderSection::Values ParseConnection(const ThinString &value)
 	std::vector<ThinString> list = http::ParseList(value);
 
 	for (std::vector<ThinString>::const_iterator it = list.begin(); it != list.end(); it++) {
-		if (http::abnf::IsToken(*it)) {
-			// valueも大文字小文字を無視
-			values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
-		} else {
+		if (!http::abnf::IsToken(*it)) {
 			throw http::BadRequestException();
 		}
+		// valueも大文字小文字を無視
+		values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
 	}
-
 	return values;
 }
 
@@ -208,10 +199,11 @@ HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &v
 		return ParseTransferEncoding(value);
 	} else if (name == "connection") {
 		return ParseConnection(value);
+	} else {
+		Values values;
+		values.push_back(HeaderValue(value.ToString()));
+		return values;
 	}
-	Values values;
-	values.push_back(HeaderValue(value.ToString()));
-	return values;
 }
 
 // TODO: こっちはexception出さないように
