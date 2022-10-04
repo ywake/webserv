@@ -178,10 +178,8 @@ HeaderSection::Values ParseTransferEncoding(const ThinString &value)
 	return values;
 }
 
-// Connection
-// 	= #connection-option
-// connection-option
-// 	= token
+// Connection        = #connection-option
+// connection-option = token
 HeaderSection::Values ParseConnection(const ThinString &value)
 {
 	HeaderSection::Values   values;
