@@ -139,8 +139,7 @@ HeaderSection::Values ParseHost(const ThinString &value)
 	if (value == "") {
 		throw http::BadRequestException();
 	}
-	http::abnf::HostPort host_port(value);
-	(void)host_port;
+	(void)http::abnf::HostPort(value);
 	values.push_back(value.ToString());
 
 	return values;
