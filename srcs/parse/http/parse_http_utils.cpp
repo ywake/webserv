@@ -31,15 +31,15 @@ namespace http
 {
 	ThinString TrimOws(const ThinString &value)
 	{
-		return TrimRight(TrimLeft(value));
+		return TrimRightOws(TrimLeftOws(value));
 	}
 
-	ThinString TrimLeft(const ThinString &value)
+	ThinString TrimLeftOws(const ThinString &value)
 	{
 		return value.TrimLeft(kWhiteSpaces);
 	}
 
-	ThinString TrimRight(const ThinString &value)
+	ThinString TrimRightOws(const ThinString &value)
 	{
 		std::size_t end_idx = value.RFindNotOf(kWhiteSpaces);
 		if (end_idx == ThinString::npos) {
@@ -68,10 +68,10 @@ namespace http
 		for (List::const_iterator it = splitted.begin(); it != splitted.end(); ++it) {
 			ThinString trimmed = *it;
 			if (it != splitted.begin()) {
-				trimmed = TrimLeft(*it);
+				trimmed = TrimLeftOws(*it);
 			}
 			if (it != splitted.end() - 1) {
-				trimmed = TrimRight(trimmed);
+				trimmed = TrimRightOws(trimmed);
 			}
 			parsed.push_back(trimmed);
 		}
