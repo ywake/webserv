@@ -124,11 +124,11 @@ TODO どっちでパースするか
 void HeaderSection::ParseEachHeaders(const Lines &lines)
 {
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
-		const std::string &name       = utils::ToLowerString(it->GetFieldName().ToString());
-		const ThinString  &value      = it->GetFieldValue();
-		Values             new_values = ParseEachHeaderValue(name, value);
-		Values            &old_values = field_lines_[name];
-		old_values.splice(old_values.end(), new_values);
+		const std::string &name      = utils::ToLowerString(it->GetFieldName().ToString());
+		const ThinString  &value     = it->GetFieldValue();
+		Values             addtional = ParseEachHeaderValue(name, value);
+		Values            &current   = field_lines_[name];
+		current.splice(current.end(), addtional);
 	}
 }
 
