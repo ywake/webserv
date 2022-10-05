@@ -23,41 +23,39 @@ namespace http
 				}
 			}
 		}
-		bool HasSingleHost(const HeaderSection &field_lines)
+
+		bool HasSingleHost(const HeaderSection::Values &values)
 		{
-			try {
-				HeaderSection::Values values = field_lines.at("host");
-				if (values.size() == 1) {
-					return true;
-				}
-			} catch (const std::out_of_range &e) {
-			}
-			return false;
+			return values.size() == 1;
 		}
 
-		bool IsValidTransferEncoding(const HeaderSection &field_lines)
+		bool IsImplementedTransferCoding(const HeaderSection::Values &values)
 		{
-			try {
-				HeaderSection::Values values = field_lines.at("transfer-encoding");
-				if (values.back().GetValue() != "chunked") {
+			for (HeaderSection::Values::const_iterator it = values.begin(); it != values.end();
+				 ++it) {
+				if (it->GetValue() != "chunked") {
 					return false;
 				}
-				size_t chunked_count = 0;
-				for (HeaderSection::Values::iterator it = values.begin(); it != values.end();
-					 ++it) {
-					if (it->GetValue() != "chunked") {
-						throw http::NotImplementedException();
-					} else {
-						chunked_count++;
-					}
-					if (chunked_count > 1) {
-						return false;
-					}
-				}
-				return true;
-			} catch (const std::out_of_range &e) {
-				return true;
 			}
+			return true;
+		}
+
+		bool IsValidTransferEncoding(const HeaderSection::Values &values)
+		{
+			if (!values.empty() && values.back().GetValue() != "chunked") {
+				return false;
+			}
+			size_t chunked_count = 0;
+			for (HeaderSection::Values::const_iterator it = values.begin(); it != values.end();
+				 ++it) {
+				if (it->GetValue() == "chunked") {
+					chunked_count++;
+				}
+				if (chunked_count > 1) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		bool IsValidContentLength(const std::string &value)
@@ -78,15 +76,20 @@ namespace http
 		 */
 		void ValidateHeaderSection(const HeaderSection &field_lines)
 		{
-			if (!HasSingleHost(field_lines)) {
-				throw http::BadRequestException();
+			if (!HasSingleHost(field_lines["host"])) {
+				throw BadRequestException();
 			}
 			bool has_content_length    = field_lines.Contains("content-length");
 			bool has_transfer_encoding = field_lines.Contains("transfer-encoding");
 			if (has_content_length && has_transfer_encoding) {
-				throw http::BadRequestException();
-			} else if (has_transfer_encoding && !IsValidTransferEncoding(field_lines)) {
-				throw http::BadRequestException();
+				throw BadRequestException();
+			} else if (has_transfer_encoding) {
+				if (!IsValidTransferEncoding(field_lines["transfer-encoding"])) {
+					throw BadRequestException();
+				}
+				if (!IsImplementedTransferCoding(field_lines["transfer-encoding"])) {
+					throw NotImplementedException();
+				}
 			}
 		}
 

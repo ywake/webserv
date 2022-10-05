@@ -21,15 +21,16 @@
 // 規定の重みは 1.0 である。
 TEST(validate_headers, is_valid_transfer_encoding)
 {
-	EXPECT_TRUE(http::headers::IsValidTransferEncoding(HeaderSection("")));
+	EXPECT_TRUE(http::headers::IsValidTransferEncoding(HeaderSection("")["transfer-encoding"]));
 	EXPECT_TRUE(http::headers::IsValidTransferEncoding(HeaderSection("Transfer-Encoding:chunked\r\n"
-	)));
-	EXPECT_TRUE(
-		http::headers::IsValidTransferEncoding(HeaderSection("Transfer-Encoding: chunked\r\n"))
-	);
+	)["transfer-encoding"]));
+	EXPECT_TRUE(http::headers::IsValidTransferEncoding(
+		HeaderSection("Transfer-Encoding: chunked\r\n")["transfer-encoding"]
+	));
 
 	// parse error扱いなので parseのテストでチェックする
-	// EXPECT_TRUE(http::headers::IsValidTransferEncoding(HeaderSection("Transfer-Encoding:\r\n")));
+	// EXPECT_TRUE(http::headers::IsValidTransferEncoding(HeaderSection("Transfer-Encoding:\r\n"
+	// )["transfer-encoding"]));
 	// EXPECT_TRUE(http::headers::IsValidTransferEncoding(HeaderSection("Transfer-Encoding:
 	// \r\n")));
 	// EXPECT_TRUE(
@@ -52,56 +53,51 @@ TEST(validate_headers, is_valid_transfer_encoding)
 // チャンク化転送符号法を複数回適用してはならない（送信者）受信者は最後chunkedならok？
 TEST(validate_headers, must_not_apply_chunked_twice)
 {
-	EXPECT_FALSE(
-		http::headers::IsValidTransferEncoding(HeaderSection("Transfer-Encoding: chunked\r\n"
-															 "Transfer-Encoding: chunked\r\n"))
-	);
 	EXPECT_FALSE(http::headers::IsValidTransferEncoding(
-		HeaderSection("Transfer-Encoding: chunked, chunked\r\n")
+		HeaderSection("Transfer-Encoding: chunked\r\n"
+					  "Transfer-Encoding: chunked\r\n")["transfer-encoding"]
+	));
+	EXPECT_FALSE(http::headers::IsValidTransferEncoding(
+		HeaderSection("Transfer-Encoding: chunked, chunked\r\n")["transfer-encoding"]
 	));
 
-	// EXPECT_FALSE(http::headers::IsValidTransferEncoding(
-	// 	HeaderSection("Transfer-Encoding: chunked, gzip, chunked\r\n")
-	// ));
-	// -> 501
+	EXPECT_FALSE(http::headers::IsValidTransferEncoding(
+		HeaderSection("Transfer-Encoding: chunked, gzip, chunked\r\n")["transfer-encoding"]
+	));
 }
 
 // チャンク化以外の転送符号法が適用される場合、チャンク化を最終転送符号法としなければならない
 TEST(validate_headers, chunk_must_be_last)
 {
-	EXPECT_TRUE(
-		http::headers::IsValidTransferEncoding(HeaderSection("Transfer-Encoding: chunked\r\n"))
-	);
+	EXPECT_TRUE(http::headers::IsValidTransferEncoding(
+		HeaderSection("Transfer-Encoding: chunked\r\n")["transfer-encoding"]
+	));
 
-	// EXPECT_TRUE(http::headers::IsValidTransferEncoding(
-	// 	HeaderSection("Transfer-Encoding: gzip, chunked\r\n")
-	// ));
-	// ->501
+	EXPECT_TRUE(http::headers::IsValidTransferEncoding(
+		HeaderSection("Transfer-Encoding: gzip, chunked\r\n")["transfer-encoding"]
+	));
 
-	// EXPECT_FALSE(http::headers::IsValidTransferEncoding(
-	// 	HeaderSection("Transfer-Encoding: chunked, gzip\r\n")
-	// ));
-	// ->501
+	EXPECT_FALSE(http::headers::IsValidTransferEncoding(
+		HeaderSection("Transfer-Encoding: chunked, gzip\r\n")["transfer-encoding"]
+	));
 }
 
 TEST(validate_headers, unknown_transfer_coding)
 {
 	// 不明な転送符号法を伴うリクエストには501でレスポンス
-	EXPECT_THROW(
-		http::headers::IsValidTransferEncoding(
-			HeaderSection("Transfer-Encoding: unknown, chunked\r\n")
-		),
-		http::NotImplementedException
-	);
-	EXPECT_THROW(
-		http::headers::IsValidTransferEncoding(
-			HeaderSection("Transfer-Encoding: trailers, chunked\r\n")
-		),
-		http::NotImplementedException
-	);
-	EXPECT_THROW(
-		http::headers::IsValidTransferEncoding(HeaderSection("Transfer-Encoding: gzip, chunked\r\n")
-		),
-		http::NotImplementedException
-	);
+	EXPECT_FALSE(http::headers::IsImplementedTransferCoding(
+		HeaderSection("Transfer-Encoding: unknown, chunked\r\n")["transfer-encoding"]
+	));
+	EXPECT_FALSE(http::headers::IsImplementedTransferCoding(
+		HeaderSection("Transfer-Encoding: trailers, chunked\r\n")["transfer-encoding"]
+	));
+	EXPECT_FALSE(http::headers::IsImplementedTransferCoding(
+		HeaderSection("Transfer-Encoding: gzip, chunked\r\n")["transfer-encoding"]
+	));
+	EXPECT_TRUE(http::headers::IsImplementedTransferCoding(
+		HeaderSection("Transfer-Encoding: chunked\r\n")["transfer-encoding"]
+	));
+	EXPECT_TRUE(http::headers::IsImplementedTransferCoding(
+		HeaderSection("Transfer-Encoding: chunked, chunked\r\n")["transfer-encoding"]
+	));
 }

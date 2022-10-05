@@ -206,10 +206,20 @@ HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &v
 	}
 }
 
-// TODO: こっちはexception出さないように
 HeaderSection::Values &HeaderSection::operator[](const std::string &field_name)
 {
-	return field_lines_.at(utils::ToLowerString(field_name));
+	return field_lines_[utils::ToLowerString(field_name)];
+}
+
+const HeaderSection::Values &HeaderSection::operator[](const std::string &field_name) const
+{
+	static const Values empty;
+
+	try {
+		return field_lines_.at(utils::ToLowerString(field_name));
+	} catch (const std::out_of_range &e) {
+		return empty;
+	}
 }
 
 HeaderSection::Values &HeaderSection::at(const std::string &field_name)
