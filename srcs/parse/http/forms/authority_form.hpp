@@ -8,12 +8,12 @@
 class AuthorityForm : public ITargetForm
 {
   private:
-	http_abnf::HostPort host_port_;
+	http::abnf::HostPort host_port_;
 
   public:
 	AuthorityForm();
 	AuthorityForm(const ThinString &str);
-	AuthorityForm(const http_abnf::HostPort &host_port);
+	AuthorityForm(const http::abnf::HostPort &host_port);
 	AuthorityForm(const AuthorityForm &other);
 	AuthorityForm    &operator=(const AuthorityForm &other);
 	bool              operator==(const AuthorityForm &other) const;

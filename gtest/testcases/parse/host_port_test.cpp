@@ -2,7 +2,7 @@
 #include "host_port.hpp"
 #include "http_exceptions.hpp"
 
-using http_abnf::HostPort;
+using http::abnf::HostPort;
 
 TEST(host_port_test, valid_host_port)
 {

@@ -1,10 +1,16 @@
 #include "header_section.hpp"
 #include "field_line.hpp"
+#include "host_port.hpp"
+#include "http_define.hpp"
 #include "http_exceptions.hpp"
+#include "parse_http_utils.hpp"
 #include "validate_field_line.hpp"
+#include "validate_headers.hpp"
+#include "validate_http_char.hpp"
 #include "webserv_utils.hpp"
 
 #include <list>
+#include <stdexcept>
 
 // [KEY:VAL] [CRLF] [KEY:VAL OBSFOLD VAL] [CRLF] [KEY:VAL] [CRLF]
 
@@ -17,8 +23,6 @@
 // KEY : VAL
 
 // TODO ThinString
-static const std::string kCrLf        = "\r\n";
-static const std::string kWhiteSpaces = " \t";
 static const std::string kSingleSpace = " ";
 
 HeaderSection::HeaderSection() {}
@@ -33,12 +37,10 @@ HeaderSection::HeaderSection(const ThinString &str)
 		throw http::BadRequestException();
 	}
 	Lines lines = ParseFieldLines(tokens);
-	StoreFieldLines(lines);
+	ParseEachHeaders(lines);
 }
 
-HeaderSection::HeaderSection(const std::map<const std::string, Values> &field_lines)
-	: field_lines_(field_lines)
-{}
+HeaderSection::HeaderSection(const Headers &field_lines) : field_lines_(field_lines) {}
 
 HeaderSection::Tokens HeaderSection::TokenizeLines(const ThinString &str) const
 {
@@ -46,8 +48,8 @@ HeaderSection::Tokens HeaderSection::TokenizeLines(const ThinString &str) const
 
 	for (ThinString remained = str; remained.size();) {
 		Token token;
-		if (remained.StartWith(kCrLf) && !http_abnf::StartWithObsFold(remained)) {
-			token = Token(kCrLf, kCrLfTk);
+		if (remained.StartWith(http::kCrLf) && !http::abnf::StartWithObsFold(remained)) {
+			token = Token(http::kCrLf, kCrLfTk);
 		} else {
 			token = CreateFieldLineToken(remained);
 		}
@@ -67,15 +69,15 @@ HeaderSection::Token HeaderSection::CreateFieldLineToken(const ThinString &str) 
 {
 	std::size_t token_len = 0;
 	while (true) {
-		token_len = str.FindAfter(kCrLf, token_len);
+		token_len = str.FindAfter(http::kCrLf, token_len);
 		if (token_len == std::string::npos) {
 			token_len = str.size();
 			break;
 		}
-		if (!http_abnf::StartWithObsFold(str.substr(token_len))) {
+		if (!http::abnf::StartWithObsFold(str.substr(token_len))) {
 			break;
 		}
-		token_len += kCrLf.size();
+		token_len += http::kCrLf.size();
 	}
 	return Token(str.substr(0, token_len), kFieldLineTk);
 }
@@ -119,22 +121,115 @@ TODO どっちでパースするか
 	データ構造はmap<name, std::set>
 	TRはcase insensitive
 */
-void HeaderSection::StoreFieldLines(const Lines &lines)
+void HeaderSection::ParseEachHeaders(const Lines &lines)
 {
 	for (Lines::const_iterator it = lines.begin(); it != lines.end(); it++) {
-		const std::string name  = utils::ToLowerString(it->GetFieldName().ToString());
-		const std::string value = it->GetFieldValue().ToString();
-		if (field_lines_[name].empty()) {
-			field_lines_[name] = value;
-		} else {
-			field_lines_[name] += ", " + value;
-		}
+		const std::string &name      = utils::ToLowerString(it->GetFieldName().ToString());
+		const ThinString  &value     = it->GetFieldValue();
+		Values             addtional = ParseEachHeaderValue(name, value);
+		Values            &current   = field_lines_[name];
+		current.splice(current.end(), addtional);
 	}
 }
 
-std::string &HeaderSection::operator[](const std::string &field_name)
+HeaderSection::Values ParseHost(const ThinString &value)
+{
+	HeaderSection::Values values;
+
+	if (value.empty()) {
+		throw http::BadRequestException();
+	}
+	(void)http::abnf::HostPort(value);
+	values.push_back(value.ToString());
+	return values;
+}
+
+HeaderSection::Values ParseContentLength(const ThinString &value)
+{
+	HeaderSection::Values values;
+	std::string           str = value.ToString();
+
+	if (!http::headers::IsValidContentLength(str)) {
+		throw http::BadRequestException();
+	}
+	values.push_back(HeaderValue(str));
+	return values;
+}
+
+HeaderSection::Values ParseTransferEncoding(const ThinString &value)
+{
+	HeaderSection::Values   values;
+	std::vector<ThinString> list = http::ParseList(value);
+
+	for (std::vector<ThinString>::const_iterator it = list.begin(); it != list.end(); it++) {
+		if (!http::abnf::IsToken(*it)) {
+			throw http::NotImplementedException();
+		}
+		// valueも大文字小文字を無視
+		values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
+	}
+	return values;
+}
+
+// Connection        = #connection-option
+// connection-option = token
+HeaderSection::Values ParseConnection(const ThinString &value)
+{
+	HeaderSection::Values   values;
+	std::vector<ThinString> list = http::ParseList(value);
+
+	for (std::vector<ThinString>::const_iterator it = list.begin(); it != list.end(); it++) {
+		if (!http::abnf::IsToken(*it)) {
+			throw http::BadRequestException();
+		}
+		// valueも大文字小文字を無視
+		values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
+	}
+	return values;
+}
+
+HeaderSection::Values
+HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &value)
+{
+	if (name == "host") {
+		return ParseHost(value);
+	} else if (name == "content-length") {
+		return ParseContentLength(value);
+	} else if (name == "transfer-encoding") {
+		return ParseTransferEncoding(value);
+	} else if (name == "connection") {
+		return ParseConnection(value);
+	} else {
+		Values values;
+		values.push_back(HeaderValue(value.ToString()));
+		return values;
+	}
+}
+
+HeaderSection::Values &HeaderSection::operator[](const std::string &field_name)
 {
 	return field_lines_[utils::ToLowerString(field_name)];
+}
+
+const HeaderSection::Values &HeaderSection::operator[](const std::string &field_name) const
+{
+	static const Values empty;
+
+	try {
+		return field_lines_.at(utils::ToLowerString(field_name));
+	} catch (const std::out_of_range &e) {
+		return empty;
+	}
+}
+
+HeaderSection::Values &HeaderSection::at(const std::string &field_name)
+{
+	return field_lines_.at(utils::ToLowerString(field_name));
+}
+
+const HeaderSection::Values &HeaderSection::at(const std::string &field_name) const
+{
+	return field_lines_.at(utils::ToLowerString(field_name));
 }
 
 bool HeaderSection::operator==(const HeaderSection &rhs) const
@@ -179,8 +274,8 @@ std::ostream &operator<<(std::ostream &os, const HeaderSection &field_lines)
 {
 	HeaderSection::Headers headers = field_lines.GetMap();
 	for (HeaderSection::Headers::const_iterator it = headers.begin(); it != headers.end(); it++) {
-		const std::string name   = it->first;
-		const std::string values = it->second;
+		const std::string &name   = it->first;
+		const HeaderValue &values = it->second.front(); // TODO fix
 		os << name << ": " << values << "\n";
 	}
 	return os;

@@ -19,9 +19,6 @@ class FieldLine
 
 	bool operator==(const FieldLine &rhs) const;
 	bool operator!=(const FieldLine &rhs) const;
-
-  private:
-	ThinString TrimOws(const ThinString &value);
 };
 
 std::ostream &operator<<(std::ostream &os, const FieldLine &field_line);

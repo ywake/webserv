@@ -8,9 +8,9 @@
 TEST(authority_form_test, valid_authority_form)
 {
 	EXPECT_EQ(
-		AuthorityForm("example.com:80"), AuthorityForm(http_abnf::HostPort("example.com:80"))
+		AuthorityForm("example.com:80"), AuthorityForm(http::abnf::HostPort("example.com:80"))
 	);
-	EXPECT_EQ(AuthorityForm("example.com:"), AuthorityForm(http_abnf::HostPort("example.com:")));
+	EXPECT_EQ(AuthorityForm("example.com:"), AuthorityForm(http::abnf::HostPort("example.com:")));
 }
 
 TEST(authority_form_test, invalid_on_http)
