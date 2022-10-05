@@ -5,7 +5,6 @@
 #include "parse_uri_relative.hpp"
 #include "thin_string.hpp"
 // TODO hexdigitAllとかここにあっていいのか微妙
-// TODO ~all系の命名が微妙かも
 namespace ABNF
 {
 	// unreserved / pct-encoded / sub-delims

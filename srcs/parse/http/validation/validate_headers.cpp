@@ -67,8 +67,6 @@ namespace http
 			return start_with_digit && utils::StrToLong(value).IsOk();
 		}
 
-		// TODO 例外だったりboolだったり微妙だから後で考える
-		// -> 400と501の区別が必要なので例外にする
 		/**
 		 * @brief
 		 *
