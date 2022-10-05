@@ -1,4 +1,7 @@
 #include "http_define.hpp"
 
-static const std::string kCrLf        = "\r\n";
-static const std::string kWhiteSpaces = " \t";
+namespace http
+{
+	const std::string kCrLf        = "\r\n";
+	const std::string kWhiteSpaces = " \t";
+} // namespace http
