@@ -5,29 +5,31 @@
 
 #include "i_event.hpp"
 
-class EventPool
+namespace event
 {
-  private:
-	class Pool : public std::deque<IEvent *>
+	class EventPool
 	{
+	  private:
+		class Pool : public std::deque<IEvent *>
+		{
+		  public:
+			void Push(IEvent *event)
+			{
+				push_back(event);
+			}
+
+			IEvent *Pop()
+			{
+				IEvent *ret = front();
+				pop_front();
+				return ret;
+			}
+		};
+
 	  public:
-		void Push(IEvent *event)
-		{
-			push_back(event);
-		}
-
-		IEvent *Pop()
-		{
-			IEvent *ret = front();
-			pop_front();
-			return ret;
-		}
+		EventPool();
+		void AddEvent(IEvent *event);
+		void Run();
 	};
-
-  public:
-	EventPool();
-	void AddEvent(IEvent *);
-	void Run();
-};
-
+} // namespace event
 #endif

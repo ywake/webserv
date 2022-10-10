@@ -4,6 +4,6 @@
 int main()
 {
 	// config_parse;
-	Server server = Server(conf::VirtualServers());
+	server::Server server = server::Server(conf::VirtualServers());
 	server.Run();
 }

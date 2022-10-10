@@ -4,18 +4,24 @@
 #include <set>
 
 #include "connection.hpp"
+#include "event/event_pool.hpp"
+#include "io_multiplexer.hpp"
+#include "server_types.hpp"
 #include "virtual_servers.hpp"
-
-class Server
+namespace server
 {
-  private:
-	std::set<Connection> conections_;
-	conf::VirtualServers configs_;
-	Server();
+	class Server
+	{
+	  private:
+		Connections          connections_;
+		conf::VirtualServers configs_;
+		IOMultiplexer        io_monitor_;
+		event::EventPool     event_pool_;
+		Server();
 
-  public:
-	Server(const conf::VirtualServers &configs);
-	void Run();
-};
-
+	  public:
+		Server(const conf::VirtualServers &configs);
+		void Run();
+	};
+} // namespace server
 #endif

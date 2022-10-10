@@ -1,9 +1,12 @@
 #ifndef I_EVENT_HPP
 #define I_EVENT_HPP
 
-class IEvent
+namespace event
 {
-	virtual void Run() = 0;
-};
+	class IEvent
+	{
+		virtual void Run() = 0;
+	};
+} // namespace event
 
 #endif
