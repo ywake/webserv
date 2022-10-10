@@ -13,3 +13,6 @@ DOCKER_EXEC_CMD := /bin/sh
 CONTAINER	:= $(word 2, $(MAKECMDGOALS))
 exec:
 	@docker-compose -f $(DIR)/docker-compose.yml exec $(CONTAINER) $(DOCKER_EXEC_CMD)
+
+retest:
+	docker-compose -f $(DIR)/docker-compose.yml restart $(CONTAINER)
