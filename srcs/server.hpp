@@ -15,7 +15,7 @@ namespace server
 	  private:
 		Connections          connections_;
 		conf::VirtualServers configs_;
-		IOMultiplexer        io_monitor_;
+		IoMultiplexer        io_monitor_;
 		event::EventPool     event_pool_;
 		Server();
 

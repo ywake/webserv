@@ -9,14 +9,14 @@ namespace event
 	class HandleConnection : public IEvent
 	{
 	  private:
-		IOMultiplexer       &io_monitor_;
+		IoMultiplexer       &io_monitor_;
 		server::Connections &connections_;
 
 	  private:
 		HandleConnection();
 
 	  public:
-		HandleConnection(IOMultiplexer &io_monitor, server::Connections &connections);
+		HandleConnection(IoMultiplexer &io_monitor, server::Connections &connections);
 		void Run();
 	};
 } // namespace event
