@@ -13,18 +13,10 @@ namespace event
 		class Pool : public std::deque<IEvent *>
 		{
 		  public:
-			void Push(IEvent *event)
-			{
-				push_back(event);
-			}
-
-			IEvent *Pop()
-			{
-				IEvent *ret = front();
-				pop_front();
-				return ret;
-			}
+			void    PushBack(IEvent *event);
+			IEvent *PopFront();
 		};
+		Pool pool_;
 
 	  public:
 		EventPool();
