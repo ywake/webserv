@@ -15,6 +15,7 @@
 !*.go
 !client.c
 !print_newer.py
+old/*
 
 # tests
 destructor.c
