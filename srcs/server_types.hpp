@@ -3,6 +3,7 @@
 
 #include <list>
 #include <set>
+#include <vector>
 
 #include "connection.hpp"
 #include "listener.hpp"
