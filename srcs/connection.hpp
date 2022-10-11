@@ -16,8 +16,9 @@ namespace server
 	{
 	  public:
 		enum State {
-			kRecv,
-			kSend,
+			kReceiving,
+			kSending,
+			kFinished,
 		};
 
 	  private:
@@ -29,16 +30,16 @@ namespace server
 		const SockAddrIn        client_;
 		State                   state_;
 		Receiver                receiver_;
-		Sender				 *sender;
+		Sender                  sender_;
 
 	  public:
 		Connection(int fd, const conf::ServerConf &conf, const SockAddrIn &client);
-		State                           GetState();
-		io_multiplexer::PollInstruction Proceed();
+		PollInstructions Proceed();
+		bool             IsFinished();
 
 	  private:
-		void                            Receive();
-		io_multiplexer::PollInstruction Send();
+		PollInstructions Receive();
+		PollInstructions Send();
 	};
 } // namespace server
 #endif
