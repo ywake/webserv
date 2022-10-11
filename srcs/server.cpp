@@ -18,10 +18,8 @@ namespace server
 		while (true) {
 			event::HandleConnection connection_event(io_monitor_, connections_);
 			event::CloseConnection  close_event(connections_);
-			event::SupplyConfig     conf_event(connections_, configs_);
 			event_pool_.AddEvent(&connection_event);
 			event_pool_.AddEvent(&close_event);
-			event_pool_.AddEvent(&conf_event);
 			event_pool_.Run();
 		}
 	}
