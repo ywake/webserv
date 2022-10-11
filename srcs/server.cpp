@@ -1,7 +1,6 @@
 #include "server.hpp"
 #include "close_connection.hpp"
 #include "handle_connection.hpp"
-#include "supply_config.hpp"
 
 namespace server
 {
