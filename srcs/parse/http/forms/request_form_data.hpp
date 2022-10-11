@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 
+// TODO std::stringに変更かも
 class RequestFormData
 {
   public:
