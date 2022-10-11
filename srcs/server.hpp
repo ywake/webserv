@@ -5,7 +5,7 @@
 
 #include "connection.hpp"
 #include "event/event_pool.hpp"
-#include "io_multiplexer.hpp"
+#include "poll.hpp"
 #include "server_types.hpp"
 #include "virtual_servers.hpp"
 namespace server
@@ -14,13 +14,15 @@ namespace server
 	{
 	  private:
 		Connections          connections_;
+		Listeners            listeners_;
 		conf::VirtualServers configs_;
-		IoMultiplexer        io_monitor_;
+		io_multiplexer::Poll io_monitor_;
 		event::EventPool     event_pool_;
 		Server();
 
 	  public:
 		Server(const conf::VirtualServers &configs);
+		int  Listen();
 		void Run();
 	};
 } // namespace server
