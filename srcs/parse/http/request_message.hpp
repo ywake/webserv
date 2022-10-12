@@ -17,7 +17,7 @@ namespace http
 			RequestLine request_line, HeaderSection field_lines, std::string message_body
 		);
 		bool               operator==(const RequestMessage &rhs) const;
-		const std::string &GetHost();
+		const std::string &GetHost() const;
 	};
 } // namespace http
 

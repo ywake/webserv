@@ -20,7 +20,7 @@ namespace http
 		return HttpMessage::operator==(rhs) && request_line_ == rhs.request_line_;
 	}
 
-	const std::string &RequestMessage::GetHost()
+	const std::string &RequestMessage::GetHost() const
 	{
 		return "";
 	}
