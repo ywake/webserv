@@ -1,5 +1,6 @@
 #include "connection.hpp"
 #include "request_message.hpp"
+#include "webserv_utils.hpp"
 
 namespace server
 {
@@ -52,7 +53,7 @@ namespace server
 		// TODO httpmsg parse失敗時の分岐
 		PollInstructions poll_instructions;
 		poll_instructions += sender_->Proceed();
-		if (sender_.IsFinished()) {
+		if (sender_->IsFinished()) {
 			poll_instructions -= sender_;
 			if (receiver_.IsSuspending()) {
 				poll_instructions += receiver_;
