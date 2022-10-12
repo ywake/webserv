@@ -33,8 +33,8 @@ namespace server
 			const http::RequestMessage    &request,
 			const SockAddrIn              &client
 		);
-		io_multiplexer::PollInstruction Proceed();
-		bool                            IsFinished();
+		PollInstructions Proceed();
+		bool             IsFinished();
 	};
 } // namespace server
 

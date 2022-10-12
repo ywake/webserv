@@ -36,12 +36,11 @@ namespace server
 	{
 		PollInstructions poll_instructions;
 
-		receiver_.Proceed();
+		poll_instrcutions += receiver_.Proceed();
 		if (receiver_.IsSuspending() || receiver_.IsFinished()) {
 			const http::RequestMessage    &request = receiver_.GetRequest();
 			const conf::VirtualServerConf &config  = configs_[request.GetHost()];
 			sender_                                = new Sender(fd_, config, request, client_);
-			poll_instructions -= receiver_;
 			poll_instructions += sender_;
 			state_ = kSending;
 		}
@@ -54,7 +53,6 @@ namespace server
 		PollInstructions poll_instructions;
 		poll_instructions += sender_->Proceed();
 		if (sender_->IsFinished()) {
-			poll_instructions -= sender_;
 			if (receiver_.IsSuspending()) {
 				poll_instructions += receiver_;
 				state_ = kReceiving;

@@ -26,7 +26,7 @@ namespace server
 
 	  public:
 		Receiver(int fd, const conf::VirtualServerConfs &configs);
-		void                            Proceed();
+		PollInstructions                Proceed();
 		const conf::VirtualServerConfs &configs_;
 		const http::RequestMessage     &GetRequest() const;
 		bool                            IsSuspending();
