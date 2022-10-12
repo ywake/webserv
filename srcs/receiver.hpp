@@ -22,7 +22,7 @@ namespace server
 		Receiver();
 
 	  public:
-		Receiver(int fd, conf::VirtualServerConfs configs);
+		Receiver(int fd, const conf::VirtualServerConfs &configs);
 		void                            Proceed();
 		const conf::VirtualServerConfs &configs_;
 	};
