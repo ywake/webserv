@@ -17,3 +17,8 @@ bool RequestMessage::operator==(const RequestMessage &rhs) const
 {
 	return HttpMessage::operator==(rhs) && request_line_ == rhs.request_line_;
 }
+
+const std::string &RequestMessage::GetHost()
+{
+	return "";
+}
