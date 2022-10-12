@@ -18,7 +18,11 @@ namespace server
 		int   fd_;
 		State state_;
 
+	  private:
+		Receiver();
+
 	  public:
+		Receiver(int fd, conf::VirtualServerConfs configs);
 		void                            Proceed();
 		const conf::VirtualServerConfs &configs_;
 	};
