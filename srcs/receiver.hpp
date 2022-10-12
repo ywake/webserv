@@ -1,6 +1,8 @@
 #ifndef RECEIVER_HPP
 #define RECEIVER_HPP
 
+#include "request_message.hpp"
+
 namespace server
 {
 	class Receiver
@@ -15,8 +17,9 @@ namespace server
 		};
 
 	  private:
-		int   fd_;
-		State state_;
+		int                  fd_;
+		State                state_;
+		http::RequestMessage request_;
 
 	  private:
 		Receiver();
