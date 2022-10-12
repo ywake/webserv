@@ -28,6 +28,9 @@ namespace server
 		Receiver(int fd, const conf::VirtualServerConfs &configs);
 		void                            Proceed();
 		const conf::VirtualServerConfs &configs_;
+		const http::RequestMessage     &GetRequest() const;
+		bool                            IsSuspending();
+		bool                            IsFinished();
 	};
 } // namespace server
 #endif

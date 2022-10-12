@@ -34,6 +34,7 @@ namespace server
 			const SockAddrIn              &client
 		);
 		io_multiplexer::PollInstruction Proceed();
+		bool                            IsFinished();
 	};
 } // namespace server
 
