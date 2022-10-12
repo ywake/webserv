@@ -26,7 +26,7 @@ namespace server
 
 		receiver_.Proceed();
 		if (receiver_.IsSuspending() || receiver_.IsFinished()) {
-			const RequestMessage          &msg    = receiver_.GetRequestMessage();
+			const http::RequestMessage    &msg    = receiver_.GetRequestMessage();
 			const conf::VirtualServerConf &config = configs_[msg.GetHost()];
 			sender_                               = Sender(fd_, config, client_, msg);
 			poll_instructions -= receiver_;

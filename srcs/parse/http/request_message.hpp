@@ -4,16 +4,21 @@
 #include "http_message.hpp"
 #include "request_line.hpp"
 
-class RequestMessage : public HttpMessage
+namespace http
 {
-  public:
-	RequestLine request_line_;
+	class RequestMessage : public HttpMessage
+	{
+	  public:
+		RequestLine request_line_;
 
-	RequestMessage();
-	RequestMessage(const std::string &str);
-	RequestMessage(RequestLine request_line, HeaderSection field_lines, std::string message_body);
-	bool               operator==(const RequestMessage &rhs) const;
-	const std::string &GetHost();
-};
+		RequestMessage();
+		RequestMessage(const std::string &str);
+		RequestMessage(
+			RequestLine request_line, HeaderSection field_lines, std::string message_body
+		);
+		bool               operator==(const RequestMessage &rhs) const;
+		const std::string &GetHost();
+	};
+} // namespace http
 
 #endif
