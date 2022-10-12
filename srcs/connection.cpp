@@ -54,7 +54,7 @@ namespace server
 		poll_instructions += sender_->Proceed();
 		if (sender_->IsFinished()) {
 			if (receiver_.IsSuspending()) {
-				poll_instructions += receiver_;
+				poll_instructions += receiver_; //バッファあるとき無理かも
 				state_ = kReceiving;
 			} else if (receiver_.IsFinished()) {
 				state_ = kFinished;
