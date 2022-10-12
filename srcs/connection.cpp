@@ -37,6 +37,11 @@ namespace server
 		PollInstructions poll_instructions;
 
 		poll_instrcutions += receiver_.Proceed();
+		// TODO
+		// クライアント側が接続を切っていて、recvがerrorで帰っていた場合、pollはそのコネクションに対してどんな挙動をるるかが不明
+		// TODO
+		// バッファにバイトが残っている場合、次の受信が来くるまでイベントが発火しない問題
+		// エラーなバイト列を受信済みだったとしても、タイムアウトが返りそう
 		if (receiver_.IsSuspending() || receiver_.IsFinished()) {
 			const http::RequestMessage    &request = receiver_.GetRequest();
 			const conf::VirtualServerConf &config  = configs_[request.GetHost()];
