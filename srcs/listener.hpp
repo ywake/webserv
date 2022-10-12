@@ -1,7 +1,9 @@
 #ifndef LISTENER_HPP
 #define LISTENER_HPP
 
+#include "connection.hpp"
 #include "virtual_server_confs.hpp"
+
 // TODO fdclass
 namespace server
 {
@@ -12,9 +14,9 @@ namespace server
 		conf::VirtualServerConfs &configs_;
 
 	  public:
-		Listener(int fd);
-		int Accept();
-		int Listen();
+		Listener(const std::string &port);
+		int        Listen();
+		Connection Accept();
 	};
 } // namespace server
 #endif
