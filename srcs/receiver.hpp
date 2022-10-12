@@ -9,7 +9,8 @@ namespace server
 		int fd_;
 
 	  public:
-		void Proceed();
+		void                            Proceed();
+		const conf::VirtualServerConfs &configs_;
 	};
 } // namespace server
 #endif
