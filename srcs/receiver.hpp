@@ -6,7 +6,17 @@ namespace server
 	class Receiver
 	{
 	  private:
-		int fd_;
+		enum State {
+			kRequsetLine,
+			kHeaderSection,
+			kBody,
+			kClose,
+			kKeepAlive,
+		};
+
+	  private:
+		int   fd_;
+		State state_;
 
 	  public:
 		void                            Proceed();
