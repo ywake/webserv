@@ -4,8 +4,19 @@
 namespace server
 {
 	Connection::Connection(int fd, const conf::VirtualServerConfs &conf, const SockAddrIn &client)
-		: fd_(fd), configs_(conf), state_(kReceiving), client_(client)
+		: fd_(fd),
+		  configs_(conf),
+		  state_(kReceiving),
+		  client_(client),
+		  receiver_(fd, conf),
+		  sender_(NULL)
 	{}
+
+	Connection::~Connection()
+	{
+		// close fdclass
+		delete sender_;
+	}
 
 	PollInstructions Connection::Proceed()
 	{
@@ -28,7 +39,7 @@ namespace server
 		if (receiver_.IsSuspending() || receiver_.IsFinished()) {
 			const http::RequestMessage    &msg    = receiver_.GetRequestMessage();
 			const conf::VirtualServerConf &config = configs_[msg.GetHost()];
-			sender_                               = Sender(fd_, config, client_, msg);
+			sender_                               = new Sender(fd_, config, client_, msg);
 			poll_instructions -= receiver_;
 			poll_instructions += sender_;
 			state_ = kSending;
@@ -40,7 +51,7 @@ namespace server
 	{
 		// TODO httpmsg parse失敗時の分岐
 		PollInstructions poll_instructions;
-		poll_instructions += sender_.Proceed();
+		poll_instructions += sender_->Proceed();
 		if (sender_.IsFinished()) {
 			poll_instructions -= sender_;
 			if (receiver_.IsSuspending()) {
@@ -49,6 +60,8 @@ namespace server
 			} else if (receiver_.IsFinished()) {
 				state_ = kFinished;
 			}
+			delete sender_;
+			sender_ = NULL;
 		}
 		return poll_instructions;
 	}

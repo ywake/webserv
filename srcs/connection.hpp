@@ -30,10 +30,11 @@ namespace server
 		const SockAddrIn                client_;
 		State                           state_;
 		Receiver                        receiver_;
-		Sender                          sender_;
+		Sender						 *sender_;
 
 	  public:
 		Connection(int fd, const conf::VirtualServerConfs &conf, const SockAddrIn &client);
+		~Connection();
 		PollInstructions Proceed();
 		bool             IsFinished();
 
