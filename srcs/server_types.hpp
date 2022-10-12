@@ -10,6 +10,7 @@
 #include "listener.hpp"
 #include "poll_instruction.hpp"
 
+// TODO こいつincludeすると色んなとこ依存してよくないかも
 namespace server
 {
 	typedef struct sockaddr_in                         SockAddrIn;
