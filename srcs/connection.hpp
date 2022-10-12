@@ -1,8 +1,6 @@
 #ifndef CONNECTION_HPP
 #define CONNECTION_HPP
 
-#include <netinet/in.h>
-
 #include "poll_instruction.hpp"
 #include "receiver.hpp"
 #include "sender.hpp"
@@ -20,9 +18,6 @@ namespace server
 			kSending,
 			kFinished,
 		};
-
-	  private:
-		typedef struct sockaddr_in SockAddrIn;
 
 	  private:
 		int                             fd_;
