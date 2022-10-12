@@ -6,27 +6,39 @@
 
 #include "config_typedef.hpp"
 #include "host_port.hpp"
-#include "server_conf.hpp"
+#include "result.hpp"
+#include "virtual_server_confs.hpp"
 
 namespace conf
 {
-	class VirtualServers
+	class ServerConfs
 	{
+		static std::map<Port, VirtualServerConfs> empty_map_;
+
 	  private:
-		std::map<Port, Host>                       default_host_;
-		std::map<http::abnf::HostPort, ServerConf> server_confs_;
+		std::map<Port, VirtualServerConfs> virtual_servers_;
 
 	  public:
-		VirtualServers();
-		~VirtualServers();
+		ServerConfs();
+		~ServerConfs();
 
-		const ServerConf &GetDefaultServer(const Port &port);
-		const ServerConf &GetConfig(const Port &port, const Host &host);
+		const VirtualServerConf &GetConf(const Port &port, const Host &host) {}
+		/**
+		 * @brief portに対応するstd::map<Host, VirtualServerConf>を返す
+		 * @brief ない場合はemptyなmapを返す
+		 *
+		 * @param port
+		 * @return const std::map<Host, VirtualServerConf>&
+		 */
+		std::map<Host, VirtualServerConf> &operator[](const Port &port);
+
+	  private:
+		const VirtualServerConf &GetDefaultServer(const Port &port);
 	};
 
-	VirtualServers::VirtualServers(/* args */) {}
+	ServerConfs::ServerConfs(/* args */) {}
 
-	VirtualServers::~VirtualServers() {}
+	ServerConfs::~ServerConfs() {}
 } // namespace conf
 
 #endif

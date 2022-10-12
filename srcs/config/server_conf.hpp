@@ -9,7 +9,7 @@
 
 namespace conf
 {
-	class ServerConf
+	class VirtualServerConf
 	{
 	  private:
 		Port                         listen_port_;
@@ -19,13 +19,26 @@ namespace conf
 		std::map<Path, LocationConf> location_conf_;
 
 	  public:
-		ServerConf(/* args */);
-		~ServerConf();
+		VirtualServerConf(
+			Port                         listen_port          = "",
+			std::string                  server_name          = "",
+			std::map<StatusCode, Path>   error_pages          = std::map<StatusCode, Path>(),
+			std::size_t                  client_max_body_size = 1UL << 20,
+			std::map<Path, LocationConf> location_conf        = std::map<Path, LocationConf>()
+		);
+		~VirtualServerConf();
 	};
 
-	ServerConf::ServerConf(/* args */) {}
+	VirtualServerConf::VirtualServerConf(
+		Port                         listen_port,
+		std::string                  server_name,
+		std::map<StatusCode, Path>   error_pages,
+		std::size_t                  client_max_body_size,
+		std::map<Path, LocationConf> location_conf
+	)
+	{}
 
-	ServerConf::~ServerConf() {}
+	VirtualServerConf::~VirtualServerConf() {}
 } // namespace conf
 
 #endif
