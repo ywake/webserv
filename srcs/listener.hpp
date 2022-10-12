@@ -19,4 +19,5 @@ namespace server
 		Connection Accept();
 	};
 } // namespace server
+
 #endif
