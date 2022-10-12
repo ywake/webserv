@@ -1,15 +1,15 @@
 #ifndef LISTENER_HPP
 #define LISTENER_HPP
 
-#include "server_conf.hpp"
+#include "virtual_server_confs.hpp"
 // TODO fdclass
 namespace server
 {
 	class Listener
 	{
 	  private:
-		int               fd_;
-		conf::ServerConf &configs_;
+		int                       fd_;
+		conf::VirtualServerConfs &configs_;
 
 	  public:
 		Listener(int fd);

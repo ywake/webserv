@@ -6,8 +6,8 @@
 #include "poll_instruction.hpp"
 #include "receiver.hpp"
 #include "sender.hpp"
-#include "server_conf.hpp"
 #include "server_types.hpp"
+#include "virtual_server_confs.hpp"
 
 // TODO fd
 namespace server
@@ -25,15 +25,15 @@ namespace server
 		typedef struct sockaddr_in SockAddrIn;
 
 	  private:
-		int                     fd_;
-		const conf::ServerConf &configs_;
-		const SockAddrIn        client_;
-		State                   state_;
-		Receiver                receiver_;
-		Sender                  sender_;
+		int                             fd_;
+		const conf::VirtualServerConfs &configs_;
+		const SockAddrIn                client_;
+		State                           state_;
+		Receiver                        receiver_;
+		Sender                          sender_;
 
 	  public:
-		Connection(int fd, const conf::ServerConf &conf, const SockAddrIn &client);
+		Connection(int fd, const conf::VirtualServerConfs &conf, const SockAddrIn &client);
 		PollInstructions Proceed();
 		bool             IsFinished();
 

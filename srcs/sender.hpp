@@ -2,15 +2,15 @@
 #define SENDER_HPP
 
 #include "poll_instruction.hpp"
-#include "server_conf.hpp"
+#include "virtual_server_conf.hpp"
 
 namespace server
 {
 	class Sender
 	{
 	  private:
-		int              fd_;
-		conf::ServerConf config;
+		int                     fd_;
+		conf::VirtualServerConf config;
 
 	  public:
 		io_multiplexer::PollInstruction Proceed();

@@ -3,7 +3,7 @@
 
 namespace server
 {
-	Connection::Connection(int fd, const conf::ServerConf &conf, const SockAddrIn &client)
+	Connection::Connection(int fd, const conf::VirtualServerConfs &conf, const SockAddrIn &client)
 		: fd_(fd), configs_(conf), state_(kReceiving), client_(client)
 	{}
 
@@ -26,9 +26,9 @@ namespace server
 
 		receiver_.Proceed();
 		if (receiver_.IsSuspending() || receiver_.IsFinished()) {
-			const RequestMessage   &msg    = receiver_.GetRequestMessage();
-			const conf::ServerConf &config = configs_[msg.GetHost()];
-			sender_                        = Sender(fd_, config, client_, msg);
+			const RequestMessage          &msg    = receiver_.GetRequestMessage();
+			const conf::VirtualServerConf &config = configs_[msg.GetHost()];
+			sender_                               = Sender(fd_, config, client_, msg);
 			poll_instructions -= receiver_;
 			poll_instructions += sender_;
 			state_ = kSending;

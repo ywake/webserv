@@ -1,9 +1,10 @@
 #ifndef VIRTUAL_SERVER_CONFS_HPP
 #define VIRTUAL_SERVER_CONFS_HPP
 
-#include "config_typedef.hpp"
-#include "server_conf.hpp"
 #include <map>
+
+#include "config_typedef.hpp"
+#include "virtual_server_conf.hpp"
 
 namespace conf
 {

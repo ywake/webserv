@@ -6,7 +6,7 @@ namespace server
 {
 	Server::Server() {}
 
-	Server::Server(const conf::VirtualServers &configs) : configs_(configs)
+	Server::Server(const conf::ServerConfs &configs) : configs_(configs)
 	{
 		// TODO listenerの登録
 		// TODO listener:configのmapにパース

@@ -1,5 +1,5 @@
-#ifndef SERVER_CONF_HPP
-#define SERVER_CONF_HPP
+#ifndef VIRTUAL_SERVER_CONF_HPP
+#define VIRTUAL_SERVER_CONF_HPP
 
 #include <map>
 #include <string>
