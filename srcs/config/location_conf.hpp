@@ -3,12 +3,8 @@
 
 #include <list>
 
-#include "conf_types.hpp"
-#include "status_code.hpp"
-
 namespace conf
 {
-
 	class LocationConf
 	{
 	  private:
@@ -23,5 +19,11 @@ namespace conf
 		LocationConf(/* args */);
 		~LocationConf();
 	};
+
+	LocationConf::LocationConf(/* args */) {}
+
+	LocationConf::~LocationConf() {}
+
 } // namespace conf
+
 #endif

@@ -1,5 +1,5 @@
-#ifndef CONF_TYPES_HPP
-#define CONF_TYPES_HPP
+#ifndef CONFIG_TYPEDEF_HPP
+#define CONFIG_TYPEDEF_HPP
 
 #include <string>
 
