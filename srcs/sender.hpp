@@ -9,8 +9,8 @@ namespace server
 	class Sender
 	{
 	  private:
-		int                     fd_;
-		conf::VirtualServerConf config;
+		int                      fd_;
+		conf::VirtualServerConf &config_;
 
 	  public:
 		io_multiplexer::PollInstruction Proceed();
