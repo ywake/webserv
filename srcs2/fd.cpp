@@ -4,19 +4,19 @@
 
 std::map<int, std::size_t> Fd::fd_count_ = std::map<int, std::size_t>();
 
-Fd::Fd()
-	: fd_(kNofd) {}
+Fd::Fd() : fd_(kNofd) {}
 
-Fd::Fd(int fd)
-	: fd_(fd)
+Fd::Fd(int fd) : fd_(fd)
 {
+	if (fd < 0) {
+		return;
+	}
 	fd_count_[fd_]++;
 }
 
-Fd::Fd(const Fd &copy)
-	: fd_(copy.fd_)
+Fd::Fd(const Fd &copy) : fd_(copy.fd_)
 {
-	if (fd_ == kNofd) {
+	if (fd_ < 0) {
 		return;
 	}
 	fd_count_[fd_]++;
@@ -28,7 +28,7 @@ Fd &Fd::operator=(const Fd &other)
 		return *this;
 	}
 	fd_ = other.fd_;
-	if (fd_ != kNofd) {
+	if (fd_ >= 0) {
 		fd_count_[fd_]++;
 	}
 	return *this;
@@ -36,8 +36,11 @@ Fd &Fd::operator=(const Fd &other)
 
 Fd::~Fd()
 {
+	if (fd_ < 0) {
+		return;
+	}
 	fd_count_[fd_]--;
-	if (fd_count_[fd_] == 0 && fd_ != kNofd) {
+	if (fd_count_[fd_] == 0) {
 		close(fd_);
 	}
 }

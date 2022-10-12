@@ -1,16 +1,17 @@
 #ifndef FD_HPP
 #define FD_HPP
+
+#include <climits>
 #include <map>
-#include <utility>
 
 class Fd
 {
   public:
-	static const int kNofd = -2;
+	static const int kNofd = INT_MIN;
 
   protected:
 	static std::map<int, std::size_t> fd_count_;
-	int fd_;
+	int                               fd_;
 
   public:
 	Fd();
