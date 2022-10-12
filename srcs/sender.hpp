@@ -9,7 +9,15 @@ namespace server
 	class Sender
 	{
 	  private:
+		enum State {
+			kReading,
+			kSending,
+			kFinished,
+		};
+
+	  private:
 		int                      fd_;
+		State                    state_;
 		conf::VirtualServerConf &config_;
 
 	  public:
