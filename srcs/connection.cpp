@@ -60,8 +60,7 @@ namespace server
 			} else if (receiver_.IsFinished()) {
 				state_ = kFinished;
 			}
-			delete sender_;
-			sender_ = NULL;
+			utils::DeleteSafe<Sender>(sender_);
 		}
 		return poll_instructions;
 	}
