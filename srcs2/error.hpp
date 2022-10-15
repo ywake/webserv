@@ -6,14 +6,15 @@
 class Error
 {
   private:
-	bool is_err_;
+	bool        is_err_;
 	std::string err_msg_;
 
   public:
 	Error();
 	Error(int errn);
 	Error(const char *msg);
-	bool IsErr();
+	Error(const std::string &msg);
+	bool        IsErr();
 	std::string Err();
 };
 
