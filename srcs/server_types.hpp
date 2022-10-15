@@ -13,10 +13,8 @@
 // TODO こいつincludeすると色んなとこ依存してよくないかも
 namespace server
 {
-	typedef struct sockaddr_in                         SockAddrIn;
-	typedef std::vector<Listener>                      Listeners;
-	typedef std::set<Connection>                       Connections;
-	typedef std::list<io_multiplexer::PollInstruction> PollInstructions;
+	typedef std::vector<Listener> Listeners;
+	typedef std::set<Connection>  Connections;
 } // namespace server
 
 #endif
