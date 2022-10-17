@@ -132,7 +132,7 @@ namespace io_multiplexer
 			if (errno == ENOENT) {
 				return Result<void>();
 			}
-			return Error(std::string("epoll append1: ") + strerror(errno));
+			return Error(std::string("epoll unregister: ") + strerror(errno));
 		}
 		registered_events_.erase(fd);
 		return Result<void>();
