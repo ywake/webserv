@@ -11,15 +11,17 @@ namespace io_multiplexer
 
 	struct PollInstruction {
 	  public:
-		enum Instruction {
+		enum Command {
+			kAppendEventType,
+			kTrimEventType,
 			kRegister,
-			kUnregister,
+			kUnregister
 		};
 
 	  public:
-		int         fd;
-		uint32_t    event;
-		Instruction instruction;
+		int                fd;
+		struct epoll_event event;
+		Command            command;
 	};
 } // namespace io_multiplexer
 
