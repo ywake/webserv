@@ -80,7 +80,7 @@ namespace io_multiplexer
 			return res;
 		}
 		event.events |= instruction.event.events;
-		event.data = instruction.event.data;
+		event.data = instruction.event.data; //これどうするか微妙
 		res        = Register(instruction.fd, event);
 		if (res.IsErr()) {
 			return res;
@@ -102,6 +102,7 @@ namespace io_multiplexer
 		if (res.IsErr()) {
 			return res;
 		}
+		event.data = instruction.event.data; //これどうするか微妙
 		event.events &= ~instruction.event.events;
 		if (!event.events) {
 			return Result<void>();
