@@ -102,12 +102,12 @@ namespace io_multiplexer
 		if (res.IsErr()) {
 			return res;
 		}
-		event.data = instruction.event.data; //これどうするか微妙
 		event.events &= ~instruction.event.events;
 		if (!event.events) {
 			return Result<void>();
 		}
-		res = Register(instruction.fd, event);
+		event.data = instruction.event.data; //これどうするか微妙
+		res        = Register(instruction.fd, event);
 		if (res.IsErr()) {
 			return res;
 		}
