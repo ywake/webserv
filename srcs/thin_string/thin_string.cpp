@@ -325,3 +325,13 @@ std::ostream &operator<<(std::ostream &os, const ThinString &thin_str)
 	os << thin_str.ToString();
 	return (os);
 }
+
+bool ThinString::operator<(const ThinString &rhs) const
+{
+	return this->ToString() < rhs.ToString();
+}
+
+bool ThinString::operator>(const ThinString &rhs) const
+{
+	return this->ToString() > rhs.ToString();
+}

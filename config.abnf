@@ -1,9 +1,9 @@
-config  = 1*(server-section)
+config  = 1*(server-section LF)
 
 
-server-section      = "server" SP "{" server-contents "}"
+server-section      = "server" SP "{" LF server-contents "}"
 
-server-contents     = *(server-entry LF)
+server-contents     = *(OWS server-entry LF)
 
 server-entry        = listen-section
                     / server-name-section
