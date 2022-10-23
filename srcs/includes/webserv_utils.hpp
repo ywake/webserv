@@ -12,8 +12,9 @@ Result<long>            StrToLongDenyPadZero(const std::string &str);
 // TODO 全部 util
 namespace utils
 {
-	std::string  ToLowerString(std::string s);
-	Result<long> StrToLong(const std::string &str);
+	std::string         ToLowerString(std::string s);
+	Result<long>        StrToLong(const std::string &str);
+	Result<std::string> ReadFile(const std::string &file_path);
 
 } // namespace utils
 
