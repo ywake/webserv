@@ -27,12 +27,8 @@ namespace conf
 		 * @param host
 		 * @return const VirtualServerConf&
 		 */
-		const VirtualServerConf &operator[](const Host &host);
+		VirtualServerConf &operator[](const Host &host);
 	};
-
-	VirtualServerConfs::VirtualServerConfs(/* args */) {}
-
-	VirtualServerConfs::~VirtualServerConfs() {}
 } // namespace conf
 
 #endif
