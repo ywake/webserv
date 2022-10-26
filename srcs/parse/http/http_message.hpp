@@ -25,6 +25,12 @@ class HttpMessage
 	{
 		return field_lines_ == rhs.field_lines_ && message_body_ == rhs.message_body_;
 	}
+
+	bool HasMessageBody() const
+	{
+		return field_lines_.Contains("content-length") ||
+			   field_lines_.Contains("transfer-encoding");
+	}
 };
 
 #endif
