@@ -21,6 +21,7 @@ namespace http
 		~HttpMessage();
 		void         SetHeaderSection(const HeaderSection &field_lines);
 		void         SetBody(const std::string &body);
+		bool         HasMessageBody() const;
 		HttpMessage &operator=(const HttpMessage &rhs);
 		bool         operator==(const HttpMessage &rhs) const;
 	};
