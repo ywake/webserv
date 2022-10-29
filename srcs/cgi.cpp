@@ -23,29 +23,45 @@ httpメッセージボディがあれば、content-lengthメタ変数を設定�
 
 Cgi::Cgi(const http::RequestMessage &message) : message_(message)
 {
-	//メタ変数の設定
-	SetMetaVariables();
-	// cgiスクリプトの起動
-	StartCgiProcess();
+	if (pipe(pipe_to_cgi) < 0) {
+		throw std::runtime_error("pipe: " + std::string(strerror(errno)));
+	}
 }
 
-//要求データの設定 httpメッセージボディを書き出す
+/*
+MUSTなメタ変数
+https://wiki.suikawiki.org/n/CGI%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0#section-%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0%E3%81%AE%E4%B8%80%E8%A6%A7
+*/
+void Cgi::SetMetaVariables()
+{
+	if (message_.HasMessageBody()) {
+		SetContentLength();
+	}
+	// MUSTなメタ変数を設定していく
+}
+
+//メタ変数の構築の仕方はそれぞれ異なるかもしれないので、Set関数を作って最後にまとめてputenvする
+void Cgi::SetContentLength()
+{
+	meta_variables_.push_back(message_.field_lines_.GetKeyValueString("content-length"));
+}
+
+ssize_t Cgi::WriteRequestData(size_t nbyte) const
+{
+	return write(pipe_to_cgi[WRITE], message_.message_body_.c_str(), nbyte);
+}
+
 //環境変数としてPut
 //スクリプト命令行の設定
 int Cgi::StartCgiProcess()
 {
-	static const int READ  = 0;
-	static const int WRITE = 1;
-	int              pipe_to_cgi[2];
-	int              pipe_from_cgi[2];
+	int pipe_from_cgi[2];
 
-	if (pipe(pipe_to_cgi) < 0 || pipe(pipe_from_cgi) < 0) {
-		throw std::runtime_error("pipe: " + std::string(strerror(errno)));
+	if (pipe(pipe_from_cgi) < 0) {
+		std::runtime_error("pipe: " + std::string(strerror(errno)));
 	}
 
-	pid_t pid;
-
-	pid = fork();
+	pid_t pid = fork();
 
 	if (pid == -1) {
 		throw std::runtime_error("fork: " + std::string(strerror(errno)));
@@ -73,39 +89,5 @@ int Cgi::StartCgiProcess()
 	} else {
 		close(pipe_to_cgi[READ]);
 		close(pipe_from_cgi[WRITE]);
-		// std::cout << message_.message_body_ << std::endl;
 	}
-}
-
-/*
-MUSTなメタ変数
-https://wiki.suikawiki.org/n/CGI%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0#section-%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0%E3%81%AE%E4%B8%80%E8%A6%A7
-*/
-void Cgi::SetMetaVariables()
-{
-	if (message_.HasMessageBody()) {
-		SetContentLength();
-	}
-	// MUSTなメタ変数を設定していく
-}
-
-//メタ変数の構築の仕方はそれぞれ異なるかもしれないので、Set関数を作って最後にまとめてputenvする
-void Cgi::SetContentLength()
-{
-	meta_variables_.push_back(RebuildHeader("content-length"));
-}
-
-// HeaderSectionに持たせるメンバ関数かもしれない。keyとvalueを結合して"key=value"の文字列にする。ToStringという名前にしよう。
-std::string Cgi::RebuildHeader(const std::string &name) const
-{
-	std::string meta_variable_value = "";
-	std::string meta_variable_name  = utils::ToLowerString(name);
-
-	HeaderSection::Values values = message_.field_lines_.at(meta_variable_name);
-	for (HeaderSection::Values::iterator it = values.begin(); it != values.end(); it++) {
-		meta_variable_value += it->GetValue();
-	}
-
-	std::string meta_variable = meta_variable_name + "=" + meta_variable_value;
-	return meta_variable;
 }

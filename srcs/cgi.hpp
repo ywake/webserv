@@ -9,6 +9,11 @@ class Cgi
   private:
 	http::RequestMessage     message_;
 	std::vector<std::string> meta_variables_;
+	int                      pipe_to_cgi[2];
+	enum PIPE_TYPE {
+		READ,
+		WRITE
+	};
 
   public:
 	// httpメッセージからcgiリクエストを作成し、cgiプロセスを起動する
@@ -17,10 +22,10 @@ class Cgi
 	http::ResponseMessage Read() const;
 
   private:
-	void        SetMetaVariables();
-	std::string RebuildHeader(const std::string &name) const;
-	void        SetContentLength();
-	int         StartCgiProcess();
+	void SetMetaVariables();
+	void SetContentLength();
+	ssize_t WriteRequestData(size_t nbyte) const;
+	int  StartCgiProcess();
 };
 
 #endif // CGI_HPP
