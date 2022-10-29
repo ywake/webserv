@@ -43,24 +43,20 @@ void Cgi::SetScriptCmdLine()
 	ThinString      query = data.query_;
 
 	std::vector<ThinString> array = Split(query, "+");
-	std::copy(array.begin(), array.end(), script_cmdlines);
+	std::copy(array.begin(), array.end(), script_cmdlines_);
 }
-
-//[TODO]queryの解析と、search-wordでのパース
-// argv[search_word.size()]
-// for () {
-//	argv[N] = search_word[i];
-// }
 
 int Cgi::Run()
 {
 	RequestFormData data = message_.request_line_.request_target_.GetRequestFormData();
 	const char     *file = data.path_.ToString().c_str();
-	char		   *argv[2];
+	char		   *argv[script_cmdlines_.size() + 1];
 	char		   *envp[meta_variables_.size() + 1];
 
-	argv[0] = const_cast<char *>(data.query_.ToString().c_str());
-	argv[1] = NULL;
+	for (std::size_t i = 0; i < script_cmdlines_.size(); i++) {
+		argv[i] = const_cast<char *>(script_cmdlines_[i].c_str());
+	}
+	argv[script_cmdlines_.size()] = NULL;
 
 	for (std::size_t i = 0; i < meta_variables_.size(); i++) {
 		envp[i] = const_cast<char *>(meta_variables_[i].c_str());
