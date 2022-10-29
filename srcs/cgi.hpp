@@ -7,25 +7,29 @@
 class Cgi
 {
   private:
-	http::RequestMessage     message_;
-	std::vector<std::string> meta_variables_;
-	int                      pipe_to_cgi[2];
 	enum PIPE_TYPE {
 		READ,
-		WRITE
+		WRITE,
+		TYPE_SIZE
 	};
+	http::RequestMessage     message_;
+	std::vector<std::string> meta_variables_;
+	int                      pipe_to_cgi[TYPE_SIZE];
 
   public:
-	// httpメッセージからcgiリクエストを作成し、cgiプロセスを起動する
 	Cgi(const http::RequestMessage &message);
 	// cgiレスポンスをhttpレスポンスに変換する
 	http::ResponseMessage Read() const;
+	void                  SetMetaVariables();
+	ssize_t               WriteRequestData(size_t nbyte) const;
+	int                   StartCgiProcess();
 
   private:
-	void SetMetaVariables();
 	void SetContentLength();
-	ssize_t WriteRequestData(size_t nbyte) const;
-	int  StartCgiProcess();
+	void ExpSafetyPipe(int *fds) const;
+	void ExpSafetyClose(int fd) const;
+	void ExpSafetyDup2(int oldfd, int newfd) const;
+	void ExecuteCgiScript() const;
 };
 
 #endif // CGI_HPP
