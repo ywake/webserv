@@ -8,7 +8,7 @@
 
 Cgi::Cgi(const http::RequestMessage &message) : message_(message)
 {
-	ExpSafetyPipe(pipe_to_cgi);
+	ExpSafetyPipe(pipe_to_cgi_);
 }
 
 // MUSTなメタ変数
@@ -29,7 +29,7 @@ void Cgi::SetContentLength()
 
 ssize_t Cgi::WriteRequestData(size_t nbyte) const
 {
-	return write(pipe_to_cgi[WRITE], message_.message_body_.c_str(), nbyte);
+	return write(pipe_to_cgi_[WRITE], message_.message_body_.c_str(), nbyte);
 }
 
 // search-string = search-word *( "+" search-word )
@@ -76,17 +76,17 @@ int Cgi::StartCgiProcess(const char *file, char **argv, char **envp)
 	case -1:
 		throw std::runtime_error("fork: " + std::string(strerror(errno)));
 	case 0:
-		ExpSafetyDup2(pipe_to_cgi[READ], STDIN_FILENO);
+		ExpSafetyDup2(pipe_to_cgi_[READ], STDIN_FILENO);
 		ExpSafetyDup2(pipe_from_cgi[WRITE], STDOUT_FILENO);
-		ExpSafetyClose(pipe_to_cgi[READ]);
+		ExpSafetyClose(pipe_to_cgi_[READ]);
 		ExpSafetyClose(pipe_from_cgi[WRITE]);
-		ExpSafetyClose(pipe_to_cgi[WRITE]);
+		ExpSafetyClose(pipe_to_cgi_[WRITE]);
 		ExpSafetyClose(pipe_from_cgi[READ]);
 
 		execve(file, argv, envp);
 		throw std::runtime_error("execve: " + std::string(strerror(errno)));
 	default:
-		ExpSafetyClose(pipe_to_cgi[READ]);
+		ExpSafetyClose(pipe_to_cgi_[READ]);
 		ExpSafetyClose(pipe_from_cgi[WRITE]);
 	}
 	return pid;

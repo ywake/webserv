@@ -15,7 +15,7 @@ class Cgi
 	http::RequestMessage     message_;
 	std::vector<std::string> meta_variables_;
 	std::vector<std::string> script_cmdlines_;
-	int                      pipe_to_cgi[TYPE_SIZE];
+	int                      pipe_to_cgi_[TYPE_SIZE];
 
   public:
 	Cgi(const http::RequestMessage &message);
