@@ -1,25 +1,26 @@
 #ifndef CGI_HPP
 #define CGI_HPP
 
-#include "http_message.hpp"
+#include "request_message.hpp"
+#include "response_message.hpp"
 
 class Cgi
 {
   private:
-	HttpMessage            message_;
-	std::list<std::string> meta_variables_;
+	http::RequestMessage     message_;
+	std::vector<std::string> meta_variables_;
 
   public:
 	// httpメッセージからcgiリクエストを作成し、cgiプロセスを起動する
-	Cgi(const HttpMessage &message);
+	Cgi(const http::RequestMessage &message);
 	// cgiレスポンスをhttpレスポンスに変換する
-	HttpMessage Read() const;
+	http::ResponseMessage Read() const;
 
   private:
 	void        SetMetaVariables();
-	void        PutMetaVariables() const;
 	std::string RebuildHeader(const std::string &name) const;
 	void        SetContentLength();
+	int         StartCgiProcess();
 };
 
 #endif // CGI_HPP

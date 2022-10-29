@@ -18,16 +18,63 @@ httpメッセージボディがあれば、content-lengthメタ変数を設定�
 
 #include <cerrno>
 #include <cstring>
+#include <sys/types.h>
+#include <unistd.h>
 
-Cgi::Cgi(const HttpMessage &message) : message_(message)
+Cgi::Cgi(const http::RequestMessage &message) : message_(message)
 {
 	//メタ変数の設定
 	SetMetaVariables();
 	// cgiスクリプトの起動
-	//要求データの設定 httpメッセージボディを標準出力に書き出す
-	// cgiプロセスの中でputする
-	PutMetaVariables();
-	//スクリプト命令行の設定
+	StartCgiProcess();
+}
+
+//要求データの設定 httpメッセージボディを書き出す
+//環境変数としてPut
+//スクリプト命令行の設定
+int Cgi::StartCgiProcess()
+{
+	static const int READ  = 0;
+	static const int WRITE = 1;
+	int              pipe_to_cgi[2];
+	int              pipe_from_cgi[2];
+
+	if (pipe(pipe_to_cgi) < 0 || pipe(pipe_from_cgi) < 0) {
+		throw std::runtime_error("pipe: " + std::string(strerror(errno)));
+	}
+
+	pid_t pid;
+
+	pid = fork();
+
+	if (pid == -1) {
+		throw std::runtime_error("fork: " + std::string(strerror(errno)));
+	}
+	if (pid == 0) {
+		close(pipe_to_cgi[WRITE]);
+		close(pipe_from_cgi[READ]);
+		dup2(pipe_to_cgi[READ], STDIN_FILENO);
+		close(pipe_to_cgi[READ]);
+		dup2(pipe_from_cgi[WRITE], STDOUT_FILENO);
+		close(pipe_from_cgi[WRITE]);
+
+		// httpリクエストのqueryから、cgiの引数を作成
+
+		// stringのvectorをchar*のvectorに変換
+		std::vector<char *> envp;
+
+		for (std::vector<std::string>::iterator it = meta_variables_.begin();
+			 it != meta_variables_.end();
+			 ++it) {
+			envp.push_back(const_cast<char *>(it->c_str()));
+		}
+
+		// execve(path, query, envp);
+	} else {
+		close(pipe_to_cgi[READ]);
+		close(pipe_from_cgi[WRITE]);
+		// std::cout << message_.message_body_ << std::endl;
+	}
 }
 
 /*
@@ -48,19 +95,7 @@ void Cgi::SetContentLength()
 	meta_variables_.push_back(RebuildHeader("content-length"));
 }
 
-void Cgi::PutMetaVariables() const
-{
-	for (std::list<std::string>::const_iterator it = meta_variables_.begin();
-		 it != meta_variables_.end();
-		 ++it) {
-		char *env = const_cast<char *>(it->c_str());
-		if (putenv(env) != 0) {
-			throw std::runtime_error("putenv: " + std::string(strerror(errno)));
-		}
-	}
-}
-
-// HeaderSectionに持たせるメンバ関数かもしれない。keyとvalueを結合して"key=value"の文字列にする
+// HeaderSectionに持たせるメンバ関数かもしれない。keyとvalueを結合して"key=value"の文字列にする。ToStringという名前にしよう。
 std::string Cgi::RebuildHeader(const std::string &name) const
 {
 	std::string meta_variable_value = "";
