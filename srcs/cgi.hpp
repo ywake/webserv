@@ -14,6 +14,7 @@ class Cgi
 	};
 	http::RequestMessage     message_;
 	std::vector<std::string> meta_variables_;
+	std::vector<std::string> script_cmdlines;
 	int                      pipe_to_cgi[TYPE_SIZE];
 
   public:
@@ -22,6 +23,7 @@ class Cgi
 	int                   Cgi::Run();
 	http::ResponseMessage Read() const;
 	void                  SetMetaVariables();
+	void                  SetScriptCmdLine();
 	ssize_t               WriteRequestData(size_t nbyte) const;
 
   private:
