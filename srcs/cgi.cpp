@@ -6,6 +6,23 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+/*
+Cgi cgi(message);
+
+cgi.SetMetaVariables();
+while (true) {
+	ssize_t byte = cgi.WriteRequestData();
+	if (byte == -1){
+		throw ...;
+	}
+	if (byte == EOF) {
+		break;
+	}
+}
+cgi.SetScriptCmdLine();
+cgi.Run();
+*/
+
 Cgi::Cgi(const http::RequestMessage &message) : message_(message)
 {
 	ExpSafetyPipe(pipe_to_cgi);
@@ -32,7 +49,31 @@ ssize_t Cgi::WriteRequestData(size_t nbyte) const
 	return write(pipe_to_cgi[WRITE], message_.message_body_.c_str(), nbyte);
 }
 
-int Cgi::StartCgiProcess()
+//[TODO]queryの解析と、search-wordでのパース
+// argv[search_word.size()]
+// for () {
+//	argv[N] = search_word[i];
+// }
+
+int Cgi::Run()
+{
+	RequestFormData data = message_.request_line_.request_target_.GetRequestFormData();
+	const char     *file = data.path_.ToString().c_str();
+	char		   *argv[2];
+	char		   *envp[meta_variables_.size() + 1];
+
+	argv[0] = const_cast<char *>(data.query_.ToString().c_str());
+	argv[1] = NULL;
+
+	for (std::size_t i = 0; i < meta_variables_.size(); i++) {
+		envp[i] = const_cast<char *>(meta_variables_[i].c_str());
+	}
+	envp[meta_variables_.size()] = NULL;
+
+	return StartCgiProcess(file, argv, envp);
+}
+
+int Cgi::StartCgiProcess(const char *file, char **argv, char **envp)
 {
 	int pipe_from_cgi[2];
 	ExpSafetyPipe(pipe_from_cgi);
@@ -49,38 +90,13 @@ int Cgi::StartCgiProcess()
 		ExpSafetyClose(pipe_to_cgi[WRITE]);
 		ExpSafetyClose(pipe_from_cgi[READ]);
 
-		ExecuteCgiScript();
+		execve(file, argv, envp);
+		throw std::runtime_error("execve: " + std::string(strerror(errno)));
 	default:
 		ExpSafetyClose(pipe_to_cgi[READ]);
 		ExpSafetyClose(pipe_from_cgi[WRITE]);
 	}
 	return pid;
-}
-
-void Cgi::ExecuteCgiScript() const
-{
-	RequestFormData data = message_.request_line_.request_target_.GetRequestFormData();
-	const char     *file = data.path_.ToString().c_str();
-	char		   *argv[2];
-	char		   *envp[meta_variables_.size() + 1];
-
-	//[TODO]queryの解析と、search-wordでのパース
-	// argv[search_word.size()]
-	// for () {
-	//	argv[N] = search_word[i];
-	// }
-
-	argv[0] = const_cast<char *>(data.query_.ToString().c_str());
-	argv[1] = NULL;
-
-	for (std::size_t i = 0; i < meta_variables_.size(); i++) {
-		envp[i] = const_cast<char *>(meta_variables_[i].c_str());
-	}
-	envp[meta_variables_.size()] = NULL;
-
-	execve(file, argv, envp);
-
-	throw std::runtime_error("execve: " + std::string(strerror(errno)));
 }
 
 void Cgi::ExpSafetyPipe(int *fds) const

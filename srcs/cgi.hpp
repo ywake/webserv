@@ -19,17 +19,17 @@ class Cgi
   public:
 	Cgi(const http::RequestMessage &message);
 	// cgiレスポンスをhttpレスポンスに変換する
+	int                   Cgi::Run();
 	http::ResponseMessage Read() const;
 	void                  SetMetaVariables();
 	ssize_t               WriteRequestData(size_t nbyte) const;
-	int                   StartCgiProcess();
 
   private:
+	int  StartCgiProcess(const char *file, char **argv, char **envp);
 	void SetContentLength();
 	void ExpSafetyPipe(int *fds) const;
 	void ExpSafetyClose(int fd) const;
 	void ExpSafetyDup2(int oldfd, int newfd) const;
-	void ExecuteCgiScript() const;
 };
 
 #endif // CGI_HPP
