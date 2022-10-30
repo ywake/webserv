@@ -11,8 +11,8 @@ namespace conf
 	{
 	  private:
 		/* data */
-		Host                                 default_host_;
-		std::map<Host, VirtualServerConf **> server_confs_;
+		Host                                default_host_;
+		std::map<Host, VirtualServerConf *> server_confs_;
 
 	  public:
 		VirtualServerConfs(/* args */);
@@ -27,7 +27,7 @@ namespace conf
 		 * @param host
 		 * @return const VirtualServerConf*
 		 */
-		VirtualServerConf **operator[](const Host &host);
+		VirtualServerConf *&operator[](const Host &host);
 	};
 } // namespace conf
 

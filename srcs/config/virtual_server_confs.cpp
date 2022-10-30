@@ -6,7 +6,7 @@ namespace conf
 
 	VirtualServerConfs::~VirtualServerConfs() {}
 
-	VirtualServerConf **VirtualServerConfs::operator[](const Host &host)
+	VirtualServerConf *&VirtualServerConfs::operator[](const Host &host)
 	{
 		if (server_confs_.find(host) == server_confs_.end()) {
 			return server_confs_[default_host_];

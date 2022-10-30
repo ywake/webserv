@@ -137,7 +137,7 @@ namespace conf
 					if (port_has_no_conf) {
 						conf_maps_[*port_it];
 					}
-					*conf_maps_[*port_it][*host_it] = &(*it);
+					conf_maps_[*port_it][*host_it] = &(*it);
 				}
 			}
 		}
