@@ -16,7 +16,8 @@ namespace conf
 		static std::map<Port, VirtualServerConfs> empty_map_;
 
 	  private:
-		std::map<Port, VirtualServerConfs> virtual_servers_;
+		std::vector<VirtualServerConf>     confs_;
+		std::map<Port, VirtualServerConfs> conf_maps_;
 
 	  public:
 		ServerConfs(std::string &config_file_path);
@@ -32,7 +33,7 @@ namespace conf
 		VirtualServerConfs &operator[](const Port &port);
 
 	  private:
-		const VirtualServerConf &GetDefaultServer(const Port &port);
+		void PortHostMapping();
 	};
 
 	// std::list<ThinString> GetConfigList(const std::string &file_content);

@@ -26,81 +26,9 @@ namespace conf
 		}
 		std::string config_file_content = res.Val();
 
-		std::vector<VirtualServerConf> v_servers = ParseConfigFile(config_file_content);
-		for (std::vector<VirtualServerConf>::iterator it = v_servers.begin(); it != v_servers.end();
-			 ++it) {
-			Port port             = it->GetListenPort();
-			Host host             = it->GetServerName();
-			bool port_has_no_conf = virtual_servers_.find(port) == virtual_servers_.end();
-			if (port_has_no_conf) {
-				virtual_servers_[port];
-			}
-			virtual_servers_[port][host] = *it;
-		}
+		confs_ = ParseConfigFile(config_file_content);
+		PortHostMapping();
 	}
-
-	// std::list<std::list<ThinString>> GetConfigStack(std::string &config_file_content)
-	// {
-	// 	typedef std::list<ThinString> Block;
-
-	// 	ThinString       content(config_file_content);
-	// 	std::list<Block> config;
-
-	// 	std::stack<Block> stack;
-	// 	stack.push(Block());
-	// 	for (size_t i = 0; i < content.size(); ++i) {
-	// 	}
-	// 	return config;
-	// }
-
-	// std::size_t GetEndBracketPos(const ThinString &str, std::size_t start_pos)
-	// {
-	// 	std::size_t pos           = start_pos;
-	// 	int         bracket_count = 0;
-	// 	bool        is_end        = false;
-	// 	while (pos < str.size()) {
-	// 		if (str.at(pos) == '{') {
-	// 			bracket_count++;
-	// 		}
-	// 		if (str.at(pos) == '}') {
-	// 			bracket_count--;
-	// 			if (bracket_count == 0) {
-	// 				is_end = true;
-	// 			}
-	// 		}
-	// 		if (is_end) {
-	// 			if (str.at(pos) == '\n') {
-	// 				return pos;
-	// 			} else {
-	// 				return std::string::npos;
-	// 			}
-	// 		}
-	// 		pos++;
-	// 	}
-	// 	return std::string::npos;
-	// }
-
-	// std::list<ThinString> GetConfigList(const std::string &file_content)
-	// {
-	// 	std::list<ThinString> v_servers;
-	// 	ThinString            content(file_content);
-
-	// 	std::size_t start_pos = 0, end_pos = 0;
-	// 	while (start_pos < content.size()) {
-	// 		start_pos = content.find("server {");
-	// 		if (start_pos != 0) {
-	// 			throw ConfigException("Invalid server block");
-	// 		}
-	// 		end_pos = GetEndBracketPos(content, start_pos);
-	// 		if (end_pos == std::string::npos) {
-	// 			throw ConfigException("No end bracket");
-	// 		}
-	// 		v_servers.push_back(content.substr(start_pos, end_pos - start_pos + 1));
-
-	// 		content = content.substr(end_pos + 1);
-	// 	}
-	// 	return v_servers;
-	// }
 
 	ServerConfs::~ServerConfs() {}
 
@@ -113,10 +41,10 @@ namespace conf
 	 */
 	VirtualServerConfs &ServerConfs::operator[](const Port &port)
 	{
-		if (virtual_servers_.find(port) == virtual_servers_.end()) {
+		if (conf_maps_.find(port) == conf_maps_.end()) {
 			return empty_map_[port];
 		}
-		return virtual_servers_[port];
+		return conf_maps_[port];
 	}
 
 	ThinString TrimWSLF(const ThinString &str)
@@ -189,6 +117,30 @@ namespace conf
 		}
 
 		return v_servers;
+	}
+
+	void ServerConfs::PortHostMapping()
+	{
+		typedef std::vector<VirtualServerConf>::iterator ConfsItr;
+		typedef std::vector<std::string>::iterator       StrItr;
+
+		for (ConfsItr it = confs_.begin(); it != confs_.end(); ++it) {
+
+			std::vector<Port> ports = it->GetListenPort();
+
+			for (StrItr port_it = ports.begin(); port_it != ports.end(); ++port_it) {
+
+				std::vector<Host> hosts = it->GetServerName();
+				for (StrItr host_it = hosts.begin(); host_it != hosts.end(); ++host_it) {
+
+					bool port_has_no_conf = conf_maps_.find(*port_it) == conf_maps_.end();
+					if (port_has_no_conf) {
+						conf_maps_[*port_it];
+					}
+					*conf_maps_[*port_it][*host_it] = &(*it);
+				}
+			}
+		}
 	}
 
 } // namespace conf
