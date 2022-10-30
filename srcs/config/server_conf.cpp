@@ -27,36 +27,18 @@ namespace conf
 		for (std::vector<ThinString>::const_iterator it = params.begin(); it != params.end();
 			 ++it) {
 
-			std::vector<ThinString> split = Split(*it, " ");
-			if (split.size() < 2) {
+			std::vector<ThinString> tokens = Split(*it, " ");
+			if (tokens.size() < 2) {
 				throw ConfigException("Invalid config");
 			}
-			if (split[0] == "listen") {
-				for (size_t i = 1; i < split.size(); i++) {
-					if (ABNF::IsDigitOnly(split[i])) {
-						listen_port_.push_back(split[i].ToString());
-					} else {
-						throw ConfigException("Invalid config");
-					}
-				}
-			} else if (split[0] == "server_name") {
-				for (size_t i = 1; i < split.size(); i++) {
-					server_name_.push_back(split[i].ToString());
-				}
-			} else if (split[0] == "error_page") {
-				if (split.size() != 3) {
-					throw ConfigException("Invalid error_page");
-				}
-				if (ABNF::IsDigitOnly(split[1])) {
-					error_pages_[split[1].ToString()] = split[2].ToString();
-				} else {
-					throw ConfigException("Invalid error_page");
-				}
-			} else if (split[0] == "client_max_body_size") {
-				if (split.size() != 2) {
-					throw ConfigException("Invalid client_max_body_size");
-				}
-				client_max_body_size_ = std::stoul(split[1].ToString());
+			if (tokens[0] == "listen") {
+				AddListenPort(tokens);
+			} else if (tokens[0] == "server_name") {
+				AddServerName(tokens);
+			} else if (tokens[0] == "error_page") {
+				AddErrorPage(tokens);
+			} else if (tokens[0] == "client_max_body_size") {
+				AddClientMaxBodySize(tokens);
 			} else {
 				throw ConfigException("Invalid config");
 			}
@@ -66,6 +48,91 @@ namespace conf
 		}
 	}
 
+	/**
+	 * Add Params
+	 */
+
+	void VirtualServerConf::AddListenPort(const std::vector<ThinString> &tokens)
+	{
+		for (size_t i = 1; i < tokens.size(); i++) {
+			if (ABNF::IsDigitOnly(tokens[i])) {
+				listen_port_.push_back(tokens[i].ToString());
+			} else {
+				throw ConfigException("Invalid config");
+			}
+		}
+	}
+
+	void VirtualServerConf::AddServerName(const std::vector<ThinString> &tokens)
+	{
+		for (size_t i = 1; i < tokens.size(); i++) {
+			server_name_.push_back(tokens[i].ToString());
+		}
+	}
+
+	void VirtualServerConf::AddErrorPage(const std::vector<ThinString> &tokens)
+	{
+		if (tokens.size() != 3) {
+			throw ConfigException("Invalid error_page");
+		}
+		if (ABNF::IsDigitOnly(tokens[1])) {
+			error_pages_[tokens[1].ToString()] = tokens[2].ToString();
+		} else {
+			throw ConfigException("Invalid error_page");
+		}
+	}
+
+	Result<std::size_t> GetUnit(char unit)
+	{
+		switch (unit) {
+		case 'k':
+		case 'K':
+			return 1024UL;
+		case 'm':
+		case 'M':
+			return 1024UL * 1024UL;
+		case 'g':
+		case 'G':
+			return 1024UL * 1024UL * 1024UL;
+		default:
+			return Error("Invalid unit");
+		}
+	}
+
+	void VirtualServerConf::AddClientMaxBodySize(const std::vector<ThinString> &tokens)
+	{
+		if (tokens.size() != 2) {
+			throw ConfigException("Invalid client_max_body_size");
+		}
+		char last_char    = tokens[1].at(tokens[1].size() - 1);
+		bool last_is_unit = !std::isdigit(last_char);
+
+		std::size_t size = 0;
+
+		ThinString num_part;
+		if (last_is_unit) {
+			num_part = tokens[1].substr(0, tokens[1].size() - 1);
+		} else {
+			num_part = tokens[1];
+		}
+		if (ABNF::IsDigitOnly(num_part)) {
+			size = std::stoul(num_part.ToString());
+		} else {
+			throw ConfigException("Invalid client_max_body_size");
+		}
+
+		std::size_t unit_size = 1;
+		if (last_is_unit) {
+			Result<std::size_t> unit = GetUnit(last_char);
+			if (unit.IsErr()) {
+				throw ConfigException("Invalid client_max_body_size");
+			}
+			unit_size = unit.Val();
+		}
+
+		client_max_body_size_ = size * unit_size;
+	}
+
 	void VirtualServerConf::AddLocation(
 		const ThinString &location, const std::vector<ThinString> &params
 	)
@@ -73,6 +140,9 @@ namespace conf
 		location_conf_[location.ToString()] = LocationConf(params);
 	}
 
+	/**
+	 * Getters
+	 */
 	std::vector<Port> VirtualServerConf::GetListenPort() const
 	{
 		return listen_port_;
@@ -97,6 +167,10 @@ namespace conf
 	{
 		return location_conf_;
 	}
+
+	/**
+	 * Operators
+	 */
 
 	bool VirtualServerConf::operator==(const VirtualServerConf &rhs) const
 	{

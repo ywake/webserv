@@ -173,6 +173,56 @@ TEST(config, error_page)
 	);
 }
 
+TEST(config, client_max_body)
+{
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "client_max_body_size 10m;"
+							  "}"),
+		std::vector<conf::VirtualServerConf>({
+			conf::VirtualServerConf({"80"}, {"localhost"}, {}, 10 * 1024 * 1024),
+		})
+	);
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "client_max_body_size 10k;"
+							  "}"),
+		std::vector<conf::VirtualServerConf>({
+			conf::VirtualServerConf({"80"}, {"localhost"}, {}, 10 * 1024),
+		})
+	);
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "client_max_body_size 10;"
+							  "}"),
+		std::vector<conf::VirtualServerConf>({
+			conf::VirtualServerConf({"80"}, {"localhost"}, {}, 10),
+		})
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "client_max_body_size ;"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "client_max_body_size 10a;"
+							  "}"),
+		conf::ConfigException
+	);
+}
+
 TEST(config, duplicate)
 {
 	EXPECT_EQ(

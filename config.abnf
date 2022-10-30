@@ -23,7 +23,7 @@ error-page          = error-code SP path
 error-code          = 1*DIGIT
 
 client-max-body-size-section = "client_max_body_size" SP size
-size            = 1*DIGIT [ "k" / "m" / "g" ]
+size            = 1*DIGIT [ "k" / "K" / "m" / "M" / "g" / "G" ]
 
 
 location-section    = "location" SP path SP "{" location-contents "}"

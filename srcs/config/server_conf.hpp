@@ -32,6 +32,10 @@ namespace conf
 		~VirtualServerConf();
 
 		void SetParams(const std::vector<ThinString> &params);
+		void AddListenPort(const std::vector<ThinString> &tokens);
+		void AddServerName(const std::vector<ThinString> &tokens);
+		void AddErrorPage(const std::vector<ThinString> &tokens);
+		void AddClientMaxBodySize(const std::vector<ThinString> &tokens);
 		void AddLocation(const ThinString &location, const std::vector<ThinString> &params);
 
 		std::vector<Port>            GetListenPort() const;
