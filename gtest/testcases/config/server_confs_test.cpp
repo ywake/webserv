@@ -122,6 +122,57 @@ TEST(config, server_name)
 	);
 }
 
+TEST(config, error_page)
+{
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page 404 /404.html;"
+							  "}"),
+		std::vector<conf::VirtualServerConf>({
+			conf::VirtualServerConf({"80"}, {"localhost"}, {{"404", "/404.html"}}),
+		})
+	);
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page 404 /404.html;"
+							  "error_page 500 /500.html;"
+							  "}"),
+		std::vector<conf::VirtualServerConf>({
+			conf::VirtualServerConf(
+				{"80"}, {"localhost"}, {{"404", "/404.html"}, {"500", "/500.html"}}
+			),
+		})
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page 404;"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page 404 /404.html 404;"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page 40a /404.html;"
+							  "}"),
+		conf::ConfigException
+	);
+}
+
 TEST(config, duplicate)
 {
 	EXPECT_EQ(

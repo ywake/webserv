@@ -47,7 +47,11 @@ namespace conf
 				if (split.size() != 3) {
 					throw ConfigException("Invalid error_page");
 				}
-				error_pages_[split[1].ToString()] = split[2].ToString();
+				if (ABNF::IsDigitOnly(split[1])) {
+					error_pages_[split[1].ToString()] = split[2].ToString();
+				} else {
+					throw ConfigException("Invalid error_page");
+				}
 			} else if (split[0] == "client_max_body_size") {
 				if (split.size() != 2) {
 					throw ConfigException("Invalid client_max_body_size");
