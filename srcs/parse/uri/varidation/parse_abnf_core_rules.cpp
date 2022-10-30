@@ -3,6 +3,19 @@
 
 namespace ABNF
 {
+	bool IsDigitOnly(const ThinString &str)
+	{
+		if (str.empty()) {
+			return false;
+		}
+		for (ThinString::const_iterator it = str.begin(); it != str.end(); ++it) {
+			if (!std::isdigit(*it)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	// HEXDIG
 	bool IsHexDigit(const char c)
 	{

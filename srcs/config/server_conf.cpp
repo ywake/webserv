@@ -1,6 +1,7 @@
 #include "server_conf.hpp"
 
 #include "config_exceptions.hpp"
+#include "parse_abnf_core_rules.hpp"
 #include "webserv_utils.hpp"
 
 namespace conf
@@ -32,8 +33,11 @@ namespace conf
 			}
 			if (split[0] == "listen") {
 				for (size_t i = 1; i < split.size(); i++) {
-					// TODO: check only digit
-					listen_port_.push_back(split[i].ToString());
+					if (ABNF::IsDigitOnly(split[i])) {
+						listen_port_.push_back(split[i].ToString());
+					} else {
+						throw ConfigException("Invalid config");
+					}
 				}
 			} else if (split[0] == "server_name") {
 				for (size_t i = 1; i < split.size(); i++) {
