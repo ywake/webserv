@@ -3,7 +3,10 @@
 
 #include "result.hpp"
 #include "thin_string.hpp"
+#include <limits>
+#include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 std::vector<ThinString> Split(const ThinString &str, const std::string delim);
@@ -23,6 +26,15 @@ namespace utils
 	std::string  ToLowerString(std::string s);
 	Result<long> StrToLong(const std::string &str);
 
+	template <
+		typename T,
+		typename = typename std::enable_if<std::numeric_limits<T>::is_integer>::type>
+	std::string NumToStr(T number)
+	{
+		std::ostringstream stream;
+		stream << number;
+		return stream.str();
+	}
 } // namespace utils
 
 #endif
