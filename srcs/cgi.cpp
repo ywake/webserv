@@ -18,13 +18,26 @@ void Cgi::SetMetaVariables()
 	if (message_.HasMessageBody()) {
 		SetContentLength();
 	}
+	if (message_.field_lines_.Contains("content-type")) {
+		SetContentType();
+	}
+	SetGateWayInterFace();
 	// MUSTなメタ変数を設定していく
 }
 
-//メタ変数の構築の仕方はそれぞれ異なるかもしれないので、Set関数を作って最後にまとめてputenvする
 void Cgi::SetContentLength()
 {
 	meta_variables_.push_back(message_.field_lines_.GetKeyValueString("content-length"));
+}
+
+void Cgi::SetContentType()
+{
+	meta_variables_.push_back(message_.field_lines_.GetKeyValueString("content-type"));
+}
+
+void Cgi::SetGateWayInterFace()
+{
+	meta_variables_.push_back("CGI/1.1");
 }
 
 ssize_t Cgi::WriteRequestData(size_t nbyte) const
@@ -36,7 +49,7 @@ ssize_t Cgi::WriteRequestData(size_t nbyte) const
 // search-word   = 1*schar
 // schar         = unreserved | escaped | xreserved
 // xreserved     = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "," | "$"
-//解析はSHOULD項目。また、解析に適合しないときの動作がRFCに定義されていない。パーセント復号も必要か？
+// 解析はSHOULD項目。また、解析に適合しないときの動作がRFCに定義されていない。パーセント復号も必要か？
 void Cgi::SetScriptCmdLine()
 {
 	RequestFormData data  = message_.request_line_.request_target_.GetRequestFormData();
@@ -50,8 +63,8 @@ int Cgi::Run()
 {
 	RequestFormData data = message_.request_line_.request_target_.GetRequestFormData();
 	const char     *file = data.path_.ToString().c_str();
-	char		   *argv[script_cmdlines_.size() + 1];
-	char		   *envp[meta_variables_.size() + 1];
+	char           *argv[script_cmdlines_.size() + 1];
+	char           *envp[meta_variables_.size() + 1];
 
 	for (std::size_t i = 0; i < script_cmdlines_.size(); i++) {
 		argv[i] = const_cast<char *>(script_cmdlines_[i].c_str());

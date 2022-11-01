@@ -29,6 +29,8 @@ class Cgi
   private:
 	int  StartCgiProcess(const char *file, char **argv, char **envp);
 	void SetContentLength();
+	void SetContentType();
+	void SetGateWayInterFace();
 	void ExpSafetyPipe(int *fds) const;
 	void ExpSafetyClose(int fd) const;
 	void ExpSafetyDup2(int oldfd, int newfd) const;
