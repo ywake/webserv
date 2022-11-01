@@ -13,6 +13,7 @@ class Cgi
 		TYPE_SIZE
 	};
 	http::RequestMessage     message_;
+	RequestFormData          formdata_;
 	std::vector<std::string> meta_variables_;
 	std::vector<std::string> script_cmdlines_;
 	int                      pipe_to_cgi_[TYPE_SIZE];
@@ -30,6 +31,8 @@ class Cgi
 	void SetContentLength();
 	void SetContentType();
 	void SetGateWayInterFace();
+	void SetPathInfo(const std::string &value);
+	void SetScriptName(const std::string &value);
 	void ExpSafetyPipe(int *fds) const;
 	void ExpSafetyClose(int fd) const;
 	void ExpSafetyDup2(int oldfd, int newfd) const;

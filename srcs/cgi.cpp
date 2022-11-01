@@ -6,7 +6,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-Cgi::Cgi(const http::RequestMessage &message) : message_(message)
+Cgi::Cgi(const http::RequestMessage &message)
+	: message_(message), formdata_(message.request_line_.request_target_.GetRequestFormData())
 {
 	ExpSafetyPipe(pipe_to_cgi_);
 }
@@ -22,7 +23,24 @@ void Cgi::SetMetaVariables()
 		SetContentType();
 	}
 	SetGateWayInterFace();
-	// MUSTなメタ変数を設定していく
+
+	std::vector<ThinString> hierarchy = Split(formdata_.path_, "/");
+
+	std::string script_path;
+	for (std::vector<ThinString>::iterator it = hierarchy.begin(); it != hierarchy.end(); it++) {
+		std::string lower_path = it->ToString();
+		script_path += lower_path;
+		if (!IsRegularFile(script_path) || !EndsWith(lower_path, ".php")) {
+			continue;
+		}
+		SetScriptName(script_path);
+
+		std::string extra_path;
+		for (std::vector<ThinString>::iterator i = ++it; i != hierarchy.end(); i++) {
+			extra_path += it->ToString();
+		}
+		SetPathInfo(extra_path);
+	}
 }
 
 void Cgi::SetContentLength()
@@ -37,7 +55,19 @@ void Cgi::SetContentType()
 
 void Cgi::SetGateWayInterFace()
 {
-	meta_variables_.push_back("CGI/1.1");
+	meta_variables_.push_back("gateway-interface=CGI/1.1");
+}
+
+void Cgi::SetPathInfo(const std::string &value)
+{
+	const std::string key = "path-info";
+	meta_variables_.push_back(key + "=" + value);
+}
+
+void Cgi::SetScriptName(const std::string &value)
+{
+	const std::string key = "script-name";
+	meta_variables_.push_back(key + "=" + value);
 }
 
 ssize_t Cgi::WriteRequestData(size_t nbyte) const
@@ -47,10 +77,9 @@ ssize_t Cgi::WriteRequestData(size_t nbyte) const
 
 int Cgi::Run()
 {
-	RequestFormData data = message_.request_line_.request_target_.GetRequestFormData();
-	const char     *file = data.path_.ToString().c_str();
-	char           *argv[script_cmdlines_.size() + 1];
-	char           *envp[meta_variables_.size() + 1];
+	const char *file = formdata_.path_.ToString().c_str();
+	char       *argv[script_cmdlines_.size() + 1];
+	char       *envp[meta_variables_.size() + 1];
 
 	for (std::size_t i = 0; i < script_cmdlines_.size(); i++) {
 		argv[i] = const_cast<char *>(script_cmdlines_[i].c_str());
