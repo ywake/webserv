@@ -6,34 +6,27 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-Cgi::Cgi(
-	const http::RequestMessage &message,
-	const std::string           server_name,
-	const std::string           server_port,
-	const std::string           client_ip
-)
-	: message_(message),
-	  formdata_(message.request_line_.request_target_.GetRequestFormData()),
-	  server_name_(server_name),
-	  server_port_(server_port),
-	  client_ip_(client_ip)
-
+Cgi::Cgi(const http::RequestMessage &message)
+	: message_(message), formdata_(message.request_line_.request_target_.GetRequestFormData())
 {
 	ExpSafetyPipe(pipe_to_cgi_);
+	SearchScriptPath();
 }
 
 // MUSTなメタ変数
 // https://wiki.suikawiki.org/n/CGI%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0#section-%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0%E3%81%AE%E4%B8%80%E8%A6%A7
-void Cgi::SetMetaVariables()
+void Cgi::SetMetaVariables(
+	const std::string server_name, const std::string server_port, const std::string client_ip
+)
 {
 	SetGateWayInterFace();
 	SetQueryString();
-	SetRemoteAddr();
 	SetRequestMethod();
-	SetServerName();
-	SetServerPort();
 	SetServerProtocol();
 	SetServerSoftWare();
+	SetServerName(server_name);
+	SetServerPort(server_port);
+	SetRemoteAddr(client_ip);
 
 	if (message_.HasMessageBody()) {
 		SetContentLength();
@@ -41,23 +34,23 @@ void Cgi::SetMetaVariables()
 	if (message_.field_lines_.Contains("content-type")) {
 		SetContentType();
 	}
+	SetScriptName();
+	SetPathInfo();
+}
 
+void Cgi::SearchScriptPath()
+{
 	std::vector<ThinString> hierarchy = Split(formdata_.path_, "/");
 
-	std::string script_path;
 	for (std::vector<ThinString>::iterator it = hierarchy.begin(); it != hierarchy.end(); it++) {
 		std::string lower_path = it->ToString();
-		script_path += lower_path;
-		if (!IsRegularFile(script_path) || !EndsWith(lower_path, ".php")) {
+		script_path_ += lower_path;
+		if (!IsRegularFile(script_path_) || !EndsWith(lower_path, ".php")) {
 			continue;
 		}
-		SetScriptName(script_path);
-
-		std::string extra_path;
-		for (std::vector<ThinString>::iterator i = ++it; i != hierarchy.end(); i++) {
-			extra_path += it->ToString();
+		for (++it; it != hierarchy.end(); it++) {
+			extra_path_ += it->ToString();
 		}
-		SetPathInfo(extra_path);
 	}
 }
 
@@ -77,14 +70,14 @@ void Cgi::SetGateWayInterFace()
 	meta_variables_.push_back("gateway-interface=CGI/1.1");
 }
 
-void Cgi::SetPathInfo(const std::string &value)
+void Cgi::SetPathInfo()
 {
-	meta_variables_.push_back(MakeKeyValueString("path-info", value));
+	meta_variables_.push_back(MakeKeyValueString("path-info", extra_path_));
 }
 
-void Cgi::SetScriptName(const std::string &value)
+void Cgi::SetScriptName()
 {
-	meta_variables_.push_back(MakeKeyValueString("script-name", value));
+	meta_variables_.push_back(MakeKeyValueString("script-name", script_path_));
 }
 
 void Cgi::SetQueryString()
@@ -92,9 +85,9 @@ void Cgi::SetQueryString()
 	meta_variables_.push_back(MakeKeyValueString("query-string", formdata_.query_.ToString()));
 }
 
-void Cgi::SetRemoteAddr()
+void Cgi::SetRemoteAddr(const std::string &remote_addr)
 {
-	meta_variables_.push_back(MakeKeyValueString("remote-addr", client_ip_));
+	meta_variables_.push_back(MakeKeyValueString("remote-addr", remote_addr));
 }
 
 void Cgi::SetRequestMethod()
@@ -104,14 +97,14 @@ void Cgi::SetRequestMethod()
 	);
 }
 
-void Cgi::SetServerName()
+void Cgi::SetServerName(const std::string &server_name)
 {
-	meta_variables_.push_back(MakeKeyValueString("server-name", server_name_));
+	meta_variables_.push_back(MakeKeyValueString("server-name", server_name));
 }
 
-void Cgi::SetServerPort()
+void Cgi::SetServerPort(const std::string &server_port)
 {
-	meta_variables_.push_back(MakeKeyValueString("server-port", server_port_));
+	meta_variables_.push_back(MakeKeyValueString("server-port", server_port));
 }
 
 void Cgi::SetServerProtocol()
@@ -131,16 +124,15 @@ ssize_t Cgi::WriteRequestData(size_t nbyte) const
 	return write(pipe_to_cgi_[WRITE], message_.message_body_.c_str(), nbyte);
 }
 
-int Cgi::Run()
+int Cgi::Run(const std::string &cgi_path)
 {
-	const char *file = formdata_.path_.ToString().c_str();
-	char       *argv[script_cmdlines_.size() + 1];
-	char       *envp[meta_variables_.size() + 1];
+	static const unsigned int kArgvSize = 2;
+	const char               *file      = cgi_path.c_str();
+	char                     *argv[kArgvSize];
+	char                     *envp[meta_variables_.size() + 1];
 
-	for (std::size_t i = 0; i < script_cmdlines_.size(); i++) {
-		argv[i] = const_cast<char *>(script_cmdlines_[i].c_str());
-	}
-	argv[script_cmdlines_.size()] = NULL;
+	argv[0] = const_cast<char *>(script_path_.c_str());
+	argv[1] = NULL;
 
 	for (std::size_t i = 0; i < meta_variables_.size(); i++) {
 		envp[i] = const_cast<char *>(meta_variables_[i].c_str());

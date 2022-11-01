@@ -15,43 +15,41 @@ class Cgi
 
 	const http::RequestMessage message_;
 	const RequestFormData      formdata_;
-	const std::string          server_name_;
-	const std::string          server_port_;
-	const std::string          client_ip_;
 
+	std::string              script_path_;
+	std::string              extra_path_;
 	std::vector<std::string> meta_variables_;
-	std::vector<std::string> script_cmdlines_;
 	int                      pipe_to_cgi_[TYPE_SIZE];
 
   public:
-	Cgi(const http::RequestMessage &message,
-		const std::string           server_name,
-		const std::string           server_port,
-		const std::string           client_ip);
+	Cgi(const http::RequestMessage &message);
 	// cgiレスポンスをhttpレスポンスに変換する
-	int                   Cgi::Run();
+	int                   Cgi::Run(const std::string &cgi_path);
 	http::ResponseMessage Read() const;
-	void                  SetMetaVariables();
-	ssize_t               WriteRequestData(size_t nbyte) const;
+	void                  SetMetaVariables(
+						 const std::string server_name, const std::string server_port, const std::string client_ip
+					 );
+	ssize_t WriteRequestData(size_t nbyte) const;
 
   private:
 	int         StartCgiProcess(const char *file, char **argv, char **envp);
 	void        SetContentLength();
 	void        SetContentType();
 	void        SetGateWayInterFace();
-	void        SetPathInfo(const std::string &value);
-	void        SetScriptName(const std::string &value);
+	void        SetPathInfo();
+	void        SetScriptName();
 	void        SetQueryString();
-	void        SetRemoteAddr();
+	void        SetRemoteAddr(const std::string &remote_addr);
 	void        SetRequestMethod();
-	void        SetServerName();
-	void        SetServerPort();
+	void        SetServerName(const std::string &server_name);
+	void        SetServerPort(const std::string &server_port);
 	void        SetServerProtocol();
 	void        SetServerSoftWare();
 	void        ExpSafetyPipe(int *fds) const;
 	void        ExpSafetyClose(int fd) const;
 	void        ExpSafetyDup2(int oldfd, int newfd) const;
 	std::string MakeKeyValueString(const std::string &key, const std::string &value);
+	void        SearchScriptPath();
 };
 
 #endif // CGI_HPP
