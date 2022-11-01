@@ -267,6 +267,9 @@ std::string HeaderSection::GetKeyValueString(const std::string &key) const
 	std::string value     = "";
 	std::string lower_key = utils::ToLowerString(key);
 
+	if (!Contains(lower_key)) {
+		return lower_key + "=";
+	}
 	HeaderSection::Values values = field_lines_.at(lower_key);
 	for (HeaderSection::Values::iterator it = values.begin(); it != values.end(); it++) {
 		value += it->GetValue();
