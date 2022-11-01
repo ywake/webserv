@@ -45,20 +45,6 @@ ssize_t Cgi::WriteRequestData(size_t nbyte) const
 	return write(pipe_to_cgi_[WRITE], message_.message_body_.c_str(), nbyte);
 }
 
-// search-string = search-word *( "+" search-word )
-// search-word   = 1*schar
-// schar         = unreserved | escaped | xreserved
-// xreserved     = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "," | "$"
-// 解析はSHOULD項目。また、解析に適合しないときの動作がRFCに定義されていない。パーセント復号も必要か？
-void Cgi::SetScriptCmdLine()
-{
-	RequestFormData data  = message_.request_line_.request_target_.GetRequestFormData();
-	ThinString      query = data.query_;
-
-	std::vector<ThinString> array = Split(query, "+");
-	std::copy(array.begin(), array.end(), script_cmdlines_);
-}
-
 int Cgi::Run()
 {
 	RequestFormData data = message_.request_line_.request_target_.GetRequestFormData();

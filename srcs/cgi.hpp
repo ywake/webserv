@@ -23,7 +23,6 @@ class Cgi
 	int                   Cgi::Run();
 	http::ResponseMessage Read() const;
 	void                  SetMetaVariables();
-	void                  SetScriptCmdLine();
 	ssize_t               WriteRequestData(size_t nbyte) const;
 
   private:
