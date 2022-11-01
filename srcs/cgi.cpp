@@ -6,8 +6,18 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-Cgi::Cgi(const http::RequestMessage &message)
-	: message_(message), formdata_(message.request_line_.request_target_.GetRequestFormData())
+Cgi::Cgi(
+	const http::RequestMessage &message,
+	const std::string           server_name,
+	const std::string           server_port,
+	const std::string           client_ip
+)
+	: message_(message),
+	  formdata_(message.request_line_.request_target_.GetRequestFormData()),
+	  server_name_(server_name),
+	  server_port_(server_port),
+	  client_ip_(client_ip)
+
 {
 	ExpSafetyPipe(pipe_to_cgi_);
 }
@@ -16,13 +26,21 @@ Cgi::Cgi(const http::RequestMessage &message)
 // https://wiki.suikawiki.org/n/CGI%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0#section-%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0%E3%81%AE%E4%B8%80%E8%A6%A7
 void Cgi::SetMetaVariables()
 {
+	SetGateWayInterFace();
+	SetQueryString();
+	SetRemoteAddr();
+	SetRequestMethod();
+	SetServerName();
+	SetServerPort();
+	SetServerProtocol();
+	SetServerSoftWare();
+
 	if (message_.HasMessageBody()) {
 		SetContentLength();
 	}
 	if (message_.field_lines_.Contains("content-type")) {
 		SetContentType();
 	}
-	SetGateWayInterFace();
 
 	std::vector<ThinString> hierarchy = Split(formdata_.path_, "/");
 
@@ -43,6 +61,7 @@ void Cgi::SetMetaVariables()
 	}
 }
 
+// FIX transfer-encofingヘッダでチャンク化の場合は、復号して本体の長さを決定しなければならない
 void Cgi::SetContentLength()
 {
 	meta_variables_.push_back(message_.field_lines_.GetKeyValueString("content-length"));
@@ -60,14 +79,51 @@ void Cgi::SetGateWayInterFace()
 
 void Cgi::SetPathInfo(const std::string &value)
 {
-	const std::string key = "path-info";
-	meta_variables_.push_back(key + "=" + value);
+	meta_variables_.push_back(MakeKeyValueString("path-info", value));
 }
 
 void Cgi::SetScriptName(const std::string &value)
 {
-	const std::string key = "script-name";
-	meta_variables_.push_back(key + "=" + value);
+	meta_variables_.push_back(MakeKeyValueString("script-name", value));
+}
+
+void Cgi::SetQueryString()
+{
+	meta_variables_.push_back(MakeKeyValueString("query-string", formdata_.query_.ToString()));
+}
+
+void Cgi::SetRemoteAddr()
+{
+	meta_variables_.push_back(MakeKeyValueString("remote-addr", client_ip_));
+}
+
+void Cgi::SetRequestMethod()
+{
+	meta_variables_.push_back(
+		MakeKeyValueString("request-method", message_.request_line_.method_.ToString())
+	);
+}
+
+void Cgi::SetServerName()
+{
+	meta_variables_.push_back(MakeKeyValueString("server-name", server_name_));
+}
+
+void Cgi::SetServerPort()
+{
+	meta_variables_.push_back(MakeKeyValueString("server-port", server_port_));
+}
+
+void Cgi::SetServerProtocol()
+{
+	meta_variables_.push_back(
+		MakeKeyValueString("server-protocol", message_.request_line_.http_version_.ToString())
+	);
+}
+
+void Cgi::SetServerSoftWare()
+{
+	meta_variables_.push_back("server-software=webserv/1.0");
 }
 
 ssize_t Cgi::WriteRequestData(size_t nbyte) const
@@ -139,4 +195,9 @@ void Cgi::ExpSafetyDup2(int oldfd, int newfd) const
 	if (dup2(oldfd, newfd) == -1) {
 		throw std::runtime_error("dup2: " + std::string(strerror(errno)));
 	}
+}
+
+std::string Cgi::MakeKeyValueString(const std::string &key, const std::string &value)
+{
+	return key + "=" + value;
 }
