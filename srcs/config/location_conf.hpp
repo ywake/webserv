@@ -51,6 +51,9 @@ namespace conf
 
 		bool                operator==(const LocationConf &rhs) const;
 		const LocationConf &operator=(const LocationConf &rhs);
+
+	  private:
+		void AddAllowMethods(const std::vector<ThinString> &tokens);
 	};
 
 	std::ostream &operator<<(std::ostream &os, const LocationConf &conf);

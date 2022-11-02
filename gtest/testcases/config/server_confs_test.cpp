@@ -307,14 +307,14 @@ TEST(config, client_max_body)
 	);
 }
 
-TEST(config, location_conf)
+TEST(config, location_conf_allow_methods)
 {
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
-							  //   "root /var/www;"
+							  "allow_methods GET;"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -323,8 +323,140 @@ TEST(config, location_conf)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(1UL << 20),
-				conf::ServerConf::LocationConfs({
-					{"/", conf::LocationConf()},
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(conf::LocationConf::AllowMethods({"GET"})),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "allow_methods GET POST;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(conf::LocationConf::AllowMethods({"GET", "POST"})),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "allow_methods GET POST DELETE;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(
+							conf::LocationConf::AllowMethods({"GET", "POST", "DELETE"})
+						),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "allow_methods POST DELETE;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(conf::LocationConf::AllowMethods({"POST", "DELETE"})),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "allow_methods POST AAAA;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(conf::LocationConf::AllowMethods({"POST", "AAAA"})),
+					},
+				})
+			),
+		})
+	);
+}
+
+TEST(config, location_conf_root)
+{
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "root /var/www;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(
+							conf::LocationConf::AllowMethods(),
+							conf::LocationConf::Redirect(),
+							conf::LocationConf::Root("/var/www")
+						),
+					},
 				})
 			),
 		})

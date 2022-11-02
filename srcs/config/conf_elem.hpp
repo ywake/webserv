@@ -17,7 +17,13 @@ class ConfElem
 
 	T &Value()
 	{
+		is_empty_ = false;
 		return value_;
+	}
+
+	void ValueSet()
+	{
+		is_empty_ = false;
 	}
 
 	const ConfElem<T> &operator=(const ConfElem<T> &rhs)

@@ -45,6 +45,7 @@ namespace conf
 		}
 		if (listen_port_.Value().empty()) {
 			listen_port_.Value().push_back("80");
+			listen_port_.ValueSet();
 		}
 	}
 
@@ -57,6 +58,7 @@ namespace conf
 		for (size_t i = 1; i < tokens.size(); i++) {
 			if (ABNF::IsDigitOnly(tokens[i])) {
 				listen_port_.Value().push_back(tokens[i].ToString());
+				listen_port_.ValueSet();
 			} else {
 				throw ConfigException("Invalid config");
 			}
@@ -67,6 +69,7 @@ namespace conf
 	{
 		for (size_t i = 1; i < tokens.size(); i++) {
 			server_name_.Value().push_back(tokens[i].ToString());
+			server_name_.ValueSet();
 		}
 	}
 

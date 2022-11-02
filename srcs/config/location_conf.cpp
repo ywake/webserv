@@ -27,17 +27,11 @@ namespace conf
 		for (std::vector<ThinString>::const_iterator it = params.begin(); it != params.end();
 			 ++it) {
 			std::vector<ThinString> split = Split(*it, " ");
-			if (split.size() >= 2) {
+			if (split.size() < 2) {
 				throw ConfigException("Invalid config");
 			}
 			if (split[0] == "allow_methods") {
-				if (split.size() != 2) {
-					throw ConfigException("Invalid config");
-				}
-				for (std::vector<ThinString>::iterator it = split.begin() + 1; it != split.end();
-					 ++it) {
-					allow_methods_.Value().push_back(it->ToString());
-				}
+				AddAllowMethods(split);
 			} else if (split[0] == "return") {
 				if (split.size() != 3) {
 					throw ConfigException("Invalid config");
@@ -56,6 +50,7 @@ namespace conf
 				for (std::vector<ThinString>::iterator it = split.begin() + 1; it != split.end();
 					 ++it) {
 					index_files_.Value().push_back(it->ToString());
+					index_files_.ValueSet();
 				}
 			} else if (split[0] == "autoindex") {
 				if (split.size() != 2) {
@@ -70,6 +65,15 @@ namespace conf
 			} else {
 				throw ConfigException("Invalid config");
 			}
+		}
+	}
+
+	void LocationConf::AddAllowMethods(const std::vector<ThinString> &tokens)
+	{
+		for (std::vector<ThinString>::const_iterator it = tokens.begin() + 1; it != tokens.end();
+			 ++it) {
+			allow_methods_.Value().push_back(it->ToString());
+			allow_methods_.ValueSet();
 		}
 	}
 
@@ -167,7 +171,7 @@ namespace conf
 		   << ", ";
 
 		LocationConf::CgiPath cgi_path = conf.GetCgiPath();
-		os << "cgi_path: " << (cgi_path.empty() ? "" : cgi_path.Value()) << std::endl;
+		os << "cgi_path: " << (cgi_path.empty() ? "" : cgi_path.Value());
 		return os;
 	}
 } // namespace conf
