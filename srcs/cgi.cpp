@@ -124,7 +124,7 @@ ssize_t Cgi::WriteRequestData(size_t nbyte) const
 	return write(pipe_to_cgi_[WRITE], message_.message_body_.c_str(), nbyte);
 }
 
-int Cgi::Run(const std::string &cgi_path)
+int Cgi::Run(const std::string &cgi_path) const
 {
 	static const unsigned int kArgvSize = 2;
 	const char               *file      = cgi_path.c_str();
@@ -142,7 +142,7 @@ int Cgi::Run(const std::string &cgi_path)
 	return StartCgiProcess(file, argv, envp);
 }
 
-int Cgi::StartCgiProcess(const char *file, char **argv, char **envp)
+int Cgi::StartCgiProcess(const char *file, char **argv, char **envp) const
 {
 	int pipe_from_cgi[2];
 	ExpSafetyPipe(pipe_from_cgi);

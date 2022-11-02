@@ -23,8 +23,8 @@ class Cgi
 
   public:
 	Cgi(const http::RequestMessage &message);
+	int Cgi::Run(const std::string &cgi_path) const;
 	// cgiレスポンスをhttpレスポンスに変換する
-	int                   Cgi::Run(const std::string &cgi_path);
 	http::ResponseMessage Read() const;
 	void                  SetMetaVariables(
 						 const std::string server_name, const std::string server_port, const std::string client_ip
@@ -32,7 +32,7 @@ class Cgi
 	ssize_t WriteRequestData(size_t nbyte) const;
 
   private:
-	int         StartCgiProcess(const char *file, char **argv, char **envp);
+	int         StartCgiProcess(const char *file, char **argv, char **envp) const;
 	void        SetContentLength();
 	void        SetContentType();
 	void        SetGateWayInterFace();
