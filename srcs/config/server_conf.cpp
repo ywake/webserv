@@ -116,7 +116,7 @@ namespace conf
 			num_part = tokens[1];
 		}
 		if (ABNF::IsDigitOnly(num_part)) {
-			size = std::stoul(num_part.ToString());
+			size = utils::stoul(num_part.ToString());
 		} else {
 			throw ConfigException("Invalid client_max_body_size");
 		}

@@ -39,6 +39,8 @@ clean: FORCE
 fclean: clean
 	$(RM) $(NAME)
 	$(RM) -r $(NAME).dSYM
+	$(RM) $(NAME).a
+	$(RM) gtest/googletest/gtest.a
 
 .PHONY: re
 re: fclean all

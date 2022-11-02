@@ -7,7 +7,7 @@ namespace utils
 
 	Result<std::string> ReadFile(const std::string &file_path)
 	{
-		std::ifstream ifs(file_path);
+		std::ifstream ifs(file_path.c_str());
 		if (!ifs) {
 			return Result<std::string>(Error("file open error"));
 		}
