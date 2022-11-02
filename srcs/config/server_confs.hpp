@@ -16,7 +16,7 @@ namespace conf
 		static std::map<Port, VirtualServerConfs> empty_map_;
 
 	  private:
-		std::vector<VirtualServerConf>     confs_;
+		std::vector<ServerConf>            confs_;
 		std::map<Port, VirtualServerConfs> conf_maps_;
 
 	  public:
@@ -24,11 +24,11 @@ namespace conf
 		~ServerConfs();
 
 		/**
-		 * @brief portに対応するstd::map<Host, VirtualServerConf>を返す
+		 * @brief portに対応するstd::map<Host, ServerConf>を返す
 		 * @brief ない場合はemptyなmapを返す
 		 *
 		 * @param port
-		 * @return const std::map<Host, VirtualServerConf>&
+		 * @return const std::map<Host, ServerConf>&
 		 */
 		VirtualServerConfs &operator[](const Port &port);
 
@@ -37,7 +37,7 @@ namespace conf
 	};
 
 	// std::list<ThinString> GetConfigList(const std::string &file_content);
-	std::vector<VirtualServerConf> ParseConfigFile(const std::string &config_file_content);
+	std::vector<ServerConf> ParseConfigFile(const std::string &config_file_content);
 } // namespace conf
 
 #endif

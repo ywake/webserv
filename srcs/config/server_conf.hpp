@@ -12,7 +12,7 @@
 
 namespace conf
 {
-	class VirtualServerConf
+	class ServerConf
 	{
 	  public:
 		typedef ConfElem<std::vector<Port> >            ListenPort;
@@ -29,14 +29,14 @@ namespace conf
 		LocationConfs     location_confs_;
 
 	  public:
-		VirtualServerConf(
+		ServerConf(
 			ListenPort        listen_port          = ListenPort(),
 			ServerName        server_name          = ServerName(),
 			ErrorPages        error_pages          = ErrorPages(),
 			ClientMaxBodySize client_max_body_size = 1UL << 20,
 			LocationConfs     location_conf        = LocationConfs()
 		);
-		~VirtualServerConf();
+		~ServerConf();
 
 		void SetParams(const std::vector<ThinString> &params);
 		void AddListenPort(const std::vector<ThinString> &tokens);
@@ -51,10 +51,10 @@ namespace conf
 		const ClientMaxBodySize &GetClientMaxBodySize() const;
 		const LocationConfs     &GetLocationConfs() const;
 
-		bool operator==(const VirtualServerConf &rhs) const;
+		bool operator==(const ServerConf &rhs) const;
 	};
 
-	std::ostream &operator<<(std::ostream &os, const VirtualServerConf &conf);
+	std::ostream &operator<<(std::ostream &os, const ServerConf &conf);
 } // namespace conf
 
 #endif

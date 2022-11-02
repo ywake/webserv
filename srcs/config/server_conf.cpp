@@ -6,7 +6,7 @@
 
 namespace conf
 {
-	VirtualServerConf::VirtualServerConf(
+	ServerConf::ServerConf(
 		ListenPort        listen_port,
 		ServerName        server_name,
 		ErrorPages        error_pages,
@@ -20,9 +20,9 @@ namespace conf
 		  location_confs_(location_confs)
 	{}
 
-	VirtualServerConf::~VirtualServerConf() {}
+	ServerConf::~ServerConf() {}
 
-	void VirtualServerConf::SetParams(const std::vector<ThinString> &params)
+	void ServerConf::SetParams(const std::vector<ThinString> &params)
 	{
 		for (std::vector<ThinString>::const_iterator it = params.begin(); it != params.end();
 			 ++it) {
@@ -52,7 +52,7 @@ namespace conf
 	 * Add Params
 	 */
 
-	void VirtualServerConf::AddListenPort(const std::vector<ThinString> &tokens)
+	void ServerConf::AddListenPort(const std::vector<ThinString> &tokens)
 	{
 		for (size_t i = 1; i < tokens.size(); i++) {
 			if (ABNF::IsDigitOnly(tokens[i])) {
@@ -63,14 +63,14 @@ namespace conf
 		}
 	}
 
-	void VirtualServerConf::AddServerName(const std::vector<ThinString> &tokens)
+	void ServerConf::AddServerName(const std::vector<ThinString> &tokens)
 	{
 		for (size_t i = 1; i < tokens.size(); i++) {
 			server_name_.Value().push_back(tokens[i].ToString());
 		}
 	}
 
-	void VirtualServerConf::AddErrorPages(const std::vector<ThinString> &tokens)
+	void ServerConf::AddErrorPages(const std::vector<ThinString> &tokens)
 	{
 		if (tokens.size() != 3) {
 			throw ConfigException("Invalid error_page");
@@ -99,7 +99,7 @@ namespace conf
 		}
 	}
 
-	void VirtualServerConf::AddClientMaxBodySize(const std::vector<ThinString> &tokens)
+	void ServerConf::AddClientMaxBodySize(const std::vector<ThinString> &tokens)
 	{
 		if (tokens.size() != 2) {
 			throw ConfigException("Invalid client_max_body_size");
@@ -133,9 +133,7 @@ namespace conf
 		client_max_body_size_ = size * unit_size;
 	}
 
-	void VirtualServerConf::AddLocation(
-		const ThinString &location, const std::vector<ThinString> &params
-	)
+	void ServerConf::AddLocation(const ThinString &location, const std::vector<ThinString> &params)
 	{
 		std::vector<ThinString> splitted_location = Split(location, " ");
 		if (splitted_location.size() != 2) {
@@ -148,27 +146,27 @@ namespace conf
 	/**
 	 * Getters
 	 */
-	const VirtualServerConf::ListenPort &VirtualServerConf::GetListenPort() const
+	const ServerConf::ListenPort &ServerConf::GetListenPort() const
 	{
 		return listen_port_;
 	}
 
-	const VirtualServerConf::ServerName &VirtualServerConf::GetServerName() const
+	const ServerConf::ServerName &ServerConf::GetServerName() const
 	{
 		return server_name_;
 	}
 
-	const VirtualServerConf::ErrorPages &VirtualServerConf::GetErrorPages() const
+	const ServerConf::ErrorPages &ServerConf::GetErrorPages() const
 	{
 		return error_pages_;
 	}
 
-	const VirtualServerConf::ClientMaxBodySize &VirtualServerConf::GetClientMaxBodySize() const
+	const ServerConf::ClientMaxBodySize &ServerConf::GetClientMaxBodySize() const
 	{
 		return client_max_body_size_;
 	}
 
-	const VirtualServerConf::LocationConfs &VirtualServerConf::GetLocationConfs() const
+	const ServerConf::LocationConfs &ServerConf::GetLocationConfs() const
 	{
 		return location_confs_;
 	}
@@ -177,7 +175,7 @@ namespace conf
 	 * Operators
 	 */
 
-	bool VirtualServerConf::operator==(const VirtualServerConf &rhs) const
+	bool ServerConf::operator==(const ServerConf &rhs) const
 	{
 		return listen_port_ == rhs.listen_port_ && server_name_ == rhs.server_name_ &&
 			   error_pages_ == rhs.error_pages_ &&
@@ -185,11 +183,11 @@ namespace conf
 			   location_confs_ == rhs.location_confs_;
 	}
 
-	std::ostream &operator<<(std::ostream &os, const VirtualServerConf &conf)
+	std::ostream &operator<<(std::ostream &os, const ServerConf &conf)
 	{
 		os << "\nlisten: ";
-		VirtualServerConf::ListenPort ports     = conf.GetListenPort();
-		std::vector<conf::Port>       port_list = ports.Value();
+		ServerConf::ListenPort  ports     = conf.GetListenPort();
+		std::vector<conf::Port> port_list = ports.Value();
 		for (std::vector<Port>::const_iterator it = port_list.begin(); it != port_list.end();
 			 ++it) {
 			os << *it << " ";
@@ -197,8 +195,8 @@ namespace conf
 		os << std::endl;
 
 		os << "server_name: ";
-		VirtualServerConf::ServerName hosts     = conf.GetServerName();
-		std::vector<conf::Port>       host_list = hosts.Value();
+		ServerConf::ServerName  hosts     = conf.GetServerName();
+		std::vector<conf::Port> host_list = hosts.Value();
 		for (std::vector<std::string>::const_iterator it = host_list.begin(); it != host_list.end();
 			 ++it) {
 			os << *it << " ";
@@ -206,7 +204,7 @@ namespace conf
 		os << std::endl;
 
 		os << "error_page: ";
-		VirtualServerConf::ErrorPages          errors    = conf.GetErrorPages();
+		ServerConf::ErrorPages                 errors    = conf.GetErrorPages();
 		std::map<conf::StatusCode, conf::Path> error_map = errors.Value();
 		for (std::map<StatusCode, Path>::const_iterator it = error_map.begin();
 			 it != error_map.end();
@@ -215,12 +213,12 @@ namespace conf
 		}
 		os << std::endl;
 
-		VirtualServerConf::ClientMaxBodySize max_body_size = conf.GetClientMaxBodySize();
+		ServerConf::ClientMaxBodySize max_body_size = conf.GetClientMaxBodySize();
 		os << "client_max_body_size: " << max_body_size.Value() << std::endl;
 
 		os << "location: " << std::endl;
-		VirtualServerConf::LocationConfs locations    = conf.GetLocationConfs();
-		std::map<Path, LocationConf>     location_map = locations.Value();
+		ServerConf::LocationConfs    locations    = conf.GetLocationConfs();
+		std::map<Path, LocationConf> location_map = locations.Value();
 		for (std::map<Path, LocationConf>::const_iterator it = location_map.begin();
 			 it != location_map.end();
 			 ++it) {

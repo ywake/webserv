@@ -11,8 +11,8 @@ namespace conf
 	{
 	  private:
 		/* data */
-		Host                                default_host_;
-		std::map<Host, VirtualServerConf *> server_confs_;
+		Host                         default_host_;
+		std::map<Host, ServerConf *> server_confs_;
 
 	  public:
 		VirtualServerConfs(/* args */);
@@ -25,9 +25,9 @@ namespace conf
 		 * defalut_hostもない場合はデフォルトコンストラクタで作成したVirtualServerConfを返す。
 		 *
 		 * @param host
-		 * @return const VirtualServerConf*
+		 * @return const ServerConf*
 		 */
-		VirtualServerConf *&operator[](const Host &host);
+		ServerConf *&operator[](const Host &host);
 	};
 } // namespace conf
 

@@ -33,11 +33,11 @@ namespace conf
 	ServerConfs::~ServerConfs() {}
 
 	/**
-	 * @brief portに対応するstd::map<Host, VirtualServerConf>を返す
+	 * @brief portに対応するstd::map<Host, ServerConf>を返す
 	 * @brief ない場合はemptyなmapを返す
 	 *
 	 * @param port
-	 * @return const std::map<Host, VirtualServerConf>&
+	 * @return const std::map<Host, ServerConf>&
 	 */
 	VirtualServerConfs &ServerConfs::operator[](const Port &port)
 	{
@@ -53,7 +53,7 @@ namespace conf
 	}
 
 	void WhenBraceOpen(
-		std::vector<VirtualServerConf>       &v_servers,
+		std::vector<ServerConf>              &v_servers,
 		std::stack<ThinString>               &head_stack,
 		std::stack<std::vector<ThinString> > &content_stack,
 		const ThinString                     &content
@@ -62,12 +62,12 @@ namespace conf
 		head_stack.push(TrimWSLF(content));
 		content_stack.push(std::vector<ThinString>());
 		if (!head_stack.empty() && head_stack.top() == "server") {
-			v_servers.push_back(VirtualServerConf());
+			v_servers.push_back(ServerConf());
 		}
 	}
 
 	void WhenBraceClose(
-		std::vector<VirtualServerConf>       &v_servers,
+		std::vector<ServerConf>              &v_servers,
 		std::stack<ThinString>               &head_stack,
 		std::stack<std::vector<ThinString> > &content_stack
 	)
@@ -84,10 +84,10 @@ namespace conf
 		content_stack.pop();
 	}
 
-	std::vector<VirtualServerConf> ParseConfigFile(const std::string &config_file_content)
+	std::vector<ServerConf> ParseConfigFile(const std::string &config_file_content)
 	{
-		std::vector<VirtualServerConf> v_servers;
-		ThinString                     contents(config_file_content);
+		std::vector<ServerConf> v_servers;
+		ThinString              contents(config_file_content);
 
 		std::stack<ThinString>               head_stack;
 		std::stack<std::vector<ThinString> > content_stack;
@@ -121,18 +121,18 @@ namespace conf
 
 	void ServerConfs::PortHostMapping()
 	{
-		typedef std::vector<VirtualServerConf>::iterator ConfsItr;
-		typedef std::vector<std::string>::iterator       StrItr;
+		typedef std::vector<ServerConf>::iterator  ConfsItr;
+		typedef std::vector<std::string>::iterator StrItr;
 
 		for (ConfsItr it = confs_.begin(); it != confs_.end(); ++it) {
 
-			VirtualServerConf::ListenPort port  = it->GetListenPort();
-			std::vector<Port>             ports = port.Value();
+			ServerConf::ListenPort port  = it->GetListenPort();
+			std::vector<Port>      ports = port.Value();
 
 			for (StrItr port_it = ports.begin(); port_it != ports.end(); ++port_it) {
 
-				VirtualServerConf::ServerName server_name = it->GetServerName();
-				std::vector<Host>             hosts       = server_name.Value();
+				ServerConf::ServerName server_name = it->GetServerName();
+				std::vector<Host>      hosts       = server_name.Value();
 				for (StrItr host_it = hosts.begin(); host_it != hosts.end(); ++host_it) {
 
 					bool port_has_no_conf = conf_maps_.find(*port_it) == conf_maps_.end();
