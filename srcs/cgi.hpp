@@ -29,7 +29,8 @@ class Cgi
 	void                  SetMetaVariables(
 						 const std::string server_name, const std::string server_port, const std::string client_ip
 					 );
-	ssize_t WriteRequestData(size_t nbyte) const;
+	ssize_t                  WriteRequestData(size_t nbyte) const;
+	std::vector<std::string> GetMetaVariables() const;
 
   private:
 	int         StartCgiProcess(const char *file, char **argv, char **envp) const;

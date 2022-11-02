@@ -26,10 +26,18 @@ namespace utils
 	std::string  ToLowerString(std::string s);
 	Result<long> StrToLong(const std::string &str);
 
-	template <
-		typename T,
-		typename = typename std::enable_if<std::numeric_limits<T>::is_integer>::type>
-	std::string NumToStr(T number)
+	template <bool Cond, class T = void>
+	struct enable_if {
+	};
+
+	template <class T>
+	struct enable_if<true, T> {
+		typedef T type;
+	};
+
+	template < typename T >
+	std::string
+	NumToStr(T number, typename enable_if<std::numeric_limits<T>::is_integer>::type * = 0)
 	{
 		std::ostringstream stream;
 		stream << number;

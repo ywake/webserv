@@ -38,6 +38,11 @@ void Cgi::SetMetaVariables(
 	SetPathInfo();
 }
 
+std::vector<std::string> Cgi::GetMetaVariables() const
+{
+	return meta_variables_;
+}
+
 void Cgi::SearchScriptPath()
 {
 	std::vector<ThinString> hierarchy = Split(formdata_.path_, "/");
