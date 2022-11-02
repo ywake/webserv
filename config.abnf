@@ -31,7 +31,7 @@ location-section    = "location" SP path SP "{" location-contents "}"
 location-contents   = *(location-entry LF)
 
 location-entry      = location-allow-methods
-                    / location-return
+                    / location-redirect
                     / location-root
                     / location-index
                     / location-autoindex
@@ -39,7 +39,7 @@ location-entry      = location-allow-methods
 
 location-allow-methods  = "allow_methods" SP method-name *(SP method-name)
 
-location-return         = "return" SP redirect-status-code SP url
+location-redirect         = "redirect" SP redirect-status-code SP url
 
 location-root           = "root" SP path
 

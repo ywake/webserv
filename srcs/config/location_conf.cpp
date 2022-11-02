@@ -32,12 +32,8 @@ namespace conf
 			}
 			if (split[0] == "allow_methods") {
 				AddAllowMethods(split);
-			} else if (split[0] == "return") {
-				if (split.size() != 3) {
-					throw ConfigException("Invalid config");
-				}
-				redirect_.Value() =
-					std::pair<StatusCode, Url>(split[1].ToString(), split[2].ToString());
+			} else if (split[0] == "redirect") {
+				AddRedirect(split);
 			} else if (split[0] == "root") {
 				if (split.size() != 2) {
 					throw ConfigException("Invalid config");
@@ -75,6 +71,14 @@ namespace conf
 			allow_methods_.Value().push_back(it->ToString());
 			allow_methods_.ValueSet();
 		}
+	}
+
+	void LocationConf::AddRedirect(const std::vector<ThinString> &tokens)
+	{
+		if (tokens.size() != 3) {
+			throw ConfigException("Invalid config");
+		}
+		redirect_.Value() = std::pair<StatusCode, Url>(tokens[1].ToString(), tokens[2].ToString());
 	}
 
 	LocationConf::~LocationConf() {}

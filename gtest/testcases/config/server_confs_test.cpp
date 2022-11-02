@@ -430,6 +430,123 @@ TEST(config, location_conf_allow_methods)
 			),
 		})
 	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "allow_methods GET;"
+							  "allow_methods POST;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(conf::LocationConf::AllowMethods({"GET", "POST"})),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "allow_methods GET;"
+							  "allow_methods ;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+}
+
+TEST(config, location_conf_redirect)
+{
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "redirect 301 example.com;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(
+							conf::LocationConf::AllowMethods(),
+							conf::LocationConf::Redirect({"301", "example.com"})
+						),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "redirect 301 example.com;"
+							  "redirect 302 example.com;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(
+							conf::LocationConf::AllowMethods(),
+							conf::LocationConf::Redirect({"302", "example.com"})
+						),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "redirect ;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "redirect 301;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
 }
 
 TEST(config, location_conf_root)
