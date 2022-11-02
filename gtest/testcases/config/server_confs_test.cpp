@@ -77,6 +77,16 @@ TEST(config, listen)
 			conf::VirtualServerConf({"80", "80"}, {"localhost"}),
 		})
 	);
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "listen 8080;"
+							  "server_name localhost;"
+							  "}"),
+		std::vector<conf::VirtualServerConf>({
+			conf::VirtualServerConf({"80", "8080"}, {"localhost"}),
+		})
+	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
 							  "listen ;"
@@ -111,6 +121,16 @@ TEST(config, server_name)
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
 			conf::VirtualServerConf({"80"}, {"localhost", "localhost"}),
+		})
+	);
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name a b c;"
+							  "server_name d;"
+							  "}"),
+		std::vector<conf::VirtualServerConf>({
+			conf::VirtualServerConf({"80"}, {"a", "b", "c", "d"}),
 		})
 	);
 	EXPECT_THROW(
@@ -205,6 +225,17 @@ TEST(config, client_max_body)
 			conf::VirtualServerConf({"80"}, {"localhost"}, {}, 10),
 		})
 	);
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "client_max_body_size 10;"
+							  "client_max_body_size 100;"
+							  "}"),
+		std::vector<conf::VirtualServerConf>({
+			conf::VirtualServerConf({"80"}, {"localhost"}, {}, 100),
+		})
+	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
@@ -223,27 +254,78 @@ TEST(config, client_max_body)
 	);
 }
 
-TEST(config, duplicate)
+TEST(config, location_conf)
 {
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
-							  "listen 8080;"
 							  "server_name localhost;"
+							  "location / {"
+							  //   "root /var/www;"
+							  "}"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80", "8080"}, {"localhost"}),
+			conf::VirtualServerConf(
+				{"80"},
+				{"localhost"},
+				{},
+				1UL << 20,
+				{
+					{"/", conf::LocationConf()},
+				}
+			),
 		})
 	);
-
-	EXPECT_EQ(
-		conf::ParseConfigFile("server {"
-							  "listen 80;"
-							  "server_name a b c;"
-							  "server_name d;"
-							  "}"),
-		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"a", "b", "c", "d"}),
-		})
-	);
+	// EXPECT_EQ(
+	// 	conf::ParseConfigFile("server {"
+	// 						  "listen 80;"
+	// 						  "server_name localhost;"
+	// 						  "location / {"
+	// 						  "root /var/www;"
+	// 						  "}"
+	// 						  "location /api {"
+	// 						  "root /var/www/api;"
+	// 						  "}"
+	// 						  "}"),
+	// 	std::vector<conf::VirtualServerConf>({
+	// 		conf::VirtualServerConf(
+	// 			{"80"},
+	// 			{"localhost"},
+	// 			{},
+	// 			1UL << 20,
+	// 			{
+	// 				conf::LocationConf("/", "/var/www"),
+	// 				conf::LocationConf("/api", "/var/www/api"),
+	// 			}
+	// 		),
+	// 	})
+	// );
+	// EXPECT_EQ(
+	// 	conf::ParseConfigFile("server {"
+	// 						  "listen 80;"
+	// 						  "server_name localhost;"
+	// 						  "location / {"
+	// 						  "root /var/www;"
+	// 						  "}"
+	// 						  "location /api {"
+	// 						  "root /var/www/api;"
+	// 						  "}"
+	// 						  "location /api/v1 {"
+	// 						  "root /var/www/api/v1;"
+	// 						  "}"
+	// 						  "}"),
+	// 	std::vector<conf::VirtualServerConf>({
+	// 		conf::VirtualServerConf(
+	// 			{"80"},
+	// 			{"localhost"},
+	// 			{},
+	// 			1UL << 20,
+	// 			{
+	// 				conf::LocationConf("/", "/var/www"),
+	// 				conf::LocationConf("/api", "/var/www/api"),
+	// 				conf::LocationConf("/api/v1", "/var/www/api/v1"),
+	// 			}
+	// 		),
+	// 	})
+	// );
 }

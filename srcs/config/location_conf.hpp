@@ -1,38 +1,59 @@
 #ifndef LOCATION_CONF_HPP
 #define LOCATION_CONF_HPP
 
+#include "conf_elem.hpp"
 #include "config_typedef.hpp"
 #include "thin_string.hpp"
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
 
 namespace conf
 {
+
 	class LocationConf
 	{
+	  public:
+		typedef ConfElem<std::vector<std::string> >   AllowMethods;
+		typedef ConfElem<std::pair<StatusCode, Url> > Redirect;
+		typedef ConfElem<Path>                        Root;
+		typedef ConfElem<std::vector<Path> >          IndexFiles;
+		typedef ConfElem<bool>                        AutoIndex;
+		typedef ConfElem<std::string>                 CgiPath;
+
 	  private:
-		std::vector<std::string>  allow_methods_;
-		std::map<StatusCode, Url> return_;
-		Path                      root_;
-		std::vector<Path>         index_files_;
-		bool                      autoindex;
-		Url                       cgi_path_;
+		AllowMethods allow_methods_;
+		Redirect     redirect_;
+		Root         root_;
+		IndexFiles   index_files_;
+		AutoIndex    autoindex;
+		CgiPath      cgi_path_;
 
 	  public:
-		LocationConf();
 		LocationConf(const std::vector<ThinString> &params);
+		LocationConf(
+			AllowMethods allow_methods_ = AllowMethods(),
+			Redirect     redirect_      = Redirect(),
+			Root         root_          = Root(),
+			IndexFiles   index_files_   = IndexFiles(),
+			AutoIndex    autoindex      = AutoIndex(),
+			CgiPath      cgi_path_      = CgiPath()
+		);
 		~LocationConf();
 
-		std::vector<std::string>  GetAllowMethods();
-		std::map<StatusCode, Url> GetReturn();
-		Path                      GetRoot();
-		std::vector<Path>         GetIndexFiles();
-		bool                      GetAutoindex();
-		Url                       GetCgiPath();
+		const AllowMethods &GetAllowMethods() const;
+		const Redirect     &GetRedirect() const;
+		const Root         &GetRoot() const;
+		const IndexFiles   &GetIndexFiles() const;
+		const AutoIndex    &GetAutoindex() const;
+		const CgiPath      &GetCgiPath() const;
 
-		bool operator==(const LocationConf &rhs) const;
+		bool                operator==(const LocationConf &rhs) const;
+		const LocationConf &operator=(const LocationConf &rhs);
 	};
+
+	std::ostream &operator<<(std::ostream &os, const LocationConf &conf);
 } // namespace conf
 
 #endif

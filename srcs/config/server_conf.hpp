@@ -19,7 +19,7 @@ namespace conf
 		std::vector<std::string>     server_name_;
 		std::map<StatusCode, Path>   error_pages_;
 		std::size_t                  client_max_body_size_;
-		std::map<Path, LocationConf> location_conf_;
+		std::map<Path, LocationConf> location_confs_;
 
 	  public:
 		VirtualServerConf(

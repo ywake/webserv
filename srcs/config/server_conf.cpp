@@ -17,7 +17,7 @@ namespace conf
 		  server_name_(server_name),
 		  error_pages_(error_pages),
 		  client_max_body_size_(client_max_body_size),
-		  location_conf_(location_conf)
+		  location_confs_(location_conf)
 	{}
 
 	VirtualServerConf::~VirtualServerConf() {}
@@ -137,7 +137,12 @@ namespace conf
 		const ThinString &location, const std::vector<ThinString> &params
 	)
 	{
-		location_conf_[location.ToString()] = LocationConf(params);
+		std::vector<ThinString> splitted_location = Split(location, " ");
+		if (splitted_location.size() != 2) {
+			throw ConfigException("Invalid location");
+		}
+		Path pertern             = splitted_location[1].ToString();
+		location_confs_[pertern] = LocationConf(params);
 	}
 
 	/**
@@ -165,7 +170,7 @@ namespace conf
 
 	std::map<Path, LocationConf> VirtualServerConf::GetLocationConfs() const
 	{
-		return location_conf_;
+		return location_confs_;
 	}
 
 	/**
@@ -177,7 +182,7 @@ namespace conf
 		return listen_port_ == rhs.listen_port_ && server_name_ == rhs.server_name_ &&
 			   error_pages_ == rhs.error_pages_ &&
 			   client_max_body_size_ == rhs.client_max_body_size_ &&
-			   location_conf_ == rhs.location_conf_;
+			   location_confs_ == rhs.location_confs_;
 	}
 
 	std::ostream &operator<<(std::ostream &os, const VirtualServerConf &conf)
@@ -207,8 +212,7 @@ namespace conf
 		for (std::map<Path, LocationConf>::const_iterator it = locations.begin();
 			 it != locations.end();
 			 ++it) {
-			os << it->first << std::endl;
-			// os << it->second << std::endl;
+			os << it->first << "{" << it->second << "}" << std::endl;
 		}
 		return os;
 	}
