@@ -14,35 +14,42 @@ namespace conf
 {
 	class VirtualServerConf
 	{
+	  public:
+		typedef ConfElem<std::vector<Port> >            ListenPort;
+		typedef ConfElem<std::vector<std::string> >     ServerName;
+		typedef ConfElem<std::map<StatusCode, Path> >   ErrorPages;
+		typedef ConfElem<std::size_t>                   ClientMaxBodySize;
+		typedef ConfElem<std::map<Path, LocationConf> > LocationConfs;
+
 	  private:
-		std::vector<Port>            listen_port_;
-		std::vector<std::string>     server_name_;
-		std::map<StatusCode, Path>   error_pages_;
-		std::size_t                  client_max_body_size_;
-		std::map<Path, LocationConf> location_confs_;
+		ListenPort        listen_port_;
+		ServerName        server_name_;
+		ErrorPages        error_pages_;
+		ClientMaxBodySize client_max_body_size_;
+		LocationConfs     location_confs_;
 
 	  public:
 		VirtualServerConf(
-			std::vector<Port>            listen_port          = std::vector<Port>(),
-			std::vector<std::string>     server_name          = std::vector<std::string>(),
-			std::map<StatusCode, Path>   error_pages          = std::map<StatusCode, Path>(),
-			std::size_t                  client_max_body_size = 1UL << 20,
-			std::map<Path, LocationConf> location_conf        = std::map<Path, LocationConf>()
+			ListenPort        listen_port          = ListenPort(),
+			ServerName        server_name          = ServerName(),
+			ErrorPages        error_pages          = ErrorPages(),
+			ClientMaxBodySize client_max_body_size = 1UL << 20,
+			LocationConfs     location_conf        = LocationConfs()
 		);
 		~VirtualServerConf();
 
 		void SetParams(const std::vector<ThinString> &params);
 		void AddListenPort(const std::vector<ThinString> &tokens);
 		void AddServerName(const std::vector<ThinString> &tokens);
-		void AddErrorPage(const std::vector<ThinString> &tokens);
+		void AddErrorPages(const std::vector<ThinString> &tokens);
 		void AddClientMaxBodySize(const std::vector<ThinString> &tokens);
 		void AddLocation(const ThinString &location, const std::vector<ThinString> &params);
 
-		std::vector<Port>            GetListenPort() const;
-		std::vector<std::string>     GetServerName() const;
-		std::map<StatusCode, Path>   GetErrorPages() const;
-		std::size_t                  GetClientMaxBodySize() const;
-		std::map<Path, LocationConf> GetLocationConfs() const;
+		const ListenPort        &GetListenPort() const;
+		const ServerName        &GetServerName() const;
+		const ErrorPages        &GetErrorPages() const;
+		const ClientMaxBodySize &GetClientMaxBodySize() const;
+		const LocationConfs     &GetLocationConfs() const;
 
 		bool operator==(const VirtualServerConf &rhs) const;
 	};

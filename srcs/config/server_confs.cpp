@@ -126,11 +126,13 @@ namespace conf
 
 		for (ConfsItr it = confs_.begin(); it != confs_.end(); ++it) {
 
-			std::vector<Port> ports = it->GetListenPort();
+			VirtualServerConf::ListenPort port  = it->GetListenPort();
+			std::vector<Port>             ports = port.Value();
 
 			for (StrItr port_it = ports.begin(); port_it != ports.end(); ++port_it) {
 
-				std::vector<Host> hosts = it->GetServerName();
+				VirtualServerConf::ServerName server_name = it->GetServerName();
+				std::vector<Host>             hosts       = server_name.Value();
 				for (StrItr host_it = hosts.begin(); host_it != hosts.end(); ++host_it) {
 
 					bool port_has_no_conf = conf_maps_.find(*port_it) == conf_maps_.end();

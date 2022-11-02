@@ -13,7 +13,10 @@ TEST(config, get_virtual_servers_list)
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"localhost"}),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"})
+			),
 		})
 	);
 
@@ -27,8 +30,14 @@ TEST(config, get_virtual_servers_list)
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"localhost"}),
-			conf::VirtualServerConf({"8080"}, {"localhost"}),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"})
+			),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"8080"}),
+				conf::VirtualServerConf::ServerName({"localhost"})
+			),
 		})
 	);
 
@@ -36,8 +45,8 @@ TEST(config, get_virtual_servers_list)
 		conf::ParseConfigFile("server{}server {\n"
 							  "}\n"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}),
-			conf::VirtualServerConf({"80"}),
+			conf::VirtualServerConf(conf::VirtualServerConf::ListenPort({"80"})),
+			conf::VirtualServerConf(conf::VirtualServerConf::ListenPort({"80"})),
 		})
 	);
 
@@ -65,7 +74,10 @@ TEST(config, listen)
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"localhost"}),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"})
+			),
 		})
 	);
 	EXPECT_EQ(
@@ -74,7 +86,10 @@ TEST(config, listen)
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80", "80"}, {"localhost"}),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80", "80"}),
+				conf::VirtualServerConf::ServerName({"localhost"})
+			),
 		})
 	);
 	EXPECT_EQ(
@@ -84,7 +99,10 @@ TEST(config, listen)
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80", "8080"}, {"localhost"}),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80", "8080"}),
+				conf::VirtualServerConf::ServerName({"localhost"})
+			),
 		})
 	);
 	EXPECT_THROW(
@@ -111,7 +129,10 @@ TEST(config, server_name)
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"localhost"}),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"})
+			),
 		})
 	);
 	EXPECT_EQ(
@@ -120,7 +141,10 @@ TEST(config, server_name)
 							  "server_name localhost localhost;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"localhost", "localhost"}),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost", "localhost"})
+			),
 		})
 	);
 	EXPECT_EQ(
@@ -130,7 +154,10 @@ TEST(config, server_name)
 							  "server_name d;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"a", "b", "c", "d"}),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"a", "b", "c", "d"})
+			),
 		})
 	);
 	EXPECT_THROW(
@@ -151,7 +178,13 @@ TEST(config, error_page)
 							  "error_page 404 /404.html;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"localhost"}, {{"404", "/404.html"}}),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"}),
+				conf::VirtualServerConf::ErrorPages(std::map<conf::StatusCode, conf::Path>({
+					{"404", "/404.html"},
+				}))
+			),
 		})
 	);
 	EXPECT_EQ(
@@ -163,7 +196,12 @@ TEST(config, error_page)
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
 			conf::VirtualServerConf(
-				{"80"}, {"localhost"}, {{"404", "/404.html"}, {"500", "/500.html"}}
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"}),
+				conf::VirtualServerConf::ErrorPages({
+					{"404", "/404.html"},
+					{"500", "/500.html"},
+				})
 			),
 		})
 	);
@@ -202,7 +240,12 @@ TEST(config, client_max_body)
 							  "client_max_body_size 10m;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"localhost"}, {}, 10 * 1024 * 1024),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"}),
+				conf::VirtualServerConf::ErrorPages(),
+				conf::VirtualServerConf::ClientMaxBodySize(10 * 1024 * 1024)
+			),
 		})
 	);
 	EXPECT_EQ(
@@ -212,7 +255,12 @@ TEST(config, client_max_body)
 							  "client_max_body_size 10k;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"localhost"}, {}, 10 * 1024),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"}),
+				conf::VirtualServerConf::ErrorPages(),
+				conf::VirtualServerConf::ClientMaxBodySize(10 * 1024)
+			),
 		})
 	);
 	EXPECT_EQ(
@@ -222,7 +270,12 @@ TEST(config, client_max_body)
 							  "client_max_body_size 10;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"localhost"}, {}, 10),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"}),
+				conf::VirtualServerConf::ErrorPages(),
+				conf::VirtualServerConf::ClientMaxBodySize(10)
+			),
 		})
 	);
 	EXPECT_EQ(
@@ -233,7 +286,12 @@ TEST(config, client_max_body)
 							  "client_max_body_size 100;"
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
-			conf::VirtualServerConf({"80"}, {"localhost"}, {}, 100),
+			conf::VirtualServerConf(
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"}),
+				conf::VirtualServerConf::ErrorPages(),
+				conf::VirtualServerConf::ClientMaxBodySize(100)
+			),
 		})
 	);
 	EXPECT_THROW(
@@ -266,13 +324,13 @@ TEST(config, location_conf)
 							  "}"),
 		std::vector<conf::VirtualServerConf>({
 			conf::VirtualServerConf(
-				{"80"},
-				{"localhost"},
-				{},
-				1UL << 20,
-				{
+				conf::VirtualServerConf::ListenPort({"80"}),
+				conf::VirtualServerConf::ServerName({"localhost"}),
+				conf::VirtualServerConf::ErrorPages(),
+				conf::VirtualServerConf::ClientMaxBodySize(1UL << 20),
+				conf::VirtualServerConf::LocationConfs({
 					{"/", conf::LocationConf()},
-				}
+				})
 			),
 		})
 	);
