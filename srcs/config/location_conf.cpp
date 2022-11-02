@@ -42,8 +42,7 @@ namespace conf
 				}
 				for (std::vector<ThinString>::iterator it = split.begin() + 1; it != split.end();
 					 ++it) {
-					index_files_.Value().push_back(it->ToString());
-					index_files_.ValueSet();
+					index_files_.push_back(it->ToString());
 				}
 			} else if (split[0] == "autoindex") {
 				if (split.size() != 2) {
@@ -65,8 +64,7 @@ namespace conf
 	{
 		for (std::vector<ThinString>::const_iterator it = tokens.begin() + 1; it != tokens.end();
 			 ++it) {
-			allow_methods_.Value().push_back(it->ToString());
-			allow_methods_.ValueSet();
+			allow_methods_.push_back(it->ToString());
 		}
 	}
 
@@ -75,7 +73,7 @@ namespace conf
 		if (tokens.size() != 3) {
 			throw ConfigException("Invalid config");
 		}
-		redirect_.Value() = std::pair<StatusCode, Url>(tokens[1].ToString(), tokens[2].ToString());
+		redirect_ = std::pair<StatusCode, Url>(tokens[1].ToString(), tokens[2].ToString());
 	}
 
 	void LocationConf::AddRoot(const std::vector<ThinString> &tokens)
@@ -83,7 +81,7 @@ namespace conf
 		if (tokens.size() != 2) {
 			throw ConfigException("Invalid config");
 		}
-		root_.Value() = tokens[1].ToString();
+		root_ = tokens[1].ToString();
 	}
 
 	LocationConf::~LocationConf() {}
@@ -143,9 +141,8 @@ namespace conf
 		os << "allow_methods: [ ";
 		LocationConf::AllowMethods allow_methods = conf.GetAllowMethods();
 		if (!allow_methods.empty()) {
-			std::vector<std::string> allow_methods_value = allow_methods.Value();
-			for (std::vector<std::string>::const_iterator it = allow_methods_value.begin();
-				 it != allow_methods_value.end();
+			for (LocationConf::AllowMethods::const_iterator it = allow_methods.begin();
+				 it != allow_methods.end();
 				 ++it) {
 				os << *it << " ";
 			}
@@ -166,9 +163,8 @@ namespace conf
 		os << "index_files: [ ";
 		LocationConf::IndexFiles index_files = conf.GetIndexFiles();
 		if (!index_files.empty()) {
-			std::vector<std::string> index_files_value = index_files.Value();
-			for (std::vector<std::string>::const_iterator it = index_files_value.begin();
-				 it != index_files_value.end();
+			for (LocationConf::IndexFiles::const_iterator it = index_files.begin();
+				 it != index_files.end();
 				 ++it) {
 				os << *it << " ";
 			}

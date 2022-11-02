@@ -43,9 +43,8 @@ namespace conf
 				throw ConfigException("Invalid config");
 			}
 		}
-		if (listen_port_.Value().empty()) {
-			listen_port_.Value().push_back("80");
-			listen_port_.ValueSet();
+		if (listen_port_.empty()) {
+			listen_port_.push_back("80");
 		}
 	}
 
@@ -57,8 +56,7 @@ namespace conf
 	{
 		for (size_t i = 1; i < tokens.size(); i++) {
 			if (ABNF::IsDigitOnly(tokens[i])) {
-				listen_port_.Value().push_back(tokens[i].ToString());
-				listen_port_.ValueSet();
+				listen_port_.push_back(tokens[i].ToString());
 			} else {
 				throw ConfigException("Invalid config");
 			}
@@ -68,8 +66,7 @@ namespace conf
 	void ServerConf::AddServerName(const std::vector<ThinString> &tokens)
 	{
 		for (size_t i = 1; i < tokens.size(); i++) {
-			server_name_.Value().push_back(tokens[i].ToString());
-			server_name_.ValueSet();
+			server_name_.push_back(tokens[i].ToString());
 		}
 	}
 
@@ -79,7 +76,7 @@ namespace conf
 			throw ConfigException("Invalid error_page");
 		}
 		if (ABNF::IsDigitOnly(tokens[1])) {
-			error_pages_.Value()[tokens[1].ToString()] = tokens[2].ToString();
+			error_pages_[tokens[1].ToString()] = tokens[2].ToString();
 		} else {
 			throw ConfigException("Invalid error_page");
 		}
@@ -142,8 +139,8 @@ namespace conf
 		if (splitted_location.size() != 2) {
 			throw ConfigException("Invalid location");
 		}
-		Path pertern                     = splitted_location[1].ToString();
-		location_confs_.Value()[pertern] = LocationConf(params);
+		Path pertern             = splitted_location[1].ToString();
+		location_confs_[pertern] = LocationConf(params);
 	}
 
 	/**
@@ -189,29 +186,22 @@ namespace conf
 	std::ostream &operator<<(std::ostream &os, const ServerConf &conf)
 	{
 		os << "\nlisten: ";
-		ServerConf::ListenPort  ports     = conf.GetListenPort();
-		std::vector<conf::Port> port_list = ports.Value();
-		for (std::vector<Port>::const_iterator it = port_list.begin(); it != port_list.end();
-			 ++it) {
+		ServerConf::ListenPort ports = conf.GetListenPort();
+		for (ServerConf::ListenPort::const_iterator it = ports.begin(); it != ports.end(); ++it) {
 			os << *it << " ";
 		}
 		os << std::endl;
 
 		os << "server_name: ";
-		ServerConf::ServerName  hosts     = conf.GetServerName();
-		std::vector<conf::Port> host_list = hosts.Value();
-		for (std::vector<std::string>::const_iterator it = host_list.begin(); it != host_list.end();
-			 ++it) {
+		ServerConf::ServerName hosts = conf.GetServerName();
+		for (ServerConf::ServerName::const_iterator it = hosts.begin(); it != hosts.end(); ++it) {
 			os << *it << " ";
 		}
 		os << std::endl;
 
 		os << "error_page: ";
-		ServerConf::ErrorPages                 errors    = conf.GetErrorPages();
-		std::map<conf::StatusCode, conf::Path> error_map = errors.Value();
-		for (std::map<StatusCode, Path>::const_iterator it = error_map.begin();
-			 it != error_map.end();
-			 ++it) {
+		ServerConf::ErrorPages errors = conf.GetErrorPages();
+		for (ServerConf::ErrorPages::const_iterator it = errors.begin(); it != errors.end(); ++it) {
 			os << it->first << " " << it->second << " ";
 		}
 		os << std::endl;
@@ -220,10 +210,9 @@ namespace conf
 		os << "client_max_body_size: " << max_body_size.Value() << std::endl;
 
 		os << "location: " << std::endl;
-		ServerConf::LocationConfs    locations    = conf.GetLocationConfs();
-		std::map<Path, LocationConf> location_map = locations.Value();
-		for (std::map<Path, LocationConf>::const_iterator it = location_map.begin();
-			 it != location_map.end();
+		ServerConf::LocationConfs locations = conf.GetLocationConfs();
+		for (ServerConf::LocationConfs::const_iterator it = locations.begin();
+			 it != locations.end();
 			 ++it) {
 			os << it->first << "{" << it->second << "}" << std::endl;
 		}

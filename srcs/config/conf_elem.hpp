@@ -1,46 +1,40 @@
 template <typename T>
-class ConfElem
+class Emptiable
 {
   private:
 	T    value_;
 	bool is_empty_;
 
   public:
-	ConfElem() : value_(), is_empty_(true){};
-	ConfElem(const T &v) : value_(v), is_empty_(false){};
-	~ConfElem(){};
+	Emptiable() : value_(), is_empty_(true){};
+	Emptiable(const T &v) : value_(v), is_empty_(false){};
+	~Emptiable(){};
 
 	bool empty() const
 	{
 		return is_empty_;
 	}
 
-	T &Value()
+	const T &Value() const
 	{
-		is_empty_ = false;
 		return value_;
 	}
 
-	void ValueSet()
-	{
-		is_empty_ = false;
-	}
-
-	const ConfElem<T> &operator=(const ConfElem<T> &rhs)
+	const Emptiable<T> &operator=(const Emptiable<T> &rhs)
 	{
 		value_    = rhs.value_;
 		is_empty_ = rhs.is_empty_;
 		return *this;
 	}
 
-	const ConfElem<T> &operator=(const T &v)
+	const Emptiable<T> &operator=(const T &v)
 	{
 		value_    = v;
 		is_empty_ = false;
 		return *this;
 	}
 
-	bool operator==(const ConfElem<T> &rhs) const
+	bool operator==(const Emptiable<T> &rhs) const
 	{
 		return value_ == rhs.value_;
 	}

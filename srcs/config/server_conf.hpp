@@ -15,11 +15,11 @@ namespace conf
 	class ServerConf
 	{
 	  public:
-		typedef ConfElem<std::vector<Port> >            ListenPort;
-		typedef ConfElem<std::vector<std::string> >     ServerName;
-		typedef ConfElem<std::map<StatusCode, Path> >   ErrorPages;
-		typedef ConfElem<std::size_t>                   ClientMaxBodySize;
-		typedef ConfElem<std::map<Path, LocationConf> > LocationConfs;
+		typedef std::vector<Port>            ListenPort;
+		typedef std::vector<std::string>     ServerName;
+		typedef std::map<StatusCode, Path>   ErrorPages;
+		typedef Emptiable<std::size_t>       ClientMaxBodySize;
+		typedef std::map<Path, LocationConf> LocationConfs;
 
 	  private:
 		ListenPort        listen_port_;

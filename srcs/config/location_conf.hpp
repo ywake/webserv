@@ -15,12 +15,12 @@ namespace conf
 	class LocationConf
 	{
 	  public:
-		typedef ConfElem<std::vector<std::string> >   AllowMethods;
-		typedef ConfElem<std::pair<StatusCode, Url> > Redirect;
-		typedef ConfElem<Path>                        Root;
-		typedef ConfElem<std::vector<Path> >          IndexFiles;
-		typedef ConfElem<bool>                        AutoIndex;
-		typedef ConfElem<std::string>                 CgiPath;
+		typedef std::vector<std::string>               AllowMethods;
+		typedef Emptiable<std::pair<StatusCode, Url> > Redirect;
+		typedef Emptiable<Path>                        Root;
+		typedef std::vector<Path>                      IndexFiles;
+		typedef Emptiable<bool>                        AutoIndex;
+		typedef Emptiable<std::string>                 CgiPath;
 
 	  private:
 		AllowMethods allow_methods_;
