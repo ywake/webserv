@@ -578,6 +578,48 @@ TEST(config, location_conf_root)
 			),
 		})
 	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "root /var/www;"
+							  "root /var/www/html;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(
+							conf::LocationConf::AllowMethods(),
+							conf::LocationConf::Redirect(),
+							conf::LocationConf::Root("/var/www/html")
+						),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "root /var/www;"
+							  "root ;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+
 	// EXPECT_EQ(
 	// 	conf::ParseConfigFile("server {"
 	// 						  "listen 80;"

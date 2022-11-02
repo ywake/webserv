@@ -35,10 +35,7 @@ namespace conf
 			} else if (split[0] == "redirect") {
 				AddRedirect(split);
 			} else if (split[0] == "root") {
-				if (split.size() != 2) {
-					throw ConfigException("Invalid config");
-				}
-				root_ = split[1].ToString();
+				AddRoot(split);
 			} else if (split[0] == "index_files") {
 				if (split.size() != 2) {
 					throw ConfigException("Invalid config");
@@ -79,6 +76,14 @@ namespace conf
 			throw ConfigException("Invalid config");
 		}
 		redirect_.Value() = std::pair<StatusCode, Url>(tokens[1].ToString(), tokens[2].ToString());
+	}
+
+	void LocationConf::AddRoot(const std::vector<ThinString> &tokens)
+	{
+		if (tokens.size() != 2) {
+			throw ConfigException("Invalid config");
+		}
+		root_.Value() = tokens[1].ToString();
 	}
 
 	LocationConf::~LocationConf() {}
