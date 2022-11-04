@@ -37,13 +37,7 @@ namespace conf
 			} else if (split[0] == "root") {
 				AddRoot(split);
 			} else if (split[0] == "index_files") {
-				if (split.size() != 2) {
-					throw ConfigException("Invalid config");
-				}
-				for (std::vector<ThinString>::iterator it = split.begin() + 1; it != split.end();
-					 ++it) {
-					index_files_.push_back(it->ToString());
-				}
+				AddIndexFiles(split);
 			} else if (split[0] == "autoindex") {
 				if (split.size() != 2) {
 					throw ConfigException("Invalid config");
@@ -82,6 +76,14 @@ namespace conf
 			throw ConfigException("Invalid config");
 		}
 		root_ = tokens[1].ToString();
+	}
+
+	void LocationConf::AddIndexFiles(const std::vector<ThinString> &tokens)
+	{
+		for (std::vector<ThinString>::const_iterator it = tokens.begin() + 1; it != tokens.end();
+			 ++it) {
+			index_files_.push_back(it->ToString());
+		}
 	}
 
 	LocationConf::~LocationConf() {}

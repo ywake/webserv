@@ -56,6 +56,9 @@ namespace conf
 		void AddAllowMethods(const std::vector<ThinString> &tokens);
 		void AddRedirect(const std::vector<ThinString> &tokens);
 		void AddRoot(const std::vector<ThinString> &tokens);
+		void AddIndexFiles(const std::vector<ThinString> &tokens);
+		void AddAutoIndex(const std::vector<ThinString> &tokens);
+		void AddCgiPath(const std::vector<ThinString> &tokens);
 	};
 
 	std::ostream &operator<<(std::ostream &os, const LocationConf &conf);
