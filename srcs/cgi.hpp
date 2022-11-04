@@ -1,10 +1,11 @@
 #ifndef CGI_HPP
 #define CGI_HPP
 
+#include "i_resource.hpp"
 #include "request_message.hpp"
 #include "response_message.hpp"
 
-class Cgi
+class Cgi : public http::IResource
 {
   private:
 	enum PIPE_TYPE {
@@ -25,12 +26,14 @@ class Cgi
 	Cgi(const http::RequestMessage &message);
 	int Cgi::Run(const std::string &cgi_path) const;
 	// cgiレスポンスをhttpレスポンスに変換する
-	http::ResponseMessage Read() const;
-	void                  SetMetaVariables(
-						 const std::string server_name, const std::string server_port, const std::string client_ip
-					 );
-	ssize_t                  WriteRequestData(size_t nbyte) const;
-	std::vector<std::string> GetMetaVariables() const;
+	void Read();
+	void SetMetaVariables(
+		const std::string server_name, const std::string server_port, const std::string client_ip
+	);
+	ssize_t                                WriteRequestData(size_t nbyte) const;
+	std::vector<std::string>               GetMetaVariables() const;
+	const io_multiplexer::PollInstructions Send();
+	const io_multiplexer::PollInstructions Receive();
 
   private:
 	int         StartCgiProcess(const char *file, char **argv, char **envp) const;
@@ -51,6 +54,10 @@ class Cgi
 	void        ExpSafetyDup2(int oldfd, int newfd) const;
 	std::string MakeKeyValueString(const std::string &key, const std::string &value);
 	void        SearchScriptPath();
+};
+
+class CgiResponse
+{
 };
 
 #endif // CGI_HPP

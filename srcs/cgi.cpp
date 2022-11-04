@@ -3,6 +3,7 @@
 
 #include <cerrno>
 #include <cstring>
+#include <deque>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -132,9 +133,10 @@ ssize_t Cgi::WriteRequestData(size_t nbyte) const
 int Cgi::Run(const std::string &cgi_path) const
 {
 	static const unsigned int kArgvSize = 2;
-	const char               *file      = cgi_path.c_str();
-	char                     *argv[kArgvSize];
-	char                     *envp[meta_variables_.size() + 1];
+
+	const char *file = cgi_path.c_str();
+	char       *argv[kArgvSize];
+	char       *envp[meta_variables_.size() + 1];
 
 	argv[0] = const_cast<char *>(script_path_.c_str());
 	argv[1] = NULL;
@@ -145,6 +147,21 @@ int Cgi::Run(const std::string &cgi_path) const
 	envp[meta_variables_.size()] = NULL;
 
 	return StartCgiProcess(file, argv, envp);
+}
+
+const io_multiplexer::PollInstructions Cgi::Send()
+{
+	io_multiplexer::PollInstructions poll_instructions;
+
+	// 全て書き込んだら、Resource.Receiveを発火させるpoll_instructionsを返す
+	ssize_t written = WriteRequestData(100);
+	return poll_instructions;
+}
+
+const io_multiplexer::PollInstructions Cgi::Receive()
+{
+	io_multiplexer::PollInstructions poll_instructions;
+	return poll_instructions;
 }
 
 int Cgi::StartCgiProcess(const char *file, char **argv, char **envp) const

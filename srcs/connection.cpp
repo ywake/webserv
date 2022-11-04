@@ -28,6 +28,26 @@ namespace server
 			poll_instructions = Receive();
 		case kSending:
 			poll_instructions = Send();
+			/*
+			case kResourceReceiving:
+				poll_instructions = resource_.Receive();
+			case kResouceSending:
+				poll_instructions = resource_.Send();
+			*/
+		}
+		return poll_instructions;
+	}
+
+	PollInstructions Connection::Open()
+	{
+		PollInstructions poll_instructions;
+
+		if (is_cgi) {
+			resource_ = new Cgi(message_);
+			resource_.SetMetaVariables("webserv", "8080", "192.168.0.22");
+			resource_.Run("/usr/bin/python3");
+		} else {
+			resource_ = new RegularFile();
 		}
 		return poll_instructions;
 	}
@@ -59,7 +79,7 @@ namespace server
 		poll_instructions += sender_->Proceed();
 		if (sender_->IsFinished()) {
 			if (receiver_.IsSuspending()) {
-				poll_instructions += receiver_; //バッファあるとき無理かも
+				poll_instructions += receiver_; // バッファあるとき無理かも
 				state_ = kReceiving;
 			} else if (receiver_.IsFinished()) {
 				state_ = kFinished;
