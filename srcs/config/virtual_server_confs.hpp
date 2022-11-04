@@ -10,18 +10,19 @@ namespace conf
 {
 	class VirtualServerConfs
 	{
+	  public:
+		typedef std::map<Host, ServerConf &> HostMap;
+
 	  private:
 		/* data */
-		Emptiable<Host>              default_host_;
-		std::map<Host, ServerConf *> server_confs_;
+		Emptiable<Host> default_host_;
+		HostMap         server_confs_;
 
 	  public:
 		VirtualServerConfs(/* args */);
 
 		// for test
-		VirtualServerConfs(
-			const Host &default_host, const std::map<Host, ServerConf *> &server_confs
-		);
+		VirtualServerConfs(const Host &default_host, const HostMap &server_confs);
 		~VirtualServerConfs();
 
 		bool operator==(const VirtualServerConfs &rhs) const;
@@ -34,9 +35,9 @@ namespace conf
 		 * @param host
 		 * @return const ServerConf*
 		 */
-		ServerConf *operator[](const Host &host) const;
+		const ServerConf &operator[](const Host &host) const;
 
-		void Add(const Host &host, ServerConf *server_conf);
+		void Add(const Host &host, ServerConf &server_conf);
 
 		void Print(std::ostream &os) const;
 	};

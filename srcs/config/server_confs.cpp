@@ -151,11 +151,7 @@ namespace conf
 				ServerConf::ServerName hosts = it->GetServerName();
 				for (StrItr host_it = hosts.begin(); host_it != hosts.end(); ++host_it) {
 
-					bool port_has_no_conf = confs_map_.find(*port_it) == confs_map_.end();
-					if (port_has_no_conf) {
-						confs_map_[*port_it];
-					}
-					confs_map_[*port_it].Add(*host_it, &(*it));
+					confs_map_[*port_it].Add(*host_it, *it);
 				}
 			}
 		}

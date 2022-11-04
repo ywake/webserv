@@ -323,7 +323,7 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(conf::LocationConf::AllowMethods({"GET"})),
@@ -347,7 +347,7 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(conf::LocationConf::AllowMethods({"GET", "POST"})),
@@ -371,7 +371,7 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -397,7 +397,7 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(conf::LocationConf::AllowMethods({"POST", "DELETE"})),
@@ -421,7 +421,7 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(conf::LocationConf::AllowMethods({"POST", "AAAA"})),
@@ -446,7 +446,7 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(conf::LocationConf::AllowMethods({"GET", "POST"})),
@@ -485,7 +485,7 @@ TEST(config, location_conf_redirect)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -513,7 +513,7 @@ TEST(config, location_conf_redirect)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -565,7 +565,7 @@ TEST(config, location_conf_root)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -594,7 +594,7 @@ TEST(config, location_conf_root)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -690,7 +690,7 @@ TEST(config, location_conf_index_files)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -719,7 +719,7 @@ TEST(config, location_conf_index_files)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -749,7 +749,7 @@ TEST(config, location_conf_index_files)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -793,7 +793,7 @@ TEST(config, location_conf_autoindex)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -823,7 +823,7 @@ TEST(config, location_conf_autoindex)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -854,7 +854,7 @@ TEST(config, location_conf_autoindex)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -910,7 +910,7 @@ TEST(config, location_conf_cgi_path)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -942,7 +942,7 @@ TEST(config, location_conf_cgi_path)
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+				conf::ServerConf::LocationConfs({
 					{
 						"/",
 						conf::LocationConf(
@@ -989,7 +989,7 @@ TEST(config, server_confs)
 			conf::ServerConf::ServerName({"localhost"}),
 			conf::ServerConf::ErrorPages(),
 			conf::ServerConf::ClientMaxBodySize(),
-			conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+			conf::ServerConf::LocationConfs({
 				{
 					"/",
 					conf::LocationConf(
@@ -1018,7 +1018,7 @@ TEST(config, server_confs)
 			conf::ServerConf::ServerName({"example.com"}),
 			conf::ServerConf::ErrorPages(),
 			conf::ServerConf::ClientMaxBodySize(),
-			conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+			conf::ServerConf::LocationConfs({
 				{
 					"/",
 					conf::LocationConf(
@@ -1065,16 +1065,16 @@ TEST(config, server_confs)
 				{"80",
 				 conf::VirtualServerConfs(
 					 "localhost",
-					 std::map<conf::Host, conf::ServerConf *>({
-						 {"localhost", &store1[0]},
-					 })
+					 conf::VirtualServerConfs::HostMap{
+						 {"localhost", store1[0]},
+					 }
 				 )},
 				{"8080",
 				 conf::VirtualServerConfs(
 					 "example.com",
-					 std::map<conf::Host, conf::ServerConf *>({
-						 {"example.com", &store1[1]},
-					 })
+					 conf::VirtualServerConfs::HostMap{
+						 {"example.com", store1[1]},
+					 }
 				 )},
 			})
 		)
