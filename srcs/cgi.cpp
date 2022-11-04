@@ -3,7 +3,6 @@
 
 #include <cerrno>
 #include <cstring>
-#include <deque>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -164,18 +163,47 @@ bool Cgi::Terminate() const
 	return WIFEXITED(status);
 }
 
-const io_multiplexer::PollInstructions Cgi::Send()
+const Result<Cgi::PollInstructions> Cgi::Send()
 {
-	io_multiplexer::PollInstructions poll_instructions;
+	PollInstructions poll_instructions;
 
 	// 全て書き込んだら、Resource.Receiveを発火させるpoll_instructionsを返す
 	ssize_t written = WriteRequestData(100);
-	return poll_instructions;
+	return Result<PollInstructions>(poll_instructions);
 }
 
-const io_multiplexer::PollInstructions Cgi::Receive()
+Result<std::vector<char>> Cgi::Read(size_t nbyte) const
 {
-	io_multiplexer::PollInstructions poll_instructions;
+	char    buffer[nbyte];
+	ssize_t read_byte = read(pipe_to_cgi_[READ], buffer, nbyte);
+	if (read_byte == -1) {
+		return Error("");
+	}
+	return Result(std::vector<char>(buffer, buffer + read_byte));
+}
+
+const Result<Cgi::PollInstructions> Cgi::Receive()
+{
+	PollInstructions poll_instructions;
+
+	bool is_full_character_q = character_q.size() >= kCharacterQueueLength;
+	bool is_full_message_q   = message_q.size() >= kMessageQueueLength;
+
+	if (is_full_character_q && is_full_message_q) {
+		//poll_instructions += PollInstructions(kTrimWrite);
+		return poll_instructions;
+	}
+
+	if (!is_full_character_q) {
+		Result<std::vector<char>> res = Read(100);
+		if (res.IsErr()) {
+			return Error("");
+		}
+		character_q.push_back(res.Val());
+		if (res.Val().empty()) {
+			//poll_instructions += PollInstructions(kTrimRead);
+		}
+	}
 	return poll_instructions;
 }
 

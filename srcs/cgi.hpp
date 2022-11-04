@@ -4,6 +4,7 @@
 #include "i_resource.hpp"
 #include "request_message.hpp"
 #include "response_message.hpp"
+#include "result/result.hpp"
 
 class Cgi : public http::IResource
 {
@@ -30,30 +31,31 @@ class Cgi : public http::IResource
 	void SetMetaVariables(
 		const std::string server_name, const std::string server_port, const std::string client_ip
 	);
-	ssize_t                                WriteRequestData(size_t nbyte) const;
-	std::vector<std::string>               GetMetaVariables() const;
-	const io_multiplexer::PollInstructions Send();
-	const io_multiplexer::PollInstructions Receive();
+	ssize_t                        WriteRequestData(size_t nbyte) const;
+	std::vector<std::string>       GetMetaVariables() const;
+	const Result<PollInstructions> Send();
+	const Result<PollInstructions> Receive();
 
   private:
-	int         StartCgiProcess(const char *file, char **argv, char **envp) const;
-	void        SetContentLength();
-	void        SetContentType();
-	void        SetGateWayInterFace();
-	void        SetPathInfo();
-	void        SetScriptName();
-	void        SetQueryString();
-	void        SetRemoteAddr(const std::string &remote_addr);
-	void        SetRequestMethod();
-	void        SetServerName(const std::string &server_name);
-	void        SetServerPort(const std::string &server_port);
-	void        SetServerProtocol();
-	void        SetServerSoftWare();
-	void        ExpSafetyPipe(int *fds) const;
-	void        ExpSafetyClose(int fd) const;
-	void        ExpSafetyDup2(int oldfd, int newfd) const;
-	std::string MakeKeyValueString(const std::string &key, const std::string &value);
-	void        SearchScriptPath();
+	int                       StartCgiProcess(const char *file, char **argv, char **envp) const;
+	void                      SetContentLength();
+	void                      SetContentType();
+	void                      SetGateWayInterFace();
+	void                      SetPathInfo();
+	void                      SetScriptName();
+	void                      SetQueryString();
+	void                      SetRemoteAddr(const std::string &remote_addr);
+	void                      SetRequestMethod();
+	void                      SetServerName(const std::string &server_name);
+	void                      SetServerPort(const std::string &server_port);
+	void                      SetServerProtocol();
+	void                      SetServerSoftWare();
+	void                      ExpSafetyPipe(int *fds) const;
+	void                      ExpSafetyClose(int fd) const;
+	void                      ExpSafetyDup2(int oldfd, int newfd) const;
+	std::string               MakeKeyValueString(const std::string &key, const std::string &value);
+	void                      SearchScriptPath();
+	Result<std::vector<char>> Cgi::Read(size_t nbyte) const;
 };
 
 class CgiResponse
