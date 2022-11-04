@@ -26,8 +26,7 @@ class Cgi : public http::IResource
   public:
 	Cgi(const http::RequestMessage &message);
 	void Cgi::Run(const std::string &cgi_path);
-	// cgiレスポンスをhttpレスポンスに変換する
-	void Read();
+	bool Cgi::Terminate() const;
 	void SetMetaVariables(
 		const std::string server_name, const std::string server_port, const std::string client_ip
 	);

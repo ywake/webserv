@@ -149,6 +149,21 @@ void Cgi::Run(const std::string &cgi_path)
 	pid_ = StartCgiProcess(file, argv, envp);
 }
 
+// non-blocking
+bool Cgi::Terminate() const
+{
+	int status;
+
+	int ret = waitpid(pid_, &status, WNOHANG);
+	if (ret == -1) {
+		return false;
+	}
+	if (ret == 0) {
+		return true;
+	}
+	return WIFEXITED(status);
+}
+
 const io_multiplexer::PollInstructions Cgi::Send()
 {
 	io_multiplexer::PollInstructions poll_instructions;
