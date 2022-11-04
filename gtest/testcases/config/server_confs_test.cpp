@@ -893,3 +893,90 @@ TEST(config, location_conf_autoindex)
 		conf::ConfigException
 	);
 }
+
+TEST(config, location_conf_cgi_path)
+{
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "cgi_path /cgi-bin;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(
+							conf::LocationConf::AllowMethods(),
+							conf::LocationConf::Redirect(),
+							conf::LocationConf::Root(),
+							conf::LocationConf::IndexFiles(),
+							conf::LocationConf::AutoIndex(),
+							conf::LocationConf::CgiPath("/cgi-bin")
+						),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "cgi_path /cgi-bin;"
+							  "cgi_path /cgi-bin2;"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(1UL << 20),
+				conf::ServerConf::LocationConfs(std::map<conf::Path, conf::LocationConf>{
+					{
+						"/",
+						conf::LocationConf(
+							conf::LocationConf::AllowMethods(),
+							conf::LocationConf::Redirect(),
+							conf::LocationConf::Root(),
+							conf::LocationConf::IndexFiles(),
+							conf::LocationConf::AutoIndex(),
+							conf::LocationConf::CgiPath("/cgi-bin2")
+						),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "cgi_path ;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "cgi_path /cgi-bin /cgi-bin;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+}

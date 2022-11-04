@@ -20,7 +20,7 @@ namespace conf
 		typedef Emptiable<Path>                        Root;
 		typedef std::vector<Path>                      IndexFiles;
 		typedef Emptiable<bool>                        AutoIndex;
-		typedef Emptiable<std::string>                 CgiPath;
+		typedef Emptiable<Path>                        CgiPath;
 
 	  private:
 		AllowMethods allow_methods_;

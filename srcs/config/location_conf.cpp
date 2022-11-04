@@ -41,10 +41,7 @@ namespace conf
 			} else if (split[0] == "autoindex") {
 				AddAutoIndex(split);
 			} else if (split[0] == "cgi_path") {
-				if (split.size() != 2) {
-					throw ConfigException("Invalid config");
-				}
-				cgi_path_ = split[1].ToString();
+				AddCgiPath(split);
 			} else {
 				throw ConfigException("Invalid config");
 			}
@@ -96,6 +93,14 @@ namespace conf
 		} else {
 			throw ConfigException("Invalid autoindex");
 		}
+	}
+
+	void LocationConf::AddCgiPath(const std::vector<ThinString> &tokens)
+	{
+		if (tokens.size() != 2) {
+			throw ConfigException("Invalid cgi_path");
+		}
+		cgi_path_ = tokens[1].ToString();
 	}
 
 	LocationConf::~LocationConf() {}
