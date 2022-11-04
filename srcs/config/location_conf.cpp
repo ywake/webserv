@@ -39,10 +39,7 @@ namespace conf
 			} else if (split[0] == "index_files") {
 				AddIndexFiles(split);
 			} else if (split[0] == "autoindex") {
-				if (split.size() != 2) {
-					throw ConfigException("Invalid config");
-				}
-				autoindex = split[1].ToString() == "on";
+				AddAutoIndex(split);
 			} else if (split[0] == "cgi_path") {
 				if (split.size() != 2) {
 					throw ConfigException("Invalid config");
@@ -65,7 +62,7 @@ namespace conf
 	void LocationConf::AddRedirect(const std::vector<ThinString> &tokens)
 	{
 		if (tokens.size() != 3) {
-			throw ConfigException("Invalid config");
+			throw ConfigException("Invalid redirect");
 		}
 		redirect_ = std::pair<StatusCode, Url>(tokens[1].ToString(), tokens[2].ToString());
 	}
@@ -73,7 +70,7 @@ namespace conf
 	void LocationConf::AddRoot(const std::vector<ThinString> &tokens)
 	{
 		if (tokens.size() != 2) {
-			throw ConfigException("Invalid config");
+			throw ConfigException("Invalid root");
 		}
 		root_ = tokens[1].ToString();
 	}
@@ -83,6 +80,21 @@ namespace conf
 		for (std::vector<ThinString>::const_iterator it = tokens.begin() + 1; it != tokens.end();
 			 ++it) {
 			index_files_.push_back(it->ToString());
+		}
+	}
+
+	void LocationConf::AddAutoIndex(const std::vector<ThinString> &tokens)
+	{
+		if (tokens.size() != 2) {
+			throw ConfigException("Invalid autoindex");
+		}
+
+		if (tokens[1] == "on") {
+			autoindex = true;
+		} else if (tokens[1] == "off") {
+			autoindex = false;
+		} else {
+			throw ConfigException("Invalid autoindex");
 		}
 	}
 
