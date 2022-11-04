@@ -130,7 +130,7 @@ ssize_t Cgi::WriteRequestData(size_t nbyte) const
 	return write(pipe_to_cgi_[WRITE], message_.message_body_.c_str(), nbyte);
 }
 
-int Cgi::Run(const std::string &cgi_path) const
+void Cgi::Run(const std::string &cgi_path)
 {
 	static const unsigned int kArgvSize = 2;
 
@@ -146,7 +146,7 @@ int Cgi::Run(const std::string &cgi_path) const
 	}
 	envp[meta_variables_.size()] = NULL;
 
-	return StartCgiProcess(file, argv, envp);
+	pid_ = StartCgiProcess(file, argv, envp);
 }
 
 const io_multiplexer::PollInstructions Cgi::Send()

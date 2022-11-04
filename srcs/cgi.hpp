@@ -21,10 +21,11 @@ class Cgi : public http::IResource
 	std::string              extra_path_;
 	std::vector<std::string> meta_variables_;
 	int                      pipe_to_cgi_[TYPE_SIZE];
+	pid_t                    pid_;
 
   public:
 	Cgi(const http::RequestMessage &message);
-	int Cgi::Run(const std::string &cgi_path) const;
+	void Cgi::Run(const std::string &cgi_path);
 	// cgiレスポンスをhttpレスポンスに変換する
 	void Read();
 	void SetMetaVariables(
