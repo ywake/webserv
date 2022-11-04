@@ -33,7 +33,7 @@ namespace conf
 			ListenPort        listen_port          = ListenPort(),
 			ServerName        server_name          = ServerName(),
 			ErrorPages        error_pages          = ErrorPages(),
-			ClientMaxBodySize client_max_body_size = 1UL << 20,
+			ClientMaxBodySize client_max_body_size = ClientMaxBodySize(),
 			LocationConfs     location_conf        = LocationConfs()
 		);
 		~ServerConf();
@@ -52,6 +52,7 @@ namespace conf
 		const LocationConfs     &GetLocationConfs() const;
 
 		bool operator==(const ServerConf &rhs) const;
+		bool operator!=(const ServerConf &rhs) const;
 	};
 
 	std::ostream &operator<<(std::ostream &os, const ServerConf &conf);

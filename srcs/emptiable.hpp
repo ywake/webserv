@@ -1,3 +1,6 @@
+#ifndef EMPTIABLE_HPP
+#define EMPTIABLE_HPP
+
 template <typename T>
 class Emptiable
 {
@@ -36,6 +39,13 @@ class Emptiable
 
 	bool operator==(const Emptiable<T> &rhs) const
 	{
-		return value_ == rhs.value_;
+		return value_ == rhs.value_ && is_empty_ == rhs.is_empty_;
+	}
+
+	bool operator!=(const Emptiable<T> &rhs) const
+	{
+		return !(*this == rhs);
 	}
 };
+
+#endif

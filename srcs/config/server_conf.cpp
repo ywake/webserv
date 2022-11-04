@@ -183,6 +183,11 @@ namespace conf
 			   location_confs_ == rhs.location_confs_;
 	}
 
+	bool ServerConf::operator!=(const ServerConf &rhs) const
+	{
+		return !(rhs == *this);
+	}
+
 	std::ostream &operator<<(std::ostream &os, const ServerConf &conf)
 	{
 		os << "\nlisten: ";

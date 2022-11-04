@@ -18,7 +18,7 @@ namespace conf
 	 * @param config_file_path
 	 * @throw conf::ConfigException
 	 */
-	ServerConfs::ServerConfs(std::string &config_file_path)
+	ServerConfs::ServerConfs(const std::string &config_file_path)
 	{
 		Result<std::string> res = utils::ReadFile(config_file_path);
 		if (res.IsErr()) {
@@ -30,7 +30,25 @@ namespace conf
 		PortHostMapping();
 	}
 
+	ServerConfs::ServerConfs(const std::string &file_content, bool is_test)
+	{
+		(void)is_test;
+		confs_ = ParseConfigFile(file_content);
+		PortHostMapping();
+	}
+
+	ServerConfs::ServerConfs(const ConfsStore &confs, const ConfsMap &confs_map)
+	{
+		confs_     = confs;
+		confs_map_ = confs_map;
+	}
+
 	ServerConfs::~ServerConfs() {}
+
+	bool ServerConfs::operator==(const ServerConfs &rhs) const
+	{
+		return confs_ == rhs.confs_ && confs_map_ == rhs.confs_map_;
+	}
 
 	/**
 	 * @brief portに対応するstd::map<Host, ServerConf>を返す
@@ -41,10 +59,10 @@ namespace conf
 	 */
 	VirtualServerConfs &ServerConfs::operator[](const Port &port)
 	{
-		if (conf_maps_.find(port) == conf_maps_.end()) {
+		if (confs_map_.find(port) == confs_map_.end()) {
 			return empty_map_[port];
 		}
-		return conf_maps_[port];
+		return confs_map_[port];
 	}
 
 	ThinString TrimWSLF(const ThinString &str)
@@ -133,14 +151,29 @@ namespace conf
 				ServerConf::ServerName hosts = it->GetServerName();
 				for (StrItr host_it = hosts.begin(); host_it != hosts.end(); ++host_it) {
 
-					bool port_has_no_conf = conf_maps_.find(*port_it) == conf_maps_.end();
+					bool port_has_no_conf = confs_map_.find(*port_it) == confs_map_.end();
 					if (port_has_no_conf) {
-						conf_maps_[*port_it];
+						confs_map_[*port_it];
 					}
-					conf_maps_[*port_it][*host_it] = &(*it);
+					confs_map_[*port_it].Add(*host_it, &(*it));
 				}
 			}
 		}
+	}
+
+	void ServerConfs::Print(std::ostream &os) const
+	{
+		for (ConfsMap::const_iterator it = confs_map_.begin(); it != confs_map_.end(); ++it) {
+			os << "▼ ▼ ▼ port: " << it->first << "▼ ▼ ▼ " << std::endl;
+			os << it->second;
+			os << "▲ ▲ ▲ port: " << it->first << "▲ ▲ ▲ " << std::endl;
+		}
+	}
+
+	std::ostream &operator<<(std::ostream &os, const ServerConfs &confs)
+	{
+		confs.Print(os);
+		return os;
 	}
 
 } // namespace conf

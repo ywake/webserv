@@ -1,8 +1,8 @@
 #ifndef LOCATION_CONF_HPP
 #define LOCATION_CONF_HPP
 
-#include "conf_elem.hpp"
 #include "config_typedef.hpp"
+#include "emptiable.hpp"
 #include "thin_string.hpp"
 #include <iostream>
 #include <map>
