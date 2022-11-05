@@ -1,22 +1,31 @@
 #include "result.hpp"
+#include <fcntl.h>
 #include <fstream>
 #include <string>
+#include <unistd.h>
 
 namespace utils
 {
 
 	Result<std::string> ReadFile(const std::string &file_path)
 	{
-		std::ifstream ifs(file_path.c_str());
-		if (!ifs) {
-			return Result<std::string>(Error("file open error"));
+		const int kReadFileBufferSize = 1024;
+
+		int fd = open(file_path.c_str(), O_RDONLY);
+		if (fd == -1) {
+			return Error("open");
 		}
 
-		std::string line, file_content;
-		while (std::getline(ifs, line)) {
-			file_content += line + "\n";
+		std::string file;
+		char        buf[kReadFileBufferSize + 1];
+		int         rs;
+		while ((rs = read(fd, buf, kReadFileBufferSize)) > 0) {
+			buf[rs] = 0;
+			file += std::string(buf);
 		}
-
-		return Result<std::string>(file_content);
+		if (rs == -1) {
+			return Error("read");
+		}
+		return file;
 	}
 } // namespace utils
