@@ -328,10 +328,17 @@ std::ostream &operator<<(std::ostream &os, const ThinString &thin_str)
 
 bool ThinString::operator<(const ThinString &rhs) const
 {
-	return this->ToString() < rhs.ToString();
+	for (ThinString::const_iterator itr = begin(), rhs_itr = rhs.begin();
+		 itr != end() && rhs_itr != rhs.end();
+		 itr++, rhs_itr++) {
+		if (*itr != *rhs_itr) {
+			return *itr < *rhs_itr;
+		}
+	}
+	return len() < rhs.len();
 }
 
 bool ThinString::operator>(const ThinString &rhs) const
 {
-	return this->ToString() > rhs.ToString();
+	return rhs < *this;
 }
