@@ -78,7 +78,7 @@ namespace conf
 		if (tokens.size() != 3) {
 			throw ConfigException("Invalid error_page");
 		}
-		if (ABNF::IsDigitOnly(tokens[1])) {
+		if (tokens[1].size() == 3 && ABNF::IsDigitOnly(tokens[1])) {
 			error_pages_[tokens[1].ToString()] = tokens[2].ToString();
 		} else {
 			throw ConfigException("Invalid error_page");

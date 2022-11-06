@@ -224,6 +224,14 @@ TEST(config, error_page)
 							  "}"),
 		conf::ConfigException
 	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page 4040 /404.html;"
+							  "}"),
+		conf::ConfigException
+	);
 }
 
 TEST(config, client_max_body)
