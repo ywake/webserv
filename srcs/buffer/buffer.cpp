@@ -32,8 +32,7 @@ namespace buffer
 		char       c     = bytes.at(idx_); // 例外は起きないはず
 		idx_++;
 		if (idx_ == bytes.size()) {
-			idx_ = 0;
-			inner_buf_.pop_front();
+			PopFront();
 		}
 		return c;
 	}
@@ -70,4 +69,14 @@ namespace buffer
 		max_inner_buf_size_ = other.max_inner_buf_size_;
 		return *this;
 	}
+
+	void Buffer::PopFront()
+	{
+		if (inner_buf_.empty()) {
+			return;
+		}
+		idx_ = 0;
+		inner_buf_.pop_front();
+	}
+
 } // namespace buffer

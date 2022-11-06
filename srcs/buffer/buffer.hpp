@@ -31,6 +31,9 @@ namespace buffer
 		bool              empty() const;
 		bool              IsFull() const;
 		Buffer           &operator=(const Buffer &other);
+
+	  private:
+		void PopFront();
 	};
 } // namespace buffer
 
