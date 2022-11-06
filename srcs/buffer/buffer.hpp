@@ -18,7 +18,7 @@ namespace buffer
 
 	  private:
 		static const std::size_t kDefaultMaxSize = 10;
-		InnerBuffer              inner_buf_;
+		InnerBuffer              buf_;
 		std::size_t              idx_;
 		std::size_t              max_inner_buf_size_;
 

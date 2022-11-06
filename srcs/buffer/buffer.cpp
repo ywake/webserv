@@ -3,7 +3,7 @@
 namespace buffer
 {
 	Buffer::Buffer(std::size_t max_inner_buf_size)
-		: inner_buf_(), idx_(), max_inner_buf_size_(max_inner_buf_size)
+		: buf_(), idx_(), max_inner_buf_size_(max_inner_buf_size)
 	{}
 
 	Buffer::Buffer(const Buffer &other)
@@ -19,7 +19,7 @@ namespace buffer
 		if (data.empty()) {
 			return Result<void>();
 		}
-		inner_buf_.push_back(data);
+		buf_.push_back(data);
 		return Result<void>();
 	}
 
@@ -28,7 +28,7 @@ namespace buffer
 		if (empty()) {
 			return Error("buffer is empty");
 		}
-		ByteArray &bytes = inner_buf_.front();
+		ByteArray &bytes = buf_.front();
 		char       c     = bytes.at(idx_); // 例外は起きないはず
 		idx_++;
 		if (idx_ == bytes.size()) {
@@ -39,14 +39,14 @@ namespace buffer
 
 	std::vector<char> Buffer::GetAll()
 	{
-		if (inner_buf_.empty()) {
+		if (buf_.empty()) {
 			return std::vector<char>();
 		}
-		ByteArray &front = inner_buf_.front();
+		ByteArray &front = buf_.front();
 		ByteArray  all(front.begin() + idx_, front.end());
 		PopFront();
-		for (; !inner_buf_.empty();) {
-			ByteArray &buf = inner_buf_.front();
+		for (; !buf_.empty();) {
+			ByteArray &buf = buf_.front();
 			std::copy(buf.begin(), buf.end(), std::back_inserter(all));
 			PopFront();
 		}
@@ -55,12 +55,12 @@ namespace buffer
 
 	bool Buffer::empty() const
 	{
-		return inner_buf_.empty();
+		return buf_.empty();
 	}
 
 	bool Buffer::IsFull() const
 	{
-		return inner_buf_.size() == max_inner_buf_size_;
+		return buf_.size() == max_inner_buf_size_;
 	}
 
 	Buffer &Buffer::operator=(const Buffer &other)
@@ -68,7 +68,7 @@ namespace buffer
 		if (this == &other) {
 			return *this;
 		}
-		inner_buf_          = other.inner_buf_;
+		buf_                = other.buf_;
 		idx_                = other.idx_;
 		max_inner_buf_size_ = other.max_inner_buf_size_;
 		return *this;
@@ -76,11 +76,11 @@ namespace buffer
 
 	void Buffer::PopFront()
 	{
-		if (inner_buf_.empty()) {
+		if (buf_.empty()) {
 			return;
 		}
 		idx_ = 0;
-		inner_buf_.pop_front();
+		buf_.pop_front();
 	}
 
 } // namespace buffer
