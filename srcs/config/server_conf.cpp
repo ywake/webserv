@@ -4,6 +4,9 @@
 #include "parse_abnf_core_rules.hpp"
 #include "webserv_utils.hpp"
 
+#include <cassert>
+#include <limits>
+
 namespace conf
 {
 	ServerConf::ServerConf(
@@ -82,18 +85,37 @@ namespace conf
 		}
 	}
 
+	std::pair<ThinString, char> GetNumberAndUnit(ThinString str)
+	{
+		assert(!str.empty());
+		std::pair<ThinString, char> ret;
+
+		char last_char = str.at(str.size() - 1);
+		if (std::isdigit(last_char)) {
+			ret.first  = str;
+			ret.second = 'b';
+		} else {
+			ret.first  = str.substr(0, str.size() - 1);
+			ret.second = last_char;
+		}
+		return ret;
+	}
+
 	Result<std::size_t> GetUnit(char unit)
 	{
 		switch (unit) {
+		case 'b':
+		case 'B':
+			return 1UL;
 		case 'k':
 		case 'K':
-			return 1024UL;
+			return 1UL << 10;
 		case 'm':
 		case 'M':
-			return 1024UL * 1024UL;
-		case 'g':
-		case 'G':
-			return 1024UL * 1024UL * 1024UL;
+			return 1UL << 20;
+		// case 'g':
+		// case 'G':
+		// 	return 1UL << 30;
 		default:
 			return Error("Invalid unit");
 		}
@@ -104,33 +126,29 @@ namespace conf
 		if (tokens.size() != 2) {
 			throw ConfigException("Invalid client_max_body_size");
 		}
-		char last_char    = tokens[1].at(tokens[1].size() - 1);
-		bool last_is_unit = !std::isdigit(last_char);
 
-		std::size_t size = 0;
+		std::pair<ThinString, char> number_unit_pair = GetNumberAndUnit(tokens[1]);
 
-		ThinString num_part;
-		if (last_is_unit) {
-			num_part = tokens[1].substr(0, tokens[1].size() - 1);
-		} else {
-			num_part = tokens[1];
+		Result<std::size_t> res = utils::StrToUnsignedLong(number_unit_pair.first.ToString());
+		if (res.IsErr()) {
+			throw ConfigException("Invalid client_max_body_size");
 		}
-		if (ABNF::IsDigitOnly(num_part)) {
-			size = utils::stoul(num_part.ToString());
-		} else {
+		std::size_t size = res.Val();
+
+		Result<std::size_t> unit = GetUnit(number_unit_pair.second);
+		if (unit.IsErr()) {
+			throw ConfigException("Invalid client_max_body_size");
+		}
+		std::size_t unit_size = unit.Val();
+
+		if (size > std::numeric_limits<std::size_t>::max() / unit_size) {
 			throw ConfigException("Invalid client_max_body_size");
 		}
 
-		std::size_t unit_size = 1;
-		if (last_is_unit) {
-			Result<std::size_t> unit = GetUnit(last_char);
-			if (unit.IsErr()) {
-				throw ConfigException("Invalid client_max_body_size");
-			}
-			unit_size = unit.Val();
-		}
-
 		client_max_body_size_ = size * unit_size;
+		if (client_max_body_size_ == 0 || client_max_body_size_.Value() > kMaxClientBodySize) {
+			throw ConfigException("Invalid client_max_body_size");
+		}
 	}
 
 	void ServerConf::AddLocation(const ThinString &location, const std::vector<ThinString> &params)

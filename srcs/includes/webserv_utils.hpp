@@ -15,7 +15,7 @@ namespace utils
 	std::string         ToLowerString(std::string s);
 	Result<long>        StrToLong(const std::string &str);
 	Result<std::string> ReadFile(const std::string &file_path);
-	std::size_t stoul(const std::string &str, std::size_t *idx = NULL, unsigned long base = 10);
+	Result<std::size_t> StrToUnsignedLong(const std::string &str);
 
 } // namespace utils
 

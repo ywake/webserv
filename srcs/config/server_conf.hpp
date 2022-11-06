@@ -15,6 +15,9 @@ namespace conf
 {
 	class ServerConf
 	{
+	  private:
+		static const std::size_t kMaxClientBodySize = 1 << 30;
+
 	  public:
 		typedef std::vector<Port>            ListenPort;
 		typedef std::vector<std::string>     ServerName;
