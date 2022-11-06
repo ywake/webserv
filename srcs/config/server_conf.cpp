@@ -61,7 +61,7 @@ namespace conf
 			if (ABNF::IsDigitOnly(tokens[i])) {
 				listen_port_.push_back(tokens[i].ToString());
 			} else {
-				throw ConfigException("Invalid config");
+				throw ConfigException("Invalid listen port");
 			}
 		}
 	}
