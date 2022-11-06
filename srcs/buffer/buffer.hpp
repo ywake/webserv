@@ -13,8 +13,8 @@ namespace buffer
 	class Buffer
 	{
 	  private:
-		typedef std::vector<char>              ByteArray;
-		typedef std::deque<std::vector<char> > InnerBuffer;
+		typedef std::vector<char>     ByteArray;
+		typedef std::deque<ByteArray> InnerBuffer;
 
 	  private:
 		static const std::size_t kDefaultMaxSize = 10;
