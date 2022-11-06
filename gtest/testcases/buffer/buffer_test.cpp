@@ -31,9 +31,10 @@ TEST(read_buffer, get_all_test)
 	EXPECT_EQ(buf.GetAll(), std::vector<char>());
 	EXPECT_EQ(buf.GetAll(), std::vector<char>());
 	EXPECT_EQ(buf.GetAll(), std::vector<char>());
-	buf.push_back(std::vector<char>{'0'});
+	buf.push_back(std::vector<char>{'0', '0'});
 	buf.push_back(std::vector<char>{'1', '2', '3'});
 	buf.push_back(std::vector<char>{'4', '5'});
+	buf.GetChar();
 	std::vector<char> v{'0', '1', '2', '3', '4', '5'};
 	EXPECT_EQ(buf.GetAll(), v);
 }

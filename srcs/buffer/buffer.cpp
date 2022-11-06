@@ -39,12 +39,16 @@ namespace buffer
 
 	std::vector<char> Buffer::GetAll()
 	{
-		ByteArray all;
-
+		if (inner_buf_.empty()) {
+			return std::vector<char>();
+		}
+		ByteArray &front = inner_buf_.front();
+		ByteArray  all(front.begin() + idx_, front.end());
+		PopFront();
 		for (; !inner_buf_.empty();) {
 			ByteArray &buf = inner_buf_.front();
 			std::copy(buf.begin(), buf.end(), std::back_inserter(all));
-			inner_buf_.pop_front();
+			PopFront();
 		}
 		return all;
 	}
