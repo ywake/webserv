@@ -3,6 +3,7 @@
 
 #include "config_typedef.hpp"
 #include "emptiable.hpp"
+#include "result.hpp"
 #include "server_conf.hpp"
 #include <map>
 
@@ -35,7 +36,7 @@ namespace conf
 		 * @param host
 		 * @return const ServerConf*
 		 */
-		const ServerConf &operator[](const Host &host) const;
+		Result<ServerConf &> operator[](const Host &host);
 
 		void Add(const Host &host, ServerConf &server_conf);
 

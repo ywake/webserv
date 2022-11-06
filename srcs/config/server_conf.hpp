@@ -8,6 +8,7 @@
 
 #include "config_typedef.hpp"
 #include "location_conf.hpp"
+#include "result.hpp"
 #include "thin_string.hpp"
 
 namespace conf

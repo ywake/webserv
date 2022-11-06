@@ -42,8 +42,11 @@ class Result<T &>
 
   public:
 	Result() : default_(), val_(default_), err_(){};
+	Result(T &v) : val_(v), err_(){};
 	Result(const T &v) : val_(v), err_(){};
+	Result(T &v, Error &e) : val_(v), err_(e){};
 	Result(const T &v, const Error &e) : val_(v), err_(e){};
+	Result(Error &e) : default_(), val_(default_), err_(e){};
 	Result(const Error &e) : default_(), val_(default_), err_(e){};
 	bool IsOk()
 	{

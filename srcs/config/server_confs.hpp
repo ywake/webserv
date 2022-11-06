@@ -18,9 +18,8 @@ namespace conf
 		typedef std::map<Port, VirtualServerConfs> ConfsMap;
 
 	  private:
-		ConfsStore      confs_;
-		ConfsMap        confs_map_;
-		static ConfsMap empty_map_;
+		ConfsStore confs_;
+		ConfsMap   confs_map_;
 
 	  public:
 		ServerConfs(const std::string &config_file_path);
@@ -41,7 +40,7 @@ namespace conf
 		 * @param port
 		 * @return const std::map<Host, ServerConf>&
 		 */
-		VirtualServerConfs &operator[](const Port &port);
+		Result<VirtualServerConfs &> operator[](const Port &port);
 
 		void Print(std::ostream &os) const;
 

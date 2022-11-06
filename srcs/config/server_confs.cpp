@@ -10,8 +10,6 @@
 
 namespace conf
 {
-	std::map<Port, VirtualServerConfs> ServerConfs::empty_map_;
-
 	/**
 	 * @brief Construct a new Server Confs
 	 *
@@ -57,12 +55,13 @@ namespace conf
 	 * @param port
 	 * @return const std::map<Host, ServerConf>&
 	 */
-	VirtualServerConfs &ServerConfs::operator[](const Port &port)
+	Result<VirtualServerConfs &> ServerConfs::operator[](const Port &port)
 	{
-		if (confs_map_.find(port) == confs_map_.end()) {
-			return empty_map_[port];
+		try {
+			return confs_map_[port];
+		} catch (const std::out_of_range &e) {
+			return Error("port not found");
 		}
-		return confs_map_[port];
 	}
 
 	ThinString TrimWSLF(const ThinString &str)
