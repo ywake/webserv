@@ -61,6 +61,31 @@ TEST(config, get_virtual_servers_list)
 							  "}"),
 		conf::ConfigException
 	);
+	// EXPECT_THROW(
+	// 	conf::ParseConfigFile("location / {"
+	// 						  "}"),
+	// 	conf::ConfigException
+	// );
+	// EXPECT_THROW(
+	// 	conf::ParseConfigFile("location / {"
+	// 							"location / {"
+	// 							"}"
+	// 						  "}"),
+	// 	conf::ConfigException
+	// );
+	// EXPECT_THROW(
+	// 	conf::ParseConfigFile("serever {"
+	// 							"location / {"
+	// 								"server {"
+	// 								"}"
+	// 							"}"
+	// 						  "}"),
+	// 	conf::ConfigException
+	// );
+	// EXPECT_THROW(
+	// 	conf::ParseConfigFile("test;"),
+	// 	conf::ConfigException
+	// );
 }
 
 TEST(config, listen)
@@ -535,30 +560,6 @@ TEST(config, location_conf_allow_methods)
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
-							  "allow_methods POST AAAA;"
-							  "}"
-							  "}"),
-		std::vector<conf::ServerConf>({
-			conf::ServerConf(
-				conf::ServerConf::ListenPort({"80"}),
-				conf::ServerConf::ServerName({"localhost"}),
-				conf::ServerConf::ErrorPages(),
-				conf::ServerConf::ClientMaxBodySize(),
-				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(conf::LocationConf::AllowMethods({"POST", "AAAA"})),
-					},
-				})
-			),
-		})
-	);
-
-	EXPECT_EQ(
-		conf::ParseConfigFile("server {"
-							  "listen 80;"
-							  "server_name localhost;"
-							  "location / {"
 							  "allow_methods GET;"
 							  "allow_methods POST;"
 							  "}"
@@ -586,6 +587,17 @@ TEST(config, location_conf_allow_methods)
 							  "location / {"
 							  "allow_methods GET;"
 							  "allow_methods ;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "allow_methods POST AAAA;"
 							  "}"
 							  "}"),
 		conf::ConfigException

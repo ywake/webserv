@@ -52,7 +52,11 @@ namespace conf
 	{
 		for (std::vector<ThinString>::const_iterator it = tokens.begin() + 1; it != tokens.end();
 			 ++it) {
-			allow_methods_.push_back(it->ToString());
+			if (*it == "GET" || *it == "POST" || *it == "DELETE") {
+				allow_methods_.push_back(it->ToString());
+			} else {
+				throw ConfigException("Invalid allow_methods");
+			}
 		}
 	}
 
