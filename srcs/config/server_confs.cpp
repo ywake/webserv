@@ -1,5 +1,6 @@
 #include "server_confs.hpp"
 #include "config_exceptions.hpp"
+#include "parse_stack.hpp"
 #include "thin_string.hpp"
 #include "webserv_utils.hpp"
 
@@ -70,35 +71,26 @@ namespace conf
 	}
 
 	void WhenBraceOpen(
-		std::vector<ServerConf>              &v_servers,
-		std::stack<ThinString>               &head_stack,
-		std::stack<std::vector<ThinString> > &content_stack,
-		const ThinString                     &content
+		std::vector<ServerConf> &v_servers, ParseStack &parse_stack, const ThinString &content
 	)
 	{
-		head_stack.push(TrimWSLF(content));
-		content_stack.push(std::vector<ThinString>());
-		if (!head_stack.empty() && head_stack.top() == "server") {
+		parse_stack.push(TrimWSLF(content));
+		if (parse_stack.TopHeader() == "server") {
 			v_servers.push_back(ServerConf());
 		}
 	}
 
-	void WhenBraceClose(
-		std::vector<ServerConf>              &v_servers,
-		std::stack<ThinString>               &head_stack,
-		std::stack<std::vector<ThinString> > &content_stack
-	)
+	void WhenBraceClose(std::vector<ServerConf> &v_servers, ParseStack &parse_stack)
 	{
-		if (head_stack.empty() || content_stack.empty()) {
+		if (parse_stack.empty()) {
 			throw ConfigException("Invalid config file");
 		}
-		if (head_stack.top() == "server") {
-			v_servers.back().SetParams(content_stack.top());
-		} else if (head_stack.top().StartWith("location")) {
-			v_servers.back().AddLocation(head_stack.top(), content_stack.top());
+		if (parse_stack.TopHeader() == "server") {
+			v_servers.back().SetParams(parse_stack.TopContents());
+		} else if (parse_stack.TopHeader().StartWith("location")) {
+			v_servers.back().AddLocation(parse_stack.TopHeader(), parse_stack.TopContents());
 		}
-		head_stack.pop();
-		content_stack.pop();
+		parse_stack.pop();
 	}
 
 	std::vector<ServerConf> ParseConfigFile(const std::string &config_file_content)
@@ -106,30 +98,27 @@ namespace conf
 		std::vector<ServerConf> v_servers;
 		ThinString              contents(config_file_content);
 
-		std::stack<ThinString>               head_stack;
-		std::stack<std::vector<ThinString> > content_stack;
-		std::size_t                          start = 0;
+		ParseStack  parse_stack;
+		std::size_t start = 0;
 		for (std::size_t i = 0; i < contents.size(); ++i) {
 			switch (contents.at(i)) {
 			case '{':
-				WhenBraceOpen(
-					v_servers, head_stack, content_stack, contents.substr(start, i - start)
-				);
+				WhenBraceOpen(v_servers, parse_stack, contents.substr(start, i - start));
 				start = i + 1;
 				break;
 			case ';':
-				content_stack.top().push_back(TrimWSLF(contents.substr(start, i - start)));
+				parse_stack.AddContent(TrimWSLF(contents.substr(start, i - start)));
 				start = i + 1;
 				break;
 			case '}':
-				WhenBraceClose(v_servers, head_stack, content_stack);
+				WhenBraceClose(v_servers, parse_stack);
 				start = i + 1;
 				break;
 			default:
 				break;
 			}
 		}
-		if (!head_stack.empty() || !content_stack.empty()) {
+		if (!parse_stack.empty()) {
 			throw ConfigException("Invalid config file");
 		}
 
