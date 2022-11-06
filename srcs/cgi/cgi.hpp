@@ -18,6 +18,7 @@ class Cgi : public http::IResource
 	const http::RequestMessage message_;
 	const RequestFormData      formdata_;
 
+	// cgiリクエストクラスが、送信とデータ変換のインタフェースを持った方が良いかも
 	std::string              script_path_;
 	std::string              extra_path_;
 	std::vector<std::string> meta_variables_;
@@ -56,10 +57,6 @@ class Cgi : public http::IResource
 	std::string               MakeKeyValueString(const std::string &key, const std::string &value);
 	void                      SearchScriptPath();
 	Result<std::vector<char>> Cgi::Read(size_t nbyte) const;
-};
-
-class CgiResponse
-{
 };
 
 #endif // CGI_HPP

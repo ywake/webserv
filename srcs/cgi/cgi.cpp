@@ -190,7 +190,7 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 	bool is_full_message_q   = message_q.size() >= kMessageQueueLength;
 
 	if (is_full_character_q && is_full_message_q) {
-		//poll_instructions += PollInstructions(kTrimWrite);
+		// poll_instructions += PollInstructions(kTrimWrite);
 		return poll_instructions;
 	}
 
@@ -200,10 +200,23 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 			return Error("");
 		}
 		character_q.push_back(res.Val());
-		if (res.Val().empty()) {
-			//poll_instructions += PollInstructions(kTrimRead);
+		if (message_q.empty() && res.Val().empty()) {
+			// poll_instructions += PollInstructions(kTrimRead);
 		}
 	}
+
+	if (!is_full_message_q) {
+		/*NLまでがヘッダ、それ以降はボディ
+		ヘッダはNLでsplit、keyvalueに分解してheader_fields_に追加
+		ボディはmessage_body_に代入
+		*/
+	}
+	// cgiレスポンスをhttpレスポンスに変換
+	/* ヘッダは、ヘッダごとに固有の変換方法があるので、それに従う
+	例えば、Statusヘッダは、httpレスポンスのstatus-codeに変換される
+	ボディは何も変更せずにhttpメッセージのbodyとする
+	*/
+
 	return poll_instructions;
 }
 
