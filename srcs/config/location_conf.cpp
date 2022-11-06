@@ -52,17 +52,20 @@ namespace conf
 	{
 		for (std::vector<ThinString>::const_iterator it = tokens.begin() + 1; it != tokens.end();
 			 ++it) {
-			if (*it == "GET" || *it == "POST" || *it == "DELETE") {
-				allow_methods_.push_back(it->ToString());
-			} else {
+			if (*it != "GET" && *it != "POST" && *it != "DELETE") {
 				throw ConfigException("Invalid allow_methods");
 			}
+			allow_methods_.push_back(it->ToString());
 		}
 	}
 
 	void LocationConf::AddRedirect(const std::vector<ThinString> &tokens)
 	{
 		if (tokens.size() != 3) {
+			throw ConfigException("Invalid redirect");
+		}
+		if (tokens[1] != "301" && tokens[1] != "302" && tokens[1] != "303" && tokens[1] != "307" &&
+			tokens[1] != "308") {
 			throw ConfigException("Invalid redirect");
 		}
 		redirect_ = std::pair<StatusCode, Url>(tokens[1].ToString(), tokens[2].ToString());

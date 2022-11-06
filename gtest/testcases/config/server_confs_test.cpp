@@ -682,6 +682,39 @@ TEST(config, location_conf_redirect)
 							  "}"),
 		conf::ConfigException
 	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "redirect 304 example.com;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "redirect 200 example.com;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "redirect AAAAA example.com;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
 }
 
 TEST(config, location_conf_root)
