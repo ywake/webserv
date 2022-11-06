@@ -27,14 +27,14 @@ namespace conf
 		std::string config_file_content = res.Val();
 
 		confs_ = ParseConfigFile(config_file_content);
-		PortHostMapping();
+		CreatePortHostMap();
 	}
 
 	ServerConfs::ServerConfs(const std::string &file_content, bool is_test)
 	{
 		(void)is_test;
 		confs_ = ParseConfigFile(file_content);
-		PortHostMapping();
+		CreatePortHostMap();
 	}
 
 	ServerConfs::ServerConfs(const ConfsStore &confs, const ConfsMap &confs_map)
@@ -137,7 +137,7 @@ namespace conf
 		return v_servers;
 	}
 
-	void ServerConfs::PortHostMapping()
+	void ServerConfs::CreatePortHostMap()
 	{
 		typedef std::vector<ServerConf>::iterator  ConfsItr;
 		typedef std::vector<std::string>::iterator StrItr;
