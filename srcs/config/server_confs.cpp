@@ -74,15 +74,19 @@ namespace conf
 		std::vector<ServerConf> &v_servers, ParseStack &parse_stack, const ThinString &content
 	)
 	{
-		parse_stack.push(TrimWSLF(content));
+		if (!parse_stack.push(content)) {
+			throw ConfigException("Invalid config file");
+		}
 		if (parse_stack.TopHeader() == "server") {
 			v_servers.push_back(ServerConf());
 		}
 	}
 
-	void WhenBraceClose(std::vector<ServerConf> &v_servers, ParseStack &parse_stack)
+	void WhenBraceClose(
+		std::vector<ServerConf> &v_servers, ParseStack &parse_stack, const ThinString &content
+	)
 	{
-		if (parse_stack.empty()) {
+		if (parse_stack.empty() || !content.empty()) {
 			throw ConfigException("Invalid config file");
 		}
 		if (parse_stack.TopHeader() == "server") {
@@ -90,7 +94,10 @@ namespace conf
 		} else if (parse_stack.TopHeader().StartWith("location")) {
 			v_servers.back().AddLocation(parse_stack.TopHeader(), parse_stack.TopContents());
 		}
-		parse_stack.pop();
+
+		if (!parse_stack.pop()) {
+			throw ConfigException("Invalid config file");
+		}
 	}
 
 	std::vector<ServerConf> ParseConfigFile(const std::string &config_file_content)
@@ -101,22 +108,25 @@ namespace conf
 		ParseStack  parse_stack;
 		std::size_t start = 0;
 		for (std::size_t i = 0; i < contents.size(); ++i) {
+			if (contents.at(i) != '{' && contents.at(i) != '}' && contents.at(i) != ';') {
+				continue;
+			}
+
+			ThinString content = TrimWSLF(contents.substr(start, i - start));
 			switch (contents.at(i)) {
 			case '{':
-				WhenBraceOpen(v_servers, parse_stack, contents.substr(start, i - start));
-				start = i + 1;
+				WhenBraceOpen(v_servers, parse_stack, content);
 				break;
 			case ';':
-				parse_stack.AddContent(TrimWSLF(contents.substr(start, i - start)));
-				start = i + 1;
+				if (!parse_stack.AddContent(content)) {
+					throw ConfigException("Invalid config file");
+				}
 				break;
 			case '}':
-				WhenBraceClose(v_servers, parse_stack);
-				start = i + 1;
-				break;
-			default:
+				WhenBraceClose(v_servers, parse_stack, content);
 				break;
 			}
+			start = i + 1;
 		}
 		if (!parse_stack.empty()) {
 			throw ConfigException("Invalid config file");

@@ -61,31 +61,34 @@ TEST(config, get_virtual_servers_list)
 							  "}"),
 		conf::ConfigException
 	);
-	// EXPECT_THROW(
-	// 	conf::ParseConfigFile("location / {"
-	// 						  "}"),
-	// 	conf::ConfigException
-	// );
-	// EXPECT_THROW(
-	// 	conf::ParseConfigFile("location / {"
-	// 							"location / {"
-	// 							"}"
-	// 						  "}"),
-	// 	conf::ConfigException
-	// );
-	// EXPECT_THROW(
-	// 	conf::ParseConfigFile("serever {"
-	// 							"location / {"
-	// 								"server {"
-	// 								"}"
-	// 							"}"
-	// 						  "}"),
-	// 	conf::ConfigException
-	// );
-	// EXPECT_THROW(
-	// 	conf::ParseConfigFile("test;"),
-	// 	conf::ConfigException
-	// );
+	EXPECT_THROW(
+		conf::ParseConfigFile("server / {"
+							  "aaaa"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("location / {"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("location / {"
+							  "location / {"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("serever {"
+							  "location / {"
+							  "server {"
+							  "}"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(conf::ParseConfigFile("test;"), conf::ConfigException);
 }
 
 TEST(config, listen)

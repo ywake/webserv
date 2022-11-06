@@ -18,18 +18,24 @@ namespace conf
 	  private:
 		std::stack<Header>   head_stack_;
 		std::stack<Contents> content_stack;
+		int                  layer_;
+		enum layers {
+			kOutSide,
+			kServer,
+			kLocation
+		};
 
 	  public:
 		ParseStack(/* args */);
 		~ParseStack();
 
-		void push(const Header &head);
-		void pop();
+		bool push(const Header &head);
+		bool pop();
 		bool empty() const;
 
 		Header   TopHeader();
 		Contents TopContents();
-		void     AddContent(ThinString content);
+		bool     AddContent(ThinString content);
 	};
 } // namespace conf
 

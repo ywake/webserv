@@ -2,20 +2,47 @@
 
 namespace conf
 {
-	ParseStack::ParseStack(/* args */) : head_stack_(), content_stack() {}
+	ParseStack::ParseStack(/* args */) : head_stack_(), content_stack(), layer_(0) {}
 
 	ParseStack::~ParseStack() {}
 
-	void ParseStack::push(const Header &head)
+	bool ParseStack::push(const Header &head)
 	{
+		switch (layer_) {
+		case kOutSide:
+			if (head != "server") {
+				return false;
+			}
+			break;
+		case kServer:
+			if (!head.StartWith("location")) {
+				return false;
+			}
+			break;
+		case kLocation:
+		default:
+			return false;
+		}
+
 		head_stack_.push(head);
 		content_stack.push(Contents());
+		++layer_;
+		return true;
 	}
 
-	void ParseStack::pop()
+	bool ParseStack::pop()
 	{
 		head_stack_.pop();
 		content_stack.pop();
+		--layer_;
+		switch (layer_) {
+		case kOutSide:
+		case kServer:
+			return true;
+		case kLocation:
+		default:
+			return false;
+		}
 	}
 
 	bool ParseStack::empty() const
@@ -33,8 +60,16 @@ namespace conf
 		return content_stack.top();
 	}
 
-	void ParseStack::AddContent(ThinString content)
+	bool ParseStack::AddContent(ThinString content)
 	{
-		content_stack.top().push_back(content);
+		switch (layer_) {
+		case kServer:
+		case kLocation:
+			content_stack.top().push_back(content);
+			return true;
+		case kOutSide:
+		default:
+			return false;
+		}
 	}
 } // namespace conf
