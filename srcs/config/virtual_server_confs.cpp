@@ -25,7 +25,7 @@ namespace conf
 				// std::cerr << "server_confs_ key is not equal" << std::endl;
 				return false;
 			}
-			if (it->second != rhs.server_confs_.find(it->first)->second) {
+			if (*(it->second) != *(rhs.server_confs_.find(it->first)->second)) {
 				// std::cerr << "server_confs_ value is not equal" << std::endl;
 				return false;
 			}
@@ -36,12 +36,12 @@ namespace conf
 	Result<ServerConf &> VirtualServerConfs::operator[](const Host &host)
 	{
 		try {
-			return server_confs_[host];
+			return *server_confs_[host];
 		} catch (const std::out_of_range &e) {
 		}
 
 		try {
-			return server_confs_[default_host_.Value()];
+			return *server_confs_[default_host_.Value()];
 		} catch (const std::out_of_range &e) {
 			return Error("default_host is not set");
 		}
@@ -52,7 +52,7 @@ namespace conf
 		if (default_host_.empty()) {
 			default_host_ = host;
 		}
-		server_confs_.insert(std::pair<Host, ServerConf &>(host, server_conf));
+		server_confs_.insert(std::pair<Host, ServerConf *>(host, &server_conf));
 	}
 
 	void VirtualServerConfs::Print(std::ostream &os) const
@@ -61,7 +61,7 @@ namespace conf
 		os << "server_confs_: " << std::endl;
 		for (HostMap::const_iterator it = server_confs_.begin(); it != server_confs_.end(); it++) {
 			os << "▽ ▽ " << it->first << "▽ ▽" << std::endl;
-			os << it->second;
+			os << *(it->second);
 			os << "△ △ " << it->first << "△ △" << std::endl;
 		}
 	}

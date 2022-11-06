@@ -12,7 +12,7 @@ namespace conf
 	class VirtualServerConfs
 	{
 	  public:
-		typedef std::map<Host, ServerConf &> HostMap;
+		typedef std::map<Host, ServerConf *> HostMap;
 
 	  private:
 		/* data */

@@ -1237,14 +1237,14 @@ TEST(config, server_confs)
 				 conf::VirtualServerConfs(
 					 "localhost",
 					 conf::VirtualServerConfs::HostMap{
-						 {"localhost", store1[0]},
+						 {"localhost", &store1[0]},
 					 }
 				 )},
 				{"8080",
 				 conf::VirtualServerConfs(
 					 "example.com",
 					 conf::VirtualServerConfs::HostMap{
-						 {"example.com", store1[1]},
+						 {"example.com", &store1[1]},
 					 }
 				 )},
 			})
