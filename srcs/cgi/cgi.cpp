@@ -1,4 +1,6 @@
 #include "cgi.hpp"
+#include "parse_cgi_utils.hpp"
+#include "response_message.hpp"
 #include "webserv_utils.hpp"
 
 #include <cerrno>
@@ -168,48 +170,62 @@ const Result<Cgi::PollInstructions> Cgi::Send()
 	PollInstructions poll_instructions;
 
 	// 全て書き込んだら、Resource.Receiveを発火させるpoll_instructionsを返す
+	// 定数にする
 	ssize_t written = WriteRequestData(100);
 	return Result<PollInstructions>(poll_instructions);
 }
 
 Result<std::vector<char>> Cgi::Read(size_t nbyte) const
 {
-	char    buffer[nbyte];
-	ssize_t read_byte = read(pipe_to_cgi_[READ], buffer, nbyte);
+	// 定数にする
+	std::vector<char> buffer(100);
+	ssize_t           read_byte = read(pipe_to_cgi_[READ], buffer.data(), buffer.size());
 	if (read_byte == -1) {
 		return Error("");
 	}
-	return Result(std::vector<char>(buffer, buffer + read_byte));
+	return buffer;
 }
 
 const Result<Cgi::PollInstructions> Cgi::Receive()
 {
 	PollInstructions poll_instructions;
 
-	bool is_full_character_q = character_q.size() >= kCharacterQueueLength;
-	bool is_full_message_q   = message_q.size() >= kMessageQueueLength;
-
-	if (is_full_character_q && is_full_message_q) {
+	if (c_buffer_.IsFull() && m_buffer.IsFull()) {
 		// poll_instructions += PollInstructions(kTrimWrite);
 		return poll_instructions;
 	}
 
-	if (!is_full_character_q) {
+	if (!c_buffer_.IsFull()) {
 		Result<std::vector<char>> res = Read(100);
 		if (res.IsErr()) {
 			return Error("");
 		}
-		character_q.push_back(res.Val());
-		if (message_q.empty() && res.Val().empty()) {
+		c_buffer_.push_back(res.Val());
+		if (m_buffer_.empty() && res.Val().empty()) {
 			// poll_instructions += PollInstructions(kTrimRead);
 		}
 	}
 
 	if (!is_full_message_q) {
-		/*NLまでがヘッダ、それ以降はボディ
+		/*
+		header NL
+		header NL
+		header NL
+		NL
+		message_body
+
+		BL = NLNL
+		kState = kParseHeader | kParseBody
+		*/
+		/*BLまでがヘッダ、それ以降はボディ
 		ヘッダはNLでsplit、keyvalueに分解してheader_fields_に追加
 		ボディはmessage_body_に代入
 		*/
+		ThinString buf;
+		while (true) {
+			char c = c_buffer_.GetChar();
+		}
+		cgi::ResponseMessage msg("aaa");
 	}
 	// cgiレスポンスをhttpレスポンスに変換
 	/* ヘッダは、ヘッダごとに固有の変換方法があるので、それに従う

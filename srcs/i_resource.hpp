@@ -9,12 +9,6 @@ namespace http
 {
 	class IResource
 	{
-	  protected:
-		static const size_t           kCharacterQueueLength = 10;
-		static const size_t           kMessageQueueLength   = 10;
-		std::deque<std::vector<char>> character_q;
-		std::deque<CgiResponse>       message_q;
-
 	  public:
 		typedef io_multiplexer::PollInstructions PollInstructions;
 		virtual const Result<PollInstructions>   Send()    = 0;
