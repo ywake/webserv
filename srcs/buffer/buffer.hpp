@@ -4,6 +4,7 @@
 #include <deque>
 #include <vector>
 
+#include "emptiable.hpp"
 #include "response_message.hpp"
 #include "result.hpp"
 
@@ -27,7 +28,7 @@ namespace buffer
 		Buffer(std::size_t max_inner_buf_size = kDefaultMaxSize);
 		Buffer(const Buffer &other);
 		Result<void>      push_back(const std::vector<char> &data);
-		Result<char>      GetChar();
+		Emptiable<char>   GetChar();
 		std::vector<char> GetAll();
 		bool              empty() const;
 		bool              IsFull() const;

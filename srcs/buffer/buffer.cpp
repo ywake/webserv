@@ -23,10 +23,10 @@ namespace buffer
 		return Result<void>();
 	}
 
-	Result<char> Buffer::GetChar()
+	Emptiable<char> Buffer::GetChar()
 	{
 		if (empty()) {
-			return Error("buffer is empty");
+			return Emptiable<char>();
 		}
 		ByteArray &bytes = buf_.front();
 		char       c     = bytes.at(idx_); // 例外は起きないはず
