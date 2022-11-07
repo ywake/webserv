@@ -5,8 +5,8 @@ TEST(read_buffer, basic_test)
 {
 	buffer::Buffer buf(3);
 
-	EXPECT_TRUE(buf.GetChar().IsErr());
-	EXPECT_TRUE(buf.GetChar().IsErr());
+	EXPECT_TRUE(buf.GetChar().empty());
+	EXPECT_TRUE(buf.GetChar().empty());
 	EXPECT_FALSE(buf.push_back(std::vector<char>()).IsErr());
 	EXPECT_FALSE(buf.push_back(std::vector<char>()).IsErr());
 	EXPECT_FALSE(buf.push_back(std::vector<char>()).IsErr());
@@ -15,13 +15,13 @@ TEST(read_buffer, basic_test)
 	EXPECT_FALSE(buf.push_back(std::vector<char>{'4', '5'}).IsErr());
 	EXPECT_TRUE(buf.push_back(std::vector<char>{'6'}).IsErr());
 	EXPECT_TRUE(buf.push_back(std::vector<char>{'6'}).IsErr());
-	EXPECT_EQ(buf.GetChar().Val(), '0');
-	EXPECT_EQ(buf.GetChar().Val(), '1');
-	EXPECT_EQ(buf.GetChar().Val(), '2');
-	EXPECT_EQ(buf.GetChar().Val(), '3');
-	EXPECT_EQ(buf.GetChar().Val(), '4');
-	EXPECT_EQ(buf.GetChar().Val(), '5');
-	EXPECT_TRUE(buf.GetChar().IsErr());
+	EXPECT_EQ(buf.GetChar().Value(), '0');
+	EXPECT_EQ(buf.GetChar().Value(), '1');
+	EXPECT_EQ(buf.GetChar().Value(), '2');
+	EXPECT_EQ(buf.GetChar().Value(), '3');
+	EXPECT_EQ(buf.GetChar().Value(), '4');
+	EXPECT_EQ(buf.GetChar().Value(), '5');
+	EXPECT_TRUE(buf.GetChar().empty());
 }
 
 TEST(read_buffer, get_all_test)
