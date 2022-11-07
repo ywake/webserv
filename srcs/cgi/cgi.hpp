@@ -23,7 +23,6 @@ class Cgi : public http::IResource
 	};
 
 	State                 state_;
-	std::string           pending_;
 	buffer::Buffer        read_buffer_;
 	buffer::MessageBuffer msg_buffer_;
 
@@ -68,8 +67,9 @@ class Cgi : public http::IResource
 	void                      ExpSafetyDup2(int oldfd, int newfd) const;
 	std::string               MakeKeyValueString(const std::string &key, const std::string &value);
 	void                      SearchScriptPath();
-	Result<std::vector<char>> Cgi::Read(size_t nbyte) const;
+	Result<std::vector<char>> Read(size_t nbyte) const;
 	const Result<void>        ParseCgiResponse();
+	std::string               GetLine();
 };
 
 #endif // CGI_HPP

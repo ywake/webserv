@@ -213,7 +213,30 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 			return Error(res.Err().c_str());
 		}
 	}
-	if (state_ == kParseFinish) {
+
+	std::string line         = GetLine();
+	bool        is_blankline = line == http::kCrLf || line == http::kNl;
+
+	switch (state_) {
+	case kParseHeader:
+		// AddHeader(line);
+		if (is_blankline) {
+			state_ = kParseBody;
+		}
+		break;
+
+	case kParseBody:
+		if (is_blankline) {
+			return Error("");
+		}
+		if (line.empty()) {
+			state_ = kParseFinish;
+		}
+		// AddBody(line);
+		break;
+
+	case kParseFinish:
+	default:
 		// cgiレスポンスをhttpレスポンスに変換
 		/* ヘッダは、ヘッダごとに固有の変換方法があるので、それに従う
 		例えば、Statusヘッダは、httpレスポンスのstatus-codeに変換される
@@ -223,14 +246,9 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 	return poll_instructions;
 }
 
-const Result<void> Cgi::ParseCgiResponse()
+std::string Cgi::GetLine()
 {
-	if (read_buffer_.empty()) {
-		// SetBody(pending_);
-		state_ = kParseFinish;
-		pending_.clear();
-		return Result<void>();
-	}
+	std::string line;
 
 	while (true) {
 		Emptiable<char> res = read_buffer_.GetChar();
@@ -238,28 +256,12 @@ const Result<void> Cgi::ParseCgiResponse()
 			break;
 		}
 		char c = res.Value();
-		pending_ += c;
-
-		ThinString trim_newline       = cgi::TrimNewline(pending_);
-		bool       endswith_newline   = !trim_newline.empty();
-		bool       endswith_blankline = !cgi::TrimNewline(trim_newline).empty();
-
-		if (state_ == kParseHeader) {
-			if (endswith_newline) {
-				// AddHeader(trim_newline);
-				pending_.clear();
-			}
-			if (endswith_blankline) {
-				state_ = kParseBody;
-				pending_.clear();
-			}
-		} else if (state_ == kParseBody) {
-			if (endswith_blankline) {
-				return Error("Parse Error.");
-			}
+		line += c;
+		if (c == http::kNl[0]) {
+			break;
 		}
 	}
-	return Result<void>();
+	return line;
 }
 
 int Cgi::StartCgiProcess(const char *file, char **argv, char **envp) const
