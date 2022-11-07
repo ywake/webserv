@@ -34,3 +34,4 @@ destructor.c
 
 ## google test
 gtest/googletest
+old/*
