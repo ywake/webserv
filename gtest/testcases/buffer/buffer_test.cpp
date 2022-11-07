@@ -44,11 +44,17 @@ TEST(read_buffer, empty_test)
 	buffer::Buffer buf(3);
 
 	EXPECT_TRUE(buf.empty());
+	EXPECT_TRUE(buf.empty());
+	EXPECT_TRUE(buf.empty());
 	buf.push_back(std::vector<char>{'a', 'b'});
+	EXPECT_FALSE(buf.empty());
+	EXPECT_FALSE(buf.empty());
 	EXPECT_FALSE(buf.empty());
 	buf.push_back(std::vector<char>{'c', 'd'});
 	buf.push_back(std::vector<char>{'c', 'd'});
 	buf.GetAll();
+	EXPECT_TRUE(buf.empty());
+	EXPECT_TRUE(buf.empty());
 	EXPECT_TRUE(buf.empty());
 }
 
@@ -57,8 +63,13 @@ TEST(read_buffer, is_full_test)
 	buffer::Buffer buf(3);
 
 	EXPECT_FALSE(buf.IsFull());
+	EXPECT_FALSE(buf.IsFull());
+	EXPECT_FALSE(buf.IsFull());
 	buf.push_back(std::vector<char>{'a', 'b'});
 	buf.push_back(std::vector<char>{'c', 'd'});
 	buf.push_back(std::vector<char>{'c', 'd'});
+	EXPECT_TRUE(buf.IsFull());
+	EXPECT_TRUE(buf.IsFull());
+	EXPECT_TRUE(buf.IsFull());
 	EXPECT_TRUE(buf.IsFull());
 }
