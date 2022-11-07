@@ -16,6 +16,11 @@ class Cgi : public http::IResource
 		TYPE_SIZE
 	};
 
+	enum State {
+		kParseHeader,
+		kParseBody,
+	};
+
 	buffer::Buffer        read_buffer_;
 	buffer::MessageBuffer msg_buffer_;
 
@@ -31,8 +36,8 @@ class Cgi : public http::IResource
 
   public:
 	Cgi(const http::RequestMessage &message);
-	void Cgi::Run(const std::string &cgi_path);
-	bool Cgi::Terminate() const;
+	void Run(const std::string &cgi_path);
+	bool Terminate() const;
 	void SetMetaVariables(
 		const std::string server_name, const std::string server_port, const std::string client_ip
 	);
