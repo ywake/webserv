@@ -19,8 +19,11 @@ class Cgi : public http::IResource
 	enum State {
 		kParseHeader,
 		kParseBody,
+		kParseFinish,
 	};
 
+	State                 state_;
+	std::string           pending_;
 	buffer::Buffer        read_buffer_;
 	buffer::MessageBuffer msg_buffer_;
 
@@ -66,6 +69,7 @@ class Cgi : public http::IResource
 	std::string               MakeKeyValueString(const std::string &key, const std::string &value);
 	void                      SearchScriptPath();
 	Result<std::vector<char>> Cgi::Read(size_t nbyte) const;
+	const Result<void>        ParseCgiResponse();
 };
 
 #endif // CGI_HPP

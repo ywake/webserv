@@ -1,4 +1,5 @@
 #include "cgi.hpp"
+#include "http_define.hpp"
 #include "parse_cgi_utils.hpp"
 #include "response_message.hpp"
 #include "webserv_utils.hpp"
@@ -181,7 +182,7 @@ Result<std::vector<char>> Cgi::Read(size_t nbyte) const
 	std::vector<char> buffer(100);
 	ssize_t           read_byte = read(pipe_to_cgi_[READ], buffer.data(), buffer.size());
 	if (read_byte == -1) {
-		return Error("");
+		return Error(errno);
 	}
 	return buffer;
 }
@@ -198,7 +199,7 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 	if (!read_buffer_.IsFull()) {
 		Result<std::vector<char>> res = Read(100);
 		if (res.IsErr()) {
-			return Error("");
+			return Error(res.Err().c_str());
 		}
 		read_buffer_.push_back(res.Val());
 		if (msg_buffer_.empty() && res.Val().empty()) {
@@ -207,36 +208,58 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 	}
 
 	if (!msg_buffer_.IsFull()) {
-		/*
-		header NL
-		header NL
-		header NL
-		NL
-		message_body
-
-		BL = NLNL
-		kState = kParseHeader | kParseBody
-		*/
-		/*BLまでがヘッダ、それ以降はボディ
-		ヘッダはNLでsplit、keyvalueに分解してheader_fields_に追加
-		ボディはmessage_body_に代入
-		*/
-		ThinString buf;
-		while (true) {
-			Result<char> res = read_buffer_.GetChar();
-			if (res.IsErr()) {
-				return Error(res.Err());
-			}
-			char c = res.Val();
+		Result<void> res = ParseCgiResponse();
+		if (res.IsErr()) {
+			return Error(res.Err().c_str());
 		}
 	}
-	// cgiレスポンスをhttpレスポンスに変換
-	/* ヘッダは、ヘッダごとに固有の変換方法があるので、それに従う
-	例えば、Statusヘッダは、httpレスポンスのstatus-codeに変換される
-	ボディは何も変更せずにhttpメッセージのbodyとする
-	*/
-	// msg_buffer_.push_back();
+	if (state_ == kParseFinish) {
+		// cgiレスポンスをhttpレスポンスに変換
+		/* ヘッダは、ヘッダごとに固有の変換方法があるので、それに従う
+		例えば、Statusヘッダは、httpレスポンスのstatus-codeに変換される
+		ボディは何も変更せずにhttpメッセージのbodyとする
+		*/
+	}
 	return poll_instructions;
+}
+
+const Result<void> Cgi::ParseCgiResponse()
+{
+	if (read_buffer_.empty()) {
+		// SetBody(pending_);
+		state_ = kParseFinish;
+		pending_.clear();
+		return Result<void>();
+	}
+
+	while (true) {
+		Emptiable<char> res = read_buffer_.GetChar();
+		if (res.empty()) {
+			break;
+		}
+		char c = res.Value();
+		pending_ += c;
+
+		ThinString trim_newline       = cgi::TrimNewline(pending_);
+		bool       endswith_newline   = !trim_newline.empty();
+		bool       endswith_blankline = !cgi::TrimNewline(trim_newline).empty();
+
+		if (state_ == kParseHeader) {
+			if (endswith_newline) {
+				// AddHeader(trim_newline);
+				pending_.clear();
+			}
+			if (endswith_blankline) {
+				state_ = kParseBody;
+				pending_.clear();
+			}
+		} else if (state_ == kParseBody) {
+			if (endswith_blankline) {
+				return Error("Parse Error.");
+			}
+		}
+	}
+	return Result<void>();
 }
 
 int Cgi::StartCgiProcess(const char *file, char **argv, char **envp) const
