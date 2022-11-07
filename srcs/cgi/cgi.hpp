@@ -2,6 +2,7 @@
 #define CGI_HPP
 
 #include "buffer.hpp"
+#include "http_response_builder.hpp"
 #include "i_resource.hpp"
 #include "request_message.hpp"
 #include "response_message.hpp"
@@ -22,9 +23,10 @@ class Cgi : public http::IResource
 		kParseFinish,
 	};
 
-	State                 state_;
-	buffer::Buffer        read_buffer_;
-	buffer::MessageBuffer msg_buffer_;
+	State                    state_;
+	buffer::Buffer           read_buffer_;
+	buffer::MessageBuffer    msg_buffer_;
+	cgi::HttpResponseBuilder builder_;
 
 	const http::RequestMessage message_;
 	const RequestFormData      formdata_;

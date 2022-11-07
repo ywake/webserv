@@ -219,7 +219,7 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 
 	switch (state_) {
 	case kParseHeader:
-		// AddHeader(line);
+		builder_.AddHeader(line);
 		if (is_blankline) {
 			state_ = kParseBody;
 		}
@@ -232,7 +232,7 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 		if (line.empty()) {
 			state_ = kParseFinish;
 		}
-		// AddBody(line);
+		builder_.AddBody(line);
 		break;
 
 	case kParseFinish:
@@ -242,6 +242,7 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 		例えば、Statusヘッダは、httpレスポンスのstatus-codeに変換される
 		ボディは何も変更せずにhttpメッセージのbodyとする
 		*/
+		msg_buffer_.push_back(builder_.Translate());
 	}
 	return poll_instructions;
 }
