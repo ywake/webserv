@@ -83,4 +83,42 @@ namespace buffer
 		buf_.pop_front();
 	}
 
+	MessageBuffer::MessageBuffer(std::size_t max_innfer_buf_size = kDefaultMaxSize)
+		: buf_(), max_inner_buf_size_(max_innfer_buf_size)
+	{}
+
+	MessageBuffer::MessageBuffer(const MessageBuffer &other)
+	{
+		*this = other;
+	}
+
+	Result<void> MessageBuffer::push_back(const http::ResponseMessage &data)
+	{
+		if (IsFull()) {
+			return Error("buffer is full");
+		}
+		buf_.push_back(data);
+		return Result<void>();
+	}
+
+	bool MessageBuffer::empty() const
+	{
+		return buf_.empty();
+	}
+
+	bool MessageBuffer::IsFull() const
+	{
+		return buf_.size() == max_inner_buf_size_;
+	}
+
+	MessageBuffer &MessageBuffer::operator=(const MessageBuffer &other)
+	{
+		if (this == &other) {
+			return *this;
+		}
+		buf_                = other.buf_;
+		max_inner_buf_size_ = other.max_inner_buf_size_;
+		return *this;
+	}
+
 } // namespace buffer

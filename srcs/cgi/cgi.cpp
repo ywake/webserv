@@ -190,23 +190,23 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 {
 	PollInstructions poll_instructions;
 
-	if (c_buffer_.IsFull() && m_buffer.IsFull()) {
+	if (read_buffer_.IsFull() && msg_buffer_.IsFull()) {
 		// poll_instructions += PollInstructions(kTrimWrite);
 		return poll_instructions;
 	}
 
-	if (!c_buffer_.IsFull()) {
+	if (!read_buffer_.IsFull()) {
 		Result<std::vector<char>> res = Read(100);
 		if (res.IsErr()) {
 			return Error("");
 		}
-		c_buffer_.push_back(res.Val());
-		if (m_buffer_.empty() && res.Val().empty()) {
+		read_buffer_.push_back(res.Val());
+		if (msg_buffer_.empty() && res.Val().empty()) {
 			// poll_instructions += PollInstructions(kTrimRead);
 		}
 	}
 
-	if (!is_full_message_q) {
+	if (!msg_buffer_.IsFull()) {
 		/*
 		header NL
 		header NL
@@ -223,16 +223,19 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 		*/
 		ThinString buf;
 		while (true) {
-			char c = c_buffer_.GetChar();
+			Result<char> res = read_buffer_.GetChar();
+			if (res.IsErr()) {
+				return Error(res.Err());
+			}
+			char c = res.Val();
 		}
-		cgi::ResponseMessage msg("aaa");
 	}
 	// cgiレスポンスをhttpレスポンスに変換
 	/* ヘッダは、ヘッダごとに固有の変換方法があるので、それに従う
 	例えば、Statusヘッダは、httpレスポンスのstatus-codeに変換される
 	ボディは何も変更せずにhttpメッセージのbodyとする
 	*/
-
+	// msg_buffer_.push_back();
 	return poll_instructions;
 }
 

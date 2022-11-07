@@ -4,6 +4,7 @@
 #include <deque>
 #include <vector>
 
+#include "response_message.hpp"
 #include "result.hpp"
 
 // TODO rename
@@ -34,6 +35,25 @@ namespace buffer
 
 	  private:
 		void PopFront();
+	};
+
+	class MessageBuffer
+	{
+	  private:
+		typedef std::deque<http::ResponseMessage> InnerBuffer;
+
+	  private:
+		static const std::size_t kDefaultMaxSize = 10;
+		InnerBuffer              buf_;
+		std::size_t              max_inner_buf_size_;
+
+	  public:
+		MessageBuffer(std::size_t max_innfer_buf_size = kDefaultMaxSize);
+		MessageBuffer(const MessageBuffer &other);
+		Result<void>   push_back(const http::ResponseMessage &data);
+		bool           empty() const;
+		bool           IsFull() const;
+		MessageBuffer &operator=(const MessageBuffer &other);
 	};
 } // namespace buffer
 

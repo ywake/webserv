@@ -1,6 +1,7 @@
 #ifndef CGI_HPP
 #define CGI_HPP
 
+#include "buffer.hpp"
 #include "i_resource.hpp"
 #include "request_message.hpp"
 #include "response_message.hpp"
@@ -14,6 +15,9 @@ class Cgi : public http::IResource
 		WRITE,
 		TYPE_SIZE
 	};
+
+	buffer::Buffer        read_buffer_;
+	buffer::MessageBuffer msg_buffer_;
 
 	const http::RequestMessage message_;
 	const RequestFormData      formdata_;
