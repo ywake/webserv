@@ -199,7 +199,7 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 	if (!read_buffer_.IsFull()) {
 		Result<std::vector<char>> res = Read(100);
 		if (res.IsErr()) {
-			return Error(res.Err().c_str());
+			return res.err;
 		}
 		read_buffer_.push_back(res.Val());
 		if (msg_buffer_.empty() && res.Val().empty()) {
@@ -207,13 +207,20 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 		}
 	}
 
-	if (!msg_buffer_.IsFull()) {
-		Result<void> res = ParseCgiResponse();
-		if (res.IsErr()) {
-			return Error(res.Err().c_str());
-		}
+	if (msg_buffer_.IsFull()) {
+		// poll_instructions += PollInstructions(kAppendWrite);
+		return poll_instructions;
 	}
 
+	Result<void> res = ParseCgiResponse();
+	if (res.IsErr()) {
+		return res.err;
+	}
+	return poll_instructions;
+}
+
+const Result<void> Cgi::ParseCgiResponse()
+{
 	std::string line         = GetLine();
 	bool        is_blankline = line == http::kCrLf || line == http::kNl;
 
@@ -227,7 +234,7 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 
 	case kParseBody:
 		if (is_blankline) {
-			return Error("");
+			return Error("Invalid Cgi Response.");
 		}
 		if (line.empty()) {
 			state_ = kParseFinish;
@@ -242,9 +249,14 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 		例えば、Statusヘッダは、httpレスポンスのstatus-codeに変換される
 		ボディは何も変更せずにhttpメッセージのbodyとする
 		*/
-		msg_buffer_.push_back(builder_.Translate());
+		Result<http::ResponseMessage> res = builder_.Translate();
+		if (res.IsErr()) {
+			return res.err;
+		}
+		msg_buffer_.push_back(res.Val());
+		state_ = kParseHeader; // 同じreceiveの中で２度呼ばれないことに依存する
 	}
-	return poll_instructions;
+	return Result<void>();
 }
 
 std::string Cgi::GetLine()
