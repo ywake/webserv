@@ -1250,4 +1250,6 @@ TEST(config, server_confs)
 			})
 		)
 	);
+
+	EXPECT_THROW(conf::ServerConfs("", true), conf::ConfigException);
 }
