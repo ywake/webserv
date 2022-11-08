@@ -33,9 +33,9 @@ namespace conf
 		bool pop();
 		bool empty() const;
 
-		Header   TopHeader();
-		Contents TopContents();
-		bool     AddContent(ThinString content);
+		Header   &TopHeader();
+		Contents &TopContents();
+		bool      AddContent(ThinString content);
 	};
 } // namespace conf
 

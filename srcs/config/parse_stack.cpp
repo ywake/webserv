@@ -50,12 +50,12 @@ namespace conf
 		return head_stack_.empty() && content_stack.empty();
 	}
 
-	ParseStack::Header ParseStack::TopHeader()
+	ParseStack::Header &ParseStack::TopHeader()
 	{
 		return head_stack_.top();
 	}
 
-	ParseStack::Contents ParseStack::TopContents()
+	ParseStack::Contents &ParseStack::TopContents()
 	{
 		return content_stack.top();
 	}
