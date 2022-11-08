@@ -33,7 +33,7 @@ namespace conf
 		return true;
 	}
 
-	Result<ServerConf &> VirtualServerConfs::operator[](const Host &host)
+	Result<const ServerConf &> VirtualServerConfs::operator[](const Host &host)
 	{
 		try {
 			return *server_confs_[host];

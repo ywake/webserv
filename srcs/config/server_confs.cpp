@@ -56,7 +56,7 @@ namespace conf
 	 * @param port
 	 * @return const std::map<Host, ServerConf>&
 	 */
-	Result<VirtualServerConfs &> ServerConfs::operator[](const Port &port)
+	Result<const VirtualServerConfs &> ServerConfs::operator[](const Port &port)
 	{
 		try {
 			return confs_map_[port];

@@ -40,7 +40,7 @@ namespace conf
 		 * @param port
 		 * @return const std::map<Host, ServerConf>&
 		 */
-		Result<VirtualServerConfs &> operator[](const Port &port);
+		Result<const VirtualServerConfs &> operator[](const Port &port);
 
 		void Print(std::ostream &os) const;
 
