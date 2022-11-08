@@ -102,6 +102,10 @@ namespace conf
 
 	std::vector<ServerConf> ParseConfigFile(const std::string &config_file_content)
 	{
+		if (config_file_content.empty()) {
+			throw ConfigException("config file is empty");
+		}
+
 		std::vector<ServerConf> v_servers;
 		ThinString              contents(config_file_content);
 
