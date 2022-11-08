@@ -13,7 +13,7 @@ namespace utils
 
 		int fd = open(file_path.c_str(), O_RDONLY);
 		if (fd == -1) {
-			return Error("open");
+			return Error(errno);
 		}
 
 		std::string file;
