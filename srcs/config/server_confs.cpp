@@ -74,9 +74,7 @@ namespace conf
 		std::vector<ServerConf> &v_servers, ParseStack &parse_stack, const ThinString &content
 	)
 	{
-		if (!parse_stack.push(content)) {
-			throw ConfigException("Invalid config file");
-		}
+		parse_stack.push(content);
 		if (parse_stack.TopHeader() == "server") {
 			v_servers.push_back(ServerConf());
 		}
@@ -95,9 +93,7 @@ namespace conf
 			v_servers.back().AddLocation(parse_stack.TopHeader(), parse_stack.TopContents());
 		}
 
-		if (!parse_stack.pop()) {
-			throw ConfigException("Invalid config file");
-		}
+		parse_stack.pop();
 	}
 
 	std::vector<ServerConf> ParseConfigFile(const std::string &config_file_content)
@@ -122,9 +118,7 @@ namespace conf
 				WhenBraceOpen(v_servers, parse_stack, content);
 				break;
 			case ';':
-				if (!parse_stack.AddContent(content)) {
-					throw ConfigException("Invalid config file");
-				}
+				parse_stack.AddContent(content);
 				break;
 			case '}':
 				WhenBraceClose(v_servers, parse_stack, content);

@@ -1,4 +1,5 @@
 #include "parse_stack.hpp"
+#include "config_exceptions.hpp"
 
 namespace conf
 {
@@ -6,31 +7,30 @@ namespace conf
 
 	ParseStack::~ParseStack() {}
 
-	bool ParseStack::push(const Header &head)
+	void ParseStack::push(const Header &head)
 	{
 		switch (layer_) {
 		case kOutSide:
 			if (head != "server") {
-				return false;
+				throw conf::ConfigException("Invalid config");
 			}
 			break;
 		case kServer:
 			if (!head.StartWith("location")) {
-				return false;
+				throw conf::ConfigException("Invalid config");
 			}
 			break;
 		case kLocation:
 		default:
-			return false;
+			throw conf::ConfigException("Invalid config");
 		}
 
 		head_stack_.push(head);
 		content_stack.push(Contents());
 		++layer_;
-		return true;
 	}
 
-	bool ParseStack::pop()
+	void ParseStack::pop()
 	{
 		head_stack_.pop();
 		content_stack.pop();
@@ -38,10 +38,10 @@ namespace conf
 		switch (layer_) {
 		case kOutSide:
 		case kServer:
-			return true;
+			break;
 		case kLocation:
 		default:
-			return false;
+			throw conf::ConfigException("Invalid config");
 		}
 	}
 
@@ -60,16 +60,16 @@ namespace conf
 		return content_stack.top();
 	}
 
-	bool ParseStack::AddContent(ThinString content)
+	void ParseStack::AddContent(ThinString content)
 	{
 		switch (layer_) {
 		case kServer:
 		case kLocation:
 			content_stack.top().push_back(content);
-			return true;
+			break;
 		case kOutSide:
 		default:
-			return false;
+			throw conf::ConfigException("Invalid config");
 		}
 	}
 } // namespace conf

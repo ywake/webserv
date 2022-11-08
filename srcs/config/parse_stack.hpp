@@ -29,13 +29,13 @@ namespace conf
 		ParseStack(/* args */);
 		~ParseStack();
 
-		bool push(const Header &head);
-		bool pop();
+		void push(const Header &head);
+		void pop();
 		bool empty() const;
 
 		Header   &TopHeader();
 		Contents &TopContents();
-		bool      AddContent(ThinString content);
+		void      AddContent(ThinString content);
 	};
 } // namespace conf
 
