@@ -52,6 +52,7 @@ namespace conf
 	{
 		for (std::vector<ThinString>::const_iterator it = tokens.begin() + 1; it != tokens.end();
 			 ++it) {
+			// TODO: METHODSのプールを用意する
 			if (*it != "GET" && *it != "POST" && *it != "DELETE") {
 				throw ConfigException("Invalid allow_methods");
 			}
