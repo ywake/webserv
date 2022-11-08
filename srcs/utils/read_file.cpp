@@ -18,12 +18,12 @@ namespace utils
 
 		std::string file;
 		char        buf[kReadFileBufferSize + 1];
-		int         rs;
-		while ((rs = read(fd, buf, kReadFileBufferSize)) > 0) {
-			buf[rs] = 0;
-			file += std::string(buf);
+		int         read_count;
+		while ((read_count = read(fd, buf, kReadFileBufferSize)) > 0) {
+			buf[read_count] = 0;
+			file += std::string(buf, read_count);
 		}
-		if (rs == -1) {
+		if (read_count == -1) {
 			return Error("read");
 		}
 		return file;
