@@ -3,46 +3,22 @@
 
 namespace conf
 {
-	ParseStack::ParseStack(/* args */) : head_stack_(), content_stack(), layer_(0) {}
+	ParseStack::ParseStack(/* args */) : head_stack_(), content_stack(), state_() {}
 
 	ParseStack::~ParseStack() {}
 
 	void ParseStack::push(const Header &head)
 	{
-		switch (layer_) {
-		case kOutSide:
-			if (head != "server") {
-				throw conf::ConfigException("Invalid config: push(kOutSide)");
-			}
-			break;
-		case kServer:
-			if (!head.StartWith("location ")) {
-				throw conf::ConfigException("Invalid config: push(kServer)");
-			}
-			break;
-		case kLocation:
-		default:
-			throw conf::ConfigException("Invalid config: push(other)");
-		}
-
+		state_.Increment(head);
 		head_stack_.push(head);
 		content_stack.push(Contents());
-		++layer_;
 	}
 
 	void ParseStack::pop()
 	{
+		state_.Decrement();
 		head_stack_.pop();
 		content_stack.pop();
-		--layer_;
-		switch (layer_) {
-		case kOutSide:
-		case kServer:
-			break;
-		case kLocation:
-		default:
-			throw conf::ConfigException("Invalid config: pop");
-		}
 	}
 
 	bool ParseStack::empty() const
@@ -62,13 +38,9 @@ namespace conf
 
 	void ParseStack::AddContent(ThinString content)
 	{
-		switch (layer_) {
-		case kServer:
-		case kLocation:
+		if (state_.HasContent()) {
 			content_stack.top().push_back(content);
-			break;
-		case kOutSide:
-		default:
+		} else {
 			throw conf::ConfigException("Invalid config: AddContent");
 		}
 	}

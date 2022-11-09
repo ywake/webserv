@@ -1,6 +1,7 @@
 #ifndef PARSE_STACK_HPP
 #define PARSE_STACK_HPP
 
+#include "parse_state.hpp"
 #include "thin_string.hpp"
 
 #include <stack>
@@ -18,12 +19,7 @@ namespace conf
 	  private:
 		std::stack<Header>   head_stack_;
 		std::stack<Contents> content_stack;
-		int                  layer_;
-		enum layers {
-			kOutSide,
-			kServer,
-			kLocation
-		};
+		ParseState           state_;
 
 	  public:
 		ParseStack(/* args */);
