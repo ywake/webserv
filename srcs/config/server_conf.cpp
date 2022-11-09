@@ -32,7 +32,7 @@ namespace conf
 
 			std::vector<ThinString> tokens = Split(*it, " ");
 			if (tokens.size() < 2) {
-				throw ConfigException("Invalid config");
+				throw ConfigException("Invalid server config: invalid size");
 			}
 			if (tokens[0] == "listen") {
 				AddListenPort(tokens);
@@ -43,7 +43,7 @@ namespace conf
 			} else if (tokens[0] == "client_max_body_size") {
 				AddClientMaxBodySize(tokens);
 			} else {
-				throw ConfigException("Invalid config");
+				throw ConfigException("Invalid server config: invalid directive");
 			}
 		}
 		if (listen_port_.empty()) {

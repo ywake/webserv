@@ -28,7 +28,7 @@ namespace conf
 			 ++it) {
 			std::vector<ThinString> split = Split(*it, " ");
 			if (split.size() < 2) {
-				throw ConfigException("Invalid config");
+				throw ConfigException("Invalid location config: invalid size");
 			}
 			if (split[0] == "allow_methods") {
 				AddAllowMethods(split);
@@ -43,7 +43,7 @@ namespace conf
 			} else if (split[0] == "cgi_path") {
 				AddCgiPath(split);
 			} else {
-				throw ConfigException("Invalid config");
+				throw ConfigException("Invalid location config: invalid directive");
 			}
 		}
 	}

@@ -12,17 +12,17 @@ namespace conf
 		switch (layer_) {
 		case kOutSide:
 			if (head != "server") {
-				throw conf::ConfigException("Invalid config");
+				throw conf::ConfigException("Invalid config: push(kOutSide)");
 			}
 			break;
 		case kServer:
 			if (!head.StartWith("location")) {
-				throw conf::ConfigException("Invalid config");
+				throw conf::ConfigException("Invalid config: push(kServer)");
 			}
 			break;
 		case kLocation:
 		default:
-			throw conf::ConfigException("Invalid config");
+			throw conf::ConfigException("Invalid config: push(other)");
 		}
 
 		head_stack_.push(head);
@@ -41,7 +41,7 @@ namespace conf
 			break;
 		case kLocation:
 		default:
-			throw conf::ConfigException("Invalid config");
+			throw conf::ConfigException("Invalid config: pop");
 		}
 	}
 
@@ -69,7 +69,7 @@ namespace conf
 			break;
 		case kOutSide:
 		default:
-			throw conf::ConfigException("Invalid config");
+			throw conf::ConfigException("Invalid config: AddContent");
 		}
 	}
 } // namespace conf
