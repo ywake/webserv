@@ -80,10 +80,17 @@ TEST(config, get_virtual_servers_list)
 		conf::ConfigException
 	);
 	EXPECT_THROW(
-		conf::ParseConfigFile("serever {"
+		conf::ParseConfigFile("server {"
 							  "location / {"
 							  "server {"
 							  "}"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "locationa / {"
 							  "}"
 							  "}"),
 		conf::ConfigException

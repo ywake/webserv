@@ -16,7 +16,7 @@ namespace conf
 			}
 			break;
 		case kServer:
-			if (!head.StartWith("location")) {
+			if (!head.StartWith("location ")) {
 				throw conf::ConfigException("Invalid config: push(kServer)");
 			}
 			break;
