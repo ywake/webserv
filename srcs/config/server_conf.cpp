@@ -30,7 +30,7 @@ namespace conf
 		for (std::vector<ThinString>::const_iterator it = params.begin(); it != params.end();
 			 ++it) {
 
-			std::vector<ThinString> tokens = Split(*it, " ");
+			std::vector<ThinString> tokens = utils::TrimEmpty(Split(*it, " "));
 			if (tokens.size() < 2) {
 				throw ConfigException("Invalid server config: invalid size");
 			}

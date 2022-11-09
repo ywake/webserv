@@ -26,7 +26,7 @@ namespace conf
 	{
 		for (std::vector<ThinString>::const_iterator it = params.begin(); it != params.end();
 			 ++it) {
-			std::vector<ThinString> split = Split(*it, " ");
+			std::vector<ThinString> split = utils::TrimEmpty(Split(*it, " "));
 			if (split.size() < 2) {
 				throw ConfigException("Invalid location config: invalid size");
 			}

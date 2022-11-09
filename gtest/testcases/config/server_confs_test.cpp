@@ -145,6 +145,13 @@ TEST(config, listen)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "listen  ;"
+							  "server_name localhost;"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
 							  "listen 80a;"
 							  "server_name localhost;"
 							  "}"),
@@ -264,6 +271,14 @@ TEST(config, error_page)
 							  "listen 80;"
 							  "server_name localhost;"
 							  "error_page 4040 /404.html;"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page   ;"
 							  "}"),
 		conf::ConfigException
 	);
@@ -1217,7 +1232,7 @@ TEST(config, server_confs)
 			"listen 80;"
 			"server_name localhost;"
 			"location / {"
-			"root /var/www;"
+			"root    /var/www;"
 			"index_files index.html;"
 			"autoindex on;"
 			"}"
