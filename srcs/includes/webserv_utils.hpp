@@ -14,6 +14,7 @@ namespace utils
 {
 	std::string  ToLowerString(std::string s);
 	Result<long> StrToLong(const std::string &str);
+	Result<bool> IsRegularFile(int fd);
 
 } // namespace utils
 
