@@ -103,17 +103,19 @@ namespace conf
 		}
 
 		std::vector<ServerConf> v_servers;
-		ThinString              contents(config_file_content);
+		ThinString              file(config_file_content);
 
 		ParseStack  parse_stack;
 		std::size_t start = 0;
-		for (std::size_t i = 0; i < contents.size(); ++i) {
-			if (contents.at(i) != '{' && contents.at(i) != '}' && contents.at(i) != ';') {
+		for (std::size_t i = 0; i < file.size(); ++i) {
+			char now      = file.at(i);
+			bool is_delim = now == '{' || now == '}' || now == ';';
+			if (!is_delim) {
 				continue;
 			}
 
-			ThinString content = TrimWSLF(contents.substr(start, i - start));
-			switch (contents.at(i)) {
+			ThinString content = TrimWSLF(file.substr(start, i - start));
+			switch (now) {
 			case '{':
 				WhenBraceOpen(v_servers, parse_stack, content);
 				break;
