@@ -20,6 +20,80 @@ TEST(config, get_virtual_servers_list)
 	);
 
 	EXPECT_EQ(
+		conf::ParseConfigFile("\n\nserver {"
+							  "\n\nlisten 80;"
+							  "\n\nserver_name localhost;"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}), conf::ServerConf::ServerName({"localhost"})
+			),
+		})
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server\n{"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server{"
+							  "listen 80\n;"
+							  "server_name localhost;"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location /\n {"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(),
+				conf::ServerConf::LocationConfs({
+					{
+						"/\n",
+						conf::LocationConf(),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location \n/ {"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(),
+				conf::ServerConf::LocationConfs({
+					{
+						"\n/",
+						conf::LocationConf(),
+					},
+				})
+			),
+		})
+	);
+
+	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"

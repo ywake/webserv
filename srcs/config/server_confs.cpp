@@ -67,7 +67,7 @@ namespace conf
 
 	ThinString TrimWSLF(const ThinString &str)
 	{
-		return str.TrimLeft(" \t\n").TrimRight(" \t\n");
+		return str.TrimLeft(" \t\n").TrimRight(" \t");
 	}
 
 	void WhenBraceOpen(
