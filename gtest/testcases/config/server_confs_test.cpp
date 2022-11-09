@@ -7,6 +7,11 @@
 
 TEST(config, get_virtual_servers_list)
 {
+
+	EXPECT_EQ(conf::ParseConfigFile(""), std::vector<conf::ServerConf>({}));
+	EXPECT_EQ(conf::ParseConfigFile("\n"), std::vector<conf::ServerConf>({}));
+	EXPECT_EQ(conf::ParseConfigFile("   "), std::vector<conf::ServerConf>({}));
+
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
 							  "listen 80;"

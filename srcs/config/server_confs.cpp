@@ -33,6 +33,9 @@ namespace conf
 	{
 		(void)is_test;
 		confs_ = ParseConfigFile(file_content);
+		if (confs_.empty()) {
+			throw ConfigException("Empty config");
+		}
 		CreatePortHostMap();
 	}
 
@@ -98,10 +101,6 @@ namespace conf
 
 	std::vector<ServerConf> ParseConfigFile(const std::string &config_file_content)
 	{
-		if (config_file_content.empty()) {
-			throw ConfigException("config file is empty");
-		}
-
 		std::vector<ServerConf> v_servers;
 		ThinString              file(config_file_content);
 
