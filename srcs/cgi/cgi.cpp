@@ -173,7 +173,13 @@ const Result<Cgi::PollInstructions> Cgi::Send()
 	// 全て書き込んだら、Resource.Receiveを発火させるpoll_instructionsを返す
 	// 定数にする
 	ssize_t written = WriteRequestData(100);
-	return Result<PollInstructions>(poll_instructions);
+	if (written == -1) {
+		return Error(errno);
+	}
+	if (written == 0) {
+		// どうやってResource.Receiveを発火させる？
+	}
+	return Result<PollInstructions>();
 }
 
 Result<std::vector<char>> Cgi::Read(size_t nbyte) const
@@ -184,6 +190,7 @@ Result<std::vector<char>> Cgi::Read(size_t nbyte) const
 	if (read_byte == -1) {
 		return Error(errno);
 	}
+	buffer.resize(read_byte);
 	return buffer;
 }
 
@@ -216,6 +223,7 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 	if (res.IsErr()) {
 		return res.err;
 	}
+	// ここでメッセージバッファにhttpレスポンスを追加する方がスコープが揃うが、未完成のhttpレスポンスをResultでうまく返せない
 	return poll_instructions;
 }
 
@@ -232,6 +240,7 @@ const Result<void> Cgi::ParseCgiResponse()
 		}
 		break;
 
+	//[FIX] bodyは少しずつバッファに追加しないといけない
 	case kParseBody:
 		if (is_blankline) {
 			return Error("Invalid Cgi Response.");
@@ -277,50 +286,57 @@ std::string Cgi::GetLine()
 	return line;
 }
 
-int Cgi::StartCgiProcess(const char *file, char **argv, char **envp) const
+Result<int> Cgi::StartCgiProcess(const char *file, char **argv, char **envp) const
 {
 	int pipe_from_cgi[2];
-	ExpSafetyPipe(pipe_from_cgi);
+
+	if (pipe(pipe_from_cgi) < 0) {
+		return Error(errno);
+	}
 
 	pid_t pid = fork();
 	switch (pid) {
 	case -1:
-		throw std::runtime_error("fork: " + std::string(strerror(errno)));
+		return Error(errno);
 	case 0:
-		ExpSafetyDup2(pipe_to_cgi_[READ], STDIN_FILENO);
-		ExpSafetyDup2(pipe_from_cgi[WRITE], STDOUT_FILENO);
-		ExpSafetyClose(pipe_to_cgi_[READ]);
-		ExpSafetyClose(pipe_from_cgi[WRITE]);
-		ExpSafetyClose(pipe_to_cgi_[WRITE]);
-		ExpSafetyClose(pipe_from_cgi[READ]);
+		Xdup2(pipe_to_cgi_[READ], STDIN_FILENO);
+		Xdup2(pipe_from_cgi[WRITE], STDOUT_FILENO);
+		Xclose(pipe_to_cgi_[READ]);
+		Xclose(pipe_from_cgi[WRITE]);
+		Xclose(pipe_to_cgi_[WRITE]);
+		Xclose(pipe_from_cgi[READ]);
 
 		execve(file, argv, envp);
-		throw std::runtime_error("execve: " + std::string(strerror(errno)));
+		exit(EXIT_FAILURE);
 	default:
-		ExpSafetyClose(pipe_to_cgi_[READ]);
-		ExpSafetyClose(pipe_from_cgi[WRITE]);
+		if (close(pipe_to_cgi_[READ]) == -1) {
+			return Error(errno);
+		}
+		if (close(pipe_from_cgi[WRITE]) == -1) {
+			return Error(errno);
+		}
 	}
 	return pid;
 }
 
-void Cgi::ExpSafetyPipe(int *fds) const
+void Cgi::Xpipe(int *fds) const
 {
 	if (pipe(fds) < 0) {
-		throw std::runtime_error("pipe: " + std::string(strerror(errno)));
+		exit(EXIT_FAILURE);
 	}
 }
 
-void Cgi::ExpSafetyClose(int fd) const
+void Cgi::Xclose(int fd) const
 {
 	if (close(fd) == -1) {
-		throw std::runtime_error("close: " + std::string(strerror(errno)));
+		exit(EXIT_FAILURE);
 	}
 }
 
-void Cgi::ExpSafetyDup2(int oldfd, int newfd) const
+void Cgi::Xdup2(int oldfd, int newfd) const
 {
 	if (dup2(oldfd, newfd) == -1) {
-		throw std::runtime_error("dup2: " + std::string(strerror(errno)));
+		exit(EXIT_FAILURE);
 	}
 }
 

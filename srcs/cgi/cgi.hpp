@@ -29,7 +29,7 @@ class Cgi : public http::IResource
 	cgi::HttpResponseBuilder builder_;
 
 	const http::RequestMessage message_;
-	const RequestFormData      formdata_;
+	const RequestFormData     &formdata_;
 
 	// cgiリクエストクラスが、送信とデータ変換のインタフェースを持った方が良いかも
 	std::string              script_path_;
@@ -51,7 +51,7 @@ class Cgi : public http::IResource
 	const Result<PollInstructions> Receive();
 
   private:
-	int                       StartCgiProcess(const char *file, char **argv, char **envp) const;
+	Result<int>               StartCgiProcess(const char *file, char **argv, char **envp) const;
 	void                      SetContentLength();
 	void                      SetContentType();
 	void                      SetGateWayInterFace();
@@ -64,9 +64,9 @@ class Cgi : public http::IResource
 	void                      SetServerPort(const std::string &server_port);
 	void                      SetServerProtocol();
 	void                      SetServerSoftWare();
-	void                      ExpSafetyPipe(int *fds) const;
-	void                      ExpSafetyClose(int fd) const;
-	void                      ExpSafetyDup2(int oldfd, int newfd) const;
+	void                      Xpipe(int *fds) const;
+	void                      Xclose(int fd) const;
+	void                      Xdup2(int oldfd, int newfd) const;
 	std::string               MakeKeyValueString(const std::string &key, const std::string &value);
 	void                      SearchScriptPath();
 	Result<std::vector<char>> Read(size_t nbyte) const;
