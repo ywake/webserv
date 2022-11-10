@@ -13,6 +13,9 @@ std::vector<ThinString> Split(const ThinString &str, const std::string delim);
 Result<long>            StrToLongDenyPadZero(const std::string &str);
 bool                    IsRegularFile(const std::string &path);
 bool                    EndsWith(const std::string &str, const std::string &suffix);
+void                    Xpipe(int *fds);
+void                    Xclose(int fd);
+void                    Xdup2(int oldfd, int newfd);
 
 // TODO 全部 util
 namespace utils

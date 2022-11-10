@@ -6,13 +6,14 @@
 
 #include <cerrno>
 #include <cstring>
-#include <sys/types.h>
 #include <unistd.h>
 
 Cgi::Cgi(const http::RequestMessage &message)
 	: message_(message), formdata_(message.request_line_.request_target_.GetRequestFormData())
 {
-	ExpSafetyPipe(pipe_to_cgi_);
+	if (pipe(pipe_to_cgi_) < 0) {
+		throw std::runtime_error(std::string("pipe: ") + strerror(errno));
+	}
 	SearchScriptPath();
 }
 
@@ -132,7 +133,7 @@ ssize_t Cgi::WriteRequestData(size_t nbyte) const
 	return write(pipe_to_cgi_[WRITE], message_.message_body_.c_str(), nbyte);
 }
 
-void Cgi::Run(const std::string &cgi_path)
+Result<void> Cgi::Run(const std::string &cgi_path)
 {
 	static const unsigned int kArgvSize = 2;
 
@@ -148,7 +149,11 @@ void Cgi::Run(const std::string &cgi_path)
 	}
 	envp[meta_variables_.size()] = NULL;
 
-	pid_ = StartCgiProcess(file, argv, envp);
+	Result<int> res = StartCgiProcess(file, argv, envp);
+	if (res.IsErr()) {
+		return res.err;
+	}
+	pid_ = res.Val();
 }
 
 // non-blocking
@@ -317,27 +322,6 @@ Result<int> Cgi::StartCgiProcess(const char *file, char **argv, char **envp) con
 		}
 	}
 	return pid;
-}
-
-void Cgi::Xpipe(int *fds) const
-{
-	if (pipe(fds) < 0) {
-		exit(EXIT_FAILURE);
-	}
-}
-
-void Cgi::Xclose(int fd) const
-{
-	if (close(fd) == -1) {
-		exit(EXIT_FAILURE);
-	}
-}
-
-void Cgi::Xdup2(int oldfd, int newfd) const
-{
-	if (dup2(oldfd, newfd) == -1) {
-		exit(EXIT_FAILURE);
-	}
 }
 
 std::string Cgi::MakeKeyValueString(const std::string &key, const std::string &value)

@@ -40,11 +40,11 @@ class Cgi : public http::IResource
 
   public:
 	Cgi(const http::RequestMessage &message);
-	void Run(const std::string &cgi_path);
-	bool Terminate() const;
-	void SetMetaVariables(
-		const std::string server_name, const std::string server_port, const std::string client_ip
-	);
+	Result<void> Run(const std::string &cgi_path);
+	bool         Terminate() const;
+	void         SetMetaVariables(
+				const std::string server_name, const std::string server_port, const std::string client_ip
+			);
 	ssize_t                        WriteRequestData(size_t nbyte) const;
 	std::vector<std::string>       GetMetaVariables() const;
 	const Result<PollInstructions> Send();
@@ -64,9 +64,6 @@ class Cgi : public http::IResource
 	void                      SetServerPort(const std::string &server_port);
 	void                      SetServerProtocol();
 	void                      SetServerSoftWare();
-	void                      Xpipe(int *fds) const;
-	void                      Xclose(int fd) const;
-	void                      Xdup2(int oldfd, int newfd) const;
 	std::string               MakeKeyValueString(const std::string &key, const std::string &value);
 	void                      SearchScriptPath();
 	Result<std::vector<char>> Read(size_t nbyte) const;
