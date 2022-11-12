@@ -4,6 +4,8 @@
 #include <list>
 
 #include "event.hpp"
+
+// TODO 名前空間変えた方がいいかも
 namespace event
 {
 	typedef struct Instruction {
