@@ -1,0 +1,65 @@
+config  = 1*(server-section LF)
+
+
+server-section      = "server" SP "{" LF server-contents "}"
+
+server-contents     = *(OWS server-entry LF)
+
+server-entry        = listen-section
+                    / server-name-section
+                    / error-page-section
+                    / client-max-body-size-section
+                    / location-section
+
+listen-section      = "listen" SP port
+
+server-name-section = "server_name" SP server-name-list
+server-name-list    = server-name *(SP server-name)
+server-name         = host
+
+error-page-section  = "error_page" SP error-page-list
+error-page-list     = error-page *(SP error-page)
+error-page          = error-code SP path
+error-code          = 1*DIGIT
+
+client-max-body-size-section = "client_max_body_size" SP size
+size            = 1*DIGIT [ "k" / "K" / "m" / "M" / "g" / "G" ]
+
+
+location-section    = "location" SP path SP "{" location-contents "}"
+
+location-contents   = *(location-entry LF)
+
+location-entry      = location-allow-methods
+                    / location-redirect
+                    / location-root
+                    / location-index
+                    / location-autoindex
+                    / location-cgi-pass
+
+location-allow-methods  = "allow_methods" SP method-name *(SP method-name)
+
+location-redirect         = "redirect" SP redirect-status-code SP url
+
+location-root           = "root" SP path
+
+location-index          = "index" SP path-list
+path-list               = path *(SP path)
+
+location-autoindex      = "autoindex" SP "on" / "off"
+
+location-cgi-pass       = "cgi_pass" SP url
+
+
+
+method-name = "GET" / "POST" / "DELETE"
+
+redirect-status-code = "301" / "302" / "303" / "307" / "308"
+
+port = 1*DIGIT
+
+url = absolute-URI / path-absolute
+
+host = uri-host
+
+path = path-absolute
