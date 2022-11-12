@@ -22,10 +22,8 @@ namespace conf
 		ConfsMap   confs_map_;
 
 	  public:
-		ServerConfs(const std::string &config_file_path);
-
-		// for test. actualy値のため 第2引数はコンストラクタの区別のためだけに存在
-		ServerConfs(const std::string &file_content, bool is_test);
+		static ServerConfs FromFilePath(const std::string &config_file_path);
+		ServerConfs(const std::string &config_file_content);
 
 		// for test. expect値のため
 		ServerConfs(const ConfsStore &confs, const ConfsMap &confs_map);

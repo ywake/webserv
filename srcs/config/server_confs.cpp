@@ -11,31 +11,25 @@
 
 namespace conf
 {
-	/**
-	 * @brief Construct a new Server Confs
-	 *
-	 * @param config_file_path
-	 * @throw conf::ConfigException
-	 */
-	ServerConfs::ServerConfs(const std::string &config_file_path)
+	ServerConfs ServerConfs::FromFilePath(const std::string &config_file_path)
 	{
 		Result<std::string> res = utils::ReadFile(config_file_path);
 		if (res.IsErr()) {
 			throw ConfigException(res.Err());
 		}
 		std::string config_file_content = res.Val();
-
-		confs_ = ParseConfigFile(config_file_content);
-		if (confs_.empty()) {
-			throw ConfigException("Empty config");
-		}
-		CreatePortHostMap();
+		return ServerConfs(config_file_content);
 	}
 
-	ServerConfs::ServerConfs(const std::string &file_content, bool is_test)
+	/**
+	 * @brief Construct a new Server Confs
+	 *
+	 * @param config_file_path
+	 * @throw conf::ConfigException
+	 */
+	ServerConfs::ServerConfs(const std::string &config_file_content)
 	{
-		(void)is_test;
-		confs_ = ParseConfigFile(file_content);
+		confs_ = ParseConfigFile(config_file_content);
 		if (confs_.empty()) {
 			throw ConfigException("Empty config");
 		}

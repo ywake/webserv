@@ -1306,31 +1306,28 @@ TEST(config, server_confs)
 	};
 
 	EXPECT_EQ(
-		conf::ServerConfs(
-			"server {"
-			"listen 80;"
-			"server_name localhost;"
-			"location / {"
-			"root    /var/www;"
-			"index_files index.html;"
-			"autoindex on;"
-			"}"
-			"location .php {"
-			"cgi_path /cgi-bin;"
-			"index_files index.php;"
-			"}"
-			"}"
-			"server {"
-			"listen 8080;"
-			"server_name example.com;"
-			"location / {"
-			"root /var/www2;"
-			"index_files index.html index.htm;"
-			"autoindex off;"
-			"}"
-			"}",
-			true
-		),
+		conf::ServerConfs("server {"
+						  "listen 80;"
+						  "server_name localhost;"
+						  "location / {"
+						  "root    /var/www;"
+						  "index_files index.html;"
+						  "autoindex on;"
+						  "}"
+						  "location .php {"
+						  "cgi_path /cgi-bin;"
+						  "index_files index.php;"
+						  "}"
+						  "}"
+						  "server {"
+						  "listen 8080;"
+						  "server_name example.com;"
+						  "location / {"
+						  "root /var/www2;"
+						  "index_files index.html index.htm;"
+						  "autoindex off;"
+						  "}"
+						  "}"),
 		conf::ServerConfs(
 			store1,
 			conf::ServerConfs::ConfsMap({
@@ -1352,5 +1349,5 @@ TEST(config, server_confs)
 		)
 	);
 
-	EXPECT_THROW(conf::ServerConfs("", true), conf::ConfigException);
+	EXPECT_THROW(conf::ServerConfs(""), conf::ConfigException);
 }
