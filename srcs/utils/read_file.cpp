@@ -20,7 +20,6 @@ namespace utils
 		char        buf[kReadFileBufferSize + 1];
 		int         read_count;
 		while ((read_count = read(fd, buf, kReadFileBufferSize)) > 0) {
-			buf[read_count] = 0;
 			file += std::string(buf, read_count);
 		}
 		if (read_count == -1) {
