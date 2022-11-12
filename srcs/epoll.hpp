@@ -34,18 +34,18 @@ namespace io_multiplexer
 		Result<void>          Instruct(const event::Instruction &instruction);
 
 	  private:
+		Result<void>        InstructNonBlockingEvent(const event::Instruction &instruction);
+		Result<void>        InstructBlockingEvent(const event::Instruction &instruction);
 		Result<void>        AppendEventType(const event::Event &event);
 		Result<void>        TrimEventType(const event::Event &event);
 		Result<void>        Register(const event::Event &event);
+		Result<void>        Overwrite(const event::Event &event);
 		Result<void>        Unregister(const event::Event &event);
+		Result<EpollEvents> WaitBlockingEvents();
+		event::Events       ExportNonBlockingEvents();
 		EpollEvent          ConvertToEpollEvent(const event::Event &event);
 		event::Event        ConvertToEvent(const EpollEvent &epoll_event);
 		event::Events       ConvertToEvents(const EpollEvents &epoll_events);
-		Result<void>        InstructNonBlockingEvent(const event::Instruction &instruction);
-		Result<void>        InstructBlockingEvent(const event::Instruction &instruction);
-		Result<EpollEvents> WaitBlockingEvents();
-		event::Events       ExportNonBlockingEvents();
-		Result<void>        Overwrite(const event::Event &event);
 	};
 } // namespace io_multiplexer
 
