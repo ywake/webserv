@@ -11,6 +11,12 @@
 
 namespace conf
 {
+	/**
+	 * @brief Construct a new Server Confs
+	 *
+	 * @param config_file_path
+	 * @throw conf::ConfigException
+	 */
 	ServerConfs ServerConfs::FromFilePath(const std::string &config_file_path)
 	{
 		Result<std::string> res = utils::ReadFile(config_file_path);
@@ -21,12 +27,6 @@ namespace conf
 		return ServerConfs(config_file_content);
 	}
 
-	/**
-	 * @brief Construct a new Server Confs
-	 *
-	 * @param config_file_path
-	 * @throw conf::ConfigException
-	 */
 	ServerConfs::ServerConfs(const std::string &config_file_content)
 	{
 		confs_ = ParseConfigFile(config_file_content);
