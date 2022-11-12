@@ -26,6 +26,9 @@ namespace conf
 		std::string config_file_content = res.Val();
 
 		confs_ = ParseConfigFile(config_file_content);
+		if (confs_.empty()) {
+			throw ConfigException("Empty config");
+		}
 		CreatePortHostMap();
 	}
 
