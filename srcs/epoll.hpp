@@ -31,9 +31,9 @@ namespace io_multiplexer
 		Epoll(int timeout = -1);
 		Result<event::Events> Wait();
 		ErrEvents             InstructMulti(const event::Instructions &instructions);
+		Result<void>          Instruct(const event::Instruction &instruction);
 
 	  private:
-		Result<void>        Instruct(const event::Instruction &instruction);
 		Result<void>        AppendEventType(const event::Event &event);
 		Result<void>        TrimEventType(const event::Event &event);
 		Result<void>        Register(const event::Event &event);
