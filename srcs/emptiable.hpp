@@ -11,6 +11,7 @@ class Emptiable
   public:
 	Emptiable() : value_(), is_empty_(true){};
 	Emptiable(const T &v) : value_(v), is_empty_(false){};
+	Emptiable(const Emptiable &e) : value_(e.value_), is_empty_(e.is_empty_){};
 	~Emptiable(){};
 
 	bool empty() const
@@ -25,8 +26,10 @@ class Emptiable
 
 	const Emptiable<T> &operator=(const Emptiable<T> &rhs)
 	{
-		value_    = rhs.value_;
-		is_empty_ = rhs.is_empty_;
+		if (this != &rhs) {
+			value_    = rhs.value_;
+			is_empty_ = rhs.is_empty_;
+		}
 		return *this;
 	}
 
