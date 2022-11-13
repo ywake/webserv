@@ -1,12 +1,12 @@
-#include "fd.hpp"
+#include "managed_fd.hpp"
 
 #include <unistd.h>
 
-std::map<int, std::size_t> Fd::fd_count_ = std::map<int, std::size_t>();
+std::map<int, std::size_t> ManagedFd::fd_count_ = std::map<int, std::size_t>();
 
-Fd::Fd() : fd_(kNofd) {}
+ManagedFd::ManagedFd() : fd_(kNofd) {}
 
-Fd::Fd(int fd) : fd_(fd)
+ManagedFd::ManagedFd(int fd) : fd_(fd)
 {
 	if (fd < 0) {
 		return;
@@ -14,7 +14,7 @@ Fd::Fd(int fd) : fd_(fd)
 	fd_count_[fd_]++;
 }
 
-Fd::Fd(const Fd &copy) : fd_(copy.fd_)
+ManagedFd::ManagedFd(const ManagedFd &copy) : fd_(copy.fd_)
 {
 	if (fd_ < 0) {
 		return;
@@ -22,7 +22,7 @@ Fd::Fd(const Fd &copy) : fd_(copy.fd_)
 	fd_count_[fd_]++;
 }
 
-Fd &Fd::operator=(const Fd &other)
+ManagedFd &ManagedFd::operator=(const ManagedFd &other)
 {
 	if (this == &other) {
 		return *this;
@@ -34,7 +34,7 @@ Fd &Fd::operator=(const Fd &other)
 	return *this;
 }
 
-Fd::~Fd()
+ManagedFd::~ManagedFd()
 {
 	if (fd_ < 0) {
 		return;
@@ -45,7 +45,7 @@ Fd::~Fd()
 	}
 }
 
-int Fd::GetFd() const
+int ManagedFd::GetFd() const
 {
 	return fd_;
 }
