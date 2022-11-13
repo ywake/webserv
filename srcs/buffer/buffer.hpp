@@ -14,11 +14,11 @@ namespace buffer
 	// TODO rename
 	class Buffer
 	{
-	  private:
+	  protected:
 		typedef std::vector<char>     ByteArray;
 		typedef std::deque<ByteArray> InnerBuffer;
 
-	  private:
+	  protected:
 		static const std::size_t kDefaultMaxSize = 10;
 		InnerBuffer              buf_;
 		std::size_t              idx_;
@@ -55,6 +55,18 @@ namespace buffer
 		bool           empty() const;
 		bool           IsFull() const;
 		MessageBuffer &operator=(const MessageBuffer &other);
+	};
+
+	class LineBuffer : public Buffer
+	{
+	  private:
+		std::string leftover_;
+
+	  public:
+		LineBuffer(std::size_t max_inner_buf_size = kDefaultMaxSize);
+		LineBuffer(const LineBuffer &other);
+		LineBuffer            &operator=(const LineBuffer &other);
+		Emptiable<std::string> GetLine();
 	};
 } // namespace buffer
 

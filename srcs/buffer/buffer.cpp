@@ -1,4 +1,5 @@
 #include "buffer.hpp"
+#include "http_define.hpp"
 
 namespace buffer
 {
@@ -121,4 +122,46 @@ namespace buffer
 		return *this;
 	}
 
+	LineBuffer::LineBuffer(std::size_t max_inner_buf_size = kDefaultMaxSize)
+		: Buffer(max_inner_buf_size)
+	{}
+
+	LineBuffer::LineBuffer(const LineBuffer &other)
+	{
+		*this = other;
+	}
+
+	LineBuffer &LineBuffer::operator=(const LineBuffer &other)
+	{
+		if (this == &other) {
+			return *this;
+		}
+		buf_                = other.buf_;
+		idx_                = other.idx_;
+		max_inner_buf_size_ = other.max_inner_buf_size_;
+		leftover_           = other.leftover_;
+		return *this;
+	}
+
+	Emptiable<std::string> LineBuffer::GetLine()
+	{
+		if (leftover_.empty() && empty()) {
+			return leftover_;
+		}
+		std::string buf = leftover_;
+		while (true) {
+			Emptiable<char> res = GetChar();
+			if (res.empty()) {
+				break;
+			}
+			char c = res.Value();
+			buf += c;
+			if (c == http::kNl[0]) {
+				leftover_.clear();
+				return buf;
+			}
+		}
+		leftover_ += buf;
+		return Emptiable<std::string>();
+	}
 } // namespace buffer

@@ -69,13 +69,12 @@ bool Cgi::Terminate() const
 	return WIFEXITED(status);
 }
 
-const Result<Cgi::PollInstructions> Cgi::Send()
+const Result<Cgi::PollInstructions> Cgi::Send(std::size_t nbyte)
 {
 	PollInstructions poll_instructions;
 
 	// 全て書き込んだら、Resource.Receiveを発火させるpoll_instructionsを返す
-	// 定数にする
-	ssize_t written = WriteRequestData(100);
+	ssize_t written = WriteRequestData(nbyte);
 	if (written == -1) {
 		return Error(errno);
 	}
@@ -88,8 +87,7 @@ const Result<Cgi::PollInstructions> Cgi::Send()
 
 Result<std::vector<char>> Cgi::Read(size_t nbyte) const
 {
-	// 定数にする
-	std::vector<char> buffer(100);
+	std::vector<char> buffer(nbyte);
 	ssize_t           read_byte = read(pipe_to_cgi_[READ], buffer.data(), buffer.size());
 	if (read_byte == -1) {
 		return Error(errno);
@@ -113,6 +111,12 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 			return res.err;
 		}
 		read_buffer_.push_back(res.Val());
+		/*
+		Result<void> res = http_builder_.Read(100);
+		if (res.IsErr()) {
+			return Error(res.Err());
+		}
+		*/
 		if (msg_buffer_.empty() && res.Val().empty()) {
 			// poll_instructions += PollInstructions(kTrimRead);
 		}
@@ -133,7 +137,11 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 
 const Result<void> Cgi::ParseCgiResponse()
 {
-	std::string line         = GetLine();
+	Emptiable<std::string> res = read_buffer_.GetLine();
+	if (res.empty()) {
+		return;
+	}
+	std::string line         = res.Value();
 	bool        is_blankline = line == http::kCrLf || line == http::kNl;
 
 	switch (state_) {
@@ -164,29 +172,6 @@ const Result<void> Cgi::ParseCgiResponse()
 		state_ = kParseHeader; // 同じreceiveの中で２度呼ばれないことに依存する?
 	}
 	return Result<void>();
-}
-
-//[FIX]　ちゃんと一行返ってくる保証がない
-std::string Cgi::GetLine()
-{
-	std::string line;
-
-	// line = line_;
-	while (true) {
-		Emptiable<char> res = read_buffer_.GetChar();
-		if (res.empty()) {
-			break;
-		}
-		char c = res.Value();
-		line += c;
-		if (c == http::kNl[0]) {
-			break;
-			// line_.clear();
-			// return line;
-		}
-	}
-	// line_ += line;
-	// return Emptiable<char>();
 }
 
 Result<int> Cgi::StartCgiProcess(const char *file, char **argv, char **envp) const

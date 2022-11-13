@@ -1,4 +1,6 @@
 #include "http_response_builder.hpp"
+#include "error.hpp"
+
 using cgi::HttpResponseBuilder;
 
 HttpResponseBuilder::HttpResponseBuilder() : header_str_(), message_body_() {}

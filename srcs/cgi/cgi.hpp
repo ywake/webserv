@@ -25,7 +25,7 @@ class Cgi : public http::IResource
 	};
 
 	State                 state_;
-	buffer::Buffer        read_buffer_;
+	buffer::LineBuffer    read_buffer_;
 	buffer::MessageBuffer msg_buffer_;
 
 	cgi::CgiRequestBuilder   cgi_builder_;
@@ -42,14 +42,13 @@ class Cgi : public http::IResource
 				const std::string server_name, const std::string server_port, const std::string client_ip
 			);
 	ssize_t                        WriteRequestData(size_t nbyte) const;
-	const Result<PollInstructions> Send();
+	const Result<PollInstructions> Send(std::size_t nbyte);
 	const Result<PollInstructions> Receive();
 
   private:
 	Result<int>               StartCgiProcess(const char *file, char **argv, char **envp) const;
 	Result<std::vector<char>> Read(size_t nbyte) const;
 	const Result<void>        ParseCgiResponse();
-	std::string               GetLine();
 };
 
 #endif // CGI_HPP
