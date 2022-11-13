@@ -1,8 +1,11 @@
-#include "result.hpp"
+#include <cerrno>
+#include <cstdio>
 #include <fcntl.h>
 #include <fstream>
 #include <string>
 #include <unistd.h>
+
+#include "result.hpp"
 
 namespace utils
 {
@@ -13,7 +16,7 @@ namespace utils
 
 		int fd = open(file_path.c_str(), O_RDONLY);
 		if (fd == -1) {
-			return Error(errno);
+			return Error(std::string("open: ") + strerror(errno));
 		}
 
 		std::string file;
