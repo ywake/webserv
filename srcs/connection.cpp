@@ -18,4 +18,9 @@ namespace server
 
 	Connection::~Connection() {}
 
+	event::Instructions Connection::Proceed()
+	{
+		return event::Instructions();
+	}
+
 } // namespace server
