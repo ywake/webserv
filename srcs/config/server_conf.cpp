@@ -9,6 +9,12 @@
 
 namespace conf
 {
+	static ServerConf::ListenPort        kDefaultListenPort        = {"80"};
+	static ServerConf::ServerName        kDefaultServerName        = {};
+	static ServerConf::ErrorPages        kDefaultErrorPages        = {};
+	static ServerConf::ClientMaxBodySize kDefaultClientMaxBodySize = 1 << 20;
+	static ServerConf::LocationConfs     kDefaultLocationConfs     = {};
+
 	ServerConf::ServerConf(
 		ListenPort        listen_port,
 		ServerName        server_name,
@@ -45,9 +51,6 @@ namespace conf
 			} else {
 				throw ConfigException("Invalid server config: invalid directive");
 			}
-		}
-		if (listen_port_.empty()) {
-			listen_port_.push_back("80");
 		}
 	}
 
@@ -166,26 +169,41 @@ namespace conf
 	 */
 	const ServerConf::ListenPort &ServerConf::GetListenPort() const
 	{
+		if (listen_port_.empty()) {
+			return kDefaultListenPort;
+		}
 		return listen_port_;
 	}
 
 	const ServerConf::ServerName &ServerConf::GetServerName() const
 	{
+		if (server_name_.empty()) {
+			return kDefaultServerName;
+		}
 		return server_name_;
 	}
 
 	const ServerConf::ErrorPages &ServerConf::GetErrorPages() const
 	{
+		if (error_pages_.empty()) {
+			return kDefaultErrorPages;
+		}
 		return error_pages_;
 	}
 
 	const ServerConf::ClientMaxBodySize &ServerConf::GetClientMaxBodySize() const
 	{
+		if (client_max_body_size_.empty()) {
+			return kDefaultClientMaxBodySize;
+		}
 		return client_max_body_size_;
 	}
 
 	const ServerConf::LocationConfs &ServerConf::GetLocationConfs() const
 	{
+		if (location_confs_.empty()) {
+			return kDefaultLocationConfs;
+		}
 		return location_confs_;
 	}
 

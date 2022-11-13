@@ -5,6 +5,13 @@
 
 namespace conf
 {
+	static const LocationConf::AllowMethods kDefaultAllowMethods = {"GET", "POST", "DELETE"};
+	static const LocationConf::Redirect     kDefaultRedirect     = LocationConf::Redirect();
+	static const LocationConf::Root         kDefaultRoot         = LocationConf::Root();
+	static const LocationConf::IndexFiles   kDefaultIndexFiles   = {"index.html"};
+	static const LocationConf::AutoIndex    kDefaultAutoIndex    = false;
+	static const LocationConf::CgiPath      kDefaultCgiPath      = LocationConf::CgiPath();
+
 	LocationConf::LocationConf(
 		AllowMethods allow_methods_,
 		Redirect     redirect_,
@@ -115,31 +122,49 @@ namespace conf
 
 	const LocationConf::AllowMethods &LocationConf::GetAllowMethods() const
 	{
+		if (allow_methods_.empty()) {
+			return kDefaultAllowMethods;
+		}
 		return allow_methods_;
 	}
 
 	const LocationConf::Redirect &LocationConf::GetRedirect() const
 	{
+		if (redirect_.empty()) {
+			return kDefaultRedirect;
+		}
 		return redirect_;
 	}
 
 	const LocationConf::Root &LocationConf::GetRoot() const
 	{
+		if (root_.empty()) {
+			return kDefaultRoot;
+		}
 		return root_;
 	}
 
 	const LocationConf::IndexFiles &LocationConf::GetIndexFiles() const
 	{
+		if (index_files_.empty()) {
+			return kDefaultIndexFiles;
+		}
 		return index_files_;
 	}
 
 	const LocationConf::AutoIndex &LocationConf::GetAutoindex() const
 	{
+		if (autoindex.empty()) {
+			return kDefaultAutoIndex;
+		}
 		return autoindex;
 	}
 
 	const LocationConf::CgiPath &LocationConf::GetCgiPath() const
 	{
+		if (cgi_path_.empty()) {
+			return kDefaultCgiPath;
+		}
 		return cgi_path_;
 	}
 
