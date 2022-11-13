@@ -1,30 +1,30 @@
-#include "cgi_request.hpp"
+#include "cgi_request_builder.hpp"
 #include "webserv_utils.hpp"
 
-using cgi::RequestMessage;
+using cgi::CgiRequestBuilder;
 
-RequestMessage::RequestMessage(const http::RequestMessage &message)
+CgiRequestBuilder::CgiRequestBuilder(const http::RequestMessage &message)
 	: message_(message), formdata_(message.request_line_.request_target_.GetRequestFormData())
 {
 	SearchScriptPath();
 }
 
-const http::RequestMessage RequestMessage::GetHttpRequest() const
+const http::RequestMessage CgiRequestBuilder::GetHttpRequest() const
 {
 	return message_;
 }
 
-const std::string RequestMessage::GetScriptPath() const
+const std::string CgiRequestBuilder::GetScriptPath() const
 {
 	return script_path_;
 }
 
-const std::vector<std::string> RequestMessage::GetMetaVariables() const
+const std::vector<std::string> CgiRequestBuilder::GetMetaVariables() const
 {
 	return meta_variables_;
 }
 
-void RequestMessage::SearchScriptPath()
+void CgiRequestBuilder::SearchScriptPath()
 {
 	std::vector<ThinString> hierarchy = Split(formdata_.path_, "/");
 
@@ -42,7 +42,7 @@ void RequestMessage::SearchScriptPath()
 
 // MUSTなメタ変数
 // https://wiki.suikawiki.org/n/CGI%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0#section-%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0%E3%81%AE%E4%B8%80%E8%A6%A7
-void RequestMessage::SetMetaVariables(
+void CgiRequestBuilder::SetMetaVariables(
 	const std::string server_name, const std::string server_port, const std::string client_ip
 )
 {
@@ -66,71 +66,71 @@ void RequestMessage::SetMetaVariables(
 }
 
 // FIX transfer-encofingヘッダでチャンク化の場合は、復号して本体の長さを決定しなければならない
-void RequestMessage::SetContentLength()
+void CgiRequestBuilder::SetContentLength()
 {
 	meta_variables_.push_back(message_.field_lines_.GetKeyValueString("content-length"));
 }
 
-void RequestMessage::SetContentType()
+void CgiRequestBuilder::SetContentType()
 {
 	meta_variables_.push_back(message_.field_lines_.GetKeyValueString("content-type"));
 }
 
-void RequestMessage::SetGateWayInterFace()
+void CgiRequestBuilder::SetGateWayInterFace()
 {
 	meta_variables_.push_back("gateway-interface=CGI/1.1");
 }
 
-void RequestMessage::SetPathInfo()
+void CgiRequestBuilder::SetPathInfo()
 {
 	meta_variables_.push_back(MakeKeyValueString("path-info", extra_path_));
 }
 
-void RequestMessage::SetScriptName()
+void CgiRequestBuilder::SetScriptName()
 {
 	meta_variables_.push_back(MakeKeyValueString("script-name", script_path_));
 }
 
-void RequestMessage::SetQueryString()
+void CgiRequestBuilder::SetQueryString()
 {
 	meta_variables_.push_back(MakeKeyValueString("query-string", formdata_.query_.ToString()));
 }
 
-void RequestMessage::SetRemoteAddr(const std::string &remote_addr)
+void CgiRequestBuilder::SetRemoteAddr(const std::string &remote_addr)
 {
 	meta_variables_.push_back(MakeKeyValueString("remote-addr", remote_addr));
 }
 
-void RequestMessage::SetRequestMethod()
+void CgiRequestBuilder::SetRequestMethod()
 {
 	meta_variables_.push_back(
 		MakeKeyValueString("request-method", message_.request_line_.method_.ToString())
 	);
 }
 
-void RequestMessage::SetServerName(const std::string &server_name)
+void CgiRequestBuilder::SetServerName(const std::string &server_name)
 {
 	meta_variables_.push_back(MakeKeyValueString("server-name", server_name));
 }
 
-void RequestMessage::SetServerPort(const std::string &server_port)
+void CgiRequestBuilder::SetServerPort(const std::string &server_port)
 {
 	meta_variables_.push_back(MakeKeyValueString("server-port", server_port));
 }
 
-void RequestMessage::SetServerProtocol()
+void CgiRequestBuilder::SetServerProtocol()
 {
 	meta_variables_.push_back(
 		MakeKeyValueString("server-protocol", message_.request_line_.http_version_.ToString())
 	);
 }
 
-void RequestMessage::SetServerSoftWare()
+void CgiRequestBuilder::SetServerSoftWare()
 {
 	meta_variables_.push_back("server-software=webserv/1.0");
 }
 
-std::string RequestMessage::MakeKeyValueString(const std::string &key, const std::string &value)
+std::string CgiRequestBuilder::MakeKeyValueString(const std::string &key, const std::string &value)
 {
 	return key + "=" + value;
 }

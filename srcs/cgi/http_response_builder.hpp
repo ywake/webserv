@@ -3,6 +3,7 @@
 
 #include "header_value.hpp"
 #include "response_message.hpp"
+#include "result.hpp"
 
 namespace cgi
 {
@@ -12,14 +13,19 @@ namespace cgi
 		typedef std::list<HeaderValue>              Values;
 		typedef std::map<const std::string, Values> Headers;
 
-		Headers     header_fields_;
+		std::string header_str_;
 		std::string message_body_;
 
 	  public:
 		HttpResponseBuilder();
-		void                  AddHeader(const std::string &header);
-		void                  AddBody(const std::string &str);
-		http::ResponseMessage Translate();
+		void                          AddHeader(const std::string &header);
+		void                          AddBody(const std::string &str);
+		Result<http::ResponseMessage> Translate();
+
+	  private:
+		Result<void> TranslateHeader();
+		Result<void> TranslateStatusLine();
+		Result<void> TranslateBody();
 	};
 
 } // namespace cgi

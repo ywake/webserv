@@ -8,7 +8,7 @@
 #include <cstring>
 #include <unistd.h>
 
-Cgi::Cgi(const http::RequestMessage &message) : cgi_request_(message)
+Cgi::Cgi(const http::RequestMessage &message) : cgi_builder_(message)
 {
 	if (pipe(pipe_to_cgi_) < 0) {
 		throw std::runtime_error(std::string("pipe: ") + strerror(errno));
@@ -19,19 +19,19 @@ void Cgi::SetRequestData(
 	const std::string server_name, const std::string server_port, const std::string client_ip
 )
 {
-	cgi_request_.SetMetaVariables(server_name, server_port, client_ip);
+	cgi_builder_.SetMetaVariables(server_name, server_port, client_ip);
 }
 
 ssize_t Cgi::WriteRequestData(size_t nbyte) const
 {
-	std::string body = cgi_request_.GetHttpRequest().message_body_;
+	std::string body = cgi_builder_.GetHttpRequest().message_body_;
 	return write(pipe_to_cgi_[WRITE], body.c_str(), nbyte);
 }
 
 Result<void> Cgi::Run(const std::string &cgi_path)
 {
-	std::vector<std::string> meta_variables = cgi_request_.GetMetaVariables();
-	std::string              script_path    = cgi_request_.GetScriptPath();
+	std::vector<std::string> meta_variables = cgi_builder_.GetMetaVariables();
+	std::string              script_path    = cgi_builder_.GetScriptPath();
 
 	static const unsigned int kArgvSize = 2;
 
@@ -138,7 +138,7 @@ const Result<void> Cgi::ParseCgiResponse()
 
 	switch (state_) {
 	case kParseHeader:
-		builder_.AddHeader(line);
+		http_builder_.AddHeader(line);
 		if (is_blankline) {
 			state_ = kParseBody;
 		}
@@ -151,12 +151,12 @@ const Result<void> Cgi::ParseCgiResponse()
 		if (line.empty()) {
 			state_ = kParseFinish;
 		}
-		builder_.AddBody(line);
+		http_builder_.AddBody(line);
 		break;
 
 	case kParseFinish:
 	default:
-		Result<http::ResponseMessage> res = builder_.Translate();
+		Result<http::ResponseMessage> res = http_builder_.Translate();
 		if (res.IsErr()) {
 			return res.err;
 		}

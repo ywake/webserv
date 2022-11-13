@@ -1,13 +1,12 @@
-#ifndef CGI_REQUEST_HPP
-#define CGI_REQUEST_HPP
+#ifndef CGI_REQUEST_BUILDER_HPP
+#define CGI_REQUEST_BUILDER_HPP
 
 #include "request_message.hpp"
 #include <string>
 
 namespace cgi
 {
-	//[FIX] cgi_request_builder
-	class RequestMessage
+	class CgiRequestBuilder
 	{
 	  private:
 		const http::RequestMessage message_;
@@ -17,7 +16,7 @@ namespace cgi
 		std::string                extra_path_;
 
 	  public:
-		RequestMessage(const http::RequestMessage &message);
+		CgiRequestBuilder(const http::RequestMessage &message);
 		const http::RequestMessage     GetHttpRequest() const;
 		const std::string              GetScriptPath() const;
 		const std::vector<std::string> GetMetaVariables() const;
@@ -46,4 +45,4 @@ namespace cgi
 
 } // namespace cgi
 
-#endif // CGI_REQUEST_HPP
+#endif // CGI_REQUEST_BUILDER_HPP
