@@ -7,6 +7,7 @@
 // #include "server_types.hpp"
 #include "config/virtual_server_confs.hpp"
 #include "managed_fd.hpp"
+#include "socket.hpp"
 
 #include "instruction.hpp"
 #include <netinet/in.h>
@@ -17,7 +18,7 @@ namespace server
 {
 	typedef struct ::sockaddr_in SockAddrIn;
 
-	class Connection
+	class Connection : public Socket
 	{
 		//   public:
 		// 	enum State {
@@ -30,7 +31,6 @@ namespace server
 		static const conf::VirtualServerConfs kEmptyConfs;
 
 	  private:
-		ManagedFd                       managed_fd_;
 		const conf::VirtualServerConfs &configs_;
 		const SockAddrIn                client_;
 		// State                           state_;

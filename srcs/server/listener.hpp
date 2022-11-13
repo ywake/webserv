@@ -7,6 +7,7 @@
 #include "connection.hpp"
 #include "managed_fd.hpp"
 #include "result.hpp"
+#include "socket.hpp"
 
 #include <netdb.h>
 #include <sys/socket.h>
@@ -15,10 +16,9 @@ namespace server
 {
 	typedef struct addrinfo AddrInfo;
 
-	class Listener
+	class Listener : public Socket
 	{
 	  private:
-		ManagedFd                       managed_fd_;
 		const conf::VirtualServerConfs &configs_;
 
 	  public:
