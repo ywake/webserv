@@ -1,3 +1,5 @@
+#ifdef __linux__
+
 #include "epoll.hpp"
 
 #include <cerrno>
@@ -225,3 +227,5 @@ namespace io_multiplexer
 	}
 
 } // namespace io_multiplexer
+
+#endif
