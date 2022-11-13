@@ -15,6 +15,7 @@
 !*.go
 !client.c
 !print_newer.py
+!config.abnf
 
 # tests
 destructor.c

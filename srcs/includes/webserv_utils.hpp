@@ -15,6 +15,9 @@ namespace utils
 	std::string  ToLowerString(std::string s);
 	Result<long> StrToLong(const std::string &str);
 	Result<bool> IsRegularFile(int fd);
+	Result<std::string>     ReadFile(const std::string &file_path);
+	Result<std::size_t>     StrToUnsignedLong(const std::string &str);
+	std::vector<ThinString> TrimEmpty(const std::vector<ThinString> &vec);
 
 } // namespace utils
 
