@@ -2,6 +2,7 @@
 #define CGI_HPP
 
 #include "buffer.hpp"
+#include "cgi_request.hpp"
 #include "http_response_builder.hpp"
 #include "i_resource.hpp"
 #include "request_message.hpp"
@@ -28,44 +29,23 @@ class Cgi : public http::IResource
 	buffer::MessageBuffer    msg_buffer_;
 	cgi::HttpResponseBuilder builder_;
 
-	const http::RequestMessage message_;
-	const RequestFormData     &formdata_;
-
-	// cgiリクエストクラスが、送信とデータ変換のインタフェースを持った方が良いかも
-	std::string              script_path_;
-	std::string              extra_path_;
-	std::vector<std::string> meta_variables_;
-	int                      pipe_to_cgi_[TYPE_SIZE];
-	pid_t                    pid_;
+	cgi::RequestMessage cgi_request_;
+	int                 pipe_to_cgi_[TYPE_SIZE];
+	pid_t               pid_;
 
   public:
 	Cgi(const http::RequestMessage &message);
 	Result<void> Run(const std::string &cgi_path);
 	bool         Terminate() const;
-	void         SetMetaVariables(
+	void         SetRequestData(
 				const std::string server_name, const std::string server_port, const std::string client_ip
 			);
 	ssize_t                        WriteRequestData(size_t nbyte) const;
-	std::vector<std::string>       GetMetaVariables() const;
 	const Result<PollInstructions> Send();
 	const Result<PollInstructions> Receive();
 
   private:
 	Result<int>               StartCgiProcess(const char *file, char **argv, char **envp) const;
-	void                      SetContentLength();
-	void                      SetContentType();
-	void                      SetGateWayInterFace();
-	void                      SetPathInfo();
-	void                      SetScriptName();
-	void                      SetQueryString();
-	void                      SetRemoteAddr(const std::string &remote_addr);
-	void                      SetRequestMethod();
-	void                      SetServerName(const std::string &server_name);
-	void                      SetServerPort(const std::string &server_port);
-	void                      SetServerProtocol();
-	void                      SetServerSoftWare();
-	std::string               MakeKeyValueString(const std::string &key, const std::string &value);
-	void                      SearchScriptPath();
 	Result<std::vector<char>> Read(size_t nbyte) const;
 	const Result<void>        ParseCgiResponse();
 	std::string               GetLine();

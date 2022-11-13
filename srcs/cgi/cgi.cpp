@@ -8,146 +8,44 @@
 #include <cstring>
 #include <unistd.h>
 
-Cgi::Cgi(const http::RequestMessage &message)
-	: message_(message), formdata_(message.request_line_.request_target_.GetRequestFormData())
+Cgi::Cgi(const http::RequestMessage &message) : cgi_request_(message)
 {
 	if (pipe(pipe_to_cgi_) < 0) {
 		throw std::runtime_error(std::string("pipe: ") + strerror(errno));
 	}
-	SearchScriptPath();
 }
 
-// MUSTなメタ変数
-// https://wiki.suikawiki.org/n/CGI%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0#section-%E3%83%A1%E3%82%BF%E5%A4%89%E6%95%B0%E3%81%AE%E4%B8%80%E8%A6%A7
-void Cgi::SetMetaVariables(
+void Cgi::SetRequestData(
 	const std::string server_name, const std::string server_port, const std::string client_ip
 )
 {
-	SetGateWayInterFace();
-	SetQueryString();
-	SetRequestMethod();
-	SetServerProtocol();
-	SetServerSoftWare();
-	SetServerName(server_name);
-	SetServerPort(server_port);
-	SetRemoteAddr(client_ip);
-
-	if (message_.HasMessageBody()) {
-		SetContentLength();
-	}
-	if (message_.field_lines_.Contains("content-type")) {
-		SetContentType();
-	}
-	SetScriptName();
-	SetPathInfo();
-}
-
-std::vector<std::string> Cgi::GetMetaVariables() const
-{
-	return meta_variables_;
-}
-
-void Cgi::SearchScriptPath()
-{
-	std::vector<ThinString> hierarchy = Split(formdata_.path_, "/");
-
-	for (std::vector<ThinString>::iterator it = hierarchy.begin(); it != hierarchy.end(); it++) {
-		std::string lower_path = it->ToString();
-		script_path_ += lower_path;
-		if (!IsRegularFile(script_path_) || !EndsWith(lower_path, ".php")) {
-			continue;
-		}
-		for (++it; it != hierarchy.end(); it++) {
-			extra_path_ += it->ToString();
-		}
-	}
-}
-
-// FIX transfer-encofingヘッダでチャンク化の場合は、復号して本体の長さを決定しなければならない
-void Cgi::SetContentLength()
-{
-	meta_variables_.push_back(message_.field_lines_.GetKeyValueString("content-length"));
-}
-
-void Cgi::SetContentType()
-{
-	meta_variables_.push_back(message_.field_lines_.GetKeyValueString("content-type"));
-}
-
-void Cgi::SetGateWayInterFace()
-{
-	meta_variables_.push_back("gateway-interface=CGI/1.1");
-}
-
-void Cgi::SetPathInfo()
-{
-	meta_variables_.push_back(MakeKeyValueString("path-info", extra_path_));
-}
-
-void Cgi::SetScriptName()
-{
-	meta_variables_.push_back(MakeKeyValueString("script-name", script_path_));
-}
-
-void Cgi::SetQueryString()
-{
-	meta_variables_.push_back(MakeKeyValueString("query-string", formdata_.query_.ToString()));
-}
-
-void Cgi::SetRemoteAddr(const std::string &remote_addr)
-{
-	meta_variables_.push_back(MakeKeyValueString("remote-addr", remote_addr));
-}
-
-void Cgi::SetRequestMethod()
-{
-	meta_variables_.push_back(
-		MakeKeyValueString("request-method", message_.request_line_.method_.ToString())
-	);
-}
-
-void Cgi::SetServerName(const std::string &server_name)
-{
-	meta_variables_.push_back(MakeKeyValueString("server-name", server_name));
-}
-
-void Cgi::SetServerPort(const std::string &server_port)
-{
-	meta_variables_.push_back(MakeKeyValueString("server-port", server_port));
-}
-
-void Cgi::SetServerProtocol()
-{
-	meta_variables_.push_back(
-		MakeKeyValueString("server-protocol", message_.request_line_.http_version_.ToString())
-	);
-}
-
-void Cgi::SetServerSoftWare()
-{
-	meta_variables_.push_back("server-software=webserv/1.0");
+	cgi_request_.SetMetaVariables(server_name, server_port, client_ip);
 }
 
 ssize_t Cgi::WriteRequestData(size_t nbyte) const
 {
-	return write(pipe_to_cgi_[WRITE], message_.message_body_.c_str(), nbyte);
+	std::string body = cgi_request_.GetHttpRequest().message_body_;
+	return write(pipe_to_cgi_[WRITE], body.c_str(), nbyte);
 }
 
 Result<void> Cgi::Run(const std::string &cgi_path)
 {
+	std::vector<std::string> meta_variables = cgi_request_.GetMetaVariables();
+	std::string              script_path    = cgi_request_.GetScriptPath();
+
 	static const unsigned int kArgvSize = 2;
 
 	const char *file = cgi_path.c_str();
 	char       *argv[kArgvSize];
-	char       *envp[meta_variables_.size() + 1];
+	char       *envp[meta_variables.size() + 1];
 
-	argv[0] = const_cast<char *>(script_path_.c_str());
+	argv[0] = const_cast<char *>(script_path.c_str());
 	argv[1] = NULL;
 
-	for (std::size_t i = 0; i < meta_variables_.size(); i++) {
-		envp[i] = const_cast<char *>(meta_variables_[i].c_str());
+	for (std::size_t i = 0; i < meta_variables.size(); i++) {
+		envp[i] = const_cast<char *>(meta_variables[i].c_str());
 	}
-	envp[meta_variables_.size()] = NULL;
+	envp[meta_variables.size()] = NULL;
 
 	Result<int> res = StartCgiProcess(file, argv, envp);
 	if (res.IsErr()) {
@@ -183,6 +81,7 @@ const Result<Cgi::PollInstructions> Cgi::Send()
 	}
 	if (written == 0) {
 		// どうやってResource.Receiveを発火させる？
+		// poll += PollInstruction(kAppendRead);
 	}
 	return Result<PollInstructions>();
 }
@@ -204,7 +103,7 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 	PollInstructions poll_instructions;
 
 	if (read_buffer_.IsFull() && msg_buffer_.IsFull()) {
-		// poll_instructions += PollInstructions(kTrimWrite);
+		// poll_instructions += PollInstructions(kTrimRead);
 		return poll_instructions;
 	}
 
@@ -245,7 +144,6 @@ const Result<void> Cgi::ParseCgiResponse()
 		}
 		break;
 
-	//[FIX] bodyは少しずつバッファに追加しないといけない
 	case kParseBody:
 		if (is_blankline) {
 			return Error("Invalid Cgi Response.");
@@ -258,25 +156,22 @@ const Result<void> Cgi::ParseCgiResponse()
 
 	case kParseFinish:
 	default:
-		// cgiレスポンスをhttpレスポンスに変換
-		/* ヘッダは、ヘッダごとに固有の変換方法があるので、それに従う
-		例えば、Statusヘッダは、httpレスポンスのstatus-codeに変換される
-		ボディは何も変更せずにhttpメッセージのbodyとする
-		*/
 		Result<http::ResponseMessage> res = builder_.Translate();
 		if (res.IsErr()) {
 			return res.err;
 		}
 		msg_buffer_.push_back(res.Val());
-		state_ = kParseHeader; // 同じreceiveの中で２度呼ばれないことに依存する
+		state_ = kParseHeader; // 同じreceiveの中で２度呼ばれないことに依存する?
 	}
 	return Result<void>();
 }
 
+//[FIX]　ちゃんと一行返ってくる保証がない
 std::string Cgi::GetLine()
 {
 	std::string line;
 
+	// line = line_;
 	while (true) {
 		Emptiable<char> res = read_buffer_.GetChar();
 		if (res.empty()) {
@@ -286,9 +181,12 @@ std::string Cgi::GetLine()
 		line += c;
 		if (c == http::kNl[0]) {
 			break;
+			// line_.clear();
+			// return line;
 		}
 	}
-	return line;
+	// line_ += line;
+	// return Emptiable<char>();
 }
 
 Result<int> Cgi::StartCgiProcess(const char *file, char **argv, char **envp) const
@@ -322,9 +220,4 @@ Result<int> Cgi::StartCgiProcess(const char *file, char **argv, char **envp) con
 		}
 	}
 	return pid;
-}
-
-std::string Cgi::MakeKeyValueString(const std::string &key, const std::string &value)
-{
-	return key + "=" + value;
 }
