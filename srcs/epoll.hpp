@@ -1,6 +1,8 @@
 #ifndef EPOLL_HPP
 #define EPOLL_HPP
 
+#ifdef __linux__
+
 #include <list>
 #include <map>
 #include <sys/epoll.h>
@@ -48,5 +50,7 @@ namespace io_multiplexer
 		event::Events       ConvertToEvents(const EpollEvents &epoll_events);
 	};
 } // namespace io_multiplexer
+
+#endif
 
 #endif

@@ -4,7 +4,7 @@
 #include <climits>
 #include <map>
 
-class Fd
+class ManagedFd
 {
   public:
 	static const int kNofd = INT_MIN;
@@ -14,11 +14,11 @@ class Fd
 	int                               fd_;
 
   public:
-	Fd();
-	Fd(int fd);
-	Fd(const Fd &sock);
-	Fd &operator=(const Fd &sock);
-	virtual ~Fd();
+	ManagedFd();
+	ManagedFd(int fd);
+	ManagedFd(const ManagedFd &sock);
+	ManagedFd &operator=(const ManagedFd &sock);
+	virtual ~ManagedFd();
 
 	// tmp
 	int GetFd() const;
