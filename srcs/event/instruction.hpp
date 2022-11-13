@@ -4,9 +4,10 @@
 #include <list>
 
 #include "event.hpp"
+
+// TODO 名前空間変えた方がいいかも
 namespace event
 {
-	typedef std::list<Instruction> Instructions;
 	typedef struct Instruction {
 		enum Command {
 			kAppendEventType,
@@ -17,6 +18,8 @@ namespace event
 		Command command;
 		Event   event;
 	} Instruction;
+
+	typedef std::list<Instruction> Instructions;
 } // namespace event
 
 #endif

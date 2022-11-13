@@ -14,7 +14,7 @@ class Result
 	Result() : val_(), err_(){};
 	Result(const T &v) : val_(v), err_(){};
 	Result(const T &v, const Error &e) : val_(v), err_(e){};
-	Result(const Error &e) : err_(e){};
+	Result(const Error &e) : val_(), err_(e){};
 	Result(const Result &r) : val_(r.val_), err_(r.err_){};
 	bool IsOk()
 	{
