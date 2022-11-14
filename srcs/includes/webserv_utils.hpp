@@ -11,7 +11,6 @@
 
 std::vector<ThinString> Split(const ThinString &str, const std::string delim);
 Result<long>            StrToLongDenyPadZero(const std::string &str);
-bool                    IsRegularFile(const std::string &path);
 bool                    EndsWith(const std::string &str, const std::string &suffix);
 void                    Xpipe(int *fds);
 void                    Xclose(int fd);
@@ -26,8 +25,13 @@ namespace utils
 		delete p;
 		p = NULL;
 	}
-	std::string  ToLowerString(std::string s);
-	Result<long> StrToLong(const std::string &str);
+	std::string             ToLowerString(std::string s);
+	Result<long>            StrToLong(const std::string &str);
+	Result<bool>            IsRegularFile(const std::string &path);
+	Result<bool>            IsRegularFile(int fd);
+	Result<std::string>     ReadFile(const std::string &file_path);
+	Result<std::size_t>     StrToUnsignedLong(const std::string &str);
+	std::vector<ThinString> TrimEmpty(const std::vector<ThinString> &vec);
 
 	template <bool Cond, class T = void>
 	struct enable_if {

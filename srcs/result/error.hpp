@@ -13,6 +13,8 @@ class Error
 	Error();
 	Error(int errn);
 	Error(const char *msg);
+	Error(const std::string &msg);
+	Error(const Error &err);
 	bool        IsErr() const;
 	std::string Err() const;
 

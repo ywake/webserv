@@ -303,3 +303,22 @@ TEST(thin_string, start_with)
 	EXPECT_FALSE(ThinString("").StartWith("a"));
 	EXPECT_FALSE(ThinString("abcabc").StartWith("bc"));
 }
+
+TEST(thin_string, operator_gtlt)
+{
+	EXPECT_EQ(ThinString("a") > ThinString(""), std::string("a") > std::string(""));
+	EXPECT_EQ(ThinString("a") > ThinString("a"), std::string("a") > std::string("a"));
+	EXPECT_EQ(ThinString("a") > ThinString("b"), std::string("a") > std::string("b"));
+	EXPECT_EQ(ThinString("b") > ThinString("a"), std::string("b") > std::string("a"));
+
+	EXPECT_EQ(ThinString("a") > ThinString("ab"), std::string("a") > std::string("ab"));
+	EXPECT_EQ(ThinString("ab") > ThinString("a"), std::string("ab") > std::string("a"));
+
+	EXPECT_EQ(ThinString("a") < ThinString(""), std::string("a") < std::string(""));
+	EXPECT_EQ(ThinString("a") < ThinString("a"), std::string("a") < std::string("a"));
+	EXPECT_EQ(ThinString("a") < ThinString("b"), std::string("a") < std::string("b"));
+	EXPECT_EQ(ThinString("b") < ThinString("a"), std::string("b") < std::string("a"));
+
+	EXPECT_EQ(ThinString("a") < ThinString("ab"), std::string("a") < std::string("ab"));
+	EXPECT_EQ(ThinString("ab") < ThinString("a"), std::string("ab") < std::string("a"));
+}

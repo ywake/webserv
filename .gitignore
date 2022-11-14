@@ -16,6 +16,7 @@
 !client.c
 !print_newer.py
 old/*
+!config.abnf
 
 # tests
 destructor.c

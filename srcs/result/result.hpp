@@ -1,5 +1,6 @@
 #ifndef RESULT_HPP
 #define RESULT_HPP
+
 #include "error.hpp"
 
 template <typename T>
@@ -13,7 +14,8 @@ class Result
 	Result() : val_(), err_(){};
 	Result(const T &v) : val_(v), err_(){};
 	Result(const T &v, const Error &e) : val_(v), err_(e){};
-	Result(const Error &e) : err_(e){};
+	Result(const Error &e) : val_(), err_(e){};
+	Result(const Result &r) : val_(r.val_), err_(r.err_){};
 	bool IsOk()
 	{
 		return !err_.IsErr();
@@ -29,6 +31,14 @@ class Result
 	std::string Err()
 	{
 		return err_.Err();
+	}
+	Result &operator=(const Result &r)
+	{
+		if (this != &r) {
+			val_ = r.val_;
+			err_ = r.err_;
+		}
+		return *this;
 	}
 };
 
@@ -45,6 +55,7 @@ class Result<T &>
 	Result(const T &v) : val_(v), err_(){};
 	Result(const T &v, const Error &e) : val_(v), err_(e){};
 	Result(const Error &e) : default_(), val_(default_), err_(e){};
+	Result(const Result &r) : val_(r.val_), err_(r.err_){};
 	bool IsOk()
 	{
 		return !err_.IsErr();
@@ -61,6 +72,14 @@ class Result<T &>
 	{
 		return err_.Err();
 	}
+	Result &operator=(const Result &r)
+	{
+		if (this != &r) {
+			val_ = r.val_;
+			err_ = r.err_;
+		}
+		return *this;
+	}
 };
 
 template <>
@@ -72,6 +91,7 @@ class Result<void>
   public:
 	Result() : err_(){};
 	Result(const Error &e) : err_(e){};
+	Result(const Result &r) : err_(r.err_){};
 	bool IsOk()
 	{
 		return !err_.IsErr();
@@ -83,6 +103,13 @@ class Result<void>
 	std::string Err()
 	{
 		return err_.Err();
+	}
+	Result &operator=(const Result &r)
+	{
+		if (this != &r) {
+			err_ = r.err_;
+		}
+		return *this;
 	}
 };
 
