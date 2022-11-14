@@ -20,6 +20,12 @@ Result<http::ResponseMessage> HttpResponseBuilder::Translate()
 	return http::ResponseMessage(res_status.Val(), res_header.Val(), message_body_);
 }
 
+/*
+StatusはResponse Typeに関係なく、
+デフォルトで200、
+Statusヘッダが設定されていればその値、
+レスポンスが不正であれば400とする
+*/
 Result<StatusLine> HttpResponseBuilder::TranslateStatusLine()
 {
 	StatusLine               status;
@@ -35,6 +41,10 @@ Result<StatusLine> HttpResponseBuilder::TranslateStatusLine()
 	return status;
 }
 
+/*
+リダイレクトの際に指定されるpathを設定する項目は、httpレスポンスには存在しないので
+ヘッダを使用して返すことになっている
+*/
 Result<HeaderSection> HttpResponseBuilder::TranslateHeader()
 {
 	try {
