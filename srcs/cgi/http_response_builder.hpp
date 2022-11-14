@@ -2,6 +2,7 @@
 #define HTTP_RESPONSE_BUILDER_HPP
 
 #include "emptiable.hpp"
+#include "header_fields.hpp"
 #include "header_value.hpp"
 #include "response_message.hpp"
 #include "result.hpp"
@@ -17,13 +18,17 @@ namespace cgi
 			kParseFinish,
 		};
 
-		typedef std::list<HeaderValue>              Values;
-		typedef std::map<const std::string, Values> Headers;
-		typedef std::list<FieldLine>                Lines;
+		enum ResponseType {
+			kDocument,
+			kLocalRedir,
+			kClientRedir,
+			kClientRedirWithDocument,
+			kUndefined,
+		};
 
-		std::string header_str_;
-		std::string message_body_;
-		ParseState  state_;
+		HeaderFields header_fields_;
+		std::string  message_body_;
+		ParseState   state_;
 
 	  public:
 		HttpResponseBuilder();
@@ -35,6 +40,7 @@ namespace cgi
 		Result<http::ResponseMessage> Translate();
 		Result<StatusLine>            TranslateStatusLine();
 		Result<HeaderSection>         TranslateHeader();
+		ResponseType                  IdentifyResponseType() const;
 	};
 
 } // namespace cgi

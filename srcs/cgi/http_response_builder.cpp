@@ -4,54 +4,80 @@
 
 using cgi::HttpResponseBuilder;
 
-HttpResponseBuilder::HttpResponseBuilder() : header_str_(), message_body_() {}
-
-void HttpResponseBuilder::AddHeader(const std::string &header)
-{
-	// std::size_t colon_pos = header.find(":");
-	// if (colon_pos == ThinString::npos) {
-	// 	throw http::BadRequestException();
-	// }
-	// ThinString name                 = header.substr(0, colon_pos);
-	// ThinString value                = header.substr(colon_pos + 1);
-	// header_fields_[name.ToString()] = value.ToString();
-}
-
-void HttpResponseBuilder::AddBody(const std::string &str)
-{
-	message_body_ += str;
-}
+HttpResponseBuilder::HttpResponseBuilder() : message_body_() {}
 
 Result<http::ResponseMessage> HttpResponseBuilder::Translate()
 {
 	Result<StatusLine>    res_status = TranslateStatusLine();
 	Result<HeaderSection> res_header = TranslateHeader();
 
-	if (res_status.IsErr() || res_header.IsErr()) {
-		return Error();
+	if (res_status.IsErr()) {
+		return Error(res_status.Err());
+	}
+	if (res_header.IsErr()) {
+		return Error(res_header.Err());
 	}
 	return http::ResponseMessage(res_status.Val(), res_header.Val(), message_body_);
 }
 
 Result<StatusLine> HttpResponseBuilder::TranslateStatusLine()
 {
-	// StatusLine               status;
-	// static const std::string http_version = "HTTP/1.1";
-	//
-	// response typeで分岐
-	// header_fields_.find("Status");
-	// status.http_version_ = http_version;
-	// return status;
+	StatusLine               status;
+	static const std::string http_version = "HTTP/1.1";
+
+	//[TODO] エラーの時はbad requestを設定する必要がある
+	status.status_code_ = "200";
+	if (header_fields_.Contains("Status")) {
+		HeaderFields::Values values = header_fields_.at("Status"); // atでlistを返す必要ある？
+		status.status_code_ = values.front().GetValue();
+	}
+	status.http_version_ = http_version;
+	return status;
 }
 
 Result<HeaderSection> HttpResponseBuilder::TranslateHeader()
 {
 	try {
-		HeaderSection headers(header_str_);
-		return headers;
+		return HeaderSection(header_fields_.GetMap());
 	} catch (const std::exception &e) {
 		return Error("");
 	}
+}
+
+// 可読性悪いので要修正
+// これはサーバ側でやることかも
+// | Response Type                          | Content-Type | local-Location | client-Location |
+// | -------------------------------------- | ------------ | -------------- | --------------- |
+// | Document Response                      | *            |                |                 |
+// | Local Redirect Response                |              | *              |                 |
+// | Client Redirect Response               |              |                | *               |
+// | Client Redirect Response with Document | *            |                | *               |
+HttpResponseBuilder::ResponseType HttpResponseBuilder::IdentifyResponseType() const
+{
+	bool has_content_type = header_fields_.Contains("Content-Type");
+	bool has_location     = header_fields_.Contains("Location");
+
+	if (!has_location) {
+		return has_content_type ? kDocument : kUndefined;
+	}
+	HeaderFields::Values values = header_fields_.at("Location");
+	if (values.empty()) {
+		return kUndefined;
+	}
+	std::string value = values.front().GetValue();
+	if (value.empty()) {
+		return kUndefined;
+	}
+	bool is_local_location = value.at(0) == '/';
+	if (is_local_location) {
+		bool is_only_location = header_fields_.size() == 1;
+		return is_only_location ? kLocalRedir : kUndefined;
+	}
+	bool has_status = header_fields_.Contains("Status");
+	if (has_content_type && has_status) {
+		return kClientRedirWithDocument;
+	}
+	return kUndefined;
 }
 
 Result<Emptiable<http::ResponseMessage>>
@@ -61,9 +87,10 @@ HttpResponseBuilder::GetHttpResponse(const std::string &line)
 
 	switch (state_) {
 	case kParseHeader:
-		AddHeader(line);
 		if (is_blankline) {
 			state_ = kParseBody;
+		} else {
+			header_fields_.Add(line);
 		}
 		break;
 
@@ -74,7 +101,7 @@ HttpResponseBuilder::GetHttpResponse(const std::string &line)
 		if (line.empty()) {
 			state_ = kParseFinish;
 		}
-		AddBody(line);
+		message_body_ += line;
 		break;
 
 	case kParseFinish:
