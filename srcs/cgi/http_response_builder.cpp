@@ -38,10 +38,6 @@ Result<StatusLine> HttpResponseBuilder::TranslateStatusLine()
 	return status;
 }
 
-/*
-リダイレクトの際に指定されるpathを設定する項目は、httpレスポンスには存在しないので
-ヘッダを使用して返すことになっている
-*/
 Result<HeaderSection> HttpResponseBuilder::TranslateHeader()
 {
 	try {

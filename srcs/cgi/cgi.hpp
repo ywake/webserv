@@ -18,13 +18,6 @@ class Cgi : public http::IResource
 		TYPE_SIZE
 	};
 
-	enum State {
-		kParseHeader,
-		kParseBody,
-		kParseFinish,
-	};
-
-	State                 state_;
 	buffer::LineBuffer    read_buffer_;
 	buffer::MessageBuffer msg_buffer_;
 
