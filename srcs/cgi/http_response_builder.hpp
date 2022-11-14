@@ -32,8 +32,6 @@ namespace cgi
 
 	  public:
 		HttpResponseBuilder();
-		void                                     AddHeader(const std::string &header);
-		void                                     AddBody(const std::string &str);
 		Result<Emptiable<http::ResponseMessage>> GetHttpResponse(const std::string &line);
 
 	  private:
