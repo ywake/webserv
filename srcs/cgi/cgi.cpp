@@ -127,51 +127,19 @@ const Result<Cgi::PollInstructions> Cgi::Receive()
 		return poll_instructions;
 	}
 
-	Result<void> res = ParseCgiResponse();
+	Emptiable<std::string> line = read_buffer_.GetLine();
+	if (line.empty()) {
+		return poll_instructions;
+	}
+	Result<Emptiable<http::ResponseMessage>> res = http_builder_.GetHttpResponse(line.Value());
 	if (res.IsErr()) {
-		return res.err;
+		return Error(res.Err());
 	}
-	// ここでメッセージバッファにhttpレスポンスを追加する方がスコープが揃うが、未完成のhttpレスポンスをResultでうまく返せない
+	Emptiable<http::ResponseMessage> msg = res.Val();
+	if (!msg.empty()) {
+		msg_buffer_.push_back(msg.Value());
+	}
 	return poll_instructions;
-}
-
-const Result<void> Cgi::ParseCgiResponse()
-{
-	Emptiable<std::string> res = read_buffer_.GetLine();
-	if (res.empty()) {
-		return;
-	}
-	std::string line         = res.Value();
-	bool        is_blankline = line == http::kCrLf || line == http::kNl;
-
-	switch (state_) {
-	case kParseHeader:
-		http_builder_.AddHeader(line);
-		if (is_blankline) {
-			state_ = kParseBody;
-		}
-		break;
-
-	case kParseBody:
-		if (is_blankline) {
-			return Error("Invalid Cgi Response.");
-		}
-		if (line.empty()) {
-			state_ = kParseFinish;
-		}
-		http_builder_.AddBody(line);
-		break;
-
-	case kParseFinish:
-	default:
-		Result<http::ResponseMessage> res = http_builder_.Translate();
-		if (res.IsErr()) {
-			return res.err;
-		}
-		msg_buffer_.push_back(res.Val());
-		state_ = kParseHeader; // 同じreceiveの中で２度呼ばれないことに依存する?
-	}
-	return Result<void>();
 }
 
 Result<int> Cgi::StartCgiProcess(const char *file, char **argv, char **envp) const

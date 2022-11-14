@@ -36,14 +36,14 @@ class Cgi : public http::IResource
 
   public:
 	Cgi(const http::RequestMessage &message);
-	Result<void> Run(const std::string &cgi_path);
-	bool         Terminate() const;
-	void         SetRequestData(
-				const std::string server_name, const std::string server_port, const std::string client_ip
-			);
-	ssize_t                        WriteRequestData(size_t nbyte) const;
+	Result<void>                   Run(const std::string &cgi_path);
+	bool                           Terminate() const;
 	const Result<PollInstructions> Send(std::size_t nbyte);
 	const Result<PollInstructions> Receive();
+	ssize_t                        WriteRequestData(size_t nbyte) const;
+	void                           SetRequestData(
+								  const std::string server_name, const std::string server_port, const std::string client_ip
+							  );
 
   private:
 	Result<int>               StartCgiProcess(const char *file, char **argv, char **envp) const;
