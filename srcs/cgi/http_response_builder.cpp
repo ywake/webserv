@@ -20,24 +20,21 @@ Result<http::ResponseMessage> HttpResponseBuilder::Translate()
 	return http::ResponseMessage(res_status.Val(), res_header.Val(), message_body_);
 }
 
-/*
-StatusはResponse Typeに関係なく、
-デフォルトで200、
-Statusヘッダが設定されていればその値、
-レスポンスが不正であれば400とする
-*/
 Result<StatusLine> HttpResponseBuilder::TranslateStatusLine()
 {
 	StatusLine               status;
 	static const std::string http_version = "HTTP/1.1";
+	static const std::string status_ok    = "200";
 
-	//[TODO] エラーの時はbad requestを設定する必要がある
-	status.status_code_ = "200";
+	status.http_version_ = http_version;
+	status.status_code_  = status_ok;
 	if (header_fields_.Contains("Status")) {
 		HeaderFields::Values values = header_fields_.at("Status"); // atでlistを返す必要ある？
+		if (values.empty()) {
+			return Error();
+		}
 		status.status_code_ = values.front().GetValue();
 	}
-	status.http_version_ = http_version;
 	return status;
 }
 
