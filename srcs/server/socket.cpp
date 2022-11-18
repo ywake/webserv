@@ -10,6 +10,11 @@ namespace server
 
 	Socket::~Socket() {}
 
+	int Socket::GetFd() const
+	{
+		return managed_fd_.GetFd();
+	}
+
 	Socket &Socket::operator=(const Socket &other)
 	{
 		if (this != &other) {

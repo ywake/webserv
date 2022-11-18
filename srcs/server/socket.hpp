@@ -15,6 +15,7 @@ namespace server
 		Socket();
 		Socket(ManagedFd managed_fd);
 		Socket(const Socket &other);
+		int GetFd() const;
 		~Socket();
 
 		Socket &operator=(const Socket &other);
