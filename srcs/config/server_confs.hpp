@@ -39,6 +39,8 @@ namespace conf
 		 * @return const std::map<Host, ServerConf>&
 		 */
 		Result<const VirtualServerConfs &> operator[](const Port &port);
+		ConfsMap::const_iterator           begin() const;
+		ConfsMap::const_iterator           end() const;
 
 		void Print(std::ostream &os) const;
 
