@@ -27,8 +27,8 @@ namespace server
 
 	  public:
 		Server(const conf::ServerConfs &configs);
-		int  Listen();
-		void Run();
+		Result<void> Listen();
+		void         Run();
 	};
 } // namespace server
 #endif
