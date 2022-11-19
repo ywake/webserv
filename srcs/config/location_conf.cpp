@@ -5,12 +5,12 @@
 
 namespace conf
 {
-	static const LocationConf::AllowMethods kDefaultAllowMethods = LocationConf::AllowMethods();
-	static const LocationConf::Redirect     kDefaultRedirect     = LocationConf::Redirect();
-	static const LocationConf::Root         kDefaultRoot         = LocationConf::Root();
-	static LocationConf::IndexFiles         kDefaultIndexFiles   = LocationConf::IndexFiles();
-	static const LocationConf::AutoIndex    kDefaultAutoIndex    = false;
-	static const LocationConf::CgiPath      kDefaultCgiPath      = LocationConf::CgiPath();
+	LocationConf::AllowMethods    LocationConf::kDefaultAllowMethods = LocationConf::AllowMethods();
+	const LocationConf::Redirect  LocationConf::kDefaultRedirect     = LocationConf::Redirect();
+	const LocationConf::Root      LocationConf::kDefaultRoot         = LocationConf::Root();
+	LocationConf::IndexFiles      LocationConf::kDefaultIndexFiles   = LocationConf::IndexFiles();
+	const LocationConf::AutoIndex LocationConf::kDefaultAutoIndex    = false;
+	const LocationConf::CgiPath   LocationConf::kDefaultCgiPath      = LocationConf::CgiPath();
 
 	void LocationConf::SetDefault()
 	{

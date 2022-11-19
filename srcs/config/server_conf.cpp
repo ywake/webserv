@@ -9,11 +9,11 @@
 
 namespace conf
 {
-	static ServerConf::ListenPort              kDefaultListenPort        = ServerConf::ListenPort();
-	static const ServerConf::ServerName        kDefaultServerName        = ServerConf::ServerName();
-	static const ServerConf::ErrorPages        kDefaultErrorPages        = ServerConf::ErrorPages();
-	static const ServerConf::ClientMaxBodySize kDefaultClientMaxBodySize = 1 << 20;
-	static const ServerConf::LocationConfs     kDefaultLocationConfs = ServerConf::LocationConfs();
+	ServerConf::ListenPort              ServerConf::kDefaultListenPort = ServerConf::ListenPort();
+	const ServerConf::ServerName        ServerConf::kDefaultServerName = ServerConf::ServerName();
+	const ServerConf::ErrorPages        ServerConf::kDefaultErrorPages = ServerConf::ErrorPages();
+	const ServerConf::ClientMaxBodySize ServerConf::kDefaultClientMaxBodySize = 1 << 20;
+	const ServerConf::LocationConfs ServerConf::kDefaultLocationConfs = ServerConf::LocationConfs();
 
 	void ServerConf::SetDefault()
 	{
