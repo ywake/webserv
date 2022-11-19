@@ -14,7 +14,7 @@ class Result
 	Result() : val_(), err_(){};
 	Result(const T &v) : val_(v), err_(){};
 	Result(const T &v, const Error &e) : val_(v), err_(e){};
-	Result(const Error &e) : val_(), err_(e){};
+	Result(const Error &e) : val_(), err_(e.Err()){};
 	Result(const Result &r) : val_(r.val_), err_(r.err_){};
 	bool IsOk()
 	{
@@ -28,9 +28,13 @@ class Result
 	{
 		return val_;
 	}
-	std::string Err()
+	const std::string &ErrMsg()
 	{
 		return err_.Err();
+	}
+	const Error &Err()
+	{
+		return err_;
 	}
 	Result &operator=(const Result &r)
 	{
@@ -54,7 +58,7 @@ class Result<T &>
 	Result() : default_(), val_(default_), err_(){};
 	Result(const T &v) : val_(v), err_(){};
 	Result(const T &v, const Error &e) : val_(v), err_(e){};
-	Result(const Error &e) : default_(), val_(default_), err_(e){};
+	Result(const Error &e) : default_(), val_(default_), err_(e.Err()){};
 	Result(const Result &r) : val_(r.val_), err_(r.err_){};
 	bool IsOk()
 	{
@@ -68,9 +72,13 @@ class Result<T &>
 	{
 		return val_;
 	}
-	std::string Err()
+	const std::string &ErrMsg()
 	{
 		return err_.Err();
+	}
+	const Error &Err()
+	{
+		return err_;
 	}
 	Result &operator=(const Result &r)
 	{
@@ -90,7 +98,7 @@ class Result<void>
 
   public:
 	Result() : err_(){};
-	Result(const Error &e) : err_(e){};
+	Result(const Error &e) : err_(e.Err()){};
 	Result(const Result &r) : err_(r.err_){};
 	bool IsOk()
 	{
@@ -100,9 +108,13 @@ class Result<void>
 	{
 		return err_.IsErr();
 	}
-	std::string Err()
+	const std::string &ErrMsg()
 	{
 		return err_.Err();
+	}
+	const Error &Err()
+	{
+		return err_;
 	}
 	Result &operator=(const Result &r)
 	{

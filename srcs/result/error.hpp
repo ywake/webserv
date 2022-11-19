@@ -15,8 +15,8 @@ class Error
 	Error(const char *msg);
 	Error(const std::string &msg);
 	Error(const Error &err);
-	bool        IsErr() const;
-	std::string Err() const;
+	bool               IsErr() const;
+	const std::string &Err() const;
 
 	Error &operator=(const Error &rhs);
 	bool   operator==(const Error &rhs) const;
