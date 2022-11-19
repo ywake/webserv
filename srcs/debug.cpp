@@ -2,7 +2,7 @@
 
 #include "debug.hpp"
 
-void log(Error &err)
+void log(const Error &err)
 {
 	if (DEBUG) {
 		std::cerr << err << std::endl;

@@ -16,5 +16,5 @@ void log(T title, U contents)
 	}
 }
 
-void log(Error &err);
+void log(const Error &err);
 #endif
