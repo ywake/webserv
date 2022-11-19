@@ -9,11 +9,18 @@
 
 namespace conf
 {
-	static ServerConf::ListenPort        kDefaultListenPort        = {"80"};
-	static ServerConf::ServerName        kDefaultServerName        = {};
-	static ServerConf::ErrorPages        kDefaultErrorPages        = {};
-	static ServerConf::ClientMaxBodySize kDefaultClientMaxBodySize = 1 << 20;
-	static ServerConf::LocationConfs     kDefaultLocationConfs     = {};
+	static ServerConf::ListenPort              kDefaultListenPort        = ServerConf::ListenPort();
+	static const ServerConf::ServerName        kDefaultServerName        = ServerConf::ServerName();
+	static const ServerConf::ErrorPages        kDefaultErrorPages        = ServerConf::ErrorPages();
+	static const ServerConf::ClientMaxBodySize kDefaultClientMaxBodySize = 1 << 20;
+	static const ServerConf::LocationConfs     kDefaultLocationConfs = ServerConf::LocationConfs();
+
+	void ServerConf::SetDefault()
+	{
+		if (kDefaultListenPort.empty()) {
+			kDefaultListenPort.push_back("80");
+		}
+	}
 
 	ServerConf::ServerConf(
 		ListenPort        listen_port,
@@ -27,7 +34,9 @@ namespace conf
 		  error_pages_(error_pages),
 		  client_max_body_size_(client_max_body_size),
 		  location_confs_(location_confs)
-	{}
+	{
+		SetDefault();
+	}
 
 	ServerConf::~ServerConf() {}
 

@@ -5,12 +5,24 @@
 
 namespace conf
 {
-	static const LocationConf::AllowMethods kDefaultAllowMethods = {"GET", "POST", "DELETE"};
+	static const LocationConf::AllowMethods kDefaultAllowMethods = LocationConf::AllowMethods();
 	static const LocationConf::Redirect     kDefaultRedirect     = LocationConf::Redirect();
 	static const LocationConf::Root         kDefaultRoot         = LocationConf::Root();
-	static const LocationConf::IndexFiles   kDefaultIndexFiles   = {"index.html"};
+	static LocationConf::IndexFiles         kDefaultIndexFiles   = LocationConf::IndexFiles();
 	static const LocationConf::AutoIndex    kDefaultAutoIndex    = false;
 	static const LocationConf::CgiPath      kDefaultCgiPath      = LocationConf::CgiPath();
+
+	void LocationConf::SetDefault()
+	{
+		if (kDefaultIndexFiles.empty()) {
+			kDefaultIndexFiles.push_back("index.html");
+		}
+		if (kDefaultAllowMethods.empty()) {
+			kDefaultAllowMethods.push_back("GET");
+			kDefaultAllowMethods.push_back("POST");
+			kDefaultAllowMethods.push_back("DELETE");
+		}
+	}
 
 	LocationConf::LocationConf(
 		AllowMethods allow_methods_,
@@ -26,7 +38,9 @@ namespace conf
 		  index_files_(index_files_),
 		  autoindex(autoindex),
 		  cgi_path_(cgi_path_)
-	{}
+	{
+		SetDefault();
+	}
 
 	LocationConf::LocationConf(const std::vector<ThinString> &params)
 		: allow_methods_(), redirect_(), root_(), index_files_(), autoindex(), cgi_path_()
