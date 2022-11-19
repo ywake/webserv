@@ -43,7 +43,7 @@ namespace io_multiplexer
 		Result<void>        Register(const event::Event &event);
 		Result<void>        Overwrite(const event::Event &event);
 		Result<void>        Unregister(const event::Event &event);
-		Result<EpollEvents> WaitBlockingEvents();
+		Result<EpollEvents> WaitBlockingEvents(int timeout);
 		event::Events       ExportNonBlockingEvents();
 		EpollEvent          ConvertToEpollEvent(const event::Event &event);
 		event::Event        ConvertToEvent(const EpollEvent &epoll_event);
