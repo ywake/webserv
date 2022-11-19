@@ -21,10 +21,11 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(conf::LocationConf::AllowMethods({"GET"})),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods({"GET"})
+					),
 				})
 			),
 		})
@@ -45,10 +46,11 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(conf::LocationConf::AllowMethods({"GET", "POST"})),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods({"GET", "POST"})
+					),
 				})
 			),
 		})
@@ -69,12 +71,11 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods({"GET", "POST", "DELETE"})
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods({"GET", "POST", "DELETE"})
+					),
 				})
 			),
 		})
@@ -95,10 +96,11 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(conf::LocationConf::AllowMethods({"POST", "DELETE"})),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods({"POST", "DELETE"})
+					),
 				})
 			),
 		})
@@ -120,10 +122,11 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(conf::LocationConf::AllowMethods({"GET", "POST"})),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods({"GET", "POST"})
+					),
 				})
 			),
 		})

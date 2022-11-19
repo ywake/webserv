@@ -21,15 +21,14 @@ TEST(config, location_conf_index_files)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect(),
-							conf::LocationConf::Root(),
-							conf::LocationConf::IndexFiles({"index.html"})
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect(),
+						conf::LocationConf::Root(),
+						conf::LocationConf::IndexFiles({"index.html"})
+					),
 				})
 			),
 		})
@@ -50,15 +49,14 @@ TEST(config, location_conf_index_files)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect(),
-							conf::LocationConf::Root(),
-							conf::LocationConf::IndexFiles({"index.html", "index.htm"})
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect(),
+						conf::LocationConf::Root(),
+						conf::LocationConf::IndexFiles({"index.html", "index.htm"})
+					),
 				})
 			),
 		})
@@ -80,15 +78,14 @@ TEST(config, location_conf_index_files)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect(),
-							conf::LocationConf::Root(),
-							conf::LocationConf::IndexFiles({"a", "b", "c", "d"})
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect(),
+						conf::LocationConf::Root(),
+						conf::LocationConf::IndexFiles({"a", "b", "c", "d"})
+					),
 				})
 			),
 		})

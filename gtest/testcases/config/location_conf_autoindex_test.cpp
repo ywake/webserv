@@ -21,16 +21,15 @@ TEST(config, location_conf_autoindex)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect(),
-							conf::LocationConf::Root(),
-							conf::LocationConf::IndexFiles(),
-							conf::LocationConf::AutoIndex(true)
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect(),
+						conf::LocationConf::Root(),
+						conf::LocationConf::IndexFiles(),
+						conf::LocationConf::AutoIndex(true)
+					),
 				})
 			),
 		})
@@ -51,16 +50,15 @@ TEST(config, location_conf_autoindex)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect(),
-							conf::LocationConf::Root(),
-							conf::LocationConf::IndexFiles(),
-							conf::LocationConf::AutoIndex(false)
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect(),
+						conf::LocationConf::Root(),
+						conf::LocationConf::IndexFiles(),
+						conf::LocationConf::AutoIndex(false)
+					),
 				})
 			),
 		})
@@ -82,16 +80,15 @@ TEST(config, location_conf_autoindex)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect(),
-							conf::LocationConf::Root(),
-							conf::LocationConf::IndexFiles(),
-							conf::LocationConf::AutoIndex(false)
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect(),
+						conf::LocationConf::Root(),
+						conf::LocationConf::IndexFiles(),
+						conf::LocationConf::AutoIndex(false)
+					),
 				})
 			),
 		})
