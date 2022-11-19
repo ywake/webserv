@@ -151,6 +151,16 @@ namespace conf
 		}
 	}
 
+	ServerConfs::ConfsMap::const_iterator ServerConfs::begin() const
+	{
+		return confs_map_.begin();
+	}
+
+	ServerConfs::ConfsMap::const_iterator ServerConfs::end() const
+	{
+		return confs_map_.end();
+	}
+
 	void ServerConfs::Print(std::ostream &os) const
 	{
 		for (ConfsMap::const_iterator it = confs_map_.begin(); it != confs_map_.end(); ++it) {
