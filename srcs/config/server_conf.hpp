@@ -19,11 +19,11 @@ namespace conf
 		static const std::size_t kMaxClientBodySize = 1 << 30;
 
 	  public:
-		typedef std::vector<Port>            ListenPort;
-		typedef std::vector<std::string>     ServerName;
-		typedef std::map<StatusCode, Path>   ErrorPages;
-		typedef Emptiable<std::size_t>       ClientMaxBodySize;
-		typedef std::map<Path, LocationConf> LocationConfs;
+		typedef std::vector<Port>          ListenPort;
+		typedef std::vector<std::string>   ServerName;
+		typedef std::map<StatusCode, Path> ErrorPages;
+		typedef Emptiable<std::size_t>     ClientMaxBodySize;
+		typedef std::vector<LocationConf>  LocationConfs;
 
 	  private:
 		ListenPort        listen_port_;

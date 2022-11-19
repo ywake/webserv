@@ -11,10 +11,17 @@
 
 namespace conf
 {
-
 	class LocationConf
 	{
 	  public:
+		enum MatchPattern {
+			kPrefix,
+			kSuffix,
+			kExact
+		};
+
+	  public:
+		typedef Path                                   PathPattern;
 		typedef std::vector<std::string>               AllowMethods;
 		typedef Emptiable<std::pair<StatusCode, Url> > Redirect;
 		typedef Emptiable<Path>                        Root;
@@ -23,25 +30,36 @@ namespace conf
 		typedef Emptiable<Path>                        CgiPath;
 
 	  private:
+		Path         path_pattern_;
+		MatchPattern match_pattern_;
+
 		AllowMethods allow_methods_;
 		Redirect     redirect_;
 		Root         root_;
 		IndexFiles   index_files_;
-		AutoIndex    autoindex;
+		AutoIndex    autoindex_;
 		CgiPath      cgi_path_;
 
 	  public:
-		LocationConf(const std::vector<ThinString> &params);
 		LocationConf(
-			AllowMethods allow_methods_ = AllowMethods(),
-			Redirect     redirect_      = Redirect(),
-			Root         root_          = Root(),
-			IndexFiles   index_files_   = IndexFiles(),
-			AutoIndex    autoindex      = AutoIndex(),
-			CgiPath      cgi_path_      = CgiPath()
+			const PathPattern             &path_pattern,
+			MatchPattern                   match_pattern,
+			const std::vector<ThinString> &params
+		);
+		LocationConf(
+			PathPattern  path_pattern,
+			MatchPattern match_pattern = kPrefix,
+			AllowMethods allow_methods = AllowMethods(),
+			Redirect     redirect      = Redirect(),
+			Root         root          = Root(),
+			IndexFiles   index_files   = IndexFiles(),
+			AutoIndex    autoindex     = AutoIndex(),
+			CgiPath      cgi_path      = CgiPath()
 		);
 		~LocationConf();
 
+		const PathPattern  &GetPathPattern() const;
+		MatchPattern        GetMatchPattern() const;
 		const AllowMethods &GetAllowMethods() const;
 		const Redirect     &GetRedirect() const;
 		const Root         &GetRoot() const;

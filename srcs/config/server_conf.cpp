@@ -151,14 +151,45 @@ namespace conf
 		}
 	}
 
+	Path GetPathPattern(const std::vector<ThinString> &tokens)
+	{
+		int path_index = tokens.size() == 3 ? 2 : 1;
+		return tokens[path_index].ToString();
+	}
+
+	LocationConf::MatchPattern GetMatchPattern(const std::vector<ThinString> &tokens)
+	{
+		LocationConf::MatchPattern match_pattern = LocationConf::kPrefix;
+		if (tokens.size() == 3) {
+			if (tokens[1] == "=") {
+				match_pattern = LocationConf::kExact;
+			} else if (tokens[1] == "^") {
+				match_pattern = LocationConf::kPrefix;
+			} else if (tokens[1] == "$") {
+				match_pattern = LocationConf::kSuffix;
+			} else {
+				throw ConfigException("Invalid location");
+			}
+		}
+		return match_pattern;
+	}
+
 	void ServerConf::AddLocation(const ThinString &location, const std::vector<ThinString> &params)
 	{
-		std::vector<ThinString> splitted_location = Split(location, " ");
-		if (splitted_location.size() != 2) {
+		std::vector<ThinString> splitted_location = utils::TrimEmpty(Split(location, " "));
+
+		bool is_size2or3 = splitted_location.size() == 2 || splitted_location.size() == 3;
+		if (!is_size2or3) {
 			throw ConfigException("Invalid location");
 		}
-		Path pertern             = splitted_location[1].ToString();
-		location_confs_[pertern] = LocationConf(params);
+		if (splitted_location[0] != "location") {
+			throw ConfigException("Invalid location");
+		}
+
+		Path                       path_pattern  = GetPathPattern(splitted_location);
+		LocationConf::MatchPattern match_pattern = GetMatchPattern(splitted_location);
+
+		location_confs_.push_back(LocationConf(path_pattern, match_pattern, params));
 	}
 
 	/**
@@ -237,7 +268,7 @@ namespace conf
 		for (ServerConf::LocationConfs::const_iterator it = locations.begin();
 			 it != locations.end();
 			 ++it) {
-			os << it->first << "{" << it->second << "}" << std::endl;
+			os << "{" << *it << "}" << std::endl;
 		}
 		return os;
 	}
