@@ -24,7 +24,7 @@ class Result
 	{
 		return err_.IsErr();
 	}
-	T &Val()
+	const T &Val() const
 	{
 		return val_;
 	}
@@ -68,7 +68,7 @@ class Result<T &>
 	{
 		return err_.IsErr();
 	}
-	T &Val()
+	const T &Val() const
 	{
 		return val_;
 	}
