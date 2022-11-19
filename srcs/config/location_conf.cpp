@@ -127,6 +127,23 @@ namespace conf
 	LocationConf::~LocationConf() {}
 
 	/**
+	 * Methods
+	 */
+	bool LocationConf::IsMatch(const Path &path) const
+	{
+		switch (match_pattern_) {
+		case kPrefix:
+			return path.find(path_pattern_) == 0;
+		case kSuffix:
+			return path.rfind(path_pattern_) == path.size() - path_pattern_.size();
+		case kExact:
+			return path == path_pattern_;
+		default:
+			return false;
+		}
+	}
+
+	/**
 	 * Getters
 	 */
 	const LocationConf::PathPattern &LocationConf::GetPathPattern() const

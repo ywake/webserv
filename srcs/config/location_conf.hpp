@@ -58,6 +58,13 @@ namespace conf
 		);
 		~LocationConf();
 
+		// Methods
+		/**
+		 * @brief このLocation設定を適用するかどうかを判定する
+		 */
+		bool IsMatch(const Path &path) const;
+
+		// Getters
 		const PathPattern  &GetPathPattern() const;
 		MatchPattern        GetMatchPattern() const;
 		const AllowMethods &GetAllowMethods() const;
