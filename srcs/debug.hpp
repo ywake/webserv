@@ -1,8 +1,10 @@
-#ifndef DEBUG_H
-#define DEBUG_H
+#ifndef DEBUG_HPP
+#define DEBUG_HPP
 
 #include <iomanip>
 #include <iostream>
+
+#include "result.hpp"
 
 #define DEBUG true
 
@@ -14,4 +16,5 @@ void log(T title, U contents)
 	}
 }
 
-#endif /* DEBUG_H */
+void log(const Error &err);
+#endif
