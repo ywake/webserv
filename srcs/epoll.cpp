@@ -81,7 +81,7 @@ namespace io_multiplexer
 	{
 		Result<bool> res = utils::IsRegularFile(instruction.event.fd);
 		if (res.IsErr()) {
-			return Error(res.Err());
+			return res.Err();
 		}
 		const bool is_regular = res.Val();
 		if (is_regular) {

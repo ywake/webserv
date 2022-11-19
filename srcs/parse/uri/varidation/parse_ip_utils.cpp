@@ -48,7 +48,7 @@ namespace ABNF
 				continue;
 			}
 			if (!IsH16(*itr)) {
-				return Error("");
+				return Error();
 			}
 			bytes += kH16Bytes;
 		}
@@ -67,13 +67,13 @@ namespace ABNF
 		}
 		Result<std::size_t> bytes = CountH16Bytes(++tokens.rbegin(), tokens.rend());
 		if (bytes.IsErr()) {
-			return Error("");
+			return Error();
 		} else if (IsIPv4address(tokens.back())) {
 			return bytes.Val() + kIpv4Bytes;
 		} else if (IsH16(tokens.back())) {
 			return bytes.Val() + kH16Bytes;
 		} else {
-			return Error("");
+			return Error();
 		}
 	}
 
@@ -81,15 +81,15 @@ namespace ABNF
 	{
 		Ipv6TokensPair left_right = DivideByDcolon(tokens);
 		if (!IsValidColonPosition(left_right.first) || !IsValidColonPosition(left_right.second)) {
-			return Error("");
+			return Error();
 		}
 		Result<std::size_t> left_bytes = CountLeftBytes(left_right.first);
 		if (left_bytes.IsErr()) {
-			return Error("");
+			return Error();
 		}
 		Result<std::size_t> right_bytes = CountRightBytes(left_right.second);
 		if (right_bytes.IsErr()) {
-			return Error("");
+			return Error();
 		}
 		return left_bytes.Val() + right_bytes.Val();
 	}

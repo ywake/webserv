@@ -4,14 +4,19 @@
 #include <climits>
 #include <map>
 
+#include "result.hpp"
+
 class ManagedFd
 {
+  private:
+	typedef std::map<int, std::size_t> FdCounter;
+
   public:
 	static const int kNofd = INT_MIN;
 
   protected:
-	static std::map<int, std::size_t> fd_count_;
-	int                               fd_;
+	static FdCounter fd_count_;
+	int              fd_;
 
   public:
 	ManagedFd();
@@ -22,6 +27,10 @@ class ManagedFd
 
 	// tmp
 	int GetFd() const;
+
+  private:
+	void         CountUp(int fd);
+	Result<void> CountDown(int fd);
 };
 
 #endif
