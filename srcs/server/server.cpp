@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include "debug.hpp"
 #include "listener.hpp"
 
 namespace server
@@ -30,6 +31,15 @@ namespace server
 			}
 		}
 		return Result<void>();
+	}
+
+	void Server::Run()
+	{
+		while (true) {
+			Result<event::Events> events = io_monitor_.Wait();
+			if (events.IsErr()) {
+			}
+		}
 	}
 
 } // namespace server
