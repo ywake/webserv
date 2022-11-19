@@ -30,7 +30,7 @@ ManagedFd &ManagedFd::operator=(const ManagedFd &other)
 	Result<void> res = CountDown(fd_);
 	fd_              = other.fd_;
 	if (res.IsErr()) {
-		throw FileCloseException(res.Err());
+		throw FileCloseException(res.ErrMsg());
 	}
 	return *this;
 }

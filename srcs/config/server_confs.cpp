@@ -15,7 +15,7 @@ namespace conf
 	{
 		Result<std::string> res = utils::ReadFile(config_file_path);
 		if (res.IsErr()) {
-			throw ConfigException(res.Err());
+			throw ConfigException(res.ErrMsg());
 		}
 		std::string config_file_content = res.Val();
 		return ServerConfs(config_file_content);

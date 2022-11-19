@@ -28,9 +28,13 @@ class Result
 	{
 		return val_;
 	}
-	const std::string &Err()
+	const std::string &ErrMsg()
 	{
 		return err_.Err();
+	}
+	const Error &Err()
+	{
+		return err_;
 	}
 	Result &operator=(const Result &r)
 	{
@@ -68,9 +72,13 @@ class Result<T &>
 	{
 		return val_;
 	}
-	const std::string &Err()
+	const std::string &ErrMsg()
 	{
 		return err_.Err();
+	}
+	const Error &Err()
+	{
+		return err_;
 	}
 	Result &operator=(const Result &r)
 	{
@@ -100,9 +108,13 @@ class Result<void>
 	{
 		return err_.IsErr();
 	}
-	const std::string &Err()
+	const std::string &ErrMsg()
 	{
 		return err_.Err();
+	}
+	const Error &Err()
+	{
+		return err_;
 	}
 	Result &operator=(const Result &r)
 	{
