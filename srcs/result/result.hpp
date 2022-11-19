@@ -28,7 +28,7 @@ class Result
 	{
 		return val_;
 	}
-	std::string Err()
+	const std::string &Err()
 	{
 		return err_.Err();
 	}
@@ -68,7 +68,7 @@ class Result<T &>
 	{
 		return val_;
 	}
-	std::string Err()
+	const std::string &Err()
 	{
 		return err_.Err();
 	}
@@ -100,7 +100,7 @@ class Result<void>
 	{
 		return err_.IsErr();
 	}
-	std::string Err()
+	const std::string &Err()
 	{
 		return err_.Err();
 	}

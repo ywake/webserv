@@ -15,7 +15,7 @@ bool Error::IsErr() const
 	return is_err_;
 }
 
-std::string Error::Err() const
+const std::string &Error::Err() const
 {
 	return err_msg_;
 }
