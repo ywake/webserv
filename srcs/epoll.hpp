@@ -36,8 +36,6 @@ namespace io_multiplexer
 		Result<void>          Instruct(const event::Instruction &instruction);
 
 	  private:
-		Result<void>        InstructNonBlockingEvent(const event::Instruction &instruction);
-		Result<void>        InstructBlockingEvent(const event::Instruction &instruction);
 		Result<void>        AppendEventType(const event::Event &event);
 		Result<void>        TrimEventType(const event::Event &event);
 		Result<void>        Register(const event::Event &event);
