@@ -20,17 +20,17 @@ namespace io_multiplexer
 
 	Result<event::Events> Epoll::Wait()
 	{
-		Result<EpollEvents> wait_result     = WaitBlockingEvents();
-		event::Events       blocking_events = ConvertToEvents(wait_result.Val());
 		event::Events       events          = ExportNonBlockingEvents();
+		int                 timeout         = events.empty() ? timeout_ : 0;
+		Result<EpollEvents> wait_result     = WaitBlockingEvents(timeout);
+		event::Events       blocking_events = ConvertToEvents(wait_result.Val());
 		events.splice(events.end(), blocking_events);
 		return Result<event::Events>(events, Error(wait_result.Err()));
 	}
 
-	Result<EpollEvents> Epoll::WaitBlockingEvents()
+	Result<EpollEvents> Epoll::WaitBlockingEvents(int timeout)
 	{
 		int         num_of_events = blocking_pool_.size();
-		int         timeout       = non_blocking_pool_.empty() ? timeout_ : 0;
 		EpollEvents events(num_of_events);
 		EpollEvent *events_ptr = events.data();
 
