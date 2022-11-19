@@ -22,4 +22,6 @@ namespace event
 	typedef std::list<Instruction> Instructions;
 } // namespace event
 
+std::ostream &operator<<(std::ostream &os, const event::Instruction &instruction);
+
 #endif

@@ -1,6 +1,7 @@
 #ifndef EVENT_HPP
 #define EVENT_HPP
 
+#include <iostream>
 #include <list>
 #include <stdint.h>
 namespace event
@@ -18,5 +19,7 @@ namespace event
 
 	typedef std::list<Event> Events;
 } // namespace event
+
+std::ostream &operator<<(std::ostream &os, const event::Event &event);
 
 #endif
