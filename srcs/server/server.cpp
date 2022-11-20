@@ -54,8 +54,13 @@ namespace server
 
 	Instructions Server::RunEvents(const Events &events)
 	{
-		(void)events;
-		return Instructions();
+		Instructions insts;
+		for (Events::const_iterator it = events.begin(); it != events.end(); ++it) {
+			// Event   event = *it;
+			// Socket *sock  = static_cast<Socket *>(event.data);
+			// Instruction i     = ;
+		}
+		return insts;
 	}
 
 	Instructions Server::CloseFinishedConnections()
