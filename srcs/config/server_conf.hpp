@@ -33,12 +33,11 @@ namespace conf
 		LocationConfs     location_confs_;
 
 	  private:
-		static ListenPort              kDefaultListenPort;
+		static const ListenPort        kDefaultListenPort;
 		static const ServerName        kDefaultServerName;
 		static const ErrorPages        kDefaultErrorPages;
 		static const ClientMaxBodySize kDefaultClientMaxBodySize;
 		static const LocationConfs     kDefaultLocationConfs;
-		void                           SetDefault();
 
 	  public:
 		ServerConf(

@@ -5,24 +5,24 @@
 
 namespace conf
 {
-	LocationConf::AllowMethods    LocationConf::kDefaultAllowMethods = LocationConf::AllowMethods();
-	const LocationConf::Redirect  LocationConf::kDefaultRedirect     = LocationConf::Redirect();
-	const LocationConf::Root      LocationConf::kDefaultRoot         = LocationConf::Root();
-	LocationConf::IndexFiles      LocationConf::kDefaultIndexFiles   = LocationConf::IndexFiles();
-	const LocationConf::AutoIndex LocationConf::kDefaultAutoIndex    = false;
-	const LocationConf::CgiPath   LocationConf::kDefaultCgiPath      = LocationConf::CgiPath();
-
-	void LocationConf::SetDefault()
-	{
-		if (kDefaultIndexFiles.empty()) {
-			kDefaultIndexFiles.push_back("index.html");
-		}
-		if (kDefaultAllowMethods.empty()) {
-			kDefaultAllowMethods.push_back("GET");
-			kDefaultAllowMethods.push_back("POST");
-			kDefaultAllowMethods.push_back("DELETE");
-		}
-	}
+	const LocationConf::Redirect  LocationConf::kDefaultRedirect  = LocationConf::Redirect();
+	const LocationConf::Root      LocationConf::kDefaultRoot      = LocationConf::Root();
+	const LocationConf::AutoIndex LocationConf::kDefaultAutoIndex = false;
+	const LocationConf::CgiPath   LocationConf::kDefaultCgiPath   = LocationConf::CgiPath();
+	// AllowMethods({"GET", "POST", "DELETE"})がC++98で使えないので
+	static const char               *kDefaultAllowMethodArray[] = {"GET", "POST", "DELETE"};
+	const LocationConf::AllowMethods LocationConf::kDefaultAllowMethods =
+		LocationConf::AllowMethods(
+			kDefaultAllowMethodArray,
+			kDefaultAllowMethodArray +
+				sizeof(kDefaultAllowMethodArray) / sizeof(kDefaultAllowMethodArray[0])
+		);
+	// IndexFiles({"index.html"})がC++98で使えないので
+	static const char             *kDefaultIndexFileArray[]         = {"index.html"};
+	const LocationConf::IndexFiles LocationConf::kDefaultIndexFiles = LocationConf::IndexFiles(
+		kDefaultIndexFileArray,
+		kDefaultIndexFileArray + sizeof(kDefaultIndexFileArray) / sizeof(kDefaultIndexFileArray[0])
+	);
 
 	LocationConf::LocationConf(
 		AllowMethods allow_methods_,
@@ -38,9 +38,7 @@ namespace conf
 		  index_files_(index_files_),
 		  autoindex(autoindex),
 		  cgi_path_(cgi_path_)
-	{
-		SetDefault();
-	}
+	{}
 
 	LocationConf::LocationConf(const std::vector<ThinString> &params)
 		: allow_methods_(), redirect_(), root_(), index_files_(), autoindex(), cgi_path_()
