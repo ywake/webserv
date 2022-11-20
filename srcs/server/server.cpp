@@ -40,7 +40,25 @@ namespace server
 			if (events.IsErr()) {
 				log(events.Err());
 			}
+			event::Instructions instructions            = RunEvents(events.Val());
+			event::Instructions unregister_instructions = CloseFinishedConnections();
+			instructions.splice(instructions.end(), unregister_instructions);
+			io_multiplexer::ErrEvents err = io_monitor_.InstructMulti(instructions);
+			if (!err.empty()) {
+				log(err);
+			}
 		}
+	}
+
+	event::Instructions Server::RunEvents(const event::Events &events)
+	{
+		(void)events;
+		return event::Instructions();
+	}
+
+	event::Instructions Server::CloseFinishedConnections()
+	{
+		return event::Instructions();
 	}
 
 } // namespace server
