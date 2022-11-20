@@ -5,7 +5,6 @@
 #include "webserv_utils.hpp"
 
 #include <cassert>
-#include <limits>
 
 namespace conf
 {
