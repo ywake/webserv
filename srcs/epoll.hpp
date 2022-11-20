@@ -34,15 +34,15 @@ namespace io_multiplexer
 		Result<event::Events> Wait();
 		ErrEvents             InstructMulti(const event::Instructions &instructions);
 		Result<void>          Instruct(const event::Instruction &instruction);
+		Result<void>          AppendEventType(const event::Event &event);
+		Result<void>          TrimEventType(const event::Event &event);
+		Result<void>          Register(const event::Event &event);
+		Result<void>          Unregister(const event::Event &event);
 
 	  private:
-		Result<void>        InstructNonBlockingEvent(const event::Instruction &instruction);
-		Result<void>        InstructBlockingEvent(const event::Instruction &instruction);
-		Result<void>        AppendEventType(const event::Event &event);
-		Result<void>        TrimEventType(const event::Event &event);
-		Result<void>        Register(const event::Event &event);
+		Result<void>        RegisterBlockingEvent(const event::Event &event);
+		Result<void>        UnregisterBlockingEvent(const event::Event &event);
 		Result<void>        Overwrite(const event::Event &event);
-		Result<void>        Unregister(const event::Event &event);
 		Result<EpollEvents> WaitBlockingEvents(int timeout);
 		event::Events       ExportNonBlockingEvents();
 		EpollEvent          ConvertToEpollEvent(const event::Event &event);
