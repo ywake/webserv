@@ -14,14 +14,12 @@ namespace conf
 	const LocationConf::AllowMethods LocationConf::kDefaultAllowMethods =
 		LocationConf::AllowMethods(
 			kDefaultAllowMethodArray,
-			kDefaultAllowMethodArray +
-				sizeof(kDefaultAllowMethodArray) / sizeof(kDefaultAllowMethodArray[0])
+			kDefaultAllowMethodArray + ARRAY_SIZE(kDefaultAllowMethodArray)
 		);
 	// IndexFiles({"index.html"})がC++98で使えないので
 	static const char             *kDefaultIndexFileArray[]         = {"index.html"};
 	const LocationConf::IndexFiles LocationConf::kDefaultIndexFiles = LocationConf::IndexFiles(
-		kDefaultIndexFileArray,
-		kDefaultIndexFileArray + sizeof(kDefaultIndexFileArray) / sizeof(kDefaultIndexFileArray[0])
+		kDefaultIndexFileArray, kDefaultIndexFileArray + ARRAY_SIZE(kDefaultIndexFileArray)
 	);
 
 	LocationConf::LocationConf(

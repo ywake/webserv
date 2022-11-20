@@ -15,9 +15,7 @@ namespace conf
 	// ListenPort({"80"})がC++98で出来ないので
 	static const char           *kDefaultListenPortArray[]      = {"80"};
 	const ServerConf::ListenPort ServerConf::kDefaultListenPort = ServerConf::ListenPort(
-		kDefaultListenPortArray,
-		kDefaultListenPortArray +
-			sizeof(kDefaultListenPortArray) / sizeof(kDefaultListenPortArray[0])
+		kDefaultListenPortArray, kDefaultListenPortArray + ARRAY_SIZE(kDefaultListenPortArray)
 	);
 
 	ServerConf::ServerConf(
