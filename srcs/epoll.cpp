@@ -138,7 +138,7 @@ namespace io_multiplexer
 		}
 		const bool is_regular = res.Val();
 		if (is_regular) {
-			blocking_pool_[event.fd] = event;
+			non_blocking_pool_[event.fd] = event;
 			return Result<void>();
 		} else {
 			return RegisterBlockingEvent(event);
