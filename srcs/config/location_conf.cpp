@@ -5,6 +5,23 @@
 
 namespace conf
 {
+	const LocationConf::Redirect  LocationConf::kDefaultRedirect  = LocationConf::Redirect();
+	const LocationConf::Root      LocationConf::kDefaultRoot      = LocationConf::Root();
+	const LocationConf::AutoIndex LocationConf::kDefaultAutoIndex = false;
+	const LocationConf::CgiPath   LocationConf::kDefaultCgiPath   = LocationConf::CgiPath();
+	// AllowMethods({"GET", "POST", "DELETE"})がC++98で使えないので
+	static const char               *kDefaultAllowMethodArray[] = {"GET", "POST", "DELETE"};
+	const LocationConf::AllowMethods LocationConf::kDefaultAllowMethods =
+		LocationConf::AllowMethods(
+			kDefaultAllowMethodArray,
+			kDefaultAllowMethodArray + ARRAY_SIZE(kDefaultAllowMethodArray)
+		);
+	// IndexFiles({"index.html"})がC++98で使えないので
+	static const char             *kDefaultIndexFileArray[]         = {"index.html"};
+	const LocationConf::IndexFiles LocationConf::kDefaultIndexFiles = LocationConf::IndexFiles(
+		kDefaultIndexFileArray, kDefaultIndexFileArray + ARRAY_SIZE(kDefaultIndexFileArray)
+	);
+
 	LocationConf::LocationConf(
 		AllowMethods allow_methods_,
 		Redirect     redirect_,
@@ -115,31 +132,49 @@ namespace conf
 
 	const LocationConf::AllowMethods &LocationConf::GetAllowMethods() const
 	{
+		if (allow_methods_.empty()) {
+			return kDefaultAllowMethods;
+		}
 		return allow_methods_;
 	}
 
 	const LocationConf::Redirect &LocationConf::GetRedirect() const
 	{
+		if (redirect_.empty()) {
+			return kDefaultRedirect;
+		}
 		return redirect_;
 	}
 
 	const LocationConf::Root &LocationConf::GetRoot() const
 	{
+		if (root_.empty()) {
+			return kDefaultRoot;
+		}
 		return root_;
 	}
 
 	const LocationConf::IndexFiles &LocationConf::GetIndexFiles() const
 	{
+		if (index_files_.empty()) {
+			return kDefaultIndexFiles;
+		}
 		return index_files_;
 	}
 
 	const LocationConf::AutoIndex &LocationConf::GetAutoindex() const
 	{
+		if (autoindex.empty()) {
+			return kDefaultAutoIndex;
+		}
 		return autoindex;
 	}
 
 	const LocationConf::CgiPath &LocationConf::GetCgiPath() const
 	{
+		if (cgi_path_.empty()) {
+			return kDefaultCgiPath;
+		}
 		return cgi_path_;
 	}
 
