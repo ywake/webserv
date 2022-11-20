@@ -40,6 +40,8 @@ namespace io_multiplexer
 		Result<void>          Unregister(const event::Event &event);
 
 	  private:
+		Result<void>        RegisterBlockingEvent(const event::Event &event);
+		Result<void>        UnregisterBlockingEvent(const event::Event &event);
 		Result<void>        Overwrite(const event::Event &event);
 		Result<EpollEvents> WaitBlockingEvents(int timeout);
 		event::Events       ExportNonBlockingEvents();

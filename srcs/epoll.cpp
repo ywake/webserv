@@ -139,14 +139,20 @@ namespace io_multiplexer
 		const bool is_regular = res.Val();
 		if (is_regular) {
 			blocking_pool_[event.fd] = event;
+			return Result<void>();
 		} else {
-			EpollEvent ev = ConvertToEpollEvent(event);
-
-			if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, event.fd, &ev) == -1) {
-				return Error(std::string("epoll add: ") + strerror(errno));
-			} // TODO ENOMEM
-			blocking_pool_[event.fd] = event;
+			return RegisterBlockingEvent(event);
 		}
+	}
+
+	Result<void> Epoll::RegisterBlockingEvent(const event::Event &event)
+	{
+		EpollEvent ev = ConvertToEpollEvent(event);
+
+		if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, event.fd, &ev) == -1) {
+			return Error(std::string("epoll add: ") + strerror(errno));
+		} // TODO ENOMEM
+		blocking_pool_[event.fd] = event;
 		return Result<void>();
 	}
 
@@ -161,14 +167,19 @@ namespace io_multiplexer
 		}
 		it = blocking_pool_.find(event.fd);
 		if (it != blocking_pool_.end()) {
-			blocking_pool_.erase(event.fd);
-			EpollEvent unused;
-			if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, event.fd, &unused) == -1) {
-				return Error(std::string("epoll delete: ") + strerror(errno));
-			} // TODO ENOMEM
-			return Result<void>();
+			return UnregisterBlockingEvent(event);
 		}
 		return Error("no entry in event pool");
+	}
+
+	Result<void> Epoll::UnregisterBlockingEvent(const event::Event &event)
+	{
+		blocking_pool_.erase(event.fd);
+		EpollEvent unused;
+		if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, event.fd, &unused) == -1) {
+			return Error(std::string("epoll delete: ") + strerror(errno));
+		} // TODO ENOMEM
+		return Result<void>();
 	}
 
 	Result<void> Epoll::Overwrite(const event::Event &event)
