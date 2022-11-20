@@ -13,7 +13,7 @@ namespace conf
 	const ServerConf::ErrorPages        ServerConf::kDefaultErrorPages = ServerConf::ErrorPages();
 	const ServerConf::ClientMaxBodySize ServerConf::kDefaultClientMaxBodySize = 1 << 20;
 	// ListenPort({"80"})がC++98で出来ないので
-	const char				  *kDefaultListenPortArray[]      = {"80"};
+	static const char           *kDefaultListenPortArray[]      = {"80"};
 	const ServerConf::ListenPort ServerConf::kDefaultListenPort = ServerConf::ListenPort(
 		kDefaultListenPortArray,
 		kDefaultListenPortArray +
