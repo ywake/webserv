@@ -5,7 +5,6 @@
 #include "webserv_utils.hpp"
 
 #include <cassert>
-#include <limits>
 
 namespace conf
 {
@@ -141,12 +140,9 @@ namespace conf
 		}
 		std::size_t unit_size = unit.Val();
 
-		if (size > std::numeric_limits<std::size_t>::max() / unit_size) {
-			throw ConfigException("Invalid client_max_body_size");
-		}
-
 		client_max_body_size_ = size * unit_size;
-		if (client_max_body_size_ == 0 || client_max_body_size_.Value() > kMaxClientBodySize) {
+		if (size != client_max_body_size_.Value() / unit_size || client_max_body_size_ == 0 ||
+			client_max_body_size_.Value() > kMaxClientBodySize) {
 			throw ConfigException("Invalid client_max_body_size");
 		}
 	}
