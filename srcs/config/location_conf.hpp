@@ -30,6 +30,14 @@ namespace conf
 		AutoIndex    autoindex;
 		CgiPath      cgi_path_;
 
+	  private:
+		static const AllowMethods kDefaultAllowMethods;
+		static const Redirect     kDefaultRedirect;
+		static const Root         kDefaultRoot;
+		static const IndexFiles   kDefaultIndexFiles;
+		static const AutoIndex    kDefaultAutoIndex;
+		static const CgiPath      kDefaultCgiPath;
+
 	  public:
 		LocationConf(const std::vector<ThinString> &params);
 		LocationConf(

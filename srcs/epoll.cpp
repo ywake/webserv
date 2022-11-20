@@ -98,8 +98,8 @@ namespace io_multiplexer
 
 		it = non_blocking_pool_.find(event.fd);
 		if (it != non_blocking_pool_.end()) {
-			event::Event &event = it->second;
-			event.event_type |= event.event_type;
+			event::Event &base_event = it->second;
+			base_event.event_type |= event.event_type;
 			return Result<void>();
 		}
 		it = blocking_pool_.find(event.fd);
@@ -117,8 +117,8 @@ namespace io_multiplexer
 
 		it = non_blocking_pool_.find(event.fd);
 		if (it != non_blocking_pool_.end()) {
-			event::Event &event = it->second;
-			event.event_type &= ~event.event_type;
+			event::Event &base_event = it->second;
+			base_event.event_type &= ~event.event_type;
 			return Result<void>();
 		}
 		it = blocking_pool_.find(event.fd);
@@ -138,7 +138,7 @@ namespace io_multiplexer
 		}
 		const bool is_regular = res.Val();
 		if (is_regular) {
-			blocking_pool_[event.fd] = event;
+			non_blocking_pool_[event.fd] = event;
 			return Result<void>();
 		} else {
 			return RegisterBlockingEvent(event);
