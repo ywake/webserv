@@ -29,8 +29,8 @@ class ManagedFd
 	int GetFd() const;
 
   private:
-	void         CountUp(int fd);
-	Result<void> CountDown(int fd);
+	void CountUp(int fd);
+	void CountDown(int fd);
 };
 
 #endif

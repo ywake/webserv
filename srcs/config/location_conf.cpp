@@ -149,7 +149,8 @@ namespace conf
 		case kPrefix:
 			return path.find(path_pattern_) == 0;
 		case kSuffix:
-			return path.rfind(path_pattern_) == path.size() - path_pattern_.size();
+			return utils::EndWith(path, path_pattern_);
+			// return path.rfind(path_pattern_) == path.size() - path_pattern_.size();
 		case kExact:
 			return path == path_pattern_;
 		default:

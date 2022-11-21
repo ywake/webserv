@@ -43,6 +43,7 @@ TEST(config, location_conf_is_match_suffix)
 	EXPECT_TRUE(conf.IsMatch("/"));
 	EXPECT_TRUE(conf.IsMatch("aaa/"));
 
+	EXPECT_FALSE(conf.IsMatch(""));
 	EXPECT_FALSE(conf.IsMatch("/api"));
 	EXPECT_FALSE(conf.IsMatch("/test/aaa"));
 	EXPECT_FALSE(conf.IsMatch("aaa"));
@@ -53,6 +54,7 @@ TEST(config, location_conf_is_match_suffix)
 	);
 	EXPECT_TRUE(conf1.IsMatch("/api/test.php"));
 
+	EXPECT_FALSE(conf1.IsMatch("php"));
 	EXPECT_FALSE(conf1.IsMatch("/api/test.php/"));
 	EXPECT_FALSE(conf1.IsMatch("/api/test.php/aaa"));
 }
