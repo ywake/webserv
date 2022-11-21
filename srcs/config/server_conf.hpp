@@ -56,11 +56,11 @@ namespace conf
 		void AddClientMaxBodySize(const std::vector<ThinString> &tokens);
 		void AddLocation(const ThinString &location, const std::vector<ThinString> &params);
 
-		const ListenPort        &GetListenPort() const;
-		const ServerName        &GetServerName() const;
-		const ErrorPages        &GetErrorPages() const;
-		const ClientMaxBodySize &GetClientMaxBodySize() const;
-		const LocationConfs     &GetLocationConfs() const;
+		const ListenPort    &GetListenPort() const;
+		const ServerName    &GetServerName() const;
+		const ErrorPages    &GetErrorPages() const;
+		const std::size_t   &GetClientMaxBodySize() const;
+		const LocationConfs &GetLocationConfs() const;
 
 		bool operator==(const ServerConf &rhs) const;
 		bool operator!=(const ServerConf &rhs) const;
