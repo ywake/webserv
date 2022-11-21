@@ -1,11 +1,9 @@
 #include "managed_fd.hpp"
 
 #include <cassert>
-#include <cerrno>
-#include <stdio.h>
+#include <cstdio>
+#include <iostream>
 #include <unistd.h>
-
-#include "file_close_exception.hpp"
 
 ManagedFd::FdCounter ManagedFd::fd_count_ = std::map<int, std::size_t>();
 
@@ -27,11 +25,8 @@ ManagedFd &ManagedFd::operator=(const ManagedFd &other)
 		return *this;
 	}
 	CountUp(other.fd_);
-	Result<void> res = CountDown(fd_);
-	fd_              = other.fd_;
-	if (res.IsErr()) {
-		throw FileCloseException(res.ErrMsg());
-	}
+	CountDown(fd_);
+	fd_ = other.fd_;
 	return *this;
 }
 
@@ -53,21 +48,20 @@ void ManagedFd::CountUp(int fd)
 	fd_count_[fd]++;
 }
 
-Result<void> ManagedFd::CountDown(int fd)
+void ManagedFd::CountDown(int fd)
 {
 	if (fd < 0) {
-		return Result<void>();
+		return;
 	}
 	FdCounter::iterator it = fd_count_.find(fd);
 	assert(it != fd_count_.end());
 
 	std::size_t counter = --it->second;
 	if (counter > 0) {
-		return Result<void>();
+		return;
 	}
 	fd_count_.erase(fd);
 	if (close(fd) < 0) {
-		return Error(std::string("close: ") + strerror(errno));
+		perror("close: ");
 	}
-	return Result<void>();
 }
