@@ -14,7 +14,6 @@
 
 namespace server
 {
-	typedef struct addrinfo AddrInfo;
 
 	class Listener : public Socket
 	{
