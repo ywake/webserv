@@ -191,7 +191,8 @@ namespace conf
 	 */
 	bool LocationConf::operator==(const LocationConf &rhs) const
 	{
-		return allow_methods_ == rhs.allow_methods_ && redirect_ == rhs.redirect_ &&
+		return path_pattern_ == rhs.path_pattern_ && match_pattern_ == rhs.match_pattern_ &&
+			   allow_methods_ == rhs.allow_methods_ && redirect_ == rhs.redirect_ &&
 			   root_ == rhs.root_ && index_files_ == rhs.index_files_ &&
 			   autoindex_ == rhs.autoindex_ && cgi_path_ == rhs.cgi_path_;
 	}
@@ -199,6 +200,8 @@ namespace conf
 	const LocationConf &LocationConf::operator=(const LocationConf &rhs)
 	{
 		if (this != &rhs) {
+			path_pattern_  = rhs.path_pattern_;
+			match_pattern_ = rhs.match_pattern_;
 			allow_methods_ = rhs.allow_methods_;
 			redirect_      = rhs.redirect_;
 			root_          = rhs.root_;
