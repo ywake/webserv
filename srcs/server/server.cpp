@@ -29,7 +29,7 @@ namespace server
 			Instruction  instruction    = {Instruction::kRegister, ev};
 			Result<void> intruct_result = io_monitor_.Instruct(instruction);
 			if (intruct_result.IsErr()) {
-				Error(intruct_result.Err());
+				return Error(intruct_result.Err());
 			}
 		}
 		return Result<void>();
