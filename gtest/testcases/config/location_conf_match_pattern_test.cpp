@@ -4,14 +4,13 @@
 #include "config/server_confs.hpp"
 #include "config_exceptions.hpp"
 
-TEST(config, location_conf_index_files)
+TEST(config, location_conf_match_pattern)
 {
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
-							  "location / {"
-							  "index_files index.html;"
+							  "location ^ / {"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -23,23 +22,17 @@ TEST(config, location_conf_index_files)
 				conf::ServerConf::LocationConfs({
 					conf::LocationConf(
 						conf::LocationConf::PathPattern("/"),
-						conf::LocationConf::MatchPattern::kPrefix,
-						conf::LocationConf::AllowMethods(),
-						conf::LocationConf::Redirect(),
-						conf::LocationConf::Root(),
-						conf::LocationConf::IndexFiles({"index.html"})
+						conf::LocationConf::MatchPattern::kPrefix
 					),
 				})
 			),
 		})
 	);
-
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
-							  "location / {"
-							  "index_files index.html index.htm;"
+							  "location = / {"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -51,24 +44,17 @@ TEST(config, location_conf_index_files)
 				conf::ServerConf::LocationConfs({
 					conf::LocationConf(
 						conf::LocationConf::PathPattern("/"),
-						conf::LocationConf::MatchPattern::kPrefix,
-						conf::LocationConf::AllowMethods(),
-						conf::LocationConf::Redirect(),
-						conf::LocationConf::Root(),
-						conf::LocationConf::IndexFiles({"index.html", "index.htm"})
+						conf::LocationConf::MatchPattern::kExact
 					),
 				})
 			),
 		})
 	);
-
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
-							  "location / {"
-							  "index_files a b;"
-							  "index_files c d;"
+							  "location $ / {"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -80,11 +66,7 @@ TEST(config, location_conf_index_files)
 				conf::ServerConf::LocationConfs({
 					conf::LocationConf(
 						conf::LocationConf::PathPattern("/"),
-						conf::LocationConf::MatchPattern::kPrefix,
-						conf::LocationConf::AllowMethods(),
-						conf::LocationConf::Redirect(),
-						conf::LocationConf::Root(),
-						conf::LocationConf::IndexFiles({"a", "b", "c", "d"})
+						conf::LocationConf::MatchPattern::kSuffix
 					),
 				})
 			),
@@ -95,9 +77,52 @@ TEST(config, location_conf_index_files)
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
-							  "location / {"
-							  "index_files index.html;"
-							  "index_files ;"
+							  "location / / {"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location . / {"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location ~ / {"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location ^^ / {"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location == / {"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location $$ / {"
 							  "}"
 							  "}"),
 		conf::ConfigException

@@ -23,23 +23,36 @@ namespace conf
 	);
 
 	LocationConf::LocationConf(
-		AllowMethods allow_methods_,
-		Redirect     redirect_,
-		Root         root_,
-		IndexFiles   index_files_,
+		Path         path_pattern,
+		MatchPattern match_pattern,
+		AllowMethods allow_methods,
+		Redirect     redirect,
+		Root         root,
+		IndexFiles   index_files,
 		AutoIndex    autoindex,
-		CgiPath      cgi_path_
+		CgiPath      cgi_path
 	)
-		: allow_methods_(allow_methods_),
-		  redirect_(redirect_),
-		  root_(root_),
-		  index_files_(index_files_),
-		  autoindex(autoindex),
-		  cgi_path_(cgi_path_)
+		: path_pattern_(path_pattern),
+		  match_pattern_(match_pattern),
+		  allow_methods_(allow_methods),
+		  redirect_(redirect),
+		  root_(root),
+		  index_files_(index_files),
+		  autoindex_(autoindex),
+		  cgi_path_(cgi_path)
 	{}
 
-	LocationConf::LocationConf(const std::vector<ThinString> &params)
-		: allow_methods_(), redirect_(), root_(), index_files_(), autoindex(), cgi_path_()
+	LocationConf::LocationConf(
+		const Path &path_pattern, MatchPattern match_pattern, const std::vector<ThinString> &params
+	)
+		: path_pattern_(path_pattern),
+		  match_pattern_(match_pattern),
+		  allow_methods_(),
+		  redirect_(),
+		  root_(),
+		  index_files_(),
+		  autoindex_(),
+		  cgi_path_()
 	{
 		for (std::vector<ThinString>::const_iterator it = params.begin(); it != params.end();
 			 ++it) {
@@ -112,9 +125,9 @@ namespace conf
 		}
 
 		if (tokens[1] == "on") {
-			autoindex = true;
+			autoindex_ = true;
 		} else if (tokens[1] == "off") {
-			autoindex = false;
+			autoindex_ = false;
 		} else {
 			throw ConfigException("Invalid autoindex");
 		}
@@ -129,6 +142,37 @@ namespace conf
 	}
 
 	LocationConf::~LocationConf() {}
+
+	/**
+	 * Methods
+	 */
+	bool LocationConf::IsMatch(const Path &path) const
+	{
+		switch (match_pattern_) {
+		case kPrefix:
+			return path.find(path_pattern_) == 0;
+		case kSuffix:
+			return utils::EndWith(path, path_pattern_);
+			// return path.rfind(path_pattern_) == path.size() - path_pattern_.size();
+		case kExact:
+			return path == path_pattern_;
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * Getters
+	 */
+	const LocationConf::PathPattern &LocationConf::GetPathPattern() const
+	{
+		return path_pattern_;
+	}
+
+	LocationConf::MatchPattern LocationConf::GetMatchPattern() const
+	{
+		return match_pattern_;
+	}
 
 	const LocationConf::AllowMethods &LocationConf::GetAllowMethods() const
 	{
@@ -164,10 +208,10 @@ namespace conf
 
 	const LocationConf::AutoIndex &LocationConf::GetAutoindex() const
 	{
-		if (autoindex.empty()) {
+		if (autoindex_.empty()) {
 			return kDefaultAutoIndex;
 		}
-		return autoindex;
+		return autoindex_;
 	}
 
 	const LocationConf::CgiPath &LocationConf::GetCgiPath() const
@@ -178,21 +222,27 @@ namespace conf
 		return cgi_path_;
 	}
 
+	/**
+	 * Operators
+	 */
 	bool LocationConf::operator==(const LocationConf &rhs) const
 	{
-		return allow_methods_ == rhs.allow_methods_ && redirect_ == rhs.redirect_ &&
+		return path_pattern_ == rhs.path_pattern_ && match_pattern_ == rhs.match_pattern_ &&
+			   allow_methods_ == rhs.allow_methods_ && redirect_ == rhs.redirect_ &&
 			   root_ == rhs.root_ && index_files_ == rhs.index_files_ &&
-			   autoindex == rhs.autoindex && cgi_path_ == rhs.cgi_path_;
+			   autoindex_ == rhs.autoindex_ && cgi_path_ == rhs.cgi_path_;
 	}
 
 	const LocationConf &LocationConf::operator=(const LocationConf &rhs)
 	{
 		if (this != &rhs) {
+			path_pattern_  = rhs.path_pattern_;
+			match_pattern_ = rhs.match_pattern_;
 			allow_methods_ = rhs.allow_methods_;
 			redirect_      = rhs.redirect_;
 			root_          = rhs.root_;
 			index_files_   = rhs.index_files_;
-			autoindex      = rhs.autoindex;
+			autoindex_     = rhs.autoindex_;
 			cgi_path_      = rhs.cgi_path_;
 		}
 		return *this;
@@ -200,6 +250,22 @@ namespace conf
 
 	std::ostream &operator<<(std::ostream &os, const LocationConf &conf)
 	{
+		os << "path_pattern: " << conf.GetPathPattern() << ", ";
+
+		os << "match_pattern: ";
+		switch (conf.GetMatchPattern()) {
+		case LocationConf::kPrefix:
+			os << "^";
+			break;
+		case LocationConf::kSuffix:
+			os << "$";
+			break;
+		case LocationConf::kExact:
+			os << "=";
+			break;
+		}
+		os << ", ";
+
 		os << "allow_methods: [ ";
 		LocationConf::AllowMethods allow_methods = conf.GetAllowMethods();
 		if (!allow_methods.empty()) {

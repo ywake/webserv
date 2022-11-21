@@ -21,14 +21,13 @@ TEST(config, location_conf_root)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect(),
-							conf::LocationConf::Root("/var/www")
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect(),
+						conf::LocationConf::Root("/var/www")
+					),
 				})
 			),
 		})
@@ -50,14 +49,13 @@ TEST(config, location_conf_root)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect(),
-							conf::LocationConf::Root("/var/www/html")
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect(),
+						conf::LocationConf::Root("/var/www/html")
+					),
 				})
 			),
 		})

@@ -65,10 +65,7 @@ TEST(config, get_virtual_servers_list)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/\n",
-						conf::LocationConf(),
-					},
+					conf::LocationConf(conf::LocationConf::PathPattern("/\n")),
 				})
 			),
 		})
@@ -88,10 +85,7 @@ TEST(config, get_virtual_servers_list)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"\n/",
-						conf::LocationConf(),
-					},
+					conf::LocationConf(conf::LocationConf::PathPattern("\n/")),
 				})
 			),
 		})
