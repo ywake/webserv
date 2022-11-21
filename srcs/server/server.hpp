@@ -33,6 +33,7 @@ namespace server
 	  private:
 		event::Instructions RunEvents(const event::Events &events);
 		event::Instructions CloseFinishedConnections();
+		event::Instructions Accept(const Listener *listener);
 	};
 } // namespace server
 #endif

@@ -55,11 +55,40 @@ namespace server
 	Instructions Server::RunEvents(const Events &events)
 	{
 		Instructions insts;
+
 		for (Events::const_iterator it = events.begin(); it != events.end(); ++it) {
-			// Event   event = *it;
-			// Socket *sock  = static_cast<Socket *>(event.data);
-			// Instruction i     = ;
+			Event        event = *it;
+			Socket      *sock  = static_cast<Socket *>(event.data);
+			Instructions new_instructions;
+			if (dynamic_cast<Connection *>(sock)) {
+				Connection *connection = dynamic_cast<Connection *>(sock);
+				new_instructions       = connection->Proceed();
+			} else if (dynamic_cast<Listener *>(sock)) {
+				new_instructions = Accept(dynamic_cast<Listener *>(sock));
+			} else {
+				std::cerr << "unknown error" << std::endl;
+			}
+			insts.splice(insts.end(), new_instructions);
 		}
+		return insts;
+	}
+
+	event::Instructions Server::Accept(const Listener *listener)
+	{
+		typedef std::pair<server::Server::Connections::iterator, bool> Position;
+
+		Instructions insts;
+
+		Result<Connection> res = listener->Accept();
+		if (res.IsErr()) {
+			std::cerr << res.Err() << std::endl;
+			return insts;
+		}
+		Position    pos         = connections_.insert(res.Val());
+		Connection *conn_ptr    = const_cast<Connection *>(&*pos.first);
+		Event       ev          = {conn_ptr->GetFd(), conn_ptr, Event::kRead};
+		Instruction Instruction = {Instruction::kRegister, ev};
+		insts.push_back(Instruction);
 		return insts;
 	}
 
