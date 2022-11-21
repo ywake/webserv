@@ -16,7 +16,7 @@ namespace server
 		: Socket(other), configs_(other.configs_), client_(other.client_)
 	{}
 
-	bool Connection::operator<(const Connection &other)
+	bool Connection::operator<(const Connection &other) const
 	{
 		return this->GetFd() < other.GetFd();
 	}
