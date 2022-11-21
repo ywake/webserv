@@ -14,7 +14,6 @@
 
 namespace server
 {
-
 	class Listener : public Socket
 	{
 	  private:
