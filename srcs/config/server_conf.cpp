@@ -18,12 +18,12 @@ namespace conf
 	);
 
 	ServerConf::ServerConf(
+		Root              root,
 		ListenPort        listen_port,
 		ServerName        server_name,
 		ErrorPages        error_pages,
 		ClientMaxBodySize client_max_body_size,
-		LocationConfs     location_confs,
-		Root              root
+		LocationConfs     location_confs
 	)
 		: listen_port_(listen_port),
 		  server_name_(server_name),

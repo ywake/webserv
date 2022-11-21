@@ -13,30 +13,37 @@ TEST(config, get_virtual_servers_list)
 
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
-				conf::ServerConf::ListenPort({"80"}), conf::ServerConf::ServerName({"localhost"})
+				conf::ServerConf::Root("/var/www"),
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"})
 			),
 		})
 	);
 
 	EXPECT_EQ(
 		conf::ParseConfigFile("\n\nserver {"
+							  "\n\nroot /var/www;"
 							  "\n\nlisten 80;"
 							  "\n\nserver_name localhost;"
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
-				conf::ServerConf::ListenPort({"80"}), conf::ServerConf::ServerName({"localhost"})
+				conf::ServerConf::Root("/var/www"),
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"})
 			),
 		})
 	);
 
 	EXPECT_THROW(
 		conf::ParseConfigFile("server\n{"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "}"),
@@ -45,6 +52,7 @@ TEST(config, get_virtual_servers_list)
 
 	EXPECT_THROW(
 		conf::ParseConfigFile("server{"
+							  "root /var/www;"
 							  "listen 80\n;"
 							  "server_name localhost;"
 							  "}"),
@@ -53,6 +61,7 @@ TEST(config, get_virtual_servers_list)
 
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location /\n {"
@@ -60,6 +69,7 @@ TEST(config, get_virtual_servers_list)
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80"}),
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
@@ -73,6 +83,7 @@ TEST(config, get_virtual_servers_list)
 
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location \n/ {"
@@ -80,6 +91,7 @@ TEST(config, get_virtual_servers_list)
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80"}),
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
@@ -93,40 +105,49 @@ TEST(config, get_virtual_servers_list)
 
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "}"
 							  "server {"
+							  "root /var/www;"
 							  "listen 8080;"
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
-				conf::ServerConf::ListenPort({"80"}), conf::ServerConf::ServerName({"localhost"})
+				conf::ServerConf::Root("/var/www"),
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"})
 			),
 			conf::ServerConf(
-				conf::ServerConf::ListenPort({"8080"}), conf::ServerConf::ServerName({"localhost"})
+				conf::ServerConf::Root("/var/www"),
+				conf::ServerConf::ListenPort({"8080"}),
+				conf::ServerConf::ServerName({"localhost"})
 			),
 		})
 	);
 
 	EXPECT_EQ(
-		conf::ParseConfigFile("server{}server {\n"
+		conf::ParseConfigFile("server{root /var/www;}server {\n"
+							  "root /var/www;"
 							  "}\n"),
 		std::vector<conf::ServerConf>({
-			conf::ServerConf(),
-			conf::ServerConf(),
+			conf::ServerConf(conf::ServerConf::Root("/var/www")),
+			conf::ServerConf(conf::ServerConf::Root("/var/www")),
 		})
 	);
 
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"),
 		conf::ConfigException
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "}"
@@ -135,6 +156,7 @@ TEST(config, get_virtual_servers_list)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server / {"
+							  "root /var/www;"
 							  "aaaa"
 							  "}"),
 		conf::ConfigException
@@ -153,8 +175,10 @@ TEST(config, get_virtual_servers_list)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "location / {"
 							  "server {"
+							  "root /var/www;"
 							  "}"
 							  "}"
 							  "}"),
@@ -162,6 +186,7 @@ TEST(config, get_virtual_servers_list)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "locationa / {"
 							  "}"
 							  "}"),

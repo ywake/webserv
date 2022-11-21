@@ -43,12 +43,12 @@ namespace conf
 
 	  public:
 		ServerConf(
+			Root              root                 = Root(),
 			ListenPort        listen_port          = ListenPort(),
 			ServerName        server_name          = ServerName(),
 			ErrorPages        error_pages          = ErrorPages(),
 			ClientMaxBodySize client_max_body_size = ClientMaxBodySize(),
-			LocationConfs     location_conf        = LocationConfs(),
-			Root              root                 = Root()
+			LocationConfs     location_conf        = LocationConfs()
 		);
 		~ServerConf();
 
