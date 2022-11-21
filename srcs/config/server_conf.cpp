@@ -22,13 +22,15 @@ namespace conf
 		ServerName        server_name,
 		ErrorPages        error_pages,
 		ClientMaxBodySize client_max_body_size,
-		LocationConfs     location_confs
+		LocationConfs     location_confs,
+		Root              root
 	)
 		: listen_port_(listen_port),
 		  server_name_(server_name),
 		  error_pages_(error_pages),
 		  client_max_body_size_(client_max_body_size),
-		  location_confs_(location_confs)
+		  location_confs_(location_confs),
+		  root_(root)
 	{}
 
 	ServerConf::~ServerConf() {}
@@ -50,9 +52,14 @@ namespace conf
 				AddErrorPages(tokens);
 			} else if (tokens[0] == "client_max_body_size") {
 				AddClientMaxBodySize(tokens);
+			} else if (tokens[0] == "root") {
+				AddRoot(tokens);
 			} else {
 				throw ConfigException("Invalid server config: invalid directive");
 			}
+		}
+		if (root_.empty()) {
+			throw ConfigException("Invalid server config: root is not set");
 		}
 	}
 
@@ -194,6 +201,14 @@ namespace conf
 		location_confs_.push_back(LocationConf(path_pattern, match_pattern, params));
 	}
 
+	void ServerConf::AddRoot(const std::vector<ThinString> &tokens)
+	{
+		if (tokens.size() != 2) {
+			throw ConfigException("Invalid root");
+		}
+		root_ = tokens[1].ToString();
+	}
+
 	/**
 	 * Getters
 	 */
@@ -234,10 +249,34 @@ namespace conf
 		return location_confs_;
 	}
 
+	const Path &ServerConf::GetRoot(Path uri_path) const
+	{
+		Result<const LocationConf &> mached_location = FindMatchingLocationConf(uri_path);
+		if (mached_location.IsOk()) {
+			Emptiable<Path> location_root = mached_location.Val().GetRoot();
+			return location_root.empty() ? root_.Value() : location_root.Value();
+		}
+		return root_.Value();
+	}
+
+	/**
+	 * Methods
+	 */
+	Result<const LocationConf &> ServerConf::FindMatchingLocationConf(Path uri_path) const
+	{
+		for (LocationConfs::const_iterator it = location_confs_.begin();
+			 it != location_confs_.end();
+			 ++it) {
+			if (it->IsMatch(uri_path)) {
+				return *it;
+			}
+		}
+		return Error("No matching location");
+	}
+
 	/**
 	 * Operators
 	 */
-
 	bool ServerConf::operator==(const ServerConf &rhs) const
 	{
 		return listen_port_ == rhs.listen_port_ && server_name_ == rhs.server_name_ &&
