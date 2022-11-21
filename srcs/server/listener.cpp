@@ -67,7 +67,7 @@ namespace server
 
 	Result<Connection> Listener::Accept() const
 	{
-		return Connection(-1, configs_, SockAddrIn());
+		return Connection(-1, configs_, SockAddrStorage());
 		// SockAddrIn client;
 		// socklen_t  client_len = sizeof(client);
 		// int        fd = accept(managed_fd_.GetFd(), (struct sockaddr *)&client, &client_len);
