@@ -21,7 +21,7 @@ namespace conf
 		};
 
 	  public:
-		typedef Path                                   PathPattern;
+		typedef Emptiable<Path>                        PathPattern;
 		typedef std::vector<std::string>               AllowMethods;
 		typedef Emptiable<std::pair<StatusCode, Url> > Redirect;
 		typedef Emptiable<Path>                        Root;
@@ -30,7 +30,7 @@ namespace conf
 		typedef Emptiable<Path>                        CgiPath;
 
 	  private:
-		Path         path_pattern_;
+		PathPattern  path_pattern_;
 		MatchPattern match_pattern_;
 
 		AllowMethods allow_methods_;
@@ -52,7 +52,7 @@ namespace conf
 			const std::vector<ThinString> &params
 		);
 		LocationConf(
-			PathPattern  path_pattern,
+			PathPattern  path_pattern  = PathPattern(),
 			MatchPattern match_pattern = kPrefix,
 			AllowMethods allow_methods = AllowMethods(),
 			Redirect     redirect      = Redirect(),
@@ -70,7 +70,7 @@ namespace conf
 		bool IsMatch(const Path &path) const;
 
 		// Getters
-		const PathPattern  &GetPathPattern() const;
+		const Path         &GetPathPattern() const;
 		MatchPattern        GetMatchPattern() const;
 		const AllowMethods &GetAllowMethods() const;
 		const Redirect     &GetRedirect() const;

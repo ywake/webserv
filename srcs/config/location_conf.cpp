@@ -1,5 +1,7 @@
 #include "location_conf.hpp"
 
+#include <cassert>
+
 #include "config_exceptions.hpp"
 #include "webserv_utils.hpp"
 
@@ -20,7 +22,7 @@ namespace conf
 	);
 
 	LocationConf::LocationConf(
-		Path         path_pattern,
+		PathPattern  path_pattern,
 		MatchPattern match_pattern,
 		AllowMethods allow_methods,
 		Redirect     redirect,
@@ -40,7 +42,9 @@ namespace conf
 	{}
 
 	LocationConf::LocationConf(
-		const Path &path_pattern, MatchPattern match_pattern, const std::vector<ThinString> &params
+		const PathPattern             &path_pattern,
+		MatchPattern                   match_pattern,
+		const std::vector<ThinString> &params
 	)
 		: path_pattern_(path_pattern),
 		  match_pattern_(match_pattern),
@@ -145,14 +149,15 @@ namespace conf
 	 */
 	bool LocationConf::IsMatch(const Path &path) const
 	{
+		assert(!path_pattern_.empty());
 		switch (match_pattern_) {
 		case kPrefix:
-			return path.find(path_pattern_) == 0;
+			return path.find(path_pattern_.Value()) == 0;
 		case kSuffix:
-			return utils::EndWith(path, path_pattern_);
+			return utils::EndWith(path, path_pattern_.Value());
 			// return path.rfind(path_pattern_) == path.size() - path_pattern_.size();
 		case kExact:
-			return path == path_pattern_;
+			return path == path_pattern_.Value();
 		default:
 			return false;
 		}
@@ -161,9 +166,10 @@ namespace conf
 	/**
 	 * Getters
 	 */
-	const LocationConf::PathPattern &LocationConf::GetPathPattern() const
+	const Path &LocationConf::GetPathPattern() const
 	{
-		return path_pattern_;
+		assert(!path_pattern_.empty());
+		return path_pattern_.Value();
 	}
 
 	LocationConf::MatchPattern LocationConf::GetMatchPattern() const
