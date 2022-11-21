@@ -39,9 +39,7 @@ namespace server
 	  public:
 		Connection();
 		Connection(
-			ManagedFd                       managed_fd,
-			const conf::VirtualServerConfs &conf,
-			const SockAddrStorage          &client
+			int managed_fd, const conf::VirtualServerConfs &conf, const SockAddrStorage &client
 		);
 		Connection(const Connection &other);
 		~Connection();

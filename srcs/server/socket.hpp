@@ -13,7 +13,7 @@ namespace server
 
 	  public:
 		Socket();
-		Socket(ManagedFd managed_fd);
+		Socket(int fd);
 		Socket(const Socket &other);
 		int GetFd() const;
 		virtual ~Socket();
