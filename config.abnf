@@ -26,8 +26,8 @@ client-max-body-size-section = "client_max_body_size" SP size
 size            = 1*DIGIT [ "k" / "K" / "m" / "M" / "g" / "G" ]
 
 
-location-section    = "location" SP path SP "{" location-contents "}"
-
+location-section    = "location" 1*(SP location-prefix) SP path SP "{" location-contents "}"
+location-prefix = "^" / "$" / "="
 location-contents   = *(location-entry LF)
 
 location-entry      = location-allow-methods

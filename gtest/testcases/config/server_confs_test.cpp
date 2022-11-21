@@ -14,27 +14,25 @@ TEST(config, server_confs)
 			conf::ServerConf::ErrorPages(),
 			conf::ServerConf::ClientMaxBodySize(),
 			conf::ServerConf::LocationConfs({
-				{
-					"/",
-					conf::LocationConf(
-						conf::LocationConf::AllowMethods(),
-						conf::LocationConf::Redirect(),
-						conf::LocationConf::Root("/var/www"),
-						conf::LocationConf::IndexFiles({"index.html"}),
-						conf::LocationConf::AutoIndex(true)
-					),
-				},
-				{
-					".php",
-					conf::LocationConf(
-						conf::LocationConf::AllowMethods(),
-						conf::LocationConf::Redirect(),
-						conf::LocationConf::Root(),
-						conf::LocationConf::IndexFiles({"index.php"}),
-						conf::LocationConf::AutoIndex(),
-						conf::LocationConf::CgiPath("/cgi-bin")
-					),
-				},
+				conf::LocationConf(
+					conf::LocationConf::PathPattern("/"),
+					conf::LocationConf::MatchPattern::kPrefix,
+					conf::LocationConf::AllowMethods(),
+					conf::LocationConf::Redirect(),
+					conf::LocationConf::Root("/var/www"),
+					conf::LocationConf::IndexFiles({"index.html"}),
+					conf::LocationConf::AutoIndex(true)
+				),
+				conf::LocationConf(
+					conf::LocationConf::PathPattern(".php"),
+					conf::LocationConf::MatchPattern::kPrefix,
+					conf::LocationConf::AllowMethods(),
+					conf::LocationConf::Redirect(),
+					conf::LocationConf::Root(),
+					conf::LocationConf::IndexFiles({"index.php"}),
+					conf::LocationConf::AutoIndex(),
+					conf::LocationConf::CgiPath("/cgi-bin")
+				),
 			})
 		),
 		conf::ServerConf(
@@ -43,16 +41,15 @@ TEST(config, server_confs)
 			conf::ServerConf::ErrorPages(),
 			conf::ServerConf::ClientMaxBodySize(),
 			conf::ServerConf::LocationConfs({
-				{
-					"/",
-					conf::LocationConf(
-						conf::LocationConf::AllowMethods(),
-						conf::LocationConf::Redirect(),
-						conf::LocationConf::Root("/var/www2"),
-						conf::LocationConf::IndexFiles({"index.html", "index.htm"}),
-						conf::LocationConf::AutoIndex(false)
-					),
-				},
+				conf::LocationConf(
+					conf::LocationConf::PathPattern("/"),
+					conf::LocationConf::MatchPattern::kPrefix,
+					conf::LocationConf::AllowMethods(),
+					conf::LocationConf::Redirect(),
+					conf::LocationConf::Root("/var/www2"),
+					conf::LocationConf::IndexFiles({"index.html", "index.htm"}),
+					conf::LocationConf::AutoIndex(false)
+				),
 			})
 		),
 	};

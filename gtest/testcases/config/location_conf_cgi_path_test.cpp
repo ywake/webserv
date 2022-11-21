@@ -21,17 +21,16 @@ TEST(config, location_conf_cgi_path)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect(),
-							conf::LocationConf::Root(),
-							conf::LocationConf::IndexFiles(),
-							conf::LocationConf::AutoIndex(),
-							conf::LocationConf::CgiPath("/cgi-bin")
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect(),
+						conf::LocationConf::Root(),
+						conf::LocationConf::IndexFiles(),
+						conf::LocationConf::AutoIndex(),
+						conf::LocationConf::CgiPath("/cgi-bin")
+					),
 				})
 			),
 		})
@@ -53,17 +52,16 @@ TEST(config, location_conf_cgi_path)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect(),
-							conf::LocationConf::Root(),
-							conf::LocationConf::IndexFiles(),
-							conf::LocationConf::AutoIndex(),
-							conf::LocationConf::CgiPath("/cgi-bin2")
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect(),
+						conf::LocationConf::Root(),
+						conf::LocationConf::IndexFiles(),
+						conf::LocationConf::AutoIndex(),
+						conf::LocationConf::CgiPath("/cgi-bin2")
+					),
 				})
 			),
 		})

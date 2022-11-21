@@ -21,13 +21,12 @@ TEST(config, location_conf_redirect)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect({"301", "example.com"})
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect({"301", "example.com"})
+					),
 				})
 			),
 		})
@@ -49,13 +48,12 @@ TEST(config, location_conf_redirect)
 				conf::ServerConf::ErrorPages(),
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
-					{
-						"/",
-						conf::LocationConf(
-							conf::LocationConf::AllowMethods(),
-							conf::LocationConf::Redirect({"302", "example.com"})
-						),
-					},
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("/"),
+						conf::LocationConf::MatchPattern::kPrefix,
+						conf::LocationConf::AllowMethods(),
+						conf::LocationConf::Redirect({"302", "example.com"})
+					),
 				})
 			),
 		})

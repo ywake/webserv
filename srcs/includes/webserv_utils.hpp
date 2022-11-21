@@ -20,6 +20,7 @@ namespace utils
 	Result<std::string>     ReadFile(const std::string &file_path);
 	Result<std::size_t>     StrToUnsignedLong(const std::string &str);
 	std::vector<ThinString> TrimEmpty(const std::vector<ThinString> &vec);
+	bool                    EndWith(const std::string &src, const std::string &target);
 
 } // namespace utils
 

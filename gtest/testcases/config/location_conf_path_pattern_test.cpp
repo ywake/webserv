@@ -4,14 +4,13 @@
 #include "config/server_confs.hpp"
 #include "config_exceptions.hpp"
 
-TEST(config, location_conf_allow_methods)
+TEST(config, location_conf_path_pattern)
 {
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
-							  "allow_methods GET;"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -23,8 +22,7 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::LocationConfs({
 					conf::LocationConf(
 						conf::LocationConf::PathPattern("/"),
-						conf::LocationConf::MatchPattern::kPrefix,
-						conf::LocationConf::AllowMethods({"GET"})
+						conf::LocationConf::MatchPattern::kPrefix
 					),
 				})
 			),
@@ -35,8 +33,7 @@ TEST(config, location_conf_allow_methods)
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
-							  "location / {"
-							  "allow_methods GET POST;"
+							  "location /\n {"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -47,9 +44,8 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
 					conf::LocationConf(
-						conf::LocationConf::PathPattern("/"),
-						conf::LocationConf::MatchPattern::kPrefix,
-						conf::LocationConf::AllowMethods({"GET", "POST"})
+						conf::LocationConf::PathPattern("/\n"),
+						conf::LocationConf::MatchPattern::kPrefix
 					),
 				})
 			),
@@ -60,8 +56,7 @@ TEST(config, location_conf_allow_methods)
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
-							  "location / {"
-							  "allow_methods GET POST DELETE;"
+							  "location \n/ {"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -72,9 +67,8 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
 					conf::LocationConf(
-						conf::LocationConf::PathPattern("/"),
-						conf::LocationConf::MatchPattern::kPrefix,
-						conf::LocationConf::AllowMethods({"GET", "POST", "DELETE"})
+						conf::LocationConf::PathPattern("\n/"),
+						conf::LocationConf::MatchPattern::kPrefix
 					),
 				})
 			),
@@ -85,8 +79,7 @@ TEST(config, location_conf_allow_methods)
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
-							  "location / {"
-							  "allow_methods POST DELETE;"
+							  "location ^ \n/ {"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -97,9 +90,8 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
 					conf::LocationConf(
-						conf::LocationConf::PathPattern("/"),
-						conf::LocationConf::MatchPattern::kPrefix,
-						conf::LocationConf::AllowMethods({"POST", "DELETE"})
+						conf::LocationConf::PathPattern("\n/"),
+						conf::LocationConf::MatchPattern::kPrefix
 					),
 				})
 			),
@@ -110,9 +102,7 @@ TEST(config, location_conf_allow_methods)
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
-							  "location / {"
-							  "allow_methods GET;"
-							  "allow_methods POST;"
+							  "location ^ /\n {"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -123,9 +113,31 @@ TEST(config, location_conf_allow_methods)
 				conf::ServerConf::ClientMaxBodySize(),
 				conf::ServerConf::LocationConfs({
 					conf::LocationConf(
-						conf::LocationConf::PathPattern("/"),
-						conf::LocationConf::MatchPattern::kPrefix,
-						conf::LocationConf::AllowMethods({"GET", "POST"})
+						conf::LocationConf::PathPattern("/\n"),
+						conf::LocationConf::MatchPattern::kPrefix
+					),
+				})
+			),
+		})
+	);
+
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location ^ {"
+							  "}"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"}),
+				conf::ServerConf::ErrorPages(),
+				conf::ServerConf::ClientMaxBodySize(),
+				conf::ServerConf::LocationConfs({
+					conf::LocationConf(
+						conf::LocationConf::PathPattern("^"),
+						conf::LocationConf::MatchPattern::kPrefix
 					),
 				})
 			),
@@ -136,20 +148,7 @@ TEST(config, location_conf_allow_methods)
 		conf::ParseConfigFile("server {"
 							  "listen 80;"
 							  "server_name localhost;"
-							  "location / {"
-							  "allow_methods GET;"
-							  "allow_methods ;"
-							  "}"
-							  "}"),
-		conf::ConfigException
-	);
-
-	EXPECT_THROW(
-		conf::ParseConfigFile("server {"
-							  "listen 80;"
-							  "server_name localhost;"
-							  "location / {"
-							  "allow_methods POST AAAA;"
+							  "location ^ /aaa /api {"
 							  "}"
 							  "}"),
 		conf::ConfigException
