@@ -16,7 +16,6 @@
 // TODO fd
 namespace server
 {
-	typedef struct ::sockaddr_in    SockAddrIn;
 	typedef struct sockaddr_storage SockAddrStorage;
 	class Connection : public Socket
 	{
