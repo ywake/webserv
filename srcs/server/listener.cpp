@@ -7,28 +7,7 @@
 
 namespace server
 {
-	// Result<int> Listener::TryBindSocket(AddrInfo *lst)
-	// {
-	// 	int optval = 1;
-
-	// 	for (; lst; lst = lst->ai_next) {
-	// 		errno       = 0;
-	// 		int sock_fd = socket(lst->ai_family, lst->ai_socktype, lst->ai_protocol);
-	// 		if (sock_fd < 0) {
-	// 			continue;
-	// 		}
-	// 		if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0) {
-	// 			return Result<int>(-1, Error(errno));
-	// 		}
-	// 		if (bind(sock_fd, lst->ai_addr, lst->ai_addrlen) == 0) {
-	// 			return Result<int>(sock_fd);
-	// 		}
-	// 		if (close(sock_fd) < 0) {
-	// 			return Result<int>(-1, Error(errno));
-	// 		}
-	// 	}
-	// 	return Result<int>(-1, Error("bind fail"));
-	// }
+	typedef struct sockaddr SockAddr;
 
 	/**
 	 * @brief Construct a new Listener:: Listener object
@@ -71,7 +50,7 @@ namespace server
 		SockAddrStorage client;
 		socklen_t       client_len = sizeof(client);
 
-		int conn_fd = accept(managed_fd_.GetFd(), (struct sockaddr *)&client, &client_len);
+		int conn_fd = accept(managed_fd_.GetFd(), (SockAddr *)&client, &client_len);
 		if (conn_fd < 0) {
 			return Error("accept: " + std::string(strerror(errno)));
 		}
