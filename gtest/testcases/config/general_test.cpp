@@ -114,8 +114,8 @@ TEST(config, get_virtual_servers_list)
 		conf::ParseConfigFile("server{}server {\n"
 							  "}\n"),
 		std::vector<conf::ServerConf>({
-			conf::ServerConf(conf::ServerConf::ListenPort({"80"})),
-			conf::ServerConf(conf::ServerConf::ListenPort({"80"})),
+			conf::ServerConf(),
+			conf::ServerConf(),
 		})
 	);
 
