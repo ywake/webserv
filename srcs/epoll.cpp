@@ -12,10 +12,11 @@ namespace io_multiplexer
 {
 	Epoll::Epoll(int timeout) : timeout_(timeout), blocking_pool_()
 	{
-		epoll_fd_ = epoll_create1(EPOLL_CLOEXEC);
-		if (epoll_fd_ == -1) {
+		int epfd = epoll_create1(EPOLL_CLOEXEC);
+		if (epfd == -1) {
 			throw std::runtime_error(std::string("epoll_create: ") + strerror(errno));
 		}
+		epoll_fd_ = epfd;
 	}
 
 	Result<event::Events> Epoll::Wait()
@@ -28,14 +29,14 @@ namespace io_multiplexer
 		return Result<event::Events>(events, Error(wait_result.Err()));
 	}
 
-	Result<EpollEvents> Epoll::WaitBlockingEvents(int timeout)
+	Result<Epoll::EpollEvents> Epoll::WaitBlockingEvents(int timeout)
 	{
 		int         num_of_events = blocking_pool_.size();
 		EpollEvents events(num_of_events);
 		EpollEvent *events_ptr = events.data();
 
 		while (true) {
-			int events_size = epoll_wait(epoll_fd_, events_ptr, num_of_events, timeout);
+			int events_size = epoll_wait(epoll_fd_.GetFd(), events_ptr, num_of_events, timeout);
 			if (events_size != -1) {
 				events.resize(events_size);
 				return events;
@@ -149,7 +150,7 @@ namespace io_multiplexer
 	{
 		EpollEvent ev = ConvertToEpollEvent(event);
 
-		if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, event.fd, &ev) == -1) {
+		if (epoll_ctl(epoll_fd_.GetFd(), EPOLL_CTL_ADD, event.fd, &ev) == -1) {
 			return Error(std::string("epoll add: ") + strerror(errno));
 		} // TODO ENOMEM
 		blocking_pool_[event.fd] = event;
@@ -176,7 +177,7 @@ namespace io_multiplexer
 	{
 		blocking_pool_.erase(event.fd);
 		EpollEvent unused;
-		if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, event.fd, &unused) == -1) {
+		if (epoll_ctl(epoll_fd_.GetFd(), EPOLL_CTL_DEL, event.fd, &unused) == -1) {
 			return Error(std::string("epoll delete: ") + strerror(errno));
 		} // TODO ENOMEM
 		return Result<void>();
@@ -186,7 +187,7 @@ namespace io_multiplexer
 	{
 		EpollEvent ev = ConvertToEpollEvent(event);
 
-		if (epoll_ctl(epoll_fd_, EPOLL_CTL_MOD, event.fd, &ev) == -1) {
+		if (epoll_ctl(epoll_fd_.GetFd(), EPOLL_CTL_MOD, event.fd, &ev) == -1) {
 			return Error(std::string("epoll modify: ") + strerror(errno));
 		} // TODO ENOMEM
 		blocking_pool_[event.fd] = event;
