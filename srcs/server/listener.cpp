@@ -55,9 +55,7 @@ namespace server
 			return Error("accept: " + std::string(strerror(errno)));
 		}
 		if (fcntl(conn_fd, F_SETFL, O_NONBLOCK) == -1) {
-			if (close(conn_fd) < 0) {
-				perror("close: ");
-			}
+			utils::Close(conn_fd);
 			return Error("fcntl: " + std::string(strerror(errno)));
 		}
 		return Connection(conn_fd, configs_, client);
