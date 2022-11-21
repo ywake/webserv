@@ -60,9 +60,9 @@ namespace server
 
 	Result<void> Listener::Listen() const
 	{
-		// if (listen(managed_fd_.GetFd(), 1024) < 0) {
-		// 	return Result<void>(Error(strerror(errno)));
-		// }
+		if (listen(managed_fd_.GetFd(), 1024) < 0) {
+			return Error(std::string("listen: ") + strerror(errno));
+		}
 		return Result<void>();
 	}
 
