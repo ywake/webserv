@@ -16,12 +16,12 @@
 namespace io_multiplexer
 {
 	typedef struct ::epoll_event                         EpollEvent;
-	typedef std::vector<EpollEvent>                      EpollEvents;
 	typedef std::list<Result<const event::Instruction> > ErrEvents;
 
 	class Epoll
 	{
 	  private:
+		typedef std::vector<EpollEvent>     EpollEvents;
 		typedef std::map<int, event::Event> EventPool;
 
 	  private:

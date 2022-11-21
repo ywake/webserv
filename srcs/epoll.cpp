@@ -29,7 +29,7 @@ namespace io_multiplexer
 		return Result<event::Events>(events, Error(wait_result.Err()));
 	}
 
-	Result<EpollEvents> Epoll::WaitBlockingEvents(int timeout)
+	Result<Epoll::EpollEvents> Epoll::WaitBlockingEvents(int timeout)
 	{
 		int         num_of_events = blocking_pool_.size();
 		EpollEvents events(num_of_events);
