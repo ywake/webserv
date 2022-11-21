@@ -16,23 +16,23 @@ class Result
 	Result(const T &v, const Error &e) : val_(v), err_(e){};
 	Result(const Error &e) : val_(), err_(e.Err()){};
 	Result(const Result &r) : val_(r.val_), err_(r.err_){};
-	bool IsOk()
+	bool IsOk() const
 	{
 		return !err_.IsErr();
 	}
-	bool IsErr()
+	bool IsErr() const
 	{
 		return err_.IsErr();
 	}
-	T Val()
+	const T &Val() const
 	{
 		return val_;
 	}
-	const std::string &ErrMsg()
+	const std::string &ErrMsg() const
 	{
 		return err_.Err();
 	}
-	const Error &Err()
+	const Error &Err() const
 	{
 		return err_;
 	}
@@ -60,23 +60,23 @@ class Result<T &>
 	Result(const T &v, const Error &e) : val_(v), err_(e){};
 	Result(const Error &e) : default_(), val_(default_), err_(e.Err()){};
 	Result(const Result &r) : val_(r.val_), err_(r.err_){};
-	bool IsOk()
+	bool IsOk() const
 	{
 		return !err_.IsErr();
 	}
-	bool IsErr()
+	bool IsErr() const
 	{
 		return err_.IsErr();
 	}
-	T Val()
+	const T &Val() const
 	{
 		return val_;
 	}
-	const std::string &ErrMsg()
+	const std::string &ErrMsg() const
 	{
 		return err_.Err();
 	}
-	const Error &Err()
+	const Error &Err() const
 	{
 		return err_;
 	}
@@ -100,19 +100,19 @@ class Result<void>
 	Result() : err_(){};
 	Result(const Error &e) : err_(e.Err()){};
 	Result(const Result &r) : err_(r.err_){};
-	bool IsOk()
+	bool IsOk() const
 	{
 		return !err_.IsErr();
 	}
-	bool IsErr()
+	bool IsErr() const
 	{
 		return err_.IsErr();
 	}
-	const std::string &ErrMsg()
+	const std::string &ErrMsg() const
 	{
 		return err_.Err();
 	}
-	const Error &Err()
+	const Error &Err() const
 	{
 		return err_;
 	}
