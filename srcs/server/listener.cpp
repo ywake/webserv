@@ -1,6 +1,7 @@
 #include "listener.hpp"
 
-#include <errno.h>
+#include <cerrno>
+#include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -67,18 +68,20 @@ namespace server
 
 	Result<Connection> Listener::Accept() const
 	{
-		return Connection(-1, configs_, SockAddrStorage());
-		// SockAddrIn client;
-		// socklen_t  client_len = sizeof(client);
-		// int        fd = accept(managed_fd_.GetFd(), (struct sockaddr *)&client, &client_len);
-		// if (fd < 0) {
-		// 	return Result<Connection>(Error("accept: " + std::string(strerror(errno))));
-		// }
-		// if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
-		// 	return Result<Connection>(Error("fcntl: " + std::string(strerror(errno))));
-		// }
-		// ManagedFd conn_fd(fd);
-		// return Connection(conn_fd, configs_, client);
+		SockAddrStorage client;
+		socklen_t       client_len = sizeof(client);
+
+		int conn_fd = accept(managed_fd_.GetFd(), (struct sockaddr *)&client, &client_len);
+		if (conn_fd < 0) {
+			return Error("accept: " + std::string(strerror(errno)));
+		}
+		if (fcntl(conn_fd, F_SETFL, O_NONBLOCK) == -1) {
+			if (close(conn_fd) < 0) {
+				perror("close: ");
+			}
+			return Error("fcntl: " + std::string(strerror(errno)));
+		}
+		return Connection(conn_fd, configs_, client);
 	}
 
 } // namespace server
