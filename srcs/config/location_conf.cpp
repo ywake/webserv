@@ -207,10 +207,10 @@ namespace conf
 
 	const LocationConf::AutoIndex &LocationConf::GetAutoindex() const
 	{
-		if (autoindex.empty()) {
+		if (autoindex_.empty()) {
 			return kDefaultAutoIndex;
 		}
-		return autoindex;
+		return autoindex_;
 	}
 
 	const LocationConf::CgiPath &LocationConf::GetCgiPath() const
