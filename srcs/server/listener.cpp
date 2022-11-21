@@ -57,7 +57,7 @@ namespace server
 		// return Result<void>(Error(res.Err()));
 	}
 
-	Result<void> Listener::Listen()
+	Result<void> Listener::Listen() const
 	{
 		// if (listen(managed_fd_.GetFd(), 1024) < 0) {
 		// 	return Result<void>(Error(strerror(errno)));
@@ -65,7 +65,7 @@ namespace server
 		return Result<void>();
 	}
 
-	Result<Connection> Listener::Accept()
+	Result<Connection> Listener::Accept() const
 	{
 		return Connection(-1, configs_, SockAddrIn());
 		// SockAddrIn client;
