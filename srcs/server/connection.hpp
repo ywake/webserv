@@ -16,8 +16,7 @@
 // TODO fd
 namespace server
 {
-	typedef struct ::sockaddr_in SockAddrIn;
-
+	typedef struct sockaddr_storage SockAddrStorage;
 	class Connection : public Socket
 	{
 		//   public:
@@ -32,7 +31,7 @@ namespace server
 
 	  private:
 		const conf::VirtualServerConfs &configs_;
-		const SockAddrIn                client_;
+		const SockAddrStorage           client_;
 		// State                           state_;
 		// Receiver                        receiver_;
 		// Sender						 *sender_;
@@ -40,13 +39,13 @@ namespace server
 	  public:
 		Connection();
 		Connection(
-			ManagedFd managed_fd, const conf::VirtualServerConfs &conf, const SockAddrIn &client
+			int managed_fd, const conf::VirtualServerConfs &conf, const SockAddrStorage &client
 		);
 		Connection(const Connection &other);
 		~Connection();
 		bool operator<(const Connection &other) const;
 
-		event::Instructions Proceed();
+		event::Instructions Proceed(const event::Event &event);
 		// bool             IsFinished();
 
 		//   private:

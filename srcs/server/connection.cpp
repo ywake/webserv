@@ -7,7 +7,7 @@ namespace server
 	Connection::Connection() : Socket(), configs_(kEmptyConfs), client_() {}
 
 	Connection::Connection(
-		ManagedFd fd, const conf::VirtualServerConfs &configs, const SockAddrIn &client
+		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
 	)
 		: Socket(fd), configs_(configs), client_(client)
 	{}
@@ -23,8 +23,9 @@ namespace server
 
 	Connection::~Connection() {}
 
-	event::Instructions Connection::Proceed()
+	event::Instructions Connection::Proceed(const event::Event &event)
 	{
+		(void)event;
 		return event::Instructions();
 	}
 
