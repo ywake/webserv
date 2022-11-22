@@ -9,7 +9,7 @@ namespace server
 	Connection::Connection(
 		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
 	)
-		: Socket(fd), configs_(configs), client_(client)
+		: Socket(fd), configs_(configs), client_(client), reciever_(fd)
 	{}
 
 	Connection::Connection(const Connection &other)
