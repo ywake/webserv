@@ -25,7 +25,14 @@ namespace server
 
 	event::Instructions Connection::Proceed(const event::Event &event)
 	{
-		(void)event;
+
+	event::Instructions Connection::Recieve()
+	{
+		return event::Instructions();
+	}
+
+	event::Instructions Connection::Send()
+	{
 		return event::Instructions();
 	}
 

@@ -51,9 +51,9 @@ namespace server
 		event::Instructions Proceed(const event::Event &event);
 		// bool             IsFinished();
 
-		//   private:
-		// 	PollInstructions Receive();
-		// 	PollInstructions Send();
+	  private:
+		event::Instructions Recieve();
+		event::Instructions Send();
 	};
 } // namespace server
 #endif
