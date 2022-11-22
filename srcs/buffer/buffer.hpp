@@ -29,6 +29,7 @@ namespace buffer
 		std::vector<char> PopAll();
 		bool              empty() const;
 		Buffer           &operator=(const Buffer &other);
+		std::size_t       size();
 
 	  private:
 		void PopFront();

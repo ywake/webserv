@@ -71,4 +71,9 @@ namespace buffer
 		buf_.pop_front();
 	}
 
+	std::size_t Buffer::size()
+	{
+		return buf_.size();
+	}
+
 } // namespace buffer
