@@ -36,7 +36,6 @@ namespace server
 		const SockAddrStorage           client_;
 		Reciever                        reciever_;
 		// State                           state_;
-		// Receiver                        receiver_;
 		// Sender						 *sender_;
 
 	  public:
@@ -46,6 +45,7 @@ namespace server
 		);
 		Connection(const Connection &other);
 		~Connection();
+		bool                operator<(const Connection &other) const;
 		event::Instructions CommunicateWithClient(uint32_t event_type);
 
 		event::Instructions Proceed(const event::Event &event);
