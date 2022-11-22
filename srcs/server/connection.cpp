@@ -26,6 +26,21 @@ namespace server
 	event::Instructions Connection::Proceed(const event::Event &event)
 	{
 
+	event::Instructions Connection::CommunicateWithClient(uint32_t event_type)
+	{
+		event::Instructions insts;
+
+		if (event_type & event::Event::kRead) {
+			event::Instructions recv_insts = Recieve();
+			insts.splice(insts.end(), recv_insts);
+		}
+		if (event_type & event::Event::kWrite) {
+			event::Instructions send_insts = Send();
+			insts.splice(insts.end(), send_insts);
+		}
+		return insts;
+	}
+
 	event::Instructions Connection::Recieve()
 	{
 		return event::Instructions();

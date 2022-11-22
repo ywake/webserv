@@ -46,7 +46,7 @@ namespace server
 		);
 		Connection(const Connection &other);
 		~Connection();
-		bool operator<(const Connection &other) const;
+		event::Instructions CommunicateWithClient(uint32_t event_type);
 
 		event::Instructions Proceed(const event::Event &event);
 		// bool             IsFinished();
