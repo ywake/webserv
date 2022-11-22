@@ -12,4 +12,9 @@ namespace server
 	{}
 
 
+	bool Reciever::IsEof()
+	{
+		return is_eof_;
+	}
+
 } // namespace server
