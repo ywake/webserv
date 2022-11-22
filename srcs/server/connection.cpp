@@ -56,7 +56,8 @@ namespace server
 				std::cerr << res.Err() << std::endl;
 			}
 		}
-		return event::Instructions();
+		event::Instructions insts = ParseRequest();
+		return insts;
 	}
 
 	event::Instructions Connection::ParseRequest()
