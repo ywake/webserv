@@ -22,14 +22,14 @@ namespace server
 		for (Listeners::iterator it = listeners_.begin(); it != listeners_.end(); it++) {
 			Result<void> listen_result = it->Listen();
 			if (listen_result.IsErr()) {
-				return Error(listen_result.Err());
+				return listen_result.Err();
 			}
 			uint32_t     event_type     = Event::kWrite | Event::kRead;
 			Event        ev             = {it->GetFd(), &*it, event_type};
 			Instruction  instruction    = {Instruction::kRegister, ev};
 			Result<void> intruct_result = io_monitor_.Instruct(instruction);
 			if (intruct_result.IsErr()) {
-				return Error(intruct_result.Err());
+				return intruct_result.Err();
 			}
 		}
 		return Result<void>();
