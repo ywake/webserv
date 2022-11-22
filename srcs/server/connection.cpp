@@ -50,6 +50,15 @@ namespace server
 
 	event::Instructions Connection::Recieve()
 	{
+		if (!reciever_.IsEof() && reciever_.size() < kMaxRecvBufSize) {
+			Result<void> res = reciever_.Recv();
+			if (res.IsErr()) {
+				std::cerr << res.Err() << std::endl;
+			}
+		}
+		return event::Instructions();
+	}
+
 		return event::Instructions();
 	}
 
