@@ -25,6 +25,12 @@ namespace server
 
 	event::Instructions Connection::Proceed(const event::Event &event)
 	{
+		if (event.fd == this->GetFd()) {
+			return CommunicateWithClient(event.event_type);
+		} else {
+		}
+		return event::Instructions();
+	}
 
 	event::Instructions Connection::CommunicateWithClient(uint32_t event_type)
 	{
