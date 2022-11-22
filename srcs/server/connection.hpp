@@ -7,6 +7,7 @@
 // #include "server_types.hpp"
 #include "config/virtual_server_confs.hpp"
 #include "managed_fd.hpp"
+#include "reciever.hpp"
 #include "socket.hpp"
 
 #include "instruction.hpp"
@@ -32,6 +33,7 @@ namespace server
 	  private:
 		const conf::VirtualServerConfs &configs_;
 		const SockAddrStorage           client_;
+		Reciever                        reciever_;
 		// State                           state_;
 		// Receiver                        receiver_;
 		// Sender						 *sender_;
