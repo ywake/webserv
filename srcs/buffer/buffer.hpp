@@ -13,11 +13,11 @@ namespace buffer
 	// TODO rename
 	class Buffer
 	{
-	  private:
+	  protected:
 		typedef std::vector<char>     ByteArray;
 		typedef std::deque<ByteArray> InnerBuffer;
 
-	  private:
+	  protected:
 		static const std::size_t kDefaultMaxSize = 10;
 		InnerBuffer              buf_;
 		std::size_t              idx_;
