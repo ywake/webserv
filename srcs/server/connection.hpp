@@ -29,6 +29,7 @@ namespace server
 		// 	};
 
 	  private:
+		static const std::size_t              kMaxRecvBufSize;
 		static const conf::VirtualServerConfs kEmptyConfs;
 
 	  private:

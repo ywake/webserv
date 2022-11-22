@@ -2,7 +2,8 @@
 
 namespace server
 {
-	const conf::VirtualServerConfs Connection::kEmptyConfs = conf::VirtualServerConfs();
+	const std::size_t              Connection::kMaxRecvBufSize = 10;
+	const conf::VirtualServerConfs Connection::kEmptyConfs     = conf::VirtualServerConfs();
 
 	Connection::Connection() : Socket(), configs_(kEmptyConfs), client_() {}
 
