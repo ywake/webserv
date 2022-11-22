@@ -45,7 +45,7 @@ namespace server
 		~Connection();
 		bool operator<(const Connection &other) const;
 
-		event::Instructions Proceed();
+		event::Instructions Proceed(const event::Event &event);
 		// bool             IsFinished();
 
 		//   private:

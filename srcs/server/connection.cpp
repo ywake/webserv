@@ -23,8 +23,9 @@ namespace server
 
 	Connection::~Connection() {}
 
-	event::Instructions Connection::Proceed()
+	event::Instructions Connection::Proceed(const event::Event &event)
 	{
+		(void)event;
 		return event::Instructions();
 	}
 
