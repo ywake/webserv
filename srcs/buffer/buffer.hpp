@@ -27,8 +27,8 @@ namespace buffer
 		Buffer(std::size_t max_inner_buf_size = kDefaultMaxSize);
 		Buffer(const Buffer &other);
 		Result<void>      push_back(const std::vector<char> &data);
-		Emptiable<char>   GetChar();
-		std::vector<char> GetAll();
+		Emptiable<char>   PopChar();
+		std::vector<char> PopAll();
 		bool              empty() const;
 		bool              IsFull() const;
 		Buffer           &operator=(const Buffer &other);

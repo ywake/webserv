@@ -23,7 +23,7 @@ namespace buffer
 		return Result<void>();
 	}
 
-	Emptiable<char> Buffer::GetChar()
+	Emptiable<char> Buffer::PopChar()
 	{
 		if (empty()) {
 			return Emptiable<char>();
@@ -37,7 +37,7 @@ namespace buffer
 		return c;
 	}
 
-	std::vector<char> Buffer::GetAll()
+	std::vector<char> Buffer::PopAll()
 	{
 		if (buf_.empty()) {
 			return std::vector<char>();
