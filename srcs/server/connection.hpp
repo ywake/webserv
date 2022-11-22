@@ -55,6 +55,7 @@ namespace server
 	  private:
 		event::Instructions Recieve();
 		event::Instructions Send();
+		event::Instructions ParseRequest();
 	};
 } // namespace server
 #endif

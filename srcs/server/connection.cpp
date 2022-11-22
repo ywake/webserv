@@ -59,6 +59,8 @@ namespace server
 		return event::Instructions();
 	}
 
+	event::Instructions Connection::ParseRequest()
+	{
 		return event::Instructions();
 	}
 
