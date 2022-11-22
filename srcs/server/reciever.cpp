@@ -11,6 +11,22 @@ namespace server
 		: fd_(fd), buffer_size_(buffer_size), is_eof_(false)
 	{}
 
+	Result<void> Reciever::Recv()
+	{
+		buf_.push_back(ByteArray(buffer_size_));
+		void   *buf       = buf_.back().data();
+		ssize_t recv_size = recv(fd_, buf, buffer_size_, 0);
+		if (recv_size > 0) {
+			buf_.back().resize(recv_size);
+			return Result<void>();
+		}
+		buf_.pop_back();
+		if (recv_size == 0) {
+			is_eof_ = true;
+			return Result<void>();
+		}
+		return Error(std::string("recv: ") + strerror(errno));
+	}
 
 	bool Reciever::IsEof()
 	{
