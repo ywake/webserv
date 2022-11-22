@@ -5,14 +5,15 @@
 // #include "receiver.hpp"
 // #include "sender.hpp"
 // #include "server_types.hpp"
+#include <netinet/in.h>
+#include <stdint.h>
+#include <sys/socket.h>
+
 #include "config/virtual_server_confs.hpp"
+#include "instruction.hpp"
 #include "managed_fd.hpp"
 #include "reciever.hpp"
 #include "socket.hpp"
-
-#include "instruction.hpp"
-#include <netinet/in.h>
-#include <sys/socket.h>
 
 // TODO fd
 namespace server
