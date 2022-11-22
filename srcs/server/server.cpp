@@ -62,7 +62,7 @@ namespace server
 			Instructions new_instructions;
 			if (dynamic_cast<Connection *>(sock)) {
 				Connection *connection = dynamic_cast<Connection *>(sock);
-				new_instructions       = connection->Proceed();
+				new_instructions       = connection->Proceed(event);
 			} else if (dynamic_cast<Listener *>(sock)) {
 				new_instructions = Accept(dynamic_cast<Listener *>(sock));
 			} else {
