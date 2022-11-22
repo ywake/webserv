@@ -7,6 +7,8 @@
 
 namespace server
 {
+	const std::size_t Reciever::kDefaultBufferSize = 1024;
+
 	Reciever::Reciever(int fd, std::size_t buffer_size)
 		: fd_(fd), buffer_size_(buffer_size), is_eof_(false)
 	{}
