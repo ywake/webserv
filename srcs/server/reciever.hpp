@@ -3,6 +3,7 @@
 
 #include "buffer.hpp"
 #include "instruction.hpp"
+#include "result.hpp"
 
 namespace server
 {
