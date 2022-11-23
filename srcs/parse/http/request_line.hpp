@@ -1,5 +1,8 @@
 #ifndef REQUEST_LINE_HPP
 #define REQUEST_LINE_HPP
+
+#include <string>
+
 #include "request_target.hpp"
 #include "thin_string.hpp"
 
@@ -10,18 +13,18 @@ class RequestLine
 	static const int kMaxMethodLength      = 7;
 
   public:
-	ThinString    method_;
+	std::string   method_;
 	RequestTarget request_target_;
-	ThinString    http_version_;
+	std::string   http_version_;
 
 	RequestLine();
 	RequestLine(const RequestLine &other);
 	RequestLine(const ThinString &request_line);
 
 	RequestLine(
-		const ThinString    &method,
+		const std::string   &method,
 		const RequestTarget &request_target,
-		const ThinString    &http_version
+		const std::string   &http_version
 	);
 
 	RequestLine &operator=(const RequestLine &rhs);

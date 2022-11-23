@@ -44,9 +44,9 @@ RequestLine::RequestLine(const ThinString &request_line)
 		!http::abnf::IsHttpVersion(tokens[kVersionIdx])) {
 		throw http::BadRequestException();
 	}
-	method_         = tokens[kMthodIdx];
+	method_         = tokens[kMthodIdx].ToString();
 	request_target_ = TryConstructRequestTarget(tokens[kTargetIdx]);
-	http_version_   = tokens[kVersionIdx];
+	http_version_   = tokens[kVersionIdx].ToString();
 }
 
 // TODO methodを定数で定義したい
@@ -66,7 +66,7 @@ RequestTarget RequestLine::TryConstructRequestTarget(const ThinString &str)
 }
 
 RequestLine::RequestLine(
-	const ThinString &method, const RequestTarget &request_target, const ThinString &http_version
+	const std::string &method, const RequestTarget &request_target, const std::string &http_version
 )
 	: method_(method), request_target_(request_target), http_version_(http_version)
 {}
