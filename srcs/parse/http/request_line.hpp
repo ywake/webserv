@@ -15,6 +15,7 @@ class RequestLine
 	ThinString    http_version_;
 
 	RequestLine();
+	RequestLine(const RequestLine &other);
 	RequestLine(const ThinString &request_line);
 
 	RequestLine(

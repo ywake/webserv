@@ -11,6 +11,11 @@
 
 RequestLine::RequestLine() : method_(), request_target_(), http_version_() {}
 
+RequestLine::RequestLine(const RequestLine &other)
+{
+	*this = other;
+}
+
 /**
  * @brief request-line = method SP request-target SP HTTP-version
  * @details メソッドの文字列長が長いときはパース時点でエラーにする
