@@ -4,7 +4,7 @@ namespace server
 {
 	Socket::Socket() : managed_fd_() {}
 
-	Socket::Socket(ManagedFd managed_fd) : managed_fd_(managed_fd) {}
+	Socket::Socket(int fd) : managed_fd_(fd) {}
 
 	Socket::Socket(const Socket &other) : managed_fd_(other.managed_fd_) {}
 
