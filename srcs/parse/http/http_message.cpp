@@ -2,7 +2,7 @@
 
 namespace http
 {
-	HttpMessage::HttpMessage(HeaderSection field_lines, std::string message_body)
+	HttpMessage::HttpMessage(const HeaderSection &field_lines, const std::string &message_body)
 		: field_lines_(field_lines), message_body_(message_body)
 	{}
 
