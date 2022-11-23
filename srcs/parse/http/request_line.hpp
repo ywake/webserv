@@ -23,7 +23,8 @@ class RequestLine
 		const ThinString    &http_version
 	);
 
-	bool operator==(const RequestLine &rhs) const;
+	RequestLine &operator=(const RequestLine &rhs);
+	bool         operator==(const RequestLine &rhs) const;
 
   private:
 	RequestTarget TryConstructRequestTarget(const ThinString &str);

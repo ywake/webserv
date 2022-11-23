@@ -66,6 +66,17 @@ RequestLine::RequestLine(
 	: method_(method), request_target_(request_target), http_version_(http_version)
 {}
 
+RequestLine &RequestLine::operator=(const RequestLine &rhs)
+{
+	if (this == &rhs) {
+		return *this;
+	}
+	method_         = rhs.method_;
+	request_target_ = rhs.request_target_;
+	http_version_   = rhs.http_version_;
+	return *this;
+}
+
 bool RequestLine::operator==(const RequestLine &rhs) const
 {
 	return method_ == rhs.method_ && request_target_ == rhs.request_target_ &&
