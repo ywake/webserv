@@ -30,7 +30,7 @@ namespace server
 	  public:
 	  public:
 		enum ParserState {
-			kStatus,
+			kStartLine,
 			kHeader,
 			kBody
 		};
