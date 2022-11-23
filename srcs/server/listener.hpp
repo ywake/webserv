@@ -14,10 +14,11 @@
 
 namespace server
 {
-	typedef struct addrinfo AddrInfo;
-
 	class Listener : public Socket
 	{
+	  private:
+		typedef struct addrinfo AddrInfo;
+
 	  private:
 		const conf::VirtualServerConfs &configs_;
 

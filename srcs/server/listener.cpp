@@ -1,33 +1,16 @@
 #include "listener.hpp"
 
-#include <errno.h>
+#include <cerrno>
+#include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "listen_exception.hpp"
+#include "webserv_utils.hpp"
+
 namespace server
 {
-	// Result<int> Listener::TryBindSocket(AddrInfo *lst)
-	// {
-	// 	int optval = 1;
-
-	// 	for (; lst; lst = lst->ai_next) {
-	// 		errno       = 0;
-	// 		int sock_fd = socket(lst->ai_family, lst->ai_socktype, lst->ai_protocol);
-	// 		if (sock_fd < 0) {
-	// 			continue;
-	// 		}
-	// 		if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0) {
-	// 			return Result<int>(-1, Error(errno));
-	// 		}
-	// 		if (bind(sock_fd, lst->ai_addr, lst->ai_addrlen) == 0) {
-	// 			return Result<int>(sock_fd);
-	// 		}
-	// 		if (close(sock_fd) < 0) {
-	// 			return Result<int>(-1, Error(errno));
-	// 		}
-	// 	}
-	// 	return Result<int>(-1, Error("bind fail"));
-	// }
+	typedef struct sockaddr SockAddr;
 
 	/**
 	 * @brief Construct a new Listener:: Listener object
@@ -39,46 +22,67 @@ namespace server
 	Listener::Listener(const std::string &port, const conf::VirtualServerConfs &configs)
 		: configs_(configs)
 	{
-		(void)port;
-		// AddrInfo *lst;
-		// AddrInfo  hints = {};
+		AddrInfo *lst;
+		AddrInfo  hints = {};
 
-		// hints.ai_flags    = AI_PASSIVE | AI_ADDRCONFIG | AI_NUMERICSERV;
-		// hints.ai_socktype = SOCK_STREAM;
-		// int err           = getaddrinfo(NULL, port.c_str(), &hints, &lst);
-		// if (err != 0) {
-		// 	// return Result<void>(Error(gai_strerror(err)));
-		// }
-		// Result<int> res = TryBindSocket(lst);
-		// if (res.IsOk()) {
-		// 	managed_fd_ = ManagedFd(res.Val());
-		// }
-		// freeaddrinfo(lst);
-		// return Result<void>(Error(res.Err()));
+		hints.ai_flags    = AI_PASSIVE | AI_ADDRCONFIG | AI_NUMERICSERV;
+		hints.ai_socktype = SOCK_STREAM;
+		int err           = getaddrinfo(NULL, port.c_str(), &hints, &lst);
+		if (err != 0) {
+			throw ListenException("getaddrinfo failure");
+		}
+		Result<int> sock = TryBindSocket(lst);
+		freeaddrinfo(lst);
+		if (sock.IsErr()) {
+			throw ListenException(sock.ErrMsg());
+		}
+		managed_fd_ = sock.Val();
+	}
+
+	Result<int> Listener::TryBindSocket(AddrInfo *lst)
+	{
+		int optval = 1;
+
+		for (; lst; lst = lst->ai_next) {
+			errno       = 0;
+			int sock_fd = socket(lst->ai_family, lst->ai_socktype, lst->ai_protocol);
+			if (sock_fd < 0) {
+				continue;
+			}
+			if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0) {
+				utils::Close(sock_fd);
+				return Error(std::string("setsockopt: ") + strerror(errno));
+			}
+			if (bind(sock_fd, lst->ai_addr, lst->ai_addrlen) == 0) {
+				return sock_fd;
+			}
+			utils::Close(sock_fd);
+		}
+		return Error("bind fail");
 	}
 
 	Result<void> Listener::Listen() const
 	{
-		// if (listen(managed_fd_.GetFd(), 1024) < 0) {
-		// 	return Result<void>(Error(strerror(errno)));
-		// }
+		if (listen(managed_fd_.GetFd(), 1024) < 0) {
+			return Error(std::string("listen: ") + strerror(errno));
+		}
 		return Result<void>();
 	}
 
 	Result<Connection> Listener::Accept() const
 	{
-		return Connection(-1, configs_, SockAddrStorage());
-		// SockAddrIn client;
-		// socklen_t  client_len = sizeof(client);
-		// int        fd = accept(managed_fd_.GetFd(), (struct sockaddr *)&client, &client_len);
-		// if (fd < 0) {
-		// 	return Result<Connection>(Error("accept: " + std::string(strerror(errno))));
-		// }
-		// if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
-		// 	return Result<Connection>(Error("fcntl: " + std::string(strerror(errno))));
-		// }
-		// ManagedFd conn_fd(fd);
-		// return Connection(conn_fd, configs_, client);
+		SockAddrStorage client;
+		socklen_t       client_len = sizeof(client);
+
+		int conn_fd = accept(managed_fd_.GetFd(), (SockAddr *)&client, &client_len);
+		if (conn_fd < 0) {
+			return Error("accept: " + std::string(strerror(errno)));
+		}
+		if (fcntl(conn_fd, F_SETFL, O_NONBLOCK) == -1) {
+			utils::Close(conn_fd);
+			return Error("fcntl: " + std::string(strerror(errno)));
+		}
+		return Connection(conn_fd, configs_, client);
 	}
 
 } // namespace server

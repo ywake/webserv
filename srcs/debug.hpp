@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include "epoll.hpp"
 #include "result.hpp"
 
 #define DEBUG true
@@ -17,4 +18,6 @@ void log(T title, U contents)
 }
 
 void log(const Error &err);
+void log(const io_multiplexer::ErrEvents &err);
+
 #endif
