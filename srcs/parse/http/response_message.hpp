@@ -12,15 +12,12 @@ namespace http
 
 	  public:
 		ResponseMessage(
-			StatusLine &status_line, HeaderSection &field_lines, std::string &message_body
-		)
-			: HttpMessage(field_lines, message_body), status_line_(status_line)
-		{}
+			const StatusLine    &status_line,
+			const HeaderSection &field_lines,
+			const std::string   &message_body
+		);
 
-		bool operator==(const ResponseMessage &rhs) const
-		{
-			return HttpMessage::operator==(rhs) && status_line_ == rhs.status_line_;
-		}
+		bool operator==(const ResponseMessage &rhs) const;
 	};
 } // namespace http
 #endif
