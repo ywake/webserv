@@ -44,6 +44,7 @@ namespace server
 		const conf::VirtualServerConfs &configs_;
 		const SockAddrStorage           client_;
 		Reciever                        reciever_;
+		ParserState                     parser_state_;
 		// State                           state_;
 		// Sender						 *sender_;
 
