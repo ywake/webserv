@@ -27,9 +27,10 @@ namespace server
 		// 		kSending,
 		// 		kFinished,
 		// 	};
+	  public:
+		static const std::size_t kMaxRecvBufSize;
 
 	  private:
-		static const std::size_t              kMaxRecvBufSize;
 		static const conf::VirtualServerConfs kEmptyConfs;
 
 	  private:
