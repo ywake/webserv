@@ -1,5 +1,5 @@
-#ifndef FILE_CLOSE_EXCEPTION_HPP
-#define FILE_CLOSE_EXCEPTION_HPP
+#ifndef LISTEN_EXCEPTION_HPP
+#define LISTEN_EXCEPTION_HPP
 
 #include <stdexcept>
 
