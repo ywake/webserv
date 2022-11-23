@@ -224,6 +224,15 @@ const HeaderSection::Values &HeaderSection::at(const std::string &field_name) co
 	return field_lines_.at(utils::ToLowerString(field_name));
 }
 
+HeaderSection &HeaderSection::operator=(const HeaderSection &rhs)
+{
+	if (this == &rhs) {
+		return *this;
+	}
+	field_lines_ = rhs.field_lines_;
+	return *this;
+}
+
 bool HeaderSection::operator==(const HeaderSection &rhs) const
 {
 	return field_lines_ == rhs.field_lines_;
