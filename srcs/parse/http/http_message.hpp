@@ -10,11 +10,11 @@ namespace http
 {
 	class HttpMessage
 	{
-	  public:
-	  public:
+	  private:
 		HeaderSection field_lines_;
 		std::string   message_body_;
 
+	  public:
 		HttpMessage(HeaderSection field_lines, std::string message_body)
 			: field_lines_(field_lines), message_body_(message_body)
 		{}
