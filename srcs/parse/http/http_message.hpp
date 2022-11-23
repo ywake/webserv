@@ -16,8 +16,11 @@ namespace http
 
 	  public:
 		HttpMessage();
+		HttpMessage(const HttpMessage &other);
 		HttpMessage(const HeaderSection &field_lines, const std::string &message_body);
-		bool operator==(const HttpMessage &rhs) const;
+		~HttpMessage();
+		HttpMessage &operator=(const HttpMessage &rhs);
+		bool         operator==(const HttpMessage &rhs) const;
 	};
 } // namespace http
 #endif
