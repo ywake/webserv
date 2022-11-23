@@ -34,9 +34,9 @@ namespace server
 		ErrStatus Parse(buffer::Buffer &recieved);
 
 	  private:
-		ErrStatus ParseStartLine(buffer::Buffer &recieved);
-		ErrStatus ParseHeaderSection(buffer::Buffer &recieved);
-		ErrStatus ParseBody(buffer::Buffer &recieved);
+		void ParseStartLine(buffer::Buffer &recieved);
+		void ParseHeaderSection(buffer::Buffer &recieved);
+		void ParseBody(buffer::Buffer &recieved);
 	};
 } // namespace server
 #endif

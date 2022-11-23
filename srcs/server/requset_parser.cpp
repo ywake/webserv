@@ -1,5 +1,6 @@
 #include "requset_parser.hpp"
 #include "http_define.hpp"
+#include "http_exceptions.hpp"
 #include "webserv_utils.hpp"
 
 namespace server
@@ -8,35 +9,43 @@ namespace server
 
 	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
 	{
+		try {
 		switch (state_) {
 		case kStandBy:
 			state_ = kStartLine;
 			/* Falls through. */
 		case kStartLine:
-			return ParseStartLine(recieved);
+				ParseStartLine(recieved);
+				break;
 		case kHeader:
-			return ParseHeaderSection(recieved);
+				ParseHeaderSection(recieved);
+				break;
 		case kBody:
-			return ParseBody(recieved);
+				ParseBody(recieved);
+				break;
 		}
 		return ErrStatus();
+		} catch (http::HttpException &e) {
+			request_queue_.push_back(Error());
+			// TODO delete
+			state_ = kStandBy;
+			return ErrStatus(e.GetStatusCode(), Error());
+		}
 	}
 
-	RequestParser::ErrStatus RequestParser::ParseStartLine(buffer::Buffer &recieved)
+	void RequestParser::ParseStartLine(buffer::Buffer &recieved)
 	{
 		(void)recieved;
 		return ErrStatus();
 	}
 
-	RequestParser::ErrStatus RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
+	void RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
 	{
 		(void)recieved;
-		return ErrStatus();
 	}
 
-	RequestParser::ErrStatus RequestParser::ParseBody(buffer::Buffer &recieved)
+	void RequestParser::ParseBody(buffer::Buffer &recieved)
 	{
 		(void)recieved;
-		return ErrStatus();
 	}
 } // namespace server
