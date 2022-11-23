@@ -35,6 +35,7 @@ namespace server
 			kBody
 		};
 		static const std::size_t kMaxRecvBufSize;
+		static const std::size_t kMaxSenderBufSize;
 
 	  private:
 		static const conf::VirtualServerConfs kEmptyConfs;
