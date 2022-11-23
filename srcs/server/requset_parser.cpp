@@ -7,11 +7,13 @@ namespace server
 {
 	RequestParser::RequestParser() : state_(kStandBy), request_ptr_(NULL) {}
 
+	// TODO msg作成部分関数に分ける、msg完成したらqueueにpush_back、kDoneみたいなstateの追加、
 	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
 	{
 		try {
 			switch (state_) {
 			case kStandBy:
+				// TODO new requset_msg
 				state_ = kStartLine;
 				/* Falls through. */
 			case kStartLine:
@@ -33,6 +35,7 @@ namespace server
 		}
 	}
 
+	// TODO buffer作成部分関数に分けたいかも
 	void RequestParser::ParseStartLine(buffer::Buffer &recieved)
 	{
 		for (;;) {
