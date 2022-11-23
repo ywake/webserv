@@ -35,6 +35,7 @@ class HeaderSection
 
   public:
 	HeaderSection();
+	HeaderSection(const HeaderSection &other);
 	HeaderSection(const ThinString &str);
 	HeaderSection(const Headers &field_lines);
 

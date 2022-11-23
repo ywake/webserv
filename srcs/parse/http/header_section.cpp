@@ -27,6 +27,11 @@ static const std::string kSingleSpace = " ";
 
 HeaderSection::HeaderSection() {}
 
+HeaderSection::HeaderSection(const HeaderSection &other)
+{
+	*this = other;
+}
+
 HeaderSection::HeaderSection(const ThinString &str)
 {
 	if (str.empty()) {
