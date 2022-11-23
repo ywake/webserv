@@ -71,7 +71,7 @@ namespace http
 		StatusCode(Code code = kUndefinedCode);
 		StatusCode(const EmptyStatusCode &code);
 
-		bool               empty();
+		bool               empty() const;
 		Code               GetCode() const;
 		const std::string &GetReasonPhrase() const;
 

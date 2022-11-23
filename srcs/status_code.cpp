@@ -12,7 +12,7 @@ namespace http
 		(void)code;
 	}
 
-	bool StatusCode::empty()
+	bool StatusCode::empty() const
 	{
 		return code_ == kUndefinedCode;
 	}
