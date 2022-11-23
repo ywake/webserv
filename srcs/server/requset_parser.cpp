@@ -35,8 +35,18 @@ namespace server
 
 	void RequestParser::ParseStartLine(buffer::Buffer &recieved)
 	{
-		(void)recieved;
-		return ErrStatus();
+		for (;;) {
+			if (recieved.empty()) {
+				return;
+			}
+			Emptiable<char> c = recieved.PopChar();
+			buffer_ += c.Value();
+			if (utils::EndWith(buffer_, http::kCrLf)) {
+				break;
+			}
+		}
+		// 末尾消して、RequsetMessage.SetRequsetLine(http::RequsetLine());みたいにする予定
+		// stateの更新
 	}
 
 	void RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
