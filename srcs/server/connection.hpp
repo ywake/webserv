@@ -49,6 +49,11 @@ namespace server
 		  public:
 			RequestParser();
 			ErrStatus Parse();
+
+		  private:
+			ErrStatus ParseStartLine();
+			ErrStatus ParseHeaderSection();
+			ErrStatus ParseBody();
 		};
 		//   public:
 		// 	enum State {
