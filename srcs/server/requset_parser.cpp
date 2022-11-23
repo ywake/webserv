@@ -10,21 +10,21 @@ namespace server
 	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
 	{
 		try {
-		switch (state_) {
-		case kStandBy:
-			state_ = kStartLine;
-			/* Falls through. */
-		case kStartLine:
+			switch (state_) {
+			case kStandBy:
+				state_ = kStartLine;
+				/* Falls through. */
+			case kStartLine:
 				ParseStartLine(recieved);
 				break;
-		case kHeader:
+			case kHeader:
 				ParseHeaderSection(recieved);
 				break;
-		case kBody:
+			case kBody:
 				ParseBody(recieved);
 				break;
-		}
-		return ErrStatus();
+			}
+			return ErrStatus();
 		} catch (http::HttpException &e) {
 			request_queue_.push_back(Error());
 			// TODO delete
