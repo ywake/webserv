@@ -16,6 +16,7 @@ RequestLine::RequestLine(const RequestLine &other)
 	*this = other;
 }
 
+// TODO refactor
 /**
  * @brief request-line = method SP request-target SP HTTP-version
  * @details メソッドの文字列長が長いときはパース時点でエラーにする
