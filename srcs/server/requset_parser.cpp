@@ -51,7 +51,18 @@ namespace server
 
 	void RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
 	{
-		(void)recieved;
+		for (;;) {
+			if (recieved.empty()) {
+				return;
+			}
+			Emptiable<char> c = recieved.PopChar();
+			buffer_ += c.Value();
+			if (utils::EndWith(buffer_, http::kEmptyLine)) {
+				break;
+			}
+		}
+		// SetHeaderSection()
+		// stateの更新
 	}
 
 	void RequestParser::ParseBody(buffer::Buffer &recieved)
