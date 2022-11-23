@@ -1,3 +1,5 @@
+#ifndef CONFIG_EXCEPTIONS_HPP
+#define CONFIG_EXCEPTIONS_HPP
 #include <stdexcept>
 
 namespace conf
@@ -8,3 +10,5 @@ namespace conf
 		ConfigException(const std::string &what_arg);
 	};
 } // namespace conf
+
+#endif
