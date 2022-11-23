@@ -28,6 +28,12 @@ namespace server
 		// 		kFinished,
 		// 	};
 	  public:
+	  public:
+		enum ParserState {
+			kStatus,
+			kHeader,
+			kBody
+		};
 		static const std::size_t kMaxRecvBufSize;
 
 	  private:
