@@ -6,6 +6,7 @@
 namespace http
 {
 	extern const std::string kCrLf;
+	extern const std::string kEmptyLine;
 	extern const std::string kWhiteSpaces;
 } // namespace http
 
