@@ -28,6 +28,10 @@ class Result
 	{
 		return val_;
 	}
+	T &Val()
+	{
+		return val_;
+	}
 	const std::string &ErrMsg() const
 	{
 		return err_.Err();
@@ -67,6 +71,10 @@ class Result<T &>
 	bool IsErr() const
 	{
 		return err_.IsErr();
+	}
+	T &Val()
+	{
+		return val_;
 	}
 	const T &Val() const
 	{
