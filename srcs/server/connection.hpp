@@ -15,6 +15,7 @@
 #include "managed_fd.hpp"
 #include "reciever.hpp"
 #include "request_message.hpp"
+#include "requset_parser.hpp"
 #include "socket.hpp"
 #include "status_code.hpp"
 
@@ -25,36 +26,6 @@ namespace server
 
 	class Connection : public Socket
 	{
-	  private:
-		typedef std::deque<Result<HttpMessage> > RequsetQueue;
-
-	  private:
-		class RequestParser
-		{
-		  private:
-			typedef Result<http::StatusCode> ErrStatus;
-
-		  private:
-			enum State {
-				kStandBy,
-				kStartLine,
-				kHeader,
-				kBody
-			};
-
-		  private:
-			std::string buffer_;
-			State       state_;
-
-		  public:
-			RequestParser();
-			ErrStatus Parse();
-
-		  private:
-			ErrStatus ParseStartLine();
-			ErrStatus ParseHeaderSection();
-			ErrStatus ParseBody();
-		};
 		//   public:
 		// 	enum State {
 		// 		kReceiving,
@@ -72,7 +43,7 @@ namespace server
 		const conf::VirtualServerConfs &configs_;
 		const SockAddrStorage           client_;
 		Reciever                        reciever_;
-		RequsetQueue                    requset_queue_;
+		RequestParser                   request_parser_;
 		// State                           state_;
 		// Sender						 *sender_;
 

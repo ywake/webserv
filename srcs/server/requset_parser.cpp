@@ -1,37 +1,42 @@
-#include "connection.hpp"
+#include "requset_parser.hpp"
+#include "http_define.hpp"
+#include "webserv_utils.hpp"
 
 namespace server
 {
-	Connection::RequestParser::RequestParser() : state_(kStandBy) {}
+	RequestParser::RequestParser() : state_(kStandBy) {}
 
-	Connection::RequestParser::ErrStatus Connection::RequestParser::Parse()
+	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
 	{
 		switch (state_) {
 		case kStandBy:
 			state_ = kStartLine;
 			/* Falls through. */
 		case kStartLine:
-			return ParseStartLine();
+			return ParseStartLine(recieved);
 		case kHeader:
-			return ParseHeaderSection();
+			return ParseHeaderSection(recieved);
 		case kBody:
-			return ParseBody();
+			return ParseBody(recieved);
 		}
 		return ErrStatus();
 	}
 
-	Connection::RequestParser::ErrStatus Connection::RequestParser::ParseStartLine()
+	RequestParser::ErrStatus RequestParser::ParseStartLine(buffer::Buffer &recieved)
 	{
+		(void)recieved;
 		return ErrStatus();
 	}
 
-	Connection::RequestParser::ErrStatus Connection::RequestParser::ParseHeaderSection()
+	RequestParser::ErrStatus RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
 	{
+		(void)recieved;
 		return ErrStatus();
 	}
 
-	Connection::RequestParser::ErrStatus Connection::RequestParser::ParseBody()
+	RequestParser::ErrStatus RequestParser::ParseBody(buffer::Buffer &recieved)
 	{
+		(void)recieved;
 		return ErrStatus();
 	}
 } // namespace server

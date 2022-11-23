@@ -6,12 +6,12 @@ namespace server
 	const std::size_t              Connection::kMaxSenderBufSize = 10;
 	const conf::VirtualServerConfs Connection::kEmptyConfs       = conf::VirtualServerConfs();
 
-	Connection::Connection() : Socket(), configs_(kEmptyConfs), client_() {}
+	Connection::Connection() : Socket(), configs_(kEmptyConfs), client_(), request_parser_() {}
 
 	Connection::Connection(
 		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
 	)
-		: Socket(fd), configs_(configs), client_(client), reciever_(fd)
+		: Socket(fd), configs_(configs), client_(client), reciever_(fd), request_parser_()
 	{}
 
 	Connection::Connection(const Connection &other)
