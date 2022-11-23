@@ -27,6 +27,24 @@ namespace server
 	  private:
 		typedef std::deque<Result<HttpMessage> > RequsetQueue;
 
+	  private:
+		class RequestParser
+		{
+		  private:
+			enum State {
+				kStartLine,
+				kHeader,
+				kBody
+			};
+
+		  private:
+			std::string buffer_;
+			State       state_;
+
+		  public:
+			RequestParser();
+			Result<void> Parse();
+		};
 		//   public:
 		// 	enum State {
 		// 		kReceiving,
@@ -34,12 +52,6 @@ namespace server
 		// 		kFinished,
 		// 	};
 	  public:
-	  public:
-		enum ParserState {
-			kStartLine,
-			kHeader,
-			kBody
-		};
 		static const std::size_t kMaxRecverBufSize;
 		static const std::size_t kMaxSenderBufSize;
 
