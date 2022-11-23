@@ -1,8 +1,10 @@
 #ifndef HTTP_MESSAGE_HPP
 #define HTTP_MESSAGE_HPP
-#include "header_section.hpp"
+
 #include <string>
 #include <vector>
+
+#include "header_section.hpp"
 
 namespace http
 {
