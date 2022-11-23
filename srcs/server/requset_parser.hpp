@@ -13,7 +13,7 @@ namespace server
 	class RequestParser
 	{
 	  private:
-		typedef std::deque<Result<HttpMessage> > RequsetQueue;
+		typedef std::deque<Result<HttpMessage> > RequestQueue;
 		typedef Result<http::StatusCode>         ErrStatus;
 
 	  private:
