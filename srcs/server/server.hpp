@@ -27,8 +27,13 @@ namespace server
 
 	  public:
 		Server(const conf::ServerConfs &configs);
-		int  Listen();
-		void Run();
+		Result<void> Listen();
+		void         Run();
+
+	  private:
+		event::Instructions RunEvents(const event::Events &events);
+		event::Instructions CloseFinishedConnections();
+		event::Instructions Accept(const Listener *listener);
 	};
 } // namespace server
 #endif
