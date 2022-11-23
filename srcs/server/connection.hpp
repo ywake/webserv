@@ -5,6 +5,7 @@
 // #include "receiver.hpp"
 // #include "sender.hpp"
 // #include "server_types.hpp"
+#include <deque>
 #include <netinet/in.h>
 #include <stdint.h>
 #include <sys/socket.h>
@@ -13,6 +14,7 @@
 #include "instruction.hpp"
 #include "managed_fd.hpp"
 #include "reciever.hpp"
+#include "request_message.hpp"
 #include "socket.hpp"
 
 // TODO fd
@@ -22,6 +24,9 @@ namespace server
 
 	class Connection : public Socket
 	{
+	  private:
+		typedef std::deque<Result<HttpMessage> > RequsetQueue;
+
 		//   public:
 		// 	enum State {
 		// 		kReceiving,
@@ -45,7 +50,7 @@ namespace server
 		const conf::VirtualServerConfs &configs_;
 		const SockAddrStorage           client_;
 		Reciever                        reciever_;
-		ParserState                     parser_state_;
+		RequsetQueue                    requset_queue_;
 		// State                           state_;
 		// Sender						 *sender_;
 
