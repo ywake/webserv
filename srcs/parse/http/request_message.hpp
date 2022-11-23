@@ -1,6 +1,7 @@
 #ifndef REQUEST_MESSAGE_HPP
 #define REQUEST_MESSAGE_HPP
 
+#include "header_section.hpp"
 #include "http_message.hpp"
 #include "request_line.hpp"
 
@@ -11,23 +12,13 @@ namespace http
 	  public:
 		RequestLine request_line_;
 
-		RequestMessage() : HttpMessage(HeaderSection(), "") {}
-
-		RequestMessage(const std::string &str) : HttpMessage(str)
-		{
-			// parse
-		}
-
+		RequestMessage();
 		RequestMessage(
-			RequestLine request_line, HeaderSection field_lines, std::string message_body
-		)
-			: HttpMessage(field_lines, message_body), request_line_(request_line)
-		{}
-
-		bool operator==(const RequestMessage &rhs) const
-		{
-			return HttpMessage::operator==(rhs) && request_line_ == rhs.request_line_;
-		}
+			const RequestLine   &request_line,
+			const HeaderSection &field_lines,
+			const std::string   &message_body
+		);
+		bool operator==(const RequestMessage &rhs) const;
 	};
 } // namespace http
 #endif
