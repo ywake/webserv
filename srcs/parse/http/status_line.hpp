@@ -17,10 +17,7 @@ namespace http
 		// SP + reason_phrase_;
 		// }
 	  public:
-		bool operator==(const StatusLine &rhs) const
-		{
-			return http_version_ == rhs.http_version_ && status_code_ == rhs.status_code_;
-		}
+		bool operator==(const StatusLine &rhs) const;
 	};
 } // namespace http
 #endif
