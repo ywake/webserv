@@ -34,7 +34,7 @@ namespace server
 			kHeader,
 			kBody
 		};
-		static const std::size_t kMaxRecvBufSize;
+		static const std::size_t kMaxRecverBufSize;
 		static const std::size_t kMaxSenderBufSize;
 
 	  private:

@@ -2,7 +2,7 @@
 
 namespace server
 {
-	const std::size_t              Connection::kMaxRecvBufSize   = 10;
+	const std::size_t              Connection::kMaxRecverBufSize = 10;
 	const std::size_t              Connection::kMaxSenderBufSize = 10;
 	const conf::VirtualServerConfs Connection::kEmptyConfs       = conf::VirtualServerConfs();
 
@@ -51,7 +51,7 @@ namespace server
 
 	event::Instructions Connection::Recieve()
 	{
-		if (!reciever_.IsEof() && reciever_.size() < kMaxRecvBufSize) {
+		if (!reciever_.IsEof() && reciever_.size() < kMaxRecverBufSize) {
 			Result<void> res = reciever_.Recv();
 			if (res.IsErr()) {
 				std::cerr << res.Err() << std::endl;
