@@ -16,6 +16,7 @@
 #include "reciever.hpp"
 #include "request_message.hpp"
 #include "socket.hpp"
+#include "status_code.hpp"
 
 // TODO fd
 namespace server
@@ -31,6 +32,9 @@ namespace server
 		class RequestParser
 		{
 		  private:
+			typedef Result<http::StatusCode> ErrStatus;
+
+		  private:
 			enum State {
 				kStartLine,
 				kHeader,
@@ -43,7 +47,7 @@ namespace server
 
 		  public:
 			RequestParser();
-			Result<void> Parse();
+			ErrStatus Parse();
 		};
 		//   public:
 		// 	enum State {
