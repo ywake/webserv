@@ -15,6 +15,7 @@ namespace http
 		std::string   message_body_;
 
 	  public:
+		HttpMessage();
 		HttpMessage(const HeaderSection &field_lines, const std::string &message_body);
 		bool operator==(const HttpMessage &rhs) const;
 	};
