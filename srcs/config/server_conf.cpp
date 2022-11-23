@@ -251,12 +251,12 @@ namespace conf
 
 	const Path &ServerConf::GetRoot(Path uri_path) const
 	{
-		Result<const LocationConf &> mached_location = FindMatchingLocationConf(uri_path);
-		if (mached_location.IsOk()) {
-			Emptiable<Path> location_root = mached_location.Val().GetRoot();
-			return location_root.empty() ? root_.Value() : location_root.Value();
+		Result<const LocationConf &> matched_location = FindMatchingLocationConf(uri_path);
+		if (matched_location.IsErr()) {
+			return root_.Value();
 		}
-		return root_.Value();
+		Emptiable<Path> location_root = matched_location.Val().GetRoot();
+		return location_root.empty() ? root_.Value() : location_root.Value();
 	}
 
 	/**
