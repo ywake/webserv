@@ -9,9 +9,10 @@ namespace http
 {
 	class RequestMessage : public HttpMessage
 	{
-	  public:
+	  private:
 		RequestLine request_line_;
 
+	  public:
 		RequestMessage();
 		RequestMessage(
 			const RequestLine   &request_line,
