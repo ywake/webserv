@@ -19,6 +19,7 @@
 namespace server
 {
 	typedef struct sockaddr_storage SockAddrStorage;
+
 	class Connection : public Socket
 	{
 		//   public:
