@@ -7,9 +7,10 @@ namespace http
 {
 	class ResponseMessage : public HttpMessage
 	{
-	  public:
+	  private:
 		StatusLine status_line_;
 
+	  public:
 		ResponseMessage(
 			StatusLine &status_line, HeaderSection &field_lines, std::string &message_body
 		)
