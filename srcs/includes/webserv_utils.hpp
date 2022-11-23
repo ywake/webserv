@@ -21,6 +21,7 @@ namespace utils
 	Result<std::size_t>     StrToUnsignedLong(const std::string &str);
 	std::vector<ThinString> TrimEmpty(const std::vector<ThinString> &vec);
 	bool                    EndWith(const std::string &src, const std::string &target);
+	void                    Close(int fd);
 
 } // namespace utils
 

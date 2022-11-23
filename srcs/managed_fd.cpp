@@ -1,9 +1,8 @@
 #include "managed_fd.hpp"
 
 #include <cassert>
-#include <cstdio>
-#include <iostream>
-#include <unistd.h>
+
+#include "webserv_utils.hpp"
 
 ManagedFd::FdCounter ManagedFd::fd_count_ = std::map<int, std::size_t>();
 
@@ -61,7 +60,5 @@ void ManagedFd::CountDown(int fd)
 		return;
 	}
 	fd_count_.erase(fd);
-	if (close(fd) < 0) {
-		perror("close: ");
-	}
+	utils::Close(fd);
 }
