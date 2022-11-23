@@ -25,9 +25,10 @@ namespace server
 		};
 
 	  private:
-		std::string  buffer_;
-		State        state_;
-		RequestQueue request_queue_;
+		std::string     buffer_;
+		State           state_;
+		RequestMessage *request_ptr_;
+		RequestQueue    request_queue_;
 
 	  public:
 		RequestParser();

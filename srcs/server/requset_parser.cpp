@@ -5,7 +5,7 @@
 
 namespace server
 {
-	RequestParser::RequestParser() : state_(kStandBy) {}
+	RequestParser::RequestParser() : state_(kStandBy), request_ptr_(NULL) {}
 
 	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
 	{
