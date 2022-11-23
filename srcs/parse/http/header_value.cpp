@@ -2,6 +2,11 @@
 
 HeaderValue::HeaderValue(const std::string &str) : value_(str) {}
 
+HeaderValue::HeaderValue(const HeaderValue &other)
+{
+	*this = other;
+}
+
 HeaderValue::~HeaderValue() {}
 
 HeaderValue &HeaderValue::operator=(const HeaderValue &rhs)

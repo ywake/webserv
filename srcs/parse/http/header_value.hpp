@@ -15,6 +15,7 @@ class HeaderValue
 
   public:
 	HeaderValue(const std::string &value = "");
+	HeaderValue(const HeaderValue &other);
 	~HeaderValue();
 
 	bool empty() const;
