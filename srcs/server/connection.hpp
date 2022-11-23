@@ -36,6 +36,7 @@ namespace server
 
 		  private:
 			enum State {
+				kStandBy,
 				kStartLine,
 				kHeader,
 				kBody
