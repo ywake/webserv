@@ -42,11 +42,7 @@ namespace conf
 
 	  private:
 		static const AllowMethods kDefaultAllowMethods;
-		static const Redirect     kDefaultRedirect;
-		static const Root         kDefaultRoot;
 		static const IndexFiles   kDefaultIndexFiles;
-		static const AutoIndex    kDefaultAutoIndex;
-		static const CgiPath      kDefaultCgiPath;
 
 	  public:
 		LocationConf(

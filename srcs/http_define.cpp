@@ -3,5 +3,6 @@
 namespace http
 {
 	const std::string kCrLf        = "\r\n";
+	const std::string kEmptyLine   = "\r\n\r\n";
 	const std::string kWhiteSpaces = " \t";
 } // namespace http

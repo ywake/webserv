@@ -11,6 +11,12 @@
 
 RequestLine::RequestLine() : method_(), request_target_(), http_version_() {}
 
+RequestLine::RequestLine(const RequestLine &other)
+{
+	*this = other;
+}
+
+// TODO refactor
 /**
  * @brief request-line = method SP request-target SP HTTP-version
  * @details メソッドの文字列長が長いときはパース時点でエラーにする
@@ -39,9 +45,9 @@ RequestLine::RequestLine(const ThinString &request_line)
 		!http::abnf::IsHttpVersion(tokens[kVersionIdx])) {
 		throw http::BadRequestException();
 	}
-	method_         = tokens[kMthodIdx];
+	method_         = tokens[kMthodIdx].ToString();
 	request_target_ = TryConstructRequestTarget(tokens[kTargetIdx]);
-	http_version_   = tokens[kVersionIdx];
+	http_version_   = tokens[kVersionIdx].ToString();
 }
 
 // TODO methodを定数で定義したい
@@ -61,10 +67,21 @@ RequestTarget RequestLine::TryConstructRequestTarget(const ThinString &str)
 }
 
 RequestLine::RequestLine(
-	const ThinString &method, const RequestTarget &request_target, const ThinString &http_version
+	const std::string &method, const RequestTarget &request_target, const std::string &http_version
 )
 	: method_(method), request_target_(request_target), http_version_(http_version)
 {}
+
+RequestLine &RequestLine::operator=(const RequestLine &rhs)
+{
+	if (this == &rhs) {
+		return *this;
+	}
+	method_         = rhs.method_;
+	request_target_ = rhs.request_target_;
+	http_version_   = rhs.http_version_;
+	return *this;
+}
 
 bool RequestLine::operator==(const RequestLine &rhs) const
 {

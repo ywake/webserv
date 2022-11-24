@@ -14,6 +14,12 @@ Result<long>            StrToLongDenyPadZero(const std::string &str);
 // TODO 全部 util
 namespace utils
 {
+	template <typename T>
+	void DeleteSafe(T *&p)
+	{
+		delete p;
+		p = NULL;
+	}
 	std::string             ToLowerString(std::string s);
 	Result<long>            StrToLong(const std::string &str);
 	Result<bool>            IsRegularFile(int fd);
