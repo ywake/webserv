@@ -1,4 +1,5 @@
 #include "requset_holder.hpp"
+#include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "validate_headers.hpp"
@@ -19,14 +20,13 @@ namespace server
 		}
 	}
 
-	Result<void> RequestHolder::DeleteFront()
+	void RequestHolder::DeleteFront()
 	{
 		if (request_queue_.empty()) {
-			return Error("DeleteRequest: empty");
+			log("DeleteRequest: empty");
 		}
 		delete (request_queue_.front().Val());
 		request_queue_.pop_front();
-		return Result<void>();
 	}
 
 	std::size_t RequestHolder::Count()
