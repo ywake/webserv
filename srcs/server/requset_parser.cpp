@@ -65,8 +65,9 @@ namespace server
 		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
 			return kInComplete;
 		}
-		// 末尾消して、RequsetMessage.SetRequsetLine(http::RequsetLine());みたいにする予定
-		// stateの更新
+		buffer_.erase(buffer_.size() - http::kCrLf.size());
+		request_ptr_->SetRequestLine(RequestLine(buffer_));
+		AdvanceState();
 		return kInComplete;
 	}
 
