@@ -101,4 +101,23 @@ namespace server
 		}
 	}
 
+	// トレイラ
+	void RequestParser::AdvanceState()
+	{
+		buffer_ = std::string();
+		switch (state_) {
+		case kStandBy:
+			break;
+		case kStartLine:
+			state_ = kHeader;
+			break;
+		case kHeader:
+			state_ = kBody;
+			break;
+		case kBody:
+			state_ = kStandBy;
+			break;
+		}
+	}
+
 } // namespace server

@@ -50,6 +50,7 @@ namespace server
 		ParseResult ParseHeaderSection(buffer::Buffer &recieved);
 		ParseResult ParseBody(buffer::Buffer &recieved);
 		LoadResult  LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim);
+		void        AdvanceState();
 	};
 } // namespace server
 #endif
