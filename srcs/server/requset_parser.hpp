@@ -35,6 +35,7 @@ namespace server
 		ErrStatus Parse(buffer::Buffer &recieved);
 
 	  private:
+		void CreateRquestMessage(buffer::Buffer &recieved);
 		void ParseStartLine(buffer::Buffer &recieved);
 		void ParseHeaderSection(buffer::Buffer &recieved);
 		void ParseBody(buffer::Buffer &recieved);

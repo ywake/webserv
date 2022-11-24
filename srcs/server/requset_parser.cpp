@@ -11,30 +11,34 @@ namespace server
 	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
 	{
 		try {
-			switch (state_) {
-			case kStandBy:
-				// TODO new requset_msg
-				state_ = kStartLine;
-				/* Falls through. */
-			case kStartLine:
-				ParseStartLine(recieved);
-				break;
-			case kHeader:
-				ParseHeaderSection(recieved);
-				break;
-			case kBody:
-				ParseBody(recieved);
-				break;
-			}
+			CreateRquestMessage(recieved);
 			return ErrStatus();
 		} catch (http::HttpException &e) {
+			utils::DeleteSafe(request_ptr_);
 			request_queue_.push_back(Error());
-			// TODO delete
 			state_ = kStandBy;
 			return ErrStatus(e.GetStatusCode(), Error());
 		}
 	}
 
+	void RequestParser::CreateRquestMessage(buffer::Buffer &recieved)
+	{
+		switch (state_) {
+		case kStandBy:
+			request_ptr_ = new http::RequestMessage();
+			state_       = kStartLine;
+			/* Falls through. */
+		case kStartLine:
+			ParseStartLine(recieved);
+			break;
+		case kHeader:
+			ParseHeaderSection(recieved);
+			break;
+		case kBody:
+			ParseBody(recieved);
+			break;
+		}
+	}
 	// TODO buffer作成部分関数に分けたいかも
 	void RequestParser::ParseStartLine(buffer::Buffer &recieved)
 	{
