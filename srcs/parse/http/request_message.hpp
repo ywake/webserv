@@ -14,12 +14,15 @@ namespace http
 
 	  public:
 		RequestMessage();
+		RequestMessage(const RequestMessage &other);
 		RequestMessage(
 			const RequestLine   &request_line,
 			const HeaderSection &field_lines,
 			const std::string   &message_body
 		);
-		bool operator==(const RequestMessage &rhs) const;
+		~RequestMessage();
+		RequestMessage &operator=(const RequestMessage &rhs);
+		bool            operator==(const RequestMessage &rhs) const;
 	};
 } // namespace http
 #endif
