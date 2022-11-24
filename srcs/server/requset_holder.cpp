@@ -12,6 +12,36 @@ namespace server
 		InitParseContext();
 	}
 
+	RequestHolder::RequestHolder(const RequestHolder &other)
+	{
+		*this = other;
+	}
+
+	RequestHolder &RequestHolder::operator=(const RequestHolder &rhs)
+	{
+		if (this == &rhs) {
+			return *this;
+		}
+		DeleteAll();
+		for (RequestQueue::const_iterator it = rhs.request_queue_.begin();
+			 it != rhs.request_queue_.end();
+			 it++) {
+			request_queue_.push_back(*it);
+		}
+		for (RequestQueue::iterator it = request_queue_.begin(); it != request_queue_.end(); it++) {
+			if (it->Val() == NULL) {
+				continue;
+			}
+			http::RequestMessage *p = new http::RequestMessage();
+			*p                      = *it->Val();
+			it->Val()               = p;
+		}
+		state_        = rhs.state_;
+		loaded_data_  = rhs.loaded_data_;
+		*request_ptr_ = *rhs.request_ptr_;
+		return *this;
+	}
+
 	RequestHolder::~RequestHolder()
 	{
 		delete request_ptr_;

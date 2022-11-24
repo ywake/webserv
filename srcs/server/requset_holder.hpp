@@ -42,12 +42,14 @@ namespace server
 
 	  public:
 		RequestHolder();
+		RequestHolder(const RequestHolder &other);
 		~RequestHolder();
-		ErrStatus   Parse(buffer::Buffer &recieved);
-		void        DeleteFront();
-		void        DeleteAll();
-		std::size_t Count();
-		bool        HasInCompleteData();
+		RequestHolder &operator=(const RequestHolder &rhs);
+		ErrStatus      Parse(buffer::Buffer &recieved);
+		void           DeleteFront();
+		void           DeleteAll();
+		std::size_t    Count();
+		bool           HasInCompleteData();
 
 	  private:
 		void        InitParseContext();
