@@ -13,6 +13,16 @@ namespace http
 		: field_lines_(field_lines), message_body_(message_body)
 	{}
 
+	void HttpMessage::SetHeaderSection(const HeaderSection &field_lines)
+	{
+		field_lines_ = field_lines;
+	}
+
+	void HttpMessage::SetBody(const std::string &body)
+	{
+		message_body_ = body;
+	}
+
 	HttpMessage &HttpMessage::operator=(const HttpMessage &rhs)
 	{
 		if (this == &rhs) {
