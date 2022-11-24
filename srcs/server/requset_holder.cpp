@@ -15,9 +15,7 @@ namespace server
 	RequestHolder::~RequestHolder()
 	{
 		delete request_ptr_;
-		while (!request_queue_.empty()) {
-			DeleteFront();
-		}
+		DeleteAll();
 	}
 
 	void RequestHolder::DeleteFront()
@@ -27,6 +25,13 @@ namespace server
 		}
 		delete (request_queue_.front().Val());
 		request_queue_.pop_front();
+	}
+
+	void RequestHolder::DeleteAll()
+	{
+		while (!request_queue_.empty()) {
+			DeleteFront();
+		}
 	}
 
 	std::size_t RequestHolder::Count()
