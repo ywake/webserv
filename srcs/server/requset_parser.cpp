@@ -7,6 +7,14 @@ namespace server
 {
 	RequestParser::RequestParser() : state_(kStandBy), request_ptr_(NULL) {}
 
+	RequestParser::~RequestParser()
+	{
+		delete request_ptr_;
+		while (!request_queue_.empty()) {
+			DeleteRequest();
+		}
+	}
+
 	Result<void> RequestParser::DeleteRequest()
 	{
 		if (request_queue_.empty()) {
