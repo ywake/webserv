@@ -5,10 +5,6 @@
 
 namespace conf
 {
-	const LocationConf::Redirect  LocationConf::kDefaultRedirect  = LocationConf::Redirect();
-	const LocationConf::Root      LocationConf::kDefaultRoot      = LocationConf::Root();
-	const LocationConf::AutoIndex LocationConf::kDefaultAutoIndex = false;
-	const LocationConf::CgiPath   LocationConf::kDefaultCgiPath   = LocationConf::CgiPath();
 	// AllowMethods({"GET", "POST", "DELETE"})がC++98で使えないので
 	static const char               *kDefaultAllowMethodArray[] = {"GET", "POST", "DELETE"};
 	const LocationConf::AllowMethods LocationConf::kDefaultAllowMethods =
@@ -184,17 +180,11 @@ namespace conf
 
 	const LocationConf::Redirect &LocationConf::GetRedirect() const
 	{
-		if (redirect_.empty()) {
-			return kDefaultRedirect;
-		}
 		return redirect_;
 	}
 
 	const LocationConf::Root &LocationConf::GetRoot() const
 	{
-		if (root_.empty()) {
-			return kDefaultRoot;
-		}
 		return root_;
 	}
 
@@ -208,17 +198,11 @@ namespace conf
 
 	const LocationConf::AutoIndex &LocationConf::GetAutoindex() const
 	{
-		if (autoindex_.empty()) {
-			return kDefaultAutoIndex;
-		}
 		return autoindex_;
 	}
 
 	const LocationConf::CgiPath &LocationConf::GetCgiPath() const
 	{
-		if (cgi_path_.empty()) {
-			return kDefaultCgiPath;
-		}
 		return cgi_path_;
 	}
 

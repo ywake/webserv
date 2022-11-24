@@ -35,13 +35,15 @@ class HeaderSection
 
   public:
 	HeaderSection();
+	HeaderSection(const HeaderSection &other);
 	HeaderSection(const ThinString &str);
 	HeaderSection(const Headers &field_lines);
 
-	bool          operator==(const HeaderSection &rhs) const;
-	bool          operator!=(const HeaderSection &rhs) const;
-	Values       &operator[](const std::string &field_name);
-	const Values &operator[](const std::string &field_name) const;
+	HeaderSection &operator=(const HeaderSection &rhs);
+	bool           operator==(const HeaderSection &rhs) const;
+	bool           operator!=(const HeaderSection &rhs) const;
+	Values        &operator[](const std::string &field_name);
+	const Values  &operator[](const std::string &field_name) const;
 
 	/**
 	 * @exception std::out_of_range

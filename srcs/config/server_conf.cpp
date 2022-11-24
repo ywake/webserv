@@ -221,12 +221,12 @@ namespace conf
 		return error_pages_;
 	}
 
-	const ServerConf::ClientMaxBodySize &ServerConf::GetClientMaxBodySize() const
+	const std::size_t &ServerConf::GetClientMaxBodySize() const
 	{
 		if (client_max_body_size_.empty()) {
-			return kDefaultClientMaxBodySize;
+			return kDefaultClientMaxBodySize.Value();
 		}
-		return client_max_body_size_;
+		return client_max_body_size_.Value();
 	}
 
 	const ServerConf::LocationConfs &ServerConf::GetLocationConfs() const
