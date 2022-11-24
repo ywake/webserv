@@ -17,6 +17,11 @@ namespace http
 		: HttpMessage(field_lines, message_body), request_line_(request_line)
 	{}
 
+	void RequestMessage::SetRequestLine(const RequestLine &request_line)
+	{
+		request_line_ = request_line;
+	}
+
 	RequestMessage &RequestMessage::operator=(const RequestMessage &rhs)
 	{
 		if (this == &rhs) {
