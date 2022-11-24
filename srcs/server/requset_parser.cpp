@@ -1,6 +1,7 @@
 #include "requset_parser.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
+#include "validate_headers.hpp"
 #include "webserv_utils.hpp"
 
 namespace server
@@ -76,8 +77,11 @@ namespace server
 		if (LoadUntillDelim(recieved, http::kEmptyLine) != kParsable) {
 			return kInComplete;
 		}
-		// SetHeaderSection()
-		// stateの更新
+		buffer_.erase(buffer_.size() - http::kCrLf.size());
+		const HeaderSection headers = HeaderSection(buffer_);
+		http::headers::ValidateHeaderSection(headers);
+		request_ptr_->SetHeaderSection(headers);
+		AdvanceState();
 		return request_ptr_->HasMessageBody() ? kInComplete : kComplete;
 	}
 
