@@ -11,7 +11,11 @@ namespace server
 	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
 	{
 		try {
-			CreateRquestMessage(recieved);
+			if (CreateRquestMessage(recieved) == kComplete) {
+				request_queue_.push_back(request_ptr_);
+				request_ptr_ = NULL;
+				state_       = kStandBy;
+			}
 			return ErrStatus();
 		} catch (http::HttpException &e) {
 			utils::DeleteSafe(request_ptr_);
