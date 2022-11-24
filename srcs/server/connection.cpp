@@ -2,6 +2,8 @@
 
 namespace server
 {
+	using namespace event;
+
 	const std::size_t              Connection::kMaxRecverBufSize = 10;
 	const std::size_t              Connection::kMaxSenderBufSize = 10;
 	const conf::VirtualServerConfs Connection::kEmptyConfs       = conf::VirtualServerConfs();
@@ -25,31 +27,31 @@ namespace server
 
 	Connection::~Connection() {}
 
-	event::Instructions Connection::Proceed(const event::Event &event)
+	Instructions Connection::Proceed(const Event &event)
 	{
 		if (event.fd == this->GetFd()) {
 			return CommunicateWithClient(event.event_type);
 		} else {
 		}
-		return event::Instructions();
+		return Instructions();
 	}
 
-	event::Instructions Connection::CommunicateWithClient(uint32_t event_type)
+	Instructions Connection::CommunicateWithClient(uint32_t event_type)
 	{
 		event::Instructions insts;
 
 		if (event_type & event::Event::kRead) {
-			event::Instructions recv_insts = Recieve();
+			Instructions recv_insts = Recieve();
 			insts.splice(insts.end(), recv_insts);
 		}
 		if (event_type & event::Event::kWrite) {
-			event::Instructions send_insts = Send();
+			Instructions send_insts = Send();
 			insts.splice(insts.end(), send_insts);
 		}
 		return insts;
 	}
 
-	event::Instructions Connection::Recieve()
+	Instructions Connection::Recieve()
 	{
 		if (!reciever_.IsEof() && reciever_.size() < kMaxRecverBufSize) {
 			Result<void> res = reciever_.Recv();
@@ -58,12 +60,12 @@ namespace server
 			}
 		}
 		request_holder_.Parse(reciever_);
-		return event::Instructions();
+		return Instructions();
 	}
 
-	event::Instructions Connection::Send()
+	Instructions Connection::Send()
 	{
-		return event::Instructions();
+		return Instructions();
 	}
 
 } // namespace server
