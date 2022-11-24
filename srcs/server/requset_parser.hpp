@@ -36,7 +36,7 @@ namespace server
 
 	  public:
 		RequestParser();
-		ErrStatus Parse(buffer::Buffer &recieved);
+		Result<void> DeleteRequest();
 
 	  private:
 		ParseResult CreateRquestMessage(buffer::Buffer &recieved);

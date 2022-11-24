@@ -7,6 +7,16 @@ namespace server
 {
 	RequestParser::RequestParser() : state_(kStandBy), request_ptr_(NULL) {}
 
+	Result<void> RequestParser::DeleteRequest()
+	{
+		if (request_queue_.empty()) {
+			return Error("DeleteRequest: empty");
+		}
+		delete (request_queue_.front().Val());
+		request_queue_.pop_front();
+		return Result<void>();
+	}
+
 	// TODO msg作成部分関数に分ける、msg完成したらqueueにpush_back、kDoneみたいなstateの追加、
 	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
 	{
