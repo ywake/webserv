@@ -98,6 +98,7 @@ namespace server
 		return request_ptr_->HasMessageBody() ? kInComplete : kComplete;
 	}
 
+	// TODO body
 	RequestHolder::ParseResult RequestHolder::ParseBody(buffer::Buffer &recieved)
 	{
 		(void)recieved;
