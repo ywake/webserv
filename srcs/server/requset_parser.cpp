@@ -26,6 +26,11 @@ namespace server
 		return Result<void>();
 	}
 
+	std::size_t RequestParser::Count()
+	{
+		return request_queue_.size();
+	}
+
 	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
 	{
 		try {

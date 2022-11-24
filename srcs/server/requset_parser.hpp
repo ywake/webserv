@@ -43,6 +43,7 @@ namespace server
 		~RequestParser();
 		ErrStatus    Parse(buffer::Buffer &recieved);
 		Result<void> DeleteRequest();
+		std::size_t  Count();
 
 	  private:
 		ParseResult CreateRquestMessage(buffer::Buffer &recieved);
