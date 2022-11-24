@@ -31,6 +31,11 @@ namespace server
 		return request_queue_.size();
 	}
 
+	bool RequestHolder::HasInCompleteData()
+	{
+		return state_ != kStandBy;
+	}
+
 	RequestHolder::ErrStatus RequestHolder::Parse(buffer::Buffer &recieved)
 	{
 		if (recieved.empty()) {

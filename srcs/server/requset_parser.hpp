@@ -44,6 +44,7 @@ namespace server
 		ErrStatus    Parse(buffer::Buffer &recieved);
 		Result<void> DeleteRequest();
 		std::size_t  Count();
+		bool         HasInCompleteData();
 
 	  private:
 		ParseResult CreateRquestMessage(buffer::Buffer &recieved);
