@@ -1,5 +1,5 @@
-#ifndef FD_HPP
-#define FD_HPP
+#ifndef MANAGED_FD_HPP
+#define MANAGED_FD_HPP
 
 #include <climits>
 #include <map>
