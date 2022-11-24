@@ -6,9 +6,9 @@
 
 namespace server
 {
-	RequestParser::RequestParser() : state_(kStandBy), request_ptr_(NULL) {}
+	RequestHolder::RequestHolder() : state_(kStandBy), request_ptr_(NULL) {}
 
-	RequestParser::~RequestParser()
+	RequestHolder::~RequestHolder()
 	{
 		delete request_ptr_;
 		while (!request_queue_.empty()) {
@@ -16,7 +16,7 @@ namespace server
 		}
 	}
 
-	Result<void> RequestParser::DeleteRequest()
+	Result<void> RequestHolder::DeleteRequest()
 	{
 		if (request_queue_.empty()) {
 			return Error("DeleteRequest: empty");
@@ -26,12 +26,12 @@ namespace server
 		return Result<void>();
 	}
 
-	std::size_t RequestParser::Count()
+	std::size_t RequestHolder::Count()
 	{
 		return request_queue_.size();
 	}
 
-	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
+	RequestHolder::ErrStatus RequestHolder::Parse(buffer::Buffer &recieved)
 	{
 		try {
 			if (CreateRquestMessage(recieved) == kComplete) {
@@ -49,7 +49,7 @@ namespace server
 	}
 
 	// TODO トレイラ無視してる
-	RequestParser::ParseResult RequestParser::CreateRquestMessage(buffer::Buffer &recieved)
+	RequestHolder::ParseResult RequestHolder::CreateRquestMessage(buffer::Buffer &recieved)
 	{
 		switch (state_) {
 		case kStandBy:
@@ -66,7 +66,7 @@ namespace server
 		return kInComplete;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::Buffer &recieved)
+	RequestHolder::ParseResult RequestHolder::ParseStartLine(buffer::Buffer &recieved)
 	{
 		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
 			return kInComplete;
@@ -77,7 +77,7 @@ namespace server
 		return kInComplete;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
+	RequestHolder::ParseResult RequestHolder::ParseHeaderSection(buffer::Buffer &recieved)
 	{
 		if (LoadUntillDelim(recieved, http::kEmptyLine) != kParsable) {
 			return kInComplete;
@@ -90,14 +90,14 @@ namespace server
 		return request_ptr_->HasMessageBody() ? kInComplete : kComplete;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseBody(buffer::Buffer &recieved)
+	RequestHolder::ParseResult RequestHolder::ParseBody(buffer::Buffer &recieved)
 	{
 		(void)recieved;
 		return kComplete;
 	}
 
-	RequestParser::LoadResult
-	RequestParser::LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim)
+	RequestHolder::LoadResult
+	RequestHolder::LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim)
 	{
 		for (;;) {
 			if (recieved.empty()) {
@@ -112,7 +112,7 @@ namespace server
 	}
 
 	// TODO トレイラ
-	void RequestParser::AdvanceState()
+	void RequestHolder::AdvanceState()
 	{
 		buffer_ = std::string();
 		switch (state_) {

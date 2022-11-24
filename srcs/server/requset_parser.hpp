@@ -10,7 +10,7 @@
 
 namespace server
 {
-	class RequestParser
+	class RequestHolder
 	{
 	  private:
 		typedef std::deque<Result<http::RequestMessage *> > RequestQueue;
@@ -39,8 +39,8 @@ namespace server
 		RequestQueue          request_queue_;
 
 	  public:
-		RequestParser();
-		~RequestParser();
+		RequestHolder();
+		~RequestHolder();
 		ErrStatus    Parse(buffer::Buffer &recieved);
 		Result<void> DeleteRequest();
 		std::size_t  Count();
