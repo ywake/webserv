@@ -42,7 +42,7 @@ namespace server
 		RequestHolder();
 		~RequestHolder();
 		ErrStatus    Parse(buffer::Buffer &recieved);
-		Result<void> DeleteRequest();
+		Result<void> DeleteFront();
 		std::size_t  Count();
 		bool         HasInCompleteData();
 

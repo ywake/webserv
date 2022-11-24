@@ -12,11 +12,11 @@ namespace server
 	{
 		delete request_ptr_;
 		while (!request_queue_.empty()) {
-			DeleteRequest();
+			DeleteFront();
 		}
 	}
 
-	Result<void> RequestHolder::DeleteRequest()
+	Result<void> RequestHolder::DeleteFront()
 	{
 		if (request_queue_.empty()) {
 			return Error("DeleteRequest: empty");
