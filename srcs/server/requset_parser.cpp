@@ -21,7 +21,8 @@ namespace server
 		}
 	}
 
-	void RequestParser::CreateRquestMessage(buffer::Buffer &recieved)
+	// TODO トレイラ無視してる
+	RequestParser::ParseResult RequestParser::CreateRquestMessage(buffer::Buffer &recieved)
 	{
 		switch (state_) {
 		case kStandBy:
@@ -29,22 +30,20 @@ namespace server
 			state_       = kStartLine;
 			/* Falls through. */
 		case kStartLine:
-			ParseStartLine(recieved);
-			break;
+			return ParseStartLine(recieved);
 		case kHeader:
-			ParseHeaderSection(recieved);
-			break;
+			return ParseHeaderSection(recieved);
 		case kBody:
-			ParseBody(recieved);
-			break;
+			return ParseBody(recieved);
 		}
+		return kInComplete;
 	}
 	// TODO buffer作成部分関数に分けたいかも
-	void RequestParser::ParseStartLine(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::Buffer &recieved)
 	{
 		for (;;) {
 			if (recieved.empty()) {
-				return;
+				return kInComplete;
 			}
 			Emptiable<char> c = recieved.PopChar();
 			buffer_ += c.Value();
@@ -54,13 +53,14 @@ namespace server
 		}
 		// 末尾消して、RequsetMessage.SetRequsetLine(http::RequsetLine());みたいにする予定
 		// stateの更新
+		return kInComplete;
 	}
 
-	void RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
 	{
 		for (;;) {
 			if (recieved.empty()) {
-				return;
+				return kInComplete;
 			}
 			Emptiable<char> c = recieved.PopChar();
 			buffer_ += c.Value();
@@ -70,10 +70,12 @@ namespace server
 		}
 		// SetHeaderSection()
 		// stateの更新
+		return request_ptr_->HasMessageBody() ? kInComplete : kComplete;
 	}
 
-	void RequestParser::ParseBody(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseBody(buffer::Buffer &recieved)
 	{
 		(void)recieved;
+		return kComplete;
 	}
 } // namespace server

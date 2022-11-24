@@ -23,6 +23,10 @@ namespace server
 			kHeader,
 			kBody
 		};
+		enum ParseResult {
+			kComplete,
+			kInComplete
+		};
 
 	  private:
 		std::string           buffer_;
@@ -35,10 +39,10 @@ namespace server
 		ErrStatus Parse(buffer::Buffer &recieved);
 
 	  private:
-		void CreateRquestMessage(buffer::Buffer &recieved);
-		void ParseStartLine(buffer::Buffer &recieved);
-		void ParseHeaderSection(buffer::Buffer &recieved);
-		void ParseBody(buffer::Buffer &recieved);
+		ParseResult CreateRquestMessage(buffer::Buffer &recieved);
+		ParseResult ParseStartLine(buffer::Buffer &recieved);
+		ParseResult ParseHeaderSection(buffer::Buffer &recieved);
+		ParseResult ParseBody(buffer::Buffer &recieved);
 	};
 } // namespace server
 #endif
