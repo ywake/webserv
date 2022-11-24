@@ -60,18 +60,10 @@ namespace server
 		return kInComplete;
 	}
 
-	// TODO buffer作成部分関数に分けたいかも
 	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::Buffer &recieved)
 	{
-		for (;;) {
-			if (recieved.empty()) {
-				return kInComplete;
-			}
-			Emptiable<char> c = recieved.PopChar();
-			buffer_ += c.Value();
-			if (utils::EndWith(buffer_, http::kCrLf)) {
-				break;
-			}
+		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
+			return kInComplete;
 		}
 		// 末尾消して、RequsetMessage.SetRequsetLine(http::RequsetLine());みたいにする予定
 		// stateの更新
@@ -80,15 +72,8 @@ namespace server
 
 	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
 	{
-		for (;;) {
-			if (recieved.empty()) {
-				return kInComplete;
-			}
-			Emptiable<char> c = recieved.PopChar();
-			buffer_ += c.Value();
-			if (utils::EndWith(buffer_, http::kEmptyLine)) {
-				break;
-			}
+		if (LoadUntillDelim(recieved, http::kEmptyLine) != kParsable) {
+			return kInComplete;
 		}
 		// SetHeaderSection()
 		// stateの更新
@@ -100,4 +85,20 @@ namespace server
 		(void)recieved;
 		return kComplete;
 	}
+
+	RequestParser::LoadResult
+	RequestParser::LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim)
+	{
+		for (;;) {
+			if (recieved.empty()) {
+				return kNonParsable;
+			}
+			Emptiable<char> c = recieved.PopChar();
+			buffer_ += c.Value();
+			if (utils::EndWith(buffer_, delim)) {
+				return kParsable;
+			}
+		}
+	}
+
 } // namespace server

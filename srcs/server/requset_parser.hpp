@@ -27,6 +27,10 @@ namespace server
 			kComplete,
 			kInComplete
 		};
+		enum LoadResult {
+			kParsable,
+			kNonParsable
+		};
 
 	  private:
 		std::string           buffer_;
@@ -45,6 +49,7 @@ namespace server
 		ParseResult ParseStartLine(buffer::Buffer &recieved);
 		ParseResult ParseHeaderSection(buffer::Buffer &recieved);
 		ParseResult ParseBody(buffer::Buffer &recieved);
+		LoadResult  LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim);
 	};
 } // namespace server
 #endif
