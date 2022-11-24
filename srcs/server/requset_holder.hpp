@@ -43,10 +43,10 @@ namespace server
 	  public:
 		RequestHolder();
 		~RequestHolder();
-		ErrStatus    Parse(buffer::Buffer &recieved);
+		ErrStatus   Parse(buffer::Buffer &recieved);
 		void        DeleteFront();
-		std::size_t  Count();
-		bool         HasInCompleteData();
+		std::size_t Count();
+		bool        HasInCompleteData();
 
 	  private:
 		void        InitParseContext();
