@@ -45,13 +45,13 @@ namespace server
 			if (CreateRquestMessage(recieved) == kComplete) {
 				request_queue_.push_back(request_ptr_);
 				request_ptr_ = NULL;
-				state_       = kStandBy;
+				SetStateAndClearBuf(kStandBy);
 			}
 			return ErrStatus();
 		} catch (http::HttpException &e) {
 			utils::DeleteSafe(request_ptr_);
 			request_queue_.push_back(Error());
-			state_ = kStandBy;
+			SetStateAndClearBuf(kStandBy);
 			return ErrStatus(e.GetStatusCode(), Error());
 		}
 	}
@@ -62,7 +62,7 @@ namespace server
 		switch (state_) {
 		case kStandBy:
 			request_ptr_ = new http::RequestMessage();
-			state_       = kStartLine;
+			SetStateAndClearBuf(kStartLine);
 			/* Falls through. */
 		case kStartLine:
 			return ParseStartLine(recieved);
@@ -81,7 +81,7 @@ namespace server
 		}
 		buffer_.erase(buffer_.size() - http::kCrLf.size());
 		request_ptr_->SetRequestLine(RequestLine(buffer_));
-		AdvanceState();
+		SetStateAndClearBuf(kHeader);
 		return kInComplete;
 	}
 
@@ -94,7 +94,7 @@ namespace server
 		const HeaderSection headers = HeaderSection(buffer_);
 		http::headers::ValidateHeaderSection(headers);
 		request_ptr_->SetHeaderSection(headers);
-		AdvanceState();
+		SetStateAndClearBuf(kBody);
 		return request_ptr_->HasMessageBody() ? kInComplete : kComplete;
 	}
 
@@ -120,23 +120,10 @@ namespace server
 		}
 	}
 
-	// TODO トレイラ
-	void RequestHolder::AdvanceState()
+	void RequestHolder::SetStateAndClearBuf(State new_state)
 	{
 		buffer_ = std::string();
-		switch (state_) {
-		case kStandBy:
-			break;
-		case kStartLine:
-			state_ = kHeader;
-			break;
-		case kHeader:
-			state_ = kBody;
-			break;
-		case kBody:
-			state_ = kStandBy;
-			break;
-		}
+		state_  = new_state;
 	}
 
 } // namespace server
