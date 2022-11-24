@@ -6,7 +6,10 @@
 
 namespace server
 {
-	RequestHolder::RequestHolder() : state_(kStandBy), request_ptr_(NULL) {}
+	RequestHolder::RequestHolder() : request_queue_()
+	{
+		InitParseContext();
+	}
 
 	RequestHolder::~RequestHolder()
 	{
@@ -36,6 +39,13 @@ namespace server
 		return state_ != kStandBy;
 	}
 
+	void RequestHolder::InitParseContext()
+	{
+		buffer_      = std::string();
+		state_       = kStandBy;
+		request_ptr_ = new http::RequestMessage();
+	}
+
 	RequestHolder::ErrStatus RequestHolder::Parse(buffer::Buffer &recieved)
 	{
 		if (recieved.empty()) {
@@ -45,13 +55,13 @@ namespace server
 			if (CreateRquestMessage(recieved) == kComplete) {
 				request_queue_.push_back(request_ptr_);
 				request_ptr_ = NULL;
-				SetStateAndClearBuf(kStandBy);
+				InitParseContext();
 			}
 			return ErrStatus();
 		} catch (http::HttpException &e) {
-			utils::DeleteSafe(request_ptr_);
 			request_queue_.push_back(Error());
-			SetStateAndClearBuf(kStandBy);
+			utils::DeleteSafe(request_ptr_);
+			InitParseContext();
 			return ErrStatus(e.GetStatusCode(), Error());
 		}
 	}
@@ -61,7 +71,6 @@ namespace server
 	{
 		switch (state_) {
 		case kStandBy:
-			request_ptr_ = new http::RequestMessage();
 			SetStateAndClearBuf(kStartLine);
 			/* Falls through. */
 		case kStartLine:

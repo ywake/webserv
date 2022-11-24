@@ -49,6 +49,7 @@ namespace server
 		bool         HasInCompleteData();
 
 	  private:
+		void        InitParseContext();
 		ParseResult CreateRquestMessage(buffer::Buffer &recieved);
 		ParseResult ParseStartLine(buffer::Buffer &recieved);
 		ParseResult ParseHeaderSection(buffer::Buffer &recieved);
