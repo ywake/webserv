@@ -15,7 +15,7 @@
 #include "managed_fd.hpp"
 #include "reciever.hpp"
 #include "request_message.hpp"
-#include "requset_parser.hpp"
+#include "requset_holder.hpp"
 #include "socket.hpp"
 #include "status_code.hpp"
 
@@ -43,7 +43,7 @@ namespace server
 		const conf::VirtualServerConfs &configs_;
 		const SockAddrStorage           client_;
 		Reciever                        reciever_;
-		RequestParser                   request_parser_;
+		RequestHolder                   request_holder_;
 		// State                           state_;
 		// Sender						 *sender_;
 
