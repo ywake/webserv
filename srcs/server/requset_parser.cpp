@@ -25,7 +25,6 @@ namespace server
 		return Result<void>();
 	}
 
-	// TODO msg作成部分関数に分ける、msg完成したらqueueにpush_back、kDoneみたいなstateの追加、
 	RequestParser::ErrStatus RequestParser::Parse(buffer::Buffer &recieved)
 	{
 		try {
@@ -60,6 +59,7 @@ namespace server
 		}
 		return kInComplete;
 	}
+
 	// TODO buffer作成部分関数に分けたいかも
 	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::Buffer &recieved)
 	{
