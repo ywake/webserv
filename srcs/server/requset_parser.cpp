@@ -33,6 +33,9 @@ namespace server
 
 	RequestHolder::ErrStatus RequestHolder::Parse(buffer::Buffer &recieved)
 	{
+		if (recieved.empty()) {
+			return ErrStatus();
+		}
 		try {
 			if (CreateRquestMessage(recieved) == kComplete) {
 				request_queue_.push_back(request_ptr_);
