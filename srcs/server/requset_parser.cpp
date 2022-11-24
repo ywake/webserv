@@ -106,7 +106,7 @@ namespace server
 		}
 	}
 
-	// トレイラ
+	// TODO トレイラ
 	void RequestParser::AdvanceState()
 	{
 		buffer_ = std::string();
