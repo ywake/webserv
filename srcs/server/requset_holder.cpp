@@ -46,7 +46,7 @@ namespace server
 
 	void RequestHolder::InitParseContext()
 	{
-		buffer_      = std::string();
+		loaded_data_ = std::string();
 		state_       = kStandBy;
 		request_ptr_ = new http::RequestMessage();
 	}
@@ -93,8 +93,8 @@ namespace server
 		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
 			return kInComplete;
 		}
-		buffer_.erase(buffer_.size() - http::kCrLf.size());
-		request_ptr_->SetRequestLine(RequestLine(buffer_));
+		loaded_data_.erase(loaded_data_.size() - http::kCrLf.size());
+		request_ptr_->SetRequestLine(RequestLine(loaded_data_));
 		SetStateAndClearBuf(kHeader);
 		return kInComplete;
 	}
@@ -104,8 +104,8 @@ namespace server
 		if (LoadUntillDelim(recieved, http::kEmptyLine) != kParsable) {
 			return kInComplete;
 		}
-		buffer_.erase(buffer_.size() - http::kCrLf.size());
-		const HeaderSection headers = HeaderSection(buffer_);
+		loaded_data_.erase(loaded_data_.size() - http::kCrLf.size());
+		const HeaderSection headers = HeaderSection(loaded_data_);
 		http::headers::ValidateHeaderSection(headers);
 		request_ptr_->SetHeaderSection(headers);
 		SetStateAndClearBuf(kBody);
@@ -127,8 +127,8 @@ namespace server
 				return kNonParsable;
 			}
 			Emptiable<char> c = recieved.PopChar();
-			buffer_ += c.Value();
-			if (utils::EndWith(buffer_, delim)) {
+			loaded_data_ += c.Value();
+			if (utils::EndWith(loaded_data_, delim)) {
 				return kParsable;
 			}
 		}
@@ -136,8 +136,8 @@ namespace server
 
 	void RequestHolder::SetStateAndClearBuf(State new_state)
 	{
-		buffer_ = std::string();
-		state_  = new_state;
+		loaded_data_ = std::string();
+		state_       = new_state;
 	}
 
 } // namespace server

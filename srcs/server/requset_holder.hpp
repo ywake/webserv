@@ -35,7 +35,7 @@ namespace server
 		};
 
 	  private:
-		std::string           buffer_;
+		std::string           loaded_data_;
 		State                 state_;
 		http::RequestMessage *request_ptr_;
 		RequestQueue          request_queue_;
