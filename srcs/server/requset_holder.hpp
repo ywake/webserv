@@ -12,9 +12,11 @@ namespace server
 {
 	class RequestHolder
 	{
+	  public:
+		typedef Result<http::StatusCode> ErrStatus;
+
 	  private:
 		typedef std::deque<Result<http::RequestMessage *> > RequestQueue;
-		typedef Result<http::StatusCode>                    ErrStatus;
 
 	  private:
 		enum State {
