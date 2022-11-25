@@ -16,11 +16,14 @@ namespace server
 		};
 
 	  private:
-		const http::RequestMessage *request_msg_;
-		http::StatusCode            error_code_;
-		ErrorType                   error_type_;
+		static const http::RequestMessage kEmptyMessage;
+		const http::RequestMessage       *request_msg_;
+		http::StatusCode                  error_code_;
+		ErrorType                         error_type_;
 
 	  public:
+		Request();
+		Request(const Request &other);
 		Request(const http::RequestMessage *request_msg);
 		Request(const http::StatusCode &error_code, ErrorType error_type);
 		void SetError(const http::StatusCode &error_code, ErrorType error_type);
