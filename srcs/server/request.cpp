@@ -1,9 +1,8 @@
-#include "request.hpp"
+#include <cassert>
 
+#include "request.hpp"
 namespace server
 {
-	const http::RequestMessage Request::kEmptyMessage = http::RequestMessage();
-
 	Request::Request(
 		const http::RequestMessage *request_msg,
 		const http::StatusCode     &error_code,
@@ -40,9 +39,7 @@ namespace server
 
 	const http::RequestMessage &Request::GetMessage() const
 	{
-		if (request_msg_ == NULL) {
-			return kEmptyMessage;
-		}
+		assert(request_msg_ != NULL);
 		return *request_msg_;
 	}
 

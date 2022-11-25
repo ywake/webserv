@@ -10,10 +10,9 @@ namespace server
 	class Request : public IRequest
 	{
 	  public:
-		static const http::RequestMessage kEmptyMessage;
-		const http::RequestMessage       *request_msg_;
-		http::StatusCode                  error_code_;
-		ErrorType                         error_type_;
+		const http::RequestMessage *request_msg_;
+		http::StatusCode            error_code_;
+		ErrorType                   error_type_;
 
 	  public:
 		Request(
