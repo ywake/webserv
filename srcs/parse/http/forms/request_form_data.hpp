@@ -15,12 +15,12 @@ class RequestFormData
 	std::string query_;
 
 	RequestFormData(
-		std::string &scheme,
-		std::string &userinfo,
-		std::string &host,
-		std::string &port,
-		std::string &path,
-		std::string &query
+		const std::string &scheme,
+		const std::string &userinfo,
+		const std::string &host,
+		const std::string &port,
+		const std::string &path,
+		const std::string &query
 	);
 
 	RequestFormData(
