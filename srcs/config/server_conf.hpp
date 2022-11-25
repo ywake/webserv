@@ -24,6 +24,7 @@ namespace conf
 		typedef std::map<StatusCode, Path> ErrorPages;
 		typedef Emptiable<std::size_t>     ClientMaxBodySize;
 		typedef std::vector<LocationConf>  LocationConfs;
+		typedef Emptiable<Path>            Root;
 
 	  private:
 		ListenPort        listen_port_;
@@ -31,6 +32,7 @@ namespace conf
 		ErrorPages        error_pages_;
 		ClientMaxBodySize client_max_body_size_;
 		LocationConfs     location_confs_;
+		Root              root_;
 
 	  private:
 		static const ListenPort        kDefaultListenPort;
@@ -41,6 +43,7 @@ namespace conf
 
 	  public:
 		ServerConf(
+			Root              root                 = Root(),
 			ListenPort        listen_port          = ListenPort(),
 			ServerName        server_name          = ServerName(),
 			ErrorPages        error_pages          = ErrorPages(),
@@ -49,19 +52,27 @@ namespace conf
 		);
 		~ServerConf();
 
+		// Setters
 		void SetParams(const std::vector<ThinString> &params);
 		void AddListenPort(const std::vector<ThinString> &tokens);
 		void AddServerName(const std::vector<ThinString> &tokens);
 		void AddErrorPages(const std::vector<ThinString> &tokens);
 		void AddClientMaxBodySize(const std::vector<ThinString> &tokens);
 		void AddLocation(const ThinString &location, const std::vector<ThinString> &params);
+		void AddRoot(const std::vector<ThinString> &tokens);
 
+		// Getters
 		const ListenPort    &GetListenPort() const;
 		const ServerName    &GetServerName() const;
 		const ErrorPages    &GetErrorPages() const;
 		const std::size_t   &GetClientMaxBodySize() const;
 		const LocationConfs &GetLocationConfs() const;
+		const Path          &GetRoot(Path uri_path) const;
 
+		// Methods
+		Result<const LocationConf &> FindMatchingLocationConf(Path uri_path) const;
+
+		// Operators
 		bool operator==(const ServerConf &rhs) const;
 		bool operator!=(const ServerConf &rhs) const;
 	};
