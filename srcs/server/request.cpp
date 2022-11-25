@@ -50,4 +50,10 @@ namespace server
 	{
 		return error_code_;
 	}
+
+	const Request::ErrorType &Request::GetErrorType() const
+	{
+		return error_type_;
+	}
+
 } // namespace server
