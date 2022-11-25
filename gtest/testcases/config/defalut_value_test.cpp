@@ -16,7 +16,9 @@ TEST(config, default_server_conf)
 // location
 TEST(config, default_location_conf)
 {
-	conf::LocationConf location_conf("/", conf::LocationConf::MatchPattern::kPrefix);
+	conf::LocationConf location_conf(conf::LocationConf::PathPattern("/"));
+	EXPECT_EQ(location_conf.GetPathPattern(), conf::Path("/"));
+	EXPECT_EQ(location_conf.GetMatchPattern(), conf::LocationConf::MatchPattern::kPrefix);
 	EXPECT_EQ(
 		location_conf.GetAllowMethods(), conf::LocationConf::AllowMethods({"GET", "POST", "DELETE"})
 	);

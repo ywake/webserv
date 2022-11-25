@@ -8,12 +8,14 @@ TEST(config, error_page)
 {
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "error_page 404 /404.html;"
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80"}),
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(std::map<conf::StatusCode, conf::Path>({
@@ -24,6 +26,7 @@ TEST(config, error_page)
 	);
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "error_page 404 /404.html;"
@@ -31,6 +34,7 @@ TEST(config, error_page)
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80"}),
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages({
@@ -42,6 +46,7 @@ TEST(config, error_page)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "error_page 404;"
@@ -50,6 +55,7 @@ TEST(config, error_page)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "error_page 404 /404.html 404;"
@@ -58,6 +64,7 @@ TEST(config, error_page)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "error_page 40a /404.html;"
@@ -66,6 +73,7 @@ TEST(config, error_page)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "error_page 4040 /404.html;"
@@ -74,6 +82,7 @@ TEST(config, error_page)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "error_page   ;"

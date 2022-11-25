@@ -9,6 +9,7 @@ TEST(config, server_confs)
 {
 	conf::ServerConfs::ConfsStore store1 = {
 		conf::ServerConf(
+			conf::ServerConf::Root("/var/www"),
 			conf::ServerConf::ListenPort({"80"}),
 			conf::ServerConf::ServerName({"localhost"}),
 			conf::ServerConf::ErrorPages(),
@@ -36,6 +37,7 @@ TEST(config, server_confs)
 			})
 		),
 		conf::ServerConf(
+			conf::ServerConf::Root("/var/www2"),
 			conf::ServerConf::ListenPort({"8080"}),
 			conf::ServerConf::ServerName({"example.com"}),
 			conf::ServerConf::ErrorPages(),
@@ -56,6 +58,7 @@ TEST(config, server_confs)
 
 	EXPECT_EQ(
 		conf::ServerConfs("server {"
+						  "root /var/www;"
 						  "listen 80;"
 						  "server_name localhost;"
 						  "location / {"
@@ -69,6 +72,7 @@ TEST(config, server_confs)
 						  "}"
 						  "}"
 						  "server {"
+						  "root /var/www2;"
 						  "listen 8080;"
 						  "server_name example.com;"
 						  "location / {"

@@ -8,22 +8,27 @@ TEST(config, listen)
 {
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
-				conf::ServerConf::ListenPort({"80"}), conf::ServerConf::ServerName({"localhost"})
+				conf::ServerConf::Root("/var/www"),
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"})
 			),
 		})
 	);
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80 80;"
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80", "80"}),
 				conf::ServerConf::ServerName({"localhost"})
 			),
@@ -31,12 +36,14 @@ TEST(config, listen)
 	);
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "listen 8080;"
 							  "server_name localhost;"
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80", "8080"}),
 				conf::ServerConf::ServerName({"localhost"})
 			),
@@ -44,6 +51,7 @@ TEST(config, listen)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen ;"
 							  "server_name localhost;"
 							  "}"),
@@ -51,6 +59,7 @@ TEST(config, listen)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen  ;"
 							  "server_name localhost;"
 							  "}"),
@@ -58,6 +67,7 @@ TEST(config, listen)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80a;"
 							  "server_name localhost;"
 							  "}"),
