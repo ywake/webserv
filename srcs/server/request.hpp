@@ -22,9 +22,12 @@ namespace server
 		ErrorType                         error_type_;
 
 	  public:
-		Request();
+		Request(
+			const http::RequestMessage *request_msg = NULL,
+			const http::StatusCode     &error_code  = http::StatusCode(),
+			ErrorType                   error_type  = kNotError
+		);
 		Request(const Request &other);
-		Request(const http::RequestMessage *request_msg);
 		Request(const http::StatusCode &error_code, ErrorType error_type);
 		void SetError(const http::StatusCode &error_code, ErrorType error_type);
 		bool IsErr() const;
