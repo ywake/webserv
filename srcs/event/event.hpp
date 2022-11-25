@@ -6,6 +6,8 @@
 #include <stdint.h>
 namespace event
 {
+	typedef struct Event     Event;
+	typedef std::list<Event> Events;
 	typedef struct Event {
 		enum EventType {
 			kWrite = 1U << 0,
@@ -16,8 +18,6 @@ namespace event
 		uint32_t              event_type;
 		static const uint32_t kEmpty = 0;
 	} Event;
-
-	typedef std::list<Event> Events;
 } // namespace event
 
 std::ostream &operator<<(std::ostream &os, const event::Event &event);
