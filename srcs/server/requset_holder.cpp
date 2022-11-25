@@ -74,6 +74,15 @@ namespace server
 		return state_ != kStandBy;
 	}
 
+	void RequestHolder::OnEof()
+	{
+		if (HasInCompleteData()) {
+			request_queue_.push_back(Request(http::StatusCode::kBadRequest, Request::kFatal));
+			utils::DeleteSafe(request_ptr_);
+			InitParseContext();
+		}
+	}
+
 	void RequestHolder::InitParseContext()
 	{
 		loaded_data_ = std::string();

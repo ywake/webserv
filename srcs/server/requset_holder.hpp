@@ -47,6 +47,7 @@ namespace server
 		void           DeleteAll();
 		std::size_t    Count();
 		bool           HasInCompleteData();
+		void           OnEof();
 
 	  private:
 		void        InitParseContext();
