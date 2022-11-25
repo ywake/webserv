@@ -7,20 +7,20 @@
 class RequestFormData
 {
   public:
-	ThinString scheme_;
-	ThinString userinfo_;
-	ThinString host_;
-	ThinString port_;
-	ThinString path_;
-	ThinString query_;
+	std::string scheme_;
+	std::string userinfo_;
+	std::string host_;
+	std::string port_;
+	std::string path_;
+	std::string query_;
 
 	RequestFormData(
-		ThinString &scheme,
-		ThinString &userinfo,
-		ThinString &host,
-		ThinString &port,
-		ThinString &path,
-		ThinString &query
+		const std::string &scheme,
+		const std::string &userinfo,
+		const std::string &host,
+		const std::string &port,
+		const std::string &path,
+		const std::string &query
 	);
 
 	RequestFormData(
@@ -34,8 +34,6 @@ class RequestFormData
 
 	RequestFormData &operator=(const RequestFormData &other);
 	bool             operator==(const RequestFormData &rhs) const;
-
-	static RequestFormData ConstructFromOrigin(ThinString origin_form);
 };
 
 std::ostream &operator<<(std::ostream &os, const RequestFormData &uri);

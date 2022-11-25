@@ -15,12 +15,12 @@ RequestTarget::RequestTarget() : form_data_() {}
 
 RequestTarget::RequestTarget(const ITargetForm &form)
 {
-	form_data_.scheme_	 = form.GetScheme();
-	form_data_.userinfo_ = form.GetUserinfo();
-	form_data_.host_	 = form.GetHost();
-	form_data_.port_	 = form.GetPort();
-	form_data_.path_	 = form.GetPath();
-	form_data_.query_	 = form.GetQuery();
+	form_data_.scheme_   = form.GetScheme().ToString();
+	form_data_.userinfo_ = form.GetUserinfo().ToString();
+	form_data_.host_     = form.GetHost().ToString();
+	form_data_.port_     = form.GetPort().ToString();
+	form_data_.path_     = form.GetPath().ToString();
+	form_data_.query_    = form.GetQuery().ToString();
 }
 
 RequestTarget::RequestTarget(RequestFormData request_target) : form_data_(request_target) {}
