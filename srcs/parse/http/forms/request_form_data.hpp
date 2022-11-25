@@ -34,8 +34,6 @@ class RequestFormData
 
 	RequestFormData &operator=(const RequestFormData &other);
 	bool             operator==(const RequestFormData &rhs) const;
-
-	static RequestFormData ConstructFromOrigin(ThinString origin_form);
 };
 
 std::ostream &operator<<(std::ostream &os, const RequestFormData &uri);

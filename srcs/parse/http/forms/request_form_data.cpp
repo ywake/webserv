@@ -22,16 +22,6 @@ RequestFormData::RequestFormData(
 	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query)
 {}
 
-// URI URI::ConstructFromOrigin(ThinString origin_form)
-// {
-// 	URI uri();
-// 	// uri.scheme = "";
-// 	// uri.HierPart = HierPart();
-// 	// uri.query = ();
-// 	// uri.fragment = ();
-// 	return uri;
-// }
-
 RequestFormData &RequestFormData::operator=(const RequestFormData &other)
 {
 	if (this == &other) {
