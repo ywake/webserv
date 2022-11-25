@@ -8,6 +8,7 @@ namespace sever
 {
 	class Request
 	{
+	  public:
 		enum ErrorType {
 			kNotError,
 			kRecoverable,
