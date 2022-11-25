@@ -1,12 +1,12 @@
 #include "request_form_data.hpp"
 
 RequestFormData::RequestFormData(
-	ThinString &scheme,
-	ThinString &userinfo,
-	ThinString &host,
-	ThinString &port,
-	ThinString &path,
-	ThinString &query
+	std::string &scheme,
+	std::string &userinfo,
+	std::string &host,
+	std::string &port,
+	std::string &path,
+	std::string &query
 )
 	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query)
 {}

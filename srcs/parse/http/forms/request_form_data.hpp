@@ -7,20 +7,20 @@
 class RequestFormData
 {
   public:
-	ThinString scheme_;
-	ThinString userinfo_;
-	ThinString host_;
-	ThinString port_;
-	ThinString path_;
-	ThinString query_;
+	std::string scheme_;
+	std::string userinfo_;
+	std::string host_;
+	std::string port_;
+	std::string path_;
+	std::string query_;
 
 	RequestFormData(
-		ThinString &scheme,
-		ThinString &userinfo,
-		ThinString &host,
-		ThinString &port,
-		ThinString &path,
-		ThinString &query
+		std::string &scheme,
+		std::string &userinfo,
+		std::string &host,
+		std::string &port,
+		std::string &path,
+		std::string &query
 	);
 
 	RequestFormData(
