@@ -58,6 +58,7 @@ namespace conf
 				throw ConfigException("Invalid server config: invalid directive");
 			}
 		}
+		// TODO ここのエラー処理どこでやるべきか考えたいかも
 		if (root_.empty()) {
 			throw ConfigException("Invalid server config: root is not set");
 		}
