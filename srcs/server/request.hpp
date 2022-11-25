@@ -35,6 +35,7 @@ namespace server
 
 		const http::RequestMessage &GetMessage() const;
 		const http::StatusCode     &GetErrStatusCode() const;
+		const ErrorType            &GetErrorType() const;
 	};
 } // namespace server
 
