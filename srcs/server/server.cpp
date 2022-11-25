@@ -24,9 +24,9 @@ namespace server
 			if (listen_result.IsErr()) {
 				return listen_result.Err();
 			}
-			uint32_t     event_type     = Event::kWrite | Event::kRead;
-			Event        ev             = {it->GetFd(), &*it, event_type};
-			Instruction  instruction    = {Instruction::kRegister, ev};
+			Instruction instruction = Instruction(
+				Instruction::kRegister, it->GetFd(), Event::kWrite | Event::kRead, &*it
+			);
 			Result<void> intruct_result = io_monitor_.Instruct(instruction);
 			if (intruct_result.IsErr()) {
 				return intruct_result.Err();
@@ -73,7 +73,7 @@ namespace server
 		return insts;
 	}
 
-	event::Instructions Server::Accept(const Listener *listener)
+	Instructions Server::Accept(const Listener *listener)
 	{
 		typedef std::pair<server::Server::Connections::iterator, bool> Position;
 
@@ -84,11 +84,11 @@ namespace server
 			std::cerr << res.Err() << std::endl;
 			return insts;
 		}
-		Position    pos         = connections_.insert(res.Val());
-		Connection *conn_ptr    = const_cast<Connection *>(&*pos.first);
-		Event       ev          = {conn_ptr->GetFd(), conn_ptr, Event::kRead};
-		Instruction Instruction = {Instruction::kRegister, ev};
-		insts.push_back(Instruction);
+		Position    pos      = connections_.insert(res.Val());
+		Connection *conn_ptr = const_cast<Connection *>(&*pos.first);
+		Instruction instruction =
+			Instruction(Instruction::kRegister, conn_ptr->GetFd(), Event::kRead, conn_ptr);
+		insts.push_back(instruction);
 		return insts;
 	}
 
