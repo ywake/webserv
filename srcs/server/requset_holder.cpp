@@ -87,7 +87,7 @@ namespace server
 			return ErrStatus();
 		}
 		try {
-			if (CreateRquestMessage(recieved) == kComplete) {
+			if (CreateRequestMessage(recieved) == kComplete) {
 				request_queue_.push_back(request_ptr_);
 				request_ptr_ = NULL;
 				InitParseContext();
@@ -102,7 +102,7 @@ namespace server
 	}
 
 	// TODO トレイラ無視してる
-	RequestHolder::ParseResult RequestHolder::CreateRquestMessage(buffer::Buffer &recieved)
+	RequestHolder::ParseResult RequestHolder::CreateRequestMessage(buffer::Buffer &recieved)
 	{
 		switch (state_) {
 		case kStandBy:

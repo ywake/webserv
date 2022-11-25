@@ -53,7 +53,7 @@ namespace server
 
 	  private:
 		void        InitParseContext();
-		ParseResult CreateRquestMessage(buffer::Buffer &recieved);
+		ParseResult CreateRequestMessage(buffer::Buffer &recieved);
 		ParseResult ParseStartLine(buffer::Buffer &recieved);
 		ParseResult ParseHeaderSection(buffer::Buffer &recieved);
 		ParseResult ParseBody(buffer::Buffer &recieved);
