@@ -4,7 +4,7 @@
 #include "request_message.hpp"
 #include "status_code.hpp"
 
-namespace sever
+namespace server
 {
 	class Request
 	{
@@ -30,6 +30,6 @@ namespace sever
 		const http::RequestMessage &GetMessage() const;
 		const http::StatusCode     &GetErrStatusCode() const;
 	};
-} // namespace sever
+} // namespace server
 
 #endif

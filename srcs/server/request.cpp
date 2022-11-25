@@ -1,6 +1,6 @@
 #include "request.hpp"
 
-namespace sever
+namespace server
 {
 	Request::Request(const http::RequestMessage *request_msg)
 		: request_msg_(request_msg), error_code_(), error_type_(kNotError)
@@ -35,4 +35,4 @@ namespace sever
 	{
 		return error_code_;
 	}
-} // namespace sever
+} // namespace server
