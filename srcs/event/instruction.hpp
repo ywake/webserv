@@ -8,7 +8,9 @@
 // TODO 名前空間変えた方がいいかも
 namespace event
 {
-	typedef struct Instruction {
+	class Instruction
+	{
+	  public:
 		enum Command {
 			kAppendEventType,
 			kTrimEventType,
@@ -17,7 +19,13 @@ namespace event
 		};
 		Command command;
 		Event   event;
-	} Instruction;
+		Instruction(
+			Command  command    = kAppendEventType,
+			int      fd         = -1,
+			uint32_t event_type = Event::kEmpty,
+			void    *data       = NULL
+		);
+	};
 
 	typedef std::list<Instruction> Instructions;
 } // namespace event
