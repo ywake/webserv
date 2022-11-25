@@ -4,7 +4,7 @@
 #include <deque>
 
 #include "buffer.hpp"
-#include "request_message.hpp"
+#include "request.hpp"
 #include "result.hpp"
 #include "status_code.hpp"
 
@@ -12,11 +12,8 @@ namespace server
 {
 	class RequestHolder
 	{
-	  public:
-		typedef Result<http::StatusCode> ErrStatus;
-
 	  private:
-		typedef std::deque<Result<http::RequestMessage *> > RequestQueue;
+		typedef std::deque<Request> RequestQueue;
 
 	  private:
 		enum State {
@@ -45,7 +42,7 @@ namespace server
 		RequestHolder(const RequestHolder &other);
 		~RequestHolder();
 		RequestHolder &operator=(const RequestHolder &rhs);
-		ErrStatus      Parse(buffer::Buffer &recieved);
+		void           Parse(buffer::Buffer &recieved);
 		void           DeleteFront();
 		void           DeleteAll();
 		std::size_t    Count();

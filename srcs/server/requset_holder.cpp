@@ -26,15 +26,15 @@ namespace server
 		for (RequestQueue::const_iterator it = rhs.request_queue_.begin();
 			 it != rhs.request_queue_.end();
 			 it++) {
-			request_queue_.push_back(*it);
-		}
-		for (RequestQueue::iterator it = request_queue_.begin(); it != request_queue_.end(); it++) {
-			if (it->Val() == NULL) {
-				continue;
+			if (it->IsErr()) {
+				request_queue_.push_back(Request(it->GetErrStatusCode(), it->GetErrorType()));
+			} else {
+				request_queue_.push_back(Request(
+					new http::RequestMessage(it->GetMessage()),
+					it->GetErrStatusCode(),
+					it->GetErrorType()
+				));
 			}
-			http::RequestMessage *p = new http::RequestMessage();
-			*p                      = *it->Val();
-			it->Val()               = p;
 		}
 		state_        = rhs.state_;
 		loaded_data_  = rhs.loaded_data_;
@@ -53,7 +53,7 @@ namespace server
 		if (request_queue_.empty()) {
 			log("DeleteRequest: empty");
 		}
-		delete (request_queue_.front().Val());
+		delete (&request_queue_.front().GetMessage());
 		request_queue_.pop_front();
 	}
 
@@ -81,10 +81,10 @@ namespace server
 		request_ptr_ = new http::RequestMessage();
 	}
 
-	RequestHolder::ErrStatus RequestHolder::Parse(buffer::Buffer &recieved)
+	void RequestHolder::Parse(buffer::Buffer &recieved)
 	{
 		if (recieved.empty()) {
-			return ErrStatus();
+			return;
 		}
 		try {
 			if (CreateRequestMessage(recieved) == kComplete) {
@@ -92,12 +92,10 @@ namespace server
 				request_ptr_ = NULL;
 				InitParseContext();
 			}
-			return ErrStatus();
 		} catch (http::HttpException &e) {
-			request_queue_.push_back(Error());
+			request_queue_.push_back(Request(e.GetStatusCode(), Request::kFatal));
 			utils::DeleteSafe(request_ptr_);
 			InitParseContext();
-			return ErrStatus(e.GetStatusCode(), Error());
 		}
 	}
 
