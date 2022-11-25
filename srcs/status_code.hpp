@@ -65,7 +65,7 @@ namespace http
 
 	  private:
 		static const ReasonPhrase reason_phrase_;
-		const Code                code_;
+		Code                      code_;
 
 	  public:
 		StatusCode(Code code = kUndefinedCode);
