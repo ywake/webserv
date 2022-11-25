@@ -1,25 +1,18 @@
 #ifndef REQUEST_HPP
 #define REQUEST_HPP
 
+#include "i_request.hpp"
 #include "request_message.hpp"
 #include "status_code.hpp"
 
 namespace server
 {
-	class Request
+	class Request : public IRequest
 	{
 	  public:
-		enum ErrorType {
-			kNotError,
-			kRecoverable,
-			kFatal
-		};
-
-	  private:
-		static const http::RequestMessage kEmptyMessage;
-		const http::RequestMessage       *request_msg_;
-		http::StatusCode                  error_code_;
-		ErrorType                         error_type_;
+		const http::RequestMessage *request_msg_;
+		http::StatusCode            error_code_;
+		ErrorType                   error_type_;
 
 	  public:
 		Request(
