@@ -2,7 +2,21 @@
 
 HeaderValue::HeaderValue(const std::string &str) : value_(str) {}
 
+HeaderValue::HeaderValue(const HeaderValue &other)
+{
+	*this = other;
+}
+
 HeaderValue::~HeaderValue() {}
+
+HeaderValue &HeaderValue::operator=(const HeaderValue &rhs)
+{
+	if (this == &rhs) {
+		return *this;
+	}
+	value_ = rhs.value_;
+	return *this;
+}
 
 bool HeaderValue::operator==(const HeaderValue &rhs) const
 {

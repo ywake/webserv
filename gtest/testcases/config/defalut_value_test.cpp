@@ -25,6 +25,6 @@ TEST(config, default_location_conf)
 	EXPECT_EQ(location_conf.GetRedirect(), conf::LocationConf::Redirect());
 	EXPECT_EQ(location_conf.GetRoot(), conf::LocationConf::Root());
 	EXPECT_EQ(location_conf.GetIndexFiles(), conf::LocationConf::IndexFiles({"index.html"}));
-	EXPECT_EQ(location_conf.GetAutoindex(), false);
+	EXPECT_EQ(location_conf.GetAutoindex(), conf::LocationConf::AutoIndex());
 	EXPECT_EQ(location_conf.GetCgiPath(), conf::LocationConf::CgiPath());
 }

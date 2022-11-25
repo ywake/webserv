@@ -43,7 +43,6 @@ namespace conf
 	  private:
 		static const AllowMethods kDefaultAllowMethods;
 		static const IndexFiles   kDefaultIndexFiles;
-		static const bool         kDefaultAutoIndex;
 
 	  public:
 		LocationConf(
@@ -76,7 +75,7 @@ namespace conf
 		const Redirect     &GetRedirect() const;
 		const Root         &GetRoot() const;
 		const IndexFiles   &GetIndexFiles() const;
-		const bool         &GetAutoindex() const;
+		const AutoIndex    &GetAutoindex() const;
 		const CgiPath      &GetCgiPath() const;
 
 		bool                operator==(const LocationConf &rhs) const;

@@ -2,28 +2,22 @@
 
 namespace buffer
 {
-	Buffer::Buffer(std::size_t max_inner_buf_size)
-		: buf_(), idx_(), max_inner_buf_size_(max_inner_buf_size)
-	{}
+	Buffer::Buffer() : buf_(), idx_() {}
 
 	Buffer::Buffer(const Buffer &other)
 	{
 		*this = other;
 	}
 
-	Result<void> Buffer::push_back(const std::vector<char> &data)
+	void Buffer::push_back(const std::vector<char> &data)
 	{
-		if (IsFull()) {
-			return Error("buffer is full");
-		}
 		if (data.empty()) {
-			return Result<void>();
+			return;
 		}
 		buf_.push_back(data);
-		return Result<void>();
 	}
 
-	Emptiable<char> Buffer::GetChar()
+	Emptiable<char> Buffer::PopChar()
 	{
 		if (empty()) {
 			return Emptiable<char>();
@@ -37,7 +31,7 @@ namespace buffer
 		return c;
 	}
 
-	std::vector<char> Buffer::GetAll()
+	std::vector<char> Buffer::PopAll()
 	{
 		if (buf_.empty()) {
 			return std::vector<char>();
@@ -58,19 +52,13 @@ namespace buffer
 		return buf_.empty();
 	}
 
-	bool Buffer::IsFull() const
-	{
-		return buf_.size() == max_inner_buf_size_;
-	}
-
 	Buffer &Buffer::operator=(const Buffer &other)
 	{
 		if (this == &other) {
 			return *this;
 		}
-		buf_                = other.buf_;
-		idx_                = other.idx_;
-		max_inner_buf_size_ = other.max_inner_buf_size_;
+		buf_ = other.buf_;
+		idx_ = other.idx_;
 		return *this;
 	}
 
@@ -81,6 +69,11 @@ namespace buffer
 		}
 		idx_ = 0;
 		buf_.pop_front();
+	}
+
+	std::size_t Buffer::size()
+	{
+		return buf_.size();
 	}
 
 } // namespace buffer

@@ -27,6 +27,11 @@ static const std::string kSingleSpace = " ";
 
 HeaderSection::HeaderSection() {}
 
+HeaderSection::HeaderSection(const HeaderSection &other)
+{
+	*this = other;
+}
+
 HeaderSection::HeaderSection(const ThinString &str)
 {
 	if (str.empty()) {
@@ -222,6 +227,15 @@ HeaderSection::Values &HeaderSection::at(const std::string &field_name)
 const HeaderSection::Values &HeaderSection::at(const std::string &field_name) const
 {
 	return field_lines_.at(utils::ToLowerString(field_name));
+}
+
+HeaderSection &HeaderSection::operator=(const HeaderSection &rhs)
+{
+	if (this == &rhs) {
+		return *this;
+	}
+	field_lines_ = rhs.field_lines_;
+	return *this;
 }
 
 bool HeaderSection::operator==(const HeaderSection &rhs) const

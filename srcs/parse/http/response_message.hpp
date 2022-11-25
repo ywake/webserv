@@ -3,19 +3,21 @@
 #include "http_message.hpp"
 #include "status_line.hpp"
 
-class ResponseMessage : public HttpMessage
+namespace http
 {
-  public:
-	StatusLine status_line_;
-
-	ResponseMessage(StatusLine &status_line, HeaderSection &field_lines, std::string &message_body)
-		: HttpMessage(field_lines, message_body), status_line_(status_line)
-	{}
-
-	bool operator==(const ResponseMessage &rhs) const
+	class ResponseMessage : public HttpMessage
 	{
-		return HttpMessage::operator==(rhs) && status_line_ == rhs.status_line_;
-	}
-};
+	  private:
+		StatusLine status_line_;
 
+	  public:
+		ResponseMessage(
+			const StatusLine    &status_line,
+			const HeaderSection &field_lines,
+			const std::string   &message_body
+		);
+
+		bool operator==(const ResponseMessage &rhs) const;
+	};
+} // namespace http
 #endif

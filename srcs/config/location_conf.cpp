@@ -7,7 +7,6 @@
 
 namespace conf
 {
-	const bool LocationConf::kDefaultAutoIndex = false;
 	// AllowMethods({"GET", "POST", "DELETE"})がC++98で使えないので
 	static const char               *kDefaultAllowMethodArray[] = {"GET", "POST", "DELETE"};
 	const LocationConf::AllowMethods LocationConf::kDefaultAllowMethods =
@@ -203,12 +202,9 @@ namespace conf
 		return index_files_;
 	}
 
-	const bool &LocationConf::GetAutoindex() const
+	const LocationConf::AutoIndex &LocationConf::GetAutoindex() const
 	{
-		if (autoindex_.empty()) {
-			return kDefaultAutoIndex;
-		}
-		return autoindex_.Value();
+		return autoindex_;
 	}
 
 	const LocationConf::CgiPath &LocationConf::GetCgiPath() const

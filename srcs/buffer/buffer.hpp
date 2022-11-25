@@ -13,25 +13,23 @@ namespace buffer
 	// TODO rename
 	class Buffer
 	{
-	  private:
+	  protected:
 		typedef std::vector<char>     ByteArray;
 		typedef std::deque<ByteArray> InnerBuffer;
 
-	  private:
-		static const std::size_t kDefaultMaxSize = 10;
-		InnerBuffer              buf_;
-		std::size_t              idx_;
-		std::size_t              max_inner_buf_size_;
+	  protected:
+		InnerBuffer buf_;
+		std::size_t idx_;
 
 	  public:
-		Buffer(std::size_t max_inner_buf_size = kDefaultMaxSize);
+		Buffer();
 		Buffer(const Buffer &other);
-		Result<void>      push_back(const std::vector<char> &data);
-		Emptiable<char>   GetChar();
-		std::vector<char> GetAll();
+		void              push_back(const std::vector<char> &data);
+		Emptiable<char>   PopChar();
+		std::vector<char> PopAll();
 		bool              empty() const;
-		bool              IsFull() const;
 		Buffer           &operator=(const Buffer &other);
+		std::size_t       size();
 
 	  private:
 		void PopFront();
