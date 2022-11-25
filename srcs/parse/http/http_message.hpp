@@ -19,6 +19,8 @@ namespace http
 		HttpMessage(const HttpMessage &other);
 		HttpMessage(const HeaderSection &field_lines, const std::string &message_body);
 		~HttpMessage();
+		void         SetHeaderSection(const HeaderSection &field_lines);
+		void         SetBody(const std::string &body);
 		HttpMessage &operator=(const HttpMessage &rhs);
 		bool         operator==(const HttpMessage &rhs) const;
 	};
