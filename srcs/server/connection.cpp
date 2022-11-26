@@ -1,3 +1,6 @@
+#include <cerrno>
+#include <cstdio>
+
 #include "connection.hpp"
 
 namespace server
