@@ -15,6 +15,9 @@ namespace server
 
 	Result<void> Reciever::Recv()
 	{
+		if (IsEof()) {
+			return Result<void>();
+		}
 		buf_.push_back(ByteArray(buffer_size_));
 		void   *buf       = buf_.back().data();
 		ssize_t recv_size = recv(fd_, buf, buffer_size_, 0);
