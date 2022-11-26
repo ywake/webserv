@@ -22,27 +22,27 @@ namespace server
 		if (this == &rhs) {
 			return *this;
 		}
-		state_        = rhs.state_;
-		loaded_data_  = rhs.loaded_data_;
-		*request_ptr_ = *rhs.request_ptr_;
+		ctx_.state        = rhs.ctx_.state;
+		ctx_.loaded_data  = rhs.ctx_.loaded_data;
+		*ctx_.request_msg = *rhs.ctx_.request_msg;
 		return *this;
 	}
 
 	RequestParser::~RequestParser()
 	{
-		delete request_ptr_;
+		delete ctx_.request_msg;
 	}
 
 	bool RequestParser::HasInCompleteData()
 	{
-		return state_ != kStandBy;
+		return ctx_.state != kStandBy;
 	}
 
 	void RequestParser::InitParseContext()
 	{
-		loaded_data_ = std::string();
-		state_       = kStandBy;
-		request_ptr_ = new http::RequestMessage();
+		ctx_.loaded_data = std::string();
+		ctx_.state       = kStandBy;
+		ctx_.request_msg = new http::RequestMessage();
 	}
 
 	Emptiable<Request> RequestParser::Parse(buffer::Buffer &recieved)
@@ -52,13 +52,13 @@ namespace server
 		}
 		try {
 			if (CreateRequestMessage(recieved) == kComplete) {
-				Request req = request_ptr_;
+				Request req = ctx_.request_msg;
 				InitParseContext();
 				return req;
 			}
 			return Emptiable<Request>();
 		} catch (http::HttpException &e) {
-			utils::DeleteSafe(request_ptr_);
+			utils::DeleteSafe(ctx_.request_msg);
 			InitParseContext();
 			return Request(e.GetStatusCode(), Request::kFatal);
 		}
@@ -67,7 +67,7 @@ namespace server
 	// TODO トレイラ無視してる
 	RequestParser::ParseResult RequestParser::CreateRequestMessage(buffer::Buffer &recieved)
 	{
-		switch (state_) {
+		switch (ctx_.state) {
 		case kStandBy:
 			SetStateAndClearBuf(kStartLine);
 			/* Falls through. */
@@ -86,8 +86,8 @@ namespace server
 		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
 			return kInComplete;
 		}
-		loaded_data_.erase(loaded_data_.size() - http::kCrLf.size());
-		request_ptr_->SetRequestLine(RequestLine(loaded_data_));
+		ctx_.loaded_data.erase(ctx_.loaded_data.size() - http::kCrLf.size());
+		ctx_.request_msg->SetRequestLine(RequestLine(ctx_.loaded_data));
 		SetStateAndClearBuf(kHeader);
 		return kInComplete;
 	}
@@ -97,12 +97,12 @@ namespace server
 		if (LoadUntillDelim(recieved, http::kEmptyLine) != kParsable) {
 			return kInComplete;
 		}
-		loaded_data_.erase(loaded_data_.size() - http::kCrLf.size());
-		const HeaderSection headers = HeaderSection(loaded_data_);
+		ctx_.loaded_data.erase(ctx_.loaded_data.size() - http::kCrLf.size());
+		const HeaderSection headers = HeaderSection(ctx_.loaded_data);
 		http::headers::ValidateHeaderSection(headers);
-		request_ptr_->SetHeaderSection(headers);
+		ctx_.request_msg->SetHeaderSection(headers);
 		SetStateAndClearBuf(kBody);
-		return request_ptr_->HasMessageBody() ? kInComplete : kComplete;
+		return ctx_.request_msg->HasMessageBody() ? kInComplete : kComplete;
 	}
 
 	// TODO body
@@ -120,8 +120,8 @@ namespace server
 				return kNonParsable;
 			}
 			Emptiable<char> c = recieved.PopChar();
-			loaded_data_ += c.Value();
-			if (utils::EndWith(loaded_data_, delim)) {
+			ctx_.loaded_data += c.Value();
+			if (utils::EndWith(ctx_.loaded_data, delim)) {
 				return kParsable;
 			}
 		}
@@ -129,8 +129,8 @@ namespace server
 
 	void RequestParser::SetStateAndClearBuf(State new_state)
 	{
-		loaded_data_ = std::string();
-		state_       = new_state;
+		ctx_.loaded_data = std::string();
+		ctx_.state       = new_state;
 	}
 
 	void RequestParser::DestroyRequest(Request &request)

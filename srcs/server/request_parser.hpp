@@ -32,9 +32,11 @@ namespace server
 		};
 
 	  private:
-		State                 state_;
-		std::string           loaded_data_;
-		http::RequestMessage *request_ptr_;
+		struct Context {
+			State                 state;
+			std::string           loaded_data;
+			http::RequestMessage *request_msg;
+		} ctx_;
 
 	  public:
 		RequestParser();
