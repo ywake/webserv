@@ -18,22 +18,6 @@ namespace server
 		typedef std::deque<IRequest *> RequestQueue;
 
 	  private:
-		enum State {
-			kStandBy,
-			kStartLine,
-			kHeader,
-			kBody
-		};
-		enum ParseResult {
-			kComplete,
-			kInComplete
-		};
-		enum LoadResult {
-			kParsable,
-			kNonParsable
-		};
-
-	  private:
 		Emptiable<IRequest *> in_progress;
 		RequestQueue          request_queue_;
 		RequestParser         parser_;
