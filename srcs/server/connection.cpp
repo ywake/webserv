@@ -56,6 +56,7 @@ namespace server
 		Instructions insts;
 
 		if (reciever_.IsEof() && reciever_.empty()) {
+			request_holder_.OnEof();
 			insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
 			return insts;
 		}
