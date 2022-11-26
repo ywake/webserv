@@ -64,6 +64,7 @@ namespace server
 			// TDDO 500
 		}
 		request_holder_.OnEof();
+		// if (CanResPonsStart0) {}
 		return insts;
 	}
 
@@ -74,13 +75,23 @@ namespace server
 		if (reciever_.IsEof() && reciever_.empty()) {
 			return OnEof();
 		}
-		if (!reciever_.IsEof() && reciever_.size() < kMaxRecverBufSize) {
+		bool is_reciever_full = reciever_.size() >= kMaxRecverBufSize;
+		bool is_holder_full   = request_holder_.size() >= kMaxRequestQueueSize;
+		if (is_reciever_full && is_holder_full) {
+			insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
+			return insts;
+		}
+		if (!is_reciever_full) {
 			Result<void> res = reciever_.Recv();
 			if (res.IsErr()) {
 				std::cerr << res.Err() << std::endl;
+				// TDDO 500
 			}
 		}
-		request_holder_.Parse(reciever_);
+		if (!is_holder_full) {
+			request_holder_.Parse(reciever_);
+		}
+		// if (CanResPonsStart0) {}
 		return Instructions();
 	}
 
