@@ -47,6 +47,7 @@ namespace server
 		bool               HasInCompleteData();
 		void               DestroyParseContext();
 		static void        DestroyRequest(Request &request);
+		static Request     CopyRequest(const Request &request);
 
 	  private:
 		void        InitParseContext();
