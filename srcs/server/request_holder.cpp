@@ -31,19 +31,11 @@ namespace server
 		request_queue_.push_back(req.Value());
 	}
 
-	void RequestHolder::DeleteFront()
-	{
-		if (request_queue_.empty()) {
-			log("DeleteRequest: empty");
-		}
-		RequestParser::DestroyRequest(request_queue_.front());
-		request_queue_.pop_front();
-	}
-
 	void RequestHolder::DeleteAll()
 	{
 		while (!request_queue_.empty()) {
-			DeleteFront();
+			RequestParser::DestroyRequest(request_queue_.front());
+			request_queue_.pop_front();
 		}
 	}
 

@@ -46,7 +46,6 @@ namespace server
 		RequestHolder &operator=(const RequestHolder &rhs);
 
 		void        Parse(buffer::Buffer &recieved);
-		void        DeleteFront();
 		void        DeleteAll();
 		std::size_t Count();
 		void        OnEof();
