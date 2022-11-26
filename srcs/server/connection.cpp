@@ -53,6 +53,12 @@ namespace server
 
 	Instructions Connection::Recieve()
 	{
+		Instructions insts;
+
+		if (reciever_.IsEof() && reciever_.empty()) {
+			insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
+			return insts;
+		}
 		if (!reciever_.IsEof() && reciever_.size() < kMaxRecverBufSize) {
 			Result<void> res = reciever_.Recv();
 			if (res.IsErr()) {
