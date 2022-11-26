@@ -146,4 +146,13 @@ namespace server
 		utils::DeleteSafe(request.request_msg_);
 	}
 
+	Request RequestParser::CopyRequest(const Request &request)
+	{
+		if (request.IsErr()) {
+			return Request(request.GetErrStatusCode(), request.GetErrorType());
+		} else {
+			return Request(new http::RequestMessage(request.GetMessage()));
+		}
+	}
+
 } // namespace server
