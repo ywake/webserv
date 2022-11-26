@@ -21,6 +21,8 @@ namespace server
 		: request_msg_(), error_code_(error_code), error_type_(error_type)
 	{}
 
+	Request::~Request() {}
+
 	void Request::SetError(const http::StatusCode &error_code, ErrorType error_type)
 	{
 		error_code_ = error_code;

@@ -16,6 +16,8 @@ namespace server
 		};
 
 	  public:
+		virtual ~IRequest(){};
+
 		virtual void SetError(const http::StatusCode &error_code, ErrorType error_type) = 0;
 		virtual bool IsErr() const                                                      = 0;
 		virtual bool IsFatal() const                                                    = 0;
