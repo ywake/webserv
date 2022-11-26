@@ -46,7 +46,7 @@ namespace server
 		RequestHolder &operator=(const RequestHolder &rhs);
 
 		void        Parse(buffer::Buffer &recieved);
-		void        DeleteAll();
+		void        DestroyQueue();
 		std::size_t Count();
 		void        OnEof();
 	};

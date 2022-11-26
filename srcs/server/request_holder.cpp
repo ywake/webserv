@@ -19,7 +19,7 @@ namespace server
 		if (!in_progress.empty()) {
 			RequestParser::DestroyRequest(in_progress.Value());
 		}
-		DeleteAll();
+		DestroyQueue();
 	}
 
 	void RequestHolder::Parse(buffer::Buffer &recieved)
@@ -31,7 +31,7 @@ namespace server
 		request_queue_.push_back(req.Value());
 	}
 
-	void RequestHolder::DeleteAll()
+	void RequestHolder::DestroyQueue()
 	{
 		while (!request_queue_.empty()) {
 			RequestParser::DestroyRequest(request_queue_.front());
@@ -57,7 +57,7 @@ namespace server
 		if (this == &rhs) {
 			return *this;
 		}
-		DeleteAll();
+		DestroyQueue();
 		for (RequestQueue::const_iterator it = rhs.request_queue_.begin();
 			 it != rhs.request_queue_.end();
 			 it++) {
