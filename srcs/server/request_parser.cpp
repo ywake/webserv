@@ -133,4 +133,12 @@ namespace server
 		state_       = new_state;
 	}
 
+	void RequestParser::DestroyRequest(Request &request)
+	{
+		if (request.IsErr()) {
+			return;
+		}
+		utils::DeleteSafe(request.request_msg_);
+	}
+
 } // namespace server
