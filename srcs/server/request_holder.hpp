@@ -49,6 +49,8 @@ namespace server
 		std::size_t Count();
 		void        OnEof();
 
+		static void DestroyRequest(IRequest *&request);
+
 	  private:
 		void DestroyQueue();
 	};

@@ -67,4 +67,9 @@ namespace server
 		return *this;
 	}
 
+	void RequestHolder::DestroyRequest(IRequest *&request)
+	{
+		RequestParser::DestroyRequest(request);
+	}
+
 } // namespace server
