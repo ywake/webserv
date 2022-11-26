@@ -9,7 +9,7 @@ namespace server
 {
 	class Request : public IRequest
 	{
-	  public:
+	  private:
 		http::RequestMessage request_msg_;
 		http::StatusCode     error_code_;
 		ErrorType            error_type_;
