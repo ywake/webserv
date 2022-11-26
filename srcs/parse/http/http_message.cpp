@@ -23,6 +23,12 @@ namespace http
 		message_body_ = body;
 	}
 
+	bool HttpMessage::HasMessageBody() const
+	{
+		return field_lines_.Contains("content-length") ||
+			   field_lines_.Contains("transfer-encoding");
+	}
+
 	HttpMessage &HttpMessage::operator=(const HttpMessage &rhs)
 	{
 		if (this == &rhs) {
