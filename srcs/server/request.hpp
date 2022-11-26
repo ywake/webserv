@@ -10,15 +10,15 @@ namespace server
 	class Request : public IRequest
 	{
 	  public:
-		const http::RequestMessage *request_msg_;
-		http::StatusCode            error_code_;
-		ErrorType                   error_type_;
+		http::RequestMessage request_msg_;
+		http::StatusCode     error_code_;
+		ErrorType            error_type_;
 
 	  public:
 		Request(
-			const http::RequestMessage *request_msg = NULL,
+			const http::RequestMessage &request_msg = http::RequestMessage(),
 			const http::StatusCode     &error_code  = http::StatusCode(),
-			ErrorType                   error_type  = kNotError
+			const ErrorType            &error_type  = kNotError
 		);
 		Request(const Request &other);
 		Request(const http::StatusCode &error_code, ErrorType error_type);
