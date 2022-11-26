@@ -24,6 +24,11 @@ class Emptiable
 		return value_;
 	}
 
+	T &Value()
+	{
+		return value_;
+	}
+
 	const Emptiable<T> &operator=(const Emptiable<T> &rhs)
 	{
 		if (this != &rhs) {
