@@ -4,6 +4,7 @@
 #include <deque>
 
 #include "buffer.hpp"
+#include "emptiable.hpp"
 #include "request.hpp"
 #include "result.hpp"
 #include "status_code.hpp"
@@ -32,6 +33,7 @@ namespace server
 		};
 
 	  private:
+		Emptiable<Request>    in_progress;
 		std::string           loaded_data_;
 		State                 state_;
 		http::RequestMessage *request_ptr_;
