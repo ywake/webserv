@@ -35,6 +35,7 @@ namespace server
 	  public:
 		static const std::size_t kMaxRecverBufSize;
 		static const std::size_t kMaxSenderBufSize;
+		static const std::size_t kMaxRequestQueueSize;
 
 	  private:
 		static const conf::VirtualServerConfs kEmptyConfs;

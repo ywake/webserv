@@ -4,9 +4,10 @@ namespace server
 {
 	using namespace event;
 
-	const std::size_t              Connection::kMaxRecverBufSize = 10;
-	const std::size_t              Connection::kMaxSenderBufSize = 10;
-	const conf::VirtualServerConfs Connection::kEmptyConfs       = conf::VirtualServerConfs();
+	const std::size_t              Connection::kMaxRecverBufSize    = 10;
+	const std::size_t              Connection::kMaxSenderBufSize    = 10;
+	const std::size_t              Connection::kMaxRequestQueueSize = 3;
+	const conf::VirtualServerConfs Connection::kEmptyConfs          = conf::VirtualServerConfs();
 
 	Connection::Connection() : Socket(), configs_(kEmptyConfs), client_(), request_holder_() {}
 
