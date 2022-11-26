@@ -45,6 +45,7 @@ namespace server
 		RequestParser     &operator=(const RequestParser &rhs);
 		Emptiable<Request> Parse(buffer::Buffer &recieved);
 		bool               HasInCompleteData();
+		void               DestroyParseContext();
 		static void        DestroyRequest(Request &request);
 
 	  private:
