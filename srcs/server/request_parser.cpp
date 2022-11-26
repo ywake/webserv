@@ -38,6 +38,15 @@ namespace server
 		return ctx_.state != kStandBy;
 	}
 
+	Emptiable<IRequest *> RequestParser::OnEof()
+	{
+		if (HasInCompleteData()) {
+			DestroyParseContext();
+			return new Request(http::StatusCode::kBadRequest, Request::kFatal);
+		}
+		return Emptiable<IRequest *>();
+	}
+
 	void RequestParser::InitParseContext()
 	{
 		ctx_.loaded_bytes = std::string();
