@@ -42,12 +42,14 @@ namespace server
 		RequestHolder();
 		RequestHolder(const RequestHolder &other);
 		~RequestHolder();
+
 		RequestHolder &operator=(const RequestHolder &rhs);
-		void           Parse(buffer::Buffer &recieved);
-		void           DeleteFront();
-		void           DeleteAll();
-		std::size_t    Count();
-		void           OnEof();
+
+		void        Parse(buffer::Buffer &recieved);
+		void        DeleteFront();
+		void        DeleteAll();
+		std::size_t Count();
+		void        OnEof();
 	};
 } // namespace server
 #endif

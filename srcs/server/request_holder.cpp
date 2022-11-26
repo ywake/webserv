@@ -14,23 +14,18 @@ namespace server
 		*this = other;
 	}
 
-	RequestHolder &RequestHolder::operator=(const RequestHolder &rhs)
-	{
-		if (this == &rhs) {
-			return *this;
-		}
-		DeleteAll();
-		for (RequestQueue::const_iterator it = rhs.request_queue_.begin();
-			 it != rhs.request_queue_.end();
-			 it++) {
-			request_queue_.push_back(RequestParser::CopyRequest(*it));
-		}
-		return *this;
-	}
-
 	RequestHolder::~RequestHolder()
 	{
 		DeleteAll();
+	}
+
+	void RequestHolder::Parse(buffer::Buffer &recieved)
+	{
+		Emptiable<Request> req = parser_.Parse(recieved);
+		if (req.empty()) {
+			return;
+		}
+		request_queue_.push_back(req.Value());
 	}
 
 	void RequestHolder::DeleteFront()
@@ -62,13 +57,18 @@ namespace server
 		}
 	}
 
-	void RequestHolder::Parse(buffer::Buffer &recieved)
+	RequestHolder &RequestHolder::operator=(const RequestHolder &rhs)
 	{
-		Emptiable<Request> req = parser_.Parse(recieved);
-		if (req.empty()) {
-			return;
+		if (this == &rhs) {
+			return *this;
 		}
-		request_queue_.push_back(req.Value());
+		DeleteAll();
+		for (RequestQueue::const_iterator it = rhs.request_queue_.begin();
+			 it != rhs.request_queue_.end();
+			 it++) {
+			request_queue_.push_back(RequestParser::CopyRequest(*it));
+		}
+		return *this;
 	}
 
 } // namespace server
