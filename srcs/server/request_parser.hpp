@@ -5,7 +5,7 @@
 
 #include "buffer.hpp"
 #include "emptiable.hpp"
-#include "request.hpp"
+#include "i_request.hpp"
 #include "request_message.hpp"
 #include "result.hpp"
 #include "status_code.hpp"
@@ -14,6 +14,31 @@ namespace server
 {
 	class RequestParser
 	{
+	  private:
+		class Request : public IRequest
+		{
+		  public:
+			http::RequestMessage request_msg_;
+			http::StatusCode     error_code_;
+			ErrorType            error_type_;
+
+		  public:
+			Request(
+				const http::RequestMessage &request_msg = http::RequestMessage(),
+				const http::StatusCode     &error_code  = http::StatusCode(),
+				const ErrorType            &error_type  = kNotError
+			);
+			Request(const Request &other);
+			Request(const http::StatusCode &error_code, ErrorType error_type);
+			~Request();
+			void SetError(const http::StatusCode &error_code, ErrorType error_type);
+			bool IsErr() const;
+			bool IsFatal() const;
+
+			const http::RequestMessage &GetMessage() const;
+			const http::StatusCode     &GetErrStatusCode() const;
+			const ErrorType            &GetErrorType() const;
+		};
 
 	  private:
 		enum State {

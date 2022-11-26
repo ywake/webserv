@@ -1,9 +1,9 @@
 #include <cassert>
 
-#include "request.hpp"
+#include "request_parser.hpp"
 namespace server
 {
-	Request::Request(
+	RequestParser::Request::Request(
 		const http::RequestMessage &request_msg,
 		const http::StatusCode     &error_code,
 		const ErrorType            &error_type
@@ -11,45 +11,45 @@ namespace server
 		: request_msg_(request_msg), error_code_(error_code), error_type_(error_type)
 	{}
 
-	Request::Request(const Request &other)
+	RequestParser::Request::Request(const Request &other)
 		: request_msg_(other.request_msg_),
 		  error_code_(other.error_code_),
 		  error_type_(other.error_type_)
 	{}
 
-	Request::Request(const http::StatusCode &error_code, ErrorType error_type)
+	RequestParser::Request::Request(const http::StatusCode &error_code, ErrorType error_type)
 		: request_msg_(), error_code_(error_code), error_type_(error_type)
 	{}
 
-	Request::~Request() {}
+	RequestParser::Request::~Request() {}
 
-	void Request::SetError(const http::StatusCode &error_code, ErrorType error_type)
+	void RequestParser::Request::SetError(const http::StatusCode &error_code, ErrorType error_type)
 	{
 		error_code_ = error_code;
 		error_type_ = error_type;
 	}
 
-	bool Request::IsErr() const
+	bool RequestParser::Request::IsErr() const
 	{
 		return error_type_ != kNotError;
 	}
 
-	bool Request::IsFatal() const
+	bool RequestParser::Request::IsFatal() const
 	{
 		return error_type_ == kFatal;
 	}
 
-	const http::RequestMessage &Request::GetMessage() const
+	const http::RequestMessage &RequestParser::Request::GetMessage() const
 	{
 		return request_msg_;
 	}
 
-	const http::StatusCode &Request::GetErrStatusCode() const
+	const http::StatusCode &RequestParser::Request::GetErrStatusCode() const
 	{
 		return error_code_;
 	}
 
-	const Request::ErrorType &Request::GetErrorType() const
+	const RequestParser::Request::ErrorType &RequestParser::Request::GetErrorType() const
 	{
 		return error_type_;
 	}
