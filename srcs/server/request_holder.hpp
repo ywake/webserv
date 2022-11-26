@@ -18,9 +18,8 @@ namespace server
 		typedef std::deque<IRequest *> RequestQueue;
 
 	  private:
-		Emptiable<IRequest *> in_progress;
-		RequestQueue          request_queue_;
-		RequestParser         parser_;
+		RequestQueue  request_queue_;
+		RequestParser parser_;
 
 	  public:
 		RequestHolder();

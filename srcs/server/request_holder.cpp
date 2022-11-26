@@ -16,9 +16,6 @@ namespace server
 
 	RequestHolder::~RequestHolder()
 	{
-		if (!in_progress.empty()) {
-			RequestParser::DestroyRequest(in_progress.Value());
-		}
 		DestroyQueue();
 	}
 
