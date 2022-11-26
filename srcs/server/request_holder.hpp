@@ -6,6 +6,7 @@
 #include "buffer.hpp"
 #include "emptiable.hpp"
 #include "request.hpp"
+#include "request_parser.hpp"
 #include "result.hpp"
 #include "status_code.hpp"
 
@@ -33,11 +34,9 @@ namespace server
 		};
 
 	  private:
-		Emptiable<Request>    in_progress;
-		std::string           loaded_data_;
-		State                 state_;
-		http::RequestMessage *request_ptr_;
-		RequestQueue          request_queue_;
+		Emptiable<Request> in_progress;
+		RequestQueue       request_queue_;
+		RequestParser      parser_;
 
 	  public:
 		RequestHolder();
@@ -48,17 +47,7 @@ namespace server
 		void           DeleteFront();
 		void           DeleteAll();
 		std::size_t    Count();
-		bool           HasInCompleteData();
 		void           OnEof();
-
-	  private:
-		void        InitParseContext();
-		ParseResult CreateRequestMessage(buffer::Buffer &recieved);
-		ParseResult ParseStartLine(buffer::Buffer &recieved);
-		ParseResult ParseHeaderSection(buffer::Buffer &recieved);
-		ParseResult ParseBody(buffer::Buffer &recieved);
-		LoadResult  LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim);
-		void        SetStateAndClearBuf(State new_state);
 	};
 } // namespace server
 #endif

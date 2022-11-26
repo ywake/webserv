@@ -7,10 +7,7 @@
 
 namespace server
 {
-	RequestHolder::RequestHolder() : request_queue_()
-	{
-		InitParseContext();
-	}
+	RequestHolder::RequestHolder() : request_queue_() {}
 
 	RequestHolder::RequestHolder(const RequestHolder &other)
 	{
@@ -26,25 +23,13 @@ namespace server
 		for (RequestQueue::const_iterator it = rhs.request_queue_.begin();
 			 it != rhs.request_queue_.end();
 			 it++) {
-			if (it->IsErr()) {
-				request_queue_.push_back(Request(it->GetErrStatusCode(), it->GetErrorType()));
-			} else {
-				request_queue_.push_back(Request(
-					new http::RequestMessage(it->GetMessage()),
-					it->GetErrStatusCode(),
-					it->GetErrorType()
-				));
-			}
+			request_queue_.push_back(RequestParser::CopyRequest(*it));
 		}
-		state_        = rhs.state_;
-		loaded_data_  = rhs.loaded_data_;
-		*request_ptr_ = *rhs.request_ptr_;
 		return *this;
 	}
 
 	RequestHolder::~RequestHolder()
 	{
-		delete request_ptr_;
 		DeleteAll();
 	}
 
@@ -53,7 +38,7 @@ namespace server
 		if (request_queue_.empty()) {
 			log("DeleteRequest: empty");
 		}
-		delete (&request_queue_.front().GetMessage());
+		RequestParser::DestroyRequest(request_queue_.front());
 		request_queue_.pop_front();
 	}
 
@@ -69,112 +54,21 @@ namespace server
 		return request_queue_.size();
 	}
 
-	bool RequestHolder::HasInCompleteData()
-	{
-		return state_ != kStandBy;
-	}
-
 	void RequestHolder::OnEof()
 	{
-		if (HasInCompleteData()) {
+		if (parser_.HasInCompleteData()) {
 			request_queue_.push_back(Request(http::StatusCode::kBadRequest, Request::kFatal));
-			utils::DeleteSafe(request_ptr_);
-			InitParseContext();
+			parser_.DestroyParseContext();
 		}
-	}
-
-	void RequestHolder::InitParseContext()
-	{
-		loaded_data_ = std::string();
-		state_       = kStandBy;
-		request_ptr_ = new http::RequestMessage();
 	}
 
 	void RequestHolder::Parse(buffer::Buffer &recieved)
 	{
-		if (recieved.empty()) {
+		Emptiable<Request> req = parser_.Parse(recieved);
+		if (req.empty()) {
 			return;
 		}
-		try {
-			if (CreateRequestMessage(recieved) == kComplete) {
-				request_queue_.push_back(request_ptr_);
-				request_ptr_ = NULL;
-				InitParseContext();
-			}
-		} catch (http::HttpException &e) {
-			request_queue_.push_back(Request(e.GetStatusCode(), Request::kFatal));
-			utils::DeleteSafe(request_ptr_);
-			InitParseContext();
-		}
-	}
-
-	// TODO トレイラ無視してる
-	RequestHolder::ParseResult RequestHolder::CreateRequestMessage(buffer::Buffer &recieved)
-	{
-		switch (state_) {
-		case kStandBy:
-			SetStateAndClearBuf(kStartLine);
-			/* Falls through. */
-		case kStartLine:
-			return ParseStartLine(recieved);
-		case kHeader:
-			return ParseHeaderSection(recieved);
-		case kBody:
-			return ParseBody(recieved);
-		}
-		return kInComplete;
-	}
-
-	RequestHolder::ParseResult RequestHolder::ParseStartLine(buffer::Buffer &recieved)
-	{
-		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
-			return kInComplete;
-		}
-		loaded_data_.erase(loaded_data_.size() - http::kCrLf.size());
-		request_ptr_->SetRequestLine(RequestLine(loaded_data_));
-		SetStateAndClearBuf(kHeader);
-		return kInComplete;
-	}
-
-	RequestHolder::ParseResult RequestHolder::ParseHeaderSection(buffer::Buffer &recieved)
-	{
-		if (LoadUntillDelim(recieved, http::kEmptyLine) != kParsable) {
-			return kInComplete;
-		}
-		loaded_data_.erase(loaded_data_.size() - http::kCrLf.size());
-		const HeaderSection headers = HeaderSection(loaded_data_);
-		http::headers::ValidateHeaderSection(headers);
-		request_ptr_->SetHeaderSection(headers);
-		SetStateAndClearBuf(kBody);
-		return request_ptr_->HasMessageBody() ? kInComplete : kComplete;
-	}
-
-	// TODO body
-	RequestHolder::ParseResult RequestHolder::ParseBody(buffer::Buffer &recieved)
-	{
-		(void)recieved;
-		return kComplete;
-	}
-
-	RequestHolder::LoadResult
-	RequestHolder::LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim)
-	{
-		for (;;) {
-			if (recieved.empty()) {
-				return kNonParsable;
-			}
-			Emptiable<char> c = recieved.PopChar();
-			loaded_data_ += c.Value();
-			if (utils::EndWith(loaded_data_, delim)) {
-				return kParsable;
-			}
-		}
-	}
-
-	void RequestHolder::SetStateAndClearBuf(State new_state)
-	{
-		loaded_data_ = std::string();
-		state_       = new_state;
+		request_queue_.push_back(req.Value());
 	}
 
 } // namespace server
