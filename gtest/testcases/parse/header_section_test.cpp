@@ -56,6 +56,7 @@ TEST(header_section, throw_test)
 	EXPECT_THROW(HeaderSection(" :"), http::BadRequestException);
 	EXPECT_THROW(HeaderSection("\r\n"), http::BadRequestException);
 	EXPECT_THROW(HeaderSection("a:"), http::BadRequestException);
+	EXPECT_THROW(HeaderSection("key: value\r\n\r\n"), http::BadRequestException);
 	EXPECT_THROW(
 		HeaderSection("key: value\r\n"
 					  "\r\n"

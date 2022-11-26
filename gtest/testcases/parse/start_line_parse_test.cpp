@@ -106,4 +106,5 @@ TEST(request_line, error_case)
 	EXPECT_THROW(RequestLine("GET/HTTP/1.1"), http::BadRequestException);
 	EXPECT_THROW(RequestLine("GET_/_HTTP/1.1"), http::BadRequestException);
 	EXPECT_THROW(RequestLine("GET / HTTP/42.42"), http::BadRequestException);
+	EXPECT_THROW(RequestLine("GET / HTTP/1.1\r\n"), http::BadRequestException);
 }
