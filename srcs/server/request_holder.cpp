@@ -46,7 +46,7 @@ namespace server
 		}
 	}
 
-	std::size_t RequestHolder::Count()
+	std::size_t RequestHolder::size()
 	{
 		return request_queue_.size();
 	}
