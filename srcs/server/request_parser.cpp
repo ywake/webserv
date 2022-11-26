@@ -23,7 +23,7 @@ namespace server
 			return *this;
 		}
 		ctx_.state        = rhs.ctx_.state;
-		ctx_.loaded_data  = rhs.ctx_.loaded_data;
+		ctx_.loaded_bytes = rhs.ctx_.loaded_bytes;
 		*ctx_.request_msg = *rhs.ctx_.request_msg;
 		return *this;
 	}
@@ -40,9 +40,9 @@ namespace server
 
 	void RequestParser::InitParseContext()
 	{
-		ctx_.loaded_data = std::string();
-		ctx_.state       = kStandBy;
-		ctx_.request_msg = new http::RequestMessage();
+		ctx_.loaded_bytes = std::string();
+		ctx_.state        = kStandBy;
+		ctx_.request_msg  = new http::RequestMessage();
 	}
 
 	Emptiable<Request> RequestParser::Parse(buffer::Buffer &recieved)
@@ -68,7 +68,7 @@ namespace server
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			SetStateAndClearBuf(kStartLine);
+			SetStateAndClearLoadedBytes(kStartLine);
 			/* Falls through. */
 		case kStartLine:
 			return ParseStartLine(recieved);
@@ -85,9 +85,9 @@ namespace server
 		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
 			return kInComplete;
 		}
-		ctx_.loaded_data.erase(ctx_.loaded_data.size() - http::kCrLf.size());
-		ctx_.request_msg->SetRequestLine(RequestLine(ctx_.loaded_data));
-		SetStateAndClearBuf(kHeader);
+		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
+		ctx_.request_msg->SetRequestLine(RequestLine(ctx_.loaded_bytes));
+		SetStateAndClearLoadedBytes(kHeader);
 		return kInComplete;
 	}
 
@@ -96,11 +96,11 @@ namespace server
 		if (LoadUntillDelim(recieved, http::kEmptyLine) != kParsable) {
 			return kInComplete;
 		}
-		ctx_.loaded_data.erase(ctx_.loaded_data.size() - http::kCrLf.size());
-		const HeaderSection headers = HeaderSection(ctx_.loaded_data);
+		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
+		const HeaderSection headers = HeaderSection(ctx_.loaded_bytes);
 		http::headers::ValidateHeaderSection(headers);
 		ctx_.request_msg->SetHeaderSection(headers);
-		SetStateAndClearBuf(kBody);
+		SetStateAndClearLoadedBytes(kBody);
 		return ctx_.request_msg->HasMessageBody() ? kInComplete : kComplete;
 	}
 
@@ -119,17 +119,17 @@ namespace server
 				return kNonParsable;
 			}
 			Emptiable<char> c = recieved.PopChar();
-			ctx_.loaded_data += c.Value();
-			if (utils::EndWith(ctx_.loaded_data, delim)) {
+			ctx_.loaded_bytes += c.Value();
+			if (utils::EndWith(ctx_.loaded_bytes, delim)) {
 				return kParsable;
 			}
 		}
 	}
 
-	void RequestParser::SetStateAndClearBuf(State new_state)
+	void RequestParser::SetStateAndClearLoadedBytes(State new_state)
 	{
-		ctx_.loaded_data = std::string();
-		ctx_.state       = new_state;
+		ctx_.loaded_bytes = std::string();
+		ctx_.state        = new_state;
 	}
 
 	void RequestParser::DestroyParseContext()

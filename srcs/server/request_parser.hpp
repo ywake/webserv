@@ -34,7 +34,7 @@ namespace server
 	  private:
 		struct Context {
 			State                 state;
-			std::string           loaded_data;
+			std::string           loaded_bytes;
 			http::RequestMessage *request_msg;
 		} ctx_;
 
@@ -56,7 +56,7 @@ namespace server
 		ParseResult ParseHeaderSection(buffer::Buffer &recieved);
 		ParseResult ParseBody(buffer::Buffer &recieved);
 		LoadResult  LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim);
-		void        SetStateAndClearBuf(State new_state);
+		void        SetStateAndClearLoadedBytes(State new_state);
 	};
 } // namespace server
 #endif
