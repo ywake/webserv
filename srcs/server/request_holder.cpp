@@ -24,7 +24,7 @@ namespace server
 
 	void RequestHolder::Parse(buffer::Buffer &recieved)
 	{
-		Emptiable<Request> req = parser_.Parse(recieved);
+		Emptiable<IRequest *> req = parser_.Parse(recieved);
 		if (req.empty()) {
 			return;
 		}
@@ -46,10 +46,11 @@ namespace server
 
 	void RequestHolder::OnEof()
 	{
-		if (parser_.HasInCompleteData()) {
-			request_queue_.push_back(Request(http::StatusCode::kBadRequest, Request::kFatal));
-			parser_.DestroyParseContext();
+		Emptiable<IRequest *> error_req = parser_.OnEof();
+		if (error_req.empty()) {
+			return;
 		}
+		request_queue_.push_back(error_req.Value());
 	}
 
 	RequestHolder &RequestHolder::operator=(const RequestHolder &rhs)

@@ -15,7 +15,7 @@ namespace server
 	class RequestHolder
 	{
 	  private:
-		typedef std::deque<Request> RequestQueue;
+		typedef std::deque<IRequest *> RequestQueue;
 
 	  private:
 		enum State {
@@ -34,9 +34,9 @@ namespace server
 		};
 
 	  private:
-		Emptiable<Request> in_progress;
-		RequestQueue       request_queue_;
-		RequestParser      parser_;
+		Emptiable<IRequest *> in_progress;
+		RequestQueue          request_queue_;
+		RequestParser         parser_;
 
 	  public:
 		RequestHolder();
