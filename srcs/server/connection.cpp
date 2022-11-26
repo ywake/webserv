@@ -52,14 +52,27 @@ namespace server
 		return insts;
 	}
 
+	Instructions Connection::OnEof()
+	{
+		// TODO 最初の時用にリソース処理追加
+
+		Instructions insts;
+
+		insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
+		if (shutdown(GetFd(), SHUT_RD) < 0) {
+			std::cerr << "shutdown" << strerror(errno) << std::endl;
+			// TDDO 500
+		}
+		request_holder_.OnEof();
+		return insts;
+	}
+
 	Instructions Connection::Recieve()
 	{
 		Instructions insts;
 
 		if (reciever_.IsEof() && reciever_.empty()) {
-			request_holder_.OnEof();
-			insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
-			return insts;
+			return OnEof();
 		}
 		if (!reciever_.IsEof() && reciever_.size() < kMaxRecverBufSize) {
 			Result<void> res = reciever_.Recv();
