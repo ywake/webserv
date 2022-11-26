@@ -41,6 +41,7 @@ namespace server
 	Emptiable<IRequest *> RequestParser::OnEof()
 	{
 		if (HasInCompleteData()) {
+			DestroyParseContext();
 			return new Request(http::StatusCode::kBadRequest, Request::kFatal);
 		}
 		return Emptiable<IRequest *>();
@@ -154,9 +155,9 @@ namespace server
 		utils::DeleteSafe(request);
 	}
 
-	IRequest *RequestParser::CopyRequest(const IRequest &src)
+	IRequest *RequestParser::CopyRequest(const IRequest *src)
 	{
-		return new Request(src.GetMessage(), src.GetErrStatusCode(), src.GetErrorType());
+		return new Request(src->GetMessage(), src->GetErrStatusCode(), src->GetErrorType());
 	}
 
 } // namespace server

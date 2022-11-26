@@ -73,7 +73,7 @@ namespace server
 		Emptiable<IRequest *> OnEof();
 		void                  DestroyParseContext();
 		static void           DestroyRequest(IRequest *&request);
-		static IRequest      *CopyRequest(const IRequest &request);
+		static IRequest      *CopyRequest(const IRequest *request);
 
 	  private:
 		void        InitParseContext();
