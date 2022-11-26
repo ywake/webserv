@@ -71,6 +71,7 @@ namespace server
 			 it++) {
 			request_queue_.push_back(RequestParser::CopyRequest(*it));
 		}
+		parser_ = rhs.parser_;
 		return *this;
 	}
 
