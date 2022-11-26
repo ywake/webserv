@@ -70,6 +70,7 @@ namespace server
 		RequestParser        &operator=(const RequestParser &rhs);
 		Emptiable<IRequest *> Parse(buffer::Buffer &recieved);
 		bool                  HasInCompleteData();
+		Emptiable<IRequest *> OnEof();
 		void                  DestroyParseContext();
 		static void           DestroyRequest(IRequest *&request);
 		static IRequest      *CopyRequest(const IRequest &request);
