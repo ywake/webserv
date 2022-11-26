@@ -8,6 +8,7 @@ TEST(config, location_conf_redirect)
 {
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
@@ -16,6 +17,7 @@ TEST(config, location_conf_redirect)
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80"}),
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
@@ -34,6 +36,7 @@ TEST(config, location_conf_redirect)
 
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
@@ -43,6 +46,7 @@ TEST(config, location_conf_redirect)
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80"}),
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
@@ -61,6 +65,7 @@ TEST(config, location_conf_redirect)
 
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
@@ -72,6 +77,7 @@ TEST(config, location_conf_redirect)
 
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
@@ -83,6 +89,7 @@ TEST(config, location_conf_redirect)
 
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
@@ -94,6 +101,7 @@ TEST(config, location_conf_redirect)
 
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
@@ -105,6 +113,7 @@ TEST(config, location_conf_redirect)
 
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"

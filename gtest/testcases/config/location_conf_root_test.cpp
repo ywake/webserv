@@ -8,6 +8,7 @@ TEST(config, location_conf_root)
 {
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
@@ -16,6 +17,7 @@ TEST(config, location_conf_root)
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80"}),
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
@@ -35,6 +37,7 @@ TEST(config, location_conf_root)
 
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
@@ -44,6 +47,7 @@ TEST(config, location_conf_root)
 							  "}"),
 		std::vector<conf::ServerConf>({
 			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80"}),
 				conf::ServerConf::ServerName({"localhost"}),
 				conf::ServerConf::ErrorPages(),
@@ -63,6 +67,7 @@ TEST(config, location_conf_root)
 
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root /var/www;"
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
@@ -72,57 +77,4 @@ TEST(config, location_conf_root)
 							  "}"),
 		conf::ConfigException
 	);
-
-	// EXPECT_EQ(
-	// 	conf::ParseConfigFile("server {"
-	// 						  "listen 80;"
-	// 						  "server_name localhost;"
-	// 						  "location / {"
-	// 						  "root /var/www;"
-	// 						  "}"
-	// 						  "location /api {"
-	// 						  "root /var/www/api;"
-	// 						  "}"
-	// 						  "}"),
-	// 	std::vector<conf::ServerConf>({
-	// 		conf::ServerConf(
-	// 			{"80"},
-	// 			{"localhost"},
-	// 			{},
-	// 			1UL << 20,
-	// 			{
-	// 				conf::LocationConf("/", "/var/www"),
-	// 				conf::LocationConf("/api", "/var/www/api"),
-	// 			}
-	// 		),
-	// 	})
-	// );
-	// EXPECT_EQ(
-	// 	conf::ParseConfigFile("server {"
-	// 						  "listen 80;"
-	// 						  "server_name localhost;"
-	// 						  "location / {"
-	// 						  "root /var/www;"
-	// 						  "}"
-	// 						  "location /api {"
-	// 						  "root /var/www/api;"
-	// 						  "}"
-	// 						  "location /api/v1 {"
-	// 						  "root /var/www/api/v1;"
-	// 						  "}"
-	// 						  "}"),
-	// 	std::vector<conf::ServerConf>({
-	// 		conf::ServerConf(
-	// 			{"80"},
-	// 			{"localhost"},
-	// 			{},
-	// 			1UL << 20,
-	// 			{
-	// 				conf::LocationConf("/", "/var/www"),
-	// 				conf::LocationConf("/api", "/var/www/api"),
-	// 				conf::LocationConf("/api/v1", "/var/www/api/v1"),
-	// 			}
-	// 		),
-	// 	})
-	// );
 }

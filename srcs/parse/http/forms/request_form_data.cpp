@@ -1,12 +1,12 @@
 #include "request_form_data.hpp"
 
 RequestFormData::RequestFormData(
-	ThinString &scheme,
-	ThinString &userinfo,
-	ThinString &host,
-	ThinString &port,
-	ThinString &path,
-	ThinString &query
+	const std::string &scheme,
+	const std::string &userinfo,
+	const std::string &host,
+	const std::string &port,
+	const std::string &path,
+	const std::string &query
 )
 	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query)
 {}
@@ -21,16 +21,6 @@ RequestFormData::RequestFormData(
 )
 	: scheme_(scheme), userinfo_(userinfo), host_(host), port_(port), path_(path), query_(query)
 {}
-
-// URI URI::ConstructFromOrigin(ThinString origin_form)
-// {
-// 	URI uri();
-// 	// uri.scheme = "";
-// 	// uri.HierPart = HierPart();
-// 	// uri.query = ();
-// 	// uri.fragment = ();
-// 	return uri;
-// }
 
 RequestFormData &RequestFormData::operator=(const RequestFormData &other)
 {
