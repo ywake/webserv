@@ -31,6 +31,16 @@ namespace server
 		request_queue_.push_back(req.Value());
 	}
 
+	Emptiable<IRequest *> RequestHolder::PopFront()
+	{
+		if (request_queue_.empty()) {
+			return Emptiable<IRequest *>();
+		}
+		Emptiable<IRequest *> req = request_queue_.front();
+		request_queue_.pop_front();
+		return req;
+	}
+
 	void RequestHolder::DestroyQueue()
 	{
 		while (!request_queue_.empty()) {
