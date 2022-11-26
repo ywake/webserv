@@ -22,6 +22,7 @@ namespace server
 		);
 		Request(const Request &other);
 		Request(const http::StatusCode &error_code, ErrorType error_type);
+		~Request();
 		void SetError(const http::StatusCode &error_code, ErrorType error_type);
 		bool IsErr() const;
 		bool IsFatal() const;
