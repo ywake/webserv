@@ -30,7 +30,7 @@ namespace server
 
 		void                  Parse(buffer::Buffer &recieved);
 		Emptiable<IRequest *> PopFront();
-		std::size_t           Count();
+		std::size_t           size();
 		void                  OnEof();
 
 		static void DestroyRequest(IRequest *&request);
