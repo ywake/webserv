@@ -4,9 +4,9 @@
 namespace server
 {
 	Request::Request(
-		const http::RequestMessage *request_msg,
+		const http::RequestMessage &request_msg,
 		const http::StatusCode     &error_code,
-		ErrorType                   error_type
+		const ErrorType            &error_type
 	)
 		: request_msg_(request_msg), error_code_(error_code), error_type_(error_type)
 	{}
@@ -18,8 +18,10 @@ namespace server
 	{}
 
 	Request::Request(const http::StatusCode &error_code, ErrorType error_type)
-		: request_msg_(NULL), error_code_(error_code), error_type_(error_type)
+		: request_msg_(), error_code_(error_code), error_type_(error_type)
 	{}
+
+	Request::~Request() {}
 
 	void Request::SetError(const http::StatusCode &error_code, ErrorType error_type)
 	{
@@ -39,8 +41,7 @@ namespace server
 
 	const http::RequestMessage &Request::GetMessage() const
 	{
-		assert(request_msg_ != NULL);
-		return *request_msg_;
+		return request_msg_;
 	}
 
 	const http::StatusCode &Request::GetErrStatusCode() const

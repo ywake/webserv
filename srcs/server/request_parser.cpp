@@ -24,13 +24,13 @@ namespace server
 		}
 		ctx_.state        = rhs.ctx_.state;
 		ctx_.loaded_bytes = rhs.ctx_.loaded_bytes;
-		*ctx_.request_msg = *rhs.ctx_.request_msg;
+		*ctx_.request     = *rhs.ctx_.request;
 		return *this;
 	}
 
 	RequestParser::~RequestParser()
 	{
-		delete ctx_.request_msg;
+		delete ctx_.request;
 	}
 
 	bool RequestParser::HasInCompleteData()
@@ -42,24 +42,24 @@ namespace server
 	{
 		ctx_.loaded_bytes = std::string();
 		ctx_.state        = kStandBy;
-		ctx_.request_msg  = new http::RequestMessage();
+		ctx_.request      = new Request();
 	}
 
-	Emptiable<Request> RequestParser::Parse(buffer::Buffer &recieved)
+	Emptiable<IRequest *> RequestParser::Parse(buffer::Buffer &recieved)
 	{
 		if (recieved.empty()) {
-			return Emptiable<Request>();
+			return Emptiable<IRequest *>();
 		}
 		try {
 			if (CreateRequestMessage(recieved) == kComplete) {
-				Request req = ctx_.request_msg;
+				Request *req = ctx_.request;
 				InitParseContext();
 				return req;
 			}
-			return Emptiable<Request>();
+			return Emptiable<IRequest *>();
 		} catch (http::HttpException &e) {
 			DestroyParseContext();
-			return Request(e.GetStatusCode(), Request::kFatal);
+			return new Request(e.GetStatusCode(), Request::kFatal);
 		}
 	}
 
@@ -86,7 +86,7 @@ namespace server
 			return kInComplete;
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
-		ctx_.request_msg->SetRequestLine(RequestLine(ctx_.loaded_bytes));
+		ctx_.request->request_msg_.SetRequestLine(RequestLine(ctx_.loaded_bytes));
 		SetStateAndClearLoadedBytes(kHeader);
 		return kInComplete;
 	}
@@ -99,9 +99,9 @@ namespace server
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
 		const HeaderSection headers = HeaderSection(ctx_.loaded_bytes);
 		http::headers::ValidateHeaderSection(headers);
-		ctx_.request_msg->SetHeaderSection(headers);
+		ctx_.request->request_msg_.SetHeaderSection(headers);
 		SetStateAndClearLoadedBytes(kBody);
-		return ctx_.request_msg->HasMessageBody() ? kInComplete : kComplete;
+		return ctx_.request->request_msg_.HasMessageBody() ? kInComplete : kComplete;
 	}
 
 	// TODO body
@@ -134,25 +134,21 @@ namespace server
 
 	void RequestParser::DestroyParseContext()
 	{
-		utils::DeleteSafe(ctx_.request_msg);
+		utils::DeleteSafe(ctx_.request);
 		InitParseContext();
 	}
 
-	void RequestParser::DestroyRequest(Request &request)
+	void RequestParser::DestroyRequest(IRequest *&request)
 	{
-		if (request.IsErr()) {
+		if (request->IsErr()) {
 			return;
 		}
-		utils::DeleteSafe(request.request_msg_);
+		utils::DeleteSafe(request);
 	}
 
-	Request RequestParser::CopyRequest(const Request &request)
+	IRequest *RequestParser::CopyRequest(const IRequest &src)
 	{
-		if (request.IsErr()) {
-			return Request(request.GetErrStatusCode(), request.GetErrorType());
-		} else {
-			return Request(new http::RequestMessage(request.GetMessage()));
-		}
+		return new Request(src.GetMessage(), src.GetErrStatusCode(), src.GetErrorType());
 	}
 
 } // namespace server

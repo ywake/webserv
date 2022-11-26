@@ -33,21 +33,21 @@ namespace server
 
 	  private:
 		struct Context {
-			State                 state;
-			std::string           loaded_bytes;
-			http::RequestMessage *request_msg;
+			State       state;
+			std::string loaded_bytes;
+			Request    *request;
 		} ctx_;
 
 	  public:
 		RequestParser();
 		RequestParser(const RequestParser &other);
 		~RequestParser();
-		RequestParser     &operator=(const RequestParser &rhs);
-		Emptiable<Request> Parse(buffer::Buffer &recieved);
-		bool               HasInCompleteData();
-		void               DestroyParseContext();
-		static void        DestroyRequest(Request &request);
-		static Request     CopyRequest(const Request &request);
+		RequestParser        &operator=(const RequestParser &rhs);
+		Emptiable<IRequest *> Parse(buffer::Buffer &recieved);
+		bool                  HasInCompleteData();
+		void                  DestroyParseContext();
+		static void           DestroyRequest(IRequest *&request);
+		static IRequest      *CopyRequest(const IRequest &request);
 
 	  private:
 		void        InitParseContext();
