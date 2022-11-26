@@ -58,8 +58,7 @@ namespace server
 			}
 			return Emptiable<Request>();
 		} catch (http::HttpException &e) {
-			utils::DeleteSafe(ctx_.request_msg);
-			InitParseContext();
+			DestroyParseContext();
 			return Request(e.GetStatusCode(), Request::kFatal);
 		}
 	}
@@ -131,6 +130,12 @@ namespace server
 	{
 		ctx_.loaded_data = std::string();
 		ctx_.state       = new_state;
+	}
+
+	void RequestParser::DestroyParseContext()
+	{
+		utils::DeleteSafe(ctx_.request_msg);
+		InitParseContext();
 	}
 
 	void RequestParser::DestroyRequest(Request &request)
