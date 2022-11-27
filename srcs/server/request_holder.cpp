@@ -19,7 +19,7 @@ namespace server
 		DestroyQueue();
 	}
 
-	void RequestHolder::Parse(buffer::Buffer &recieved)
+	void RequestHolder::Parse(buffer::QueuingBuffer &recieved)
 	{
 		Emptiable<IRequest *> req = parser_.Parse(recieved);
 		if (req.empty()) {

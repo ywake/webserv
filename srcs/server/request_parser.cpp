@@ -54,7 +54,7 @@ namespace server
 		ctx_.request      = new Request();
 	}
 
-	Emptiable<IRequest *> RequestParser::Parse(buffer::Buffer &recieved)
+	Emptiable<IRequest *> RequestParser::Parse(buffer::QueuingBuffer &recieved)
 	{
 		if (recieved.empty()) {
 			return Emptiable<IRequest *>();
@@ -73,7 +73,7 @@ namespace server
 	}
 
 	// TODO トレイラ無視してる
-	RequestParser::ParseResult RequestParser::CreateRequestMessage(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::CreateRequestMessage(buffer::QueuingBuffer &recieved)
 	{
 		switch (ctx_.state) {
 		case kStandBy:
@@ -89,7 +89,7 @@ namespace server
 		return kInComplete;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::QueuingBuffer &recieved)
 	{
 		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
 			return kInComplete;
@@ -100,7 +100,7 @@ namespace server
 		return kInComplete;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::QueuingBuffer &recieved)
 	{
 		if (LoadUntillDelim(recieved, http::kEmptyLine) != kParsable) {
 			return kInComplete;
@@ -114,14 +114,14 @@ namespace server
 	}
 
 	// TODO body
-	RequestParser::ParseResult RequestParser::ParseBody(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseBody(buffer::QueuingBuffer &recieved)
 	{
 		(void)recieved;
 		return kComplete;
 	}
 
 	RequestParser::LoadResult
-	RequestParser::LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim)
+	RequestParser::LoadUntillDelim(buffer::QueuingBuffer &recieved, const std::string &delim)
 	{
 		for (;;) {
 			if (recieved.empty()) {
