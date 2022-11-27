@@ -95,7 +95,7 @@ namespace server
 			return kInComplete;
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
-		ctx_.request->request_msg_.SetRequestLine(RequestLine(ctx_.loaded_bytes));
+		ctx_.request->SetRequestLine(RequestLine(ctx_.loaded_bytes));
 		SetStateAndClearLoadedBytes(kHeader);
 		return kInComplete;
 	}
@@ -108,9 +108,9 @@ namespace server
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
 		const HeaderSection headers = HeaderSection(ctx_.loaded_bytes);
 		http::headers::ValidateHeaderSection(headers);
-		ctx_.request->request_msg_.SetHeaderSection(headers);
+		ctx_.request->SetHeaderSection(headers);
 		SetStateAndClearLoadedBytes(kBody);
-		return ctx_.request->request_msg_.HasMessageBody() ? kInComplete : kComplete;
+		return ctx_.request->HasMessageBody() ? kInComplete : kComplete;
 	}
 
 	// TODO body
