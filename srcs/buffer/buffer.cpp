@@ -2,14 +2,14 @@
 
 namespace buffer
 {
-	Buffer::Buffer() : buf_(), idx_() {}
+	QueuingBuffer::QueuingBuffer() : buf_(), idx_() {}
 
-	Buffer::Buffer(const Buffer &other)
+	QueuingBuffer::QueuingBuffer(const QueuingBuffer &other)
 	{
 		*this = other;
 	}
 
-	void Buffer::push_back(const std::vector<char> &data)
+	void QueuingBuffer::push_back(const std::vector<char> &data)
 	{
 		if (data.empty()) {
 			return;
@@ -17,7 +17,7 @@ namespace buffer
 		buf_.push_back(data);
 	}
 
-	Emptiable<char> Buffer::PopChar()
+	Emptiable<char> QueuingBuffer::PopChar()
 	{
 		if (empty()) {
 			return Emptiable<char>();
@@ -31,7 +31,7 @@ namespace buffer
 		return c;
 	}
 
-	std::vector<char> Buffer::PopAll()
+	std::vector<char> QueuingBuffer::PopAll()
 	{
 		if (buf_.empty()) {
 			return std::vector<char>();
@@ -47,12 +47,12 @@ namespace buffer
 		return all;
 	}
 
-	bool Buffer::empty() const
+	bool QueuingBuffer::empty() const
 	{
 		return buf_.empty();
 	}
 
-	Buffer &Buffer::operator=(const Buffer &other)
+	QueuingBuffer &QueuingBuffer::operator=(const QueuingBuffer &other)
 	{
 		if (this == &other) {
 			return *this;
@@ -62,7 +62,7 @@ namespace buffer
 		return *this;
 	}
 
-	void Buffer::PopFront()
+	void QueuingBuffer::PopFront()
 	{
 		if (buf_.empty()) {
 			return;
@@ -71,7 +71,7 @@ namespace buffer
 		buf_.pop_front();
 	}
 
-	std::size_t Buffer::size()
+	std::size_t QueuingBuffer::size()
 	{
 		return buf_.size();
 	}

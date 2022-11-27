@@ -7,7 +7,7 @@
 
 namespace server
 {
-	class Reciever : public buffer::Buffer
+	class Reciever : public buffer::QueuingBuffer
 	{
 	  private:
 		static const std::size_t kDefaultBufferSize;

@@ -68,7 +68,7 @@ namespace server
 		RequestParser(const RequestParser &other);
 		~RequestParser();
 		RequestParser        &operator=(const RequestParser &rhs);
-		Emptiable<IRequest *> Parse(buffer::Buffer &recieved);
+		Emptiable<IRequest *> Parse(buffer::QueuingBuffer &recieved);
 		bool                  HasInCompleteData();
 		Emptiable<IRequest *> OnEof();
 		void                  DestroyParseContext();
@@ -77,11 +77,11 @@ namespace server
 
 	  private:
 		void        InitParseContext();
-		ParseResult CreateRequestMessage(buffer::Buffer &recieved);
-		ParseResult ParseStartLine(buffer::Buffer &recieved);
-		ParseResult ParseHeaderSection(buffer::Buffer &recieved);
-		ParseResult ParseBody(buffer::Buffer &recieved);
-		LoadResult  LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim);
+		ParseResult CreateRequestMessage(buffer::QueuingBuffer &recieved);
+		ParseResult ParseStartLine(buffer::QueuingBuffer &recieved);
+		ParseResult ParseHeaderSection(buffer::QueuingBuffer &recieved);
+		ParseResult ParseBody(buffer::QueuingBuffer &recieved);
+		LoadResult  LoadUntillDelim(buffer::QueuingBuffer &recieved, const std::string &delim);
 		void        SetStateAndClearLoadedBytes(State new_state);
 	};
 } // namespace server

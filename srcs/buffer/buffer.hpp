@@ -11,7 +11,7 @@
 namespace buffer
 {
 	// TODO rename
-	class Buffer
+	class QueuingBuffer
 	{
 	  protected:
 		typedef std::vector<char>     ByteArray;
@@ -22,13 +22,13 @@ namespace buffer
 		std::size_t idx_;
 
 	  public:
-		Buffer();
-		Buffer(const Buffer &other);
+		QueuingBuffer();
+		QueuingBuffer(const QueuingBuffer &other);
 		void              push_back(const std::vector<char> &data);
 		Emptiable<char>   PopChar();
 		std::vector<char> PopAll();
 		bool              empty() const;
-		Buffer           &operator=(const Buffer &other);
+		QueuingBuffer    &operator=(const QueuingBuffer &other);
 		std::size_t       size();
 
 	  private:

@@ -28,7 +28,7 @@ namespace server
 
 		RequestHolder &operator=(const RequestHolder &rhs);
 
-		void                  Parse(buffer::Buffer &recieved);
+		void                  Parse(buffer::QueuingBuffer &recieved);
 		Emptiable<IRequest *> PopFront();
 		std::size_t           size();
 		void                  OnEof();
