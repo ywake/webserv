@@ -5,7 +5,6 @@
 
 #include "buffer.hpp"
 #include "emptiable.hpp"
-#include "request.hpp"
 #include "request_parser.hpp"
 #include "result.hpp"
 #include "status_code.hpp"
