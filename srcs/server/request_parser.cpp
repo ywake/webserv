@@ -97,11 +97,21 @@ namespace server
 		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
 			return kInComplete;
 		}
-		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
-		// ctx_.request->SetRequestLine(RequestLine(ctx_.loaded_bytes));
-		// TODO RequestLineParserを作る時に修正する
-		SetStateAndClearLoadedBytes(kHeader);
-		return kInComplete;
+	}
+
+	void RequestParser::ParseMethod(buffer::QueuingBuffer &recieved)
+	{
+		(void)recieved;
+	}
+
+	void RequestParser::ParseRequestTarget(buffer::QueuingBuffer &recieved)
+	{
+		(void)recieved;
+	}
+
+	void RequestParser::ParseHttpVersion(buffer::QueuingBuffer &recieved)
+	{
+		(void)recieved;
 	}
 
 	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::QueuingBuffer &recieved)

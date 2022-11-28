@@ -90,6 +90,9 @@ namespace server
 		void        InitParseContext();
 		ParseResult CreateRequestMessage(buffer::QueuingBuffer &recieved);
 		ParseResult ParseStartLine(buffer::QueuingBuffer &recieved);
+		void        ParseMethod(buffer::QueuingBuffer &recieved);
+		void        ParseRequestTarget(buffer::QueuingBuffer &recieved);
+		void        ParseHttpVersion(buffer::QueuingBuffer &recieved);
 		ParseResult ParseHeaderSection(buffer::QueuingBuffer &recieved);
 		ParseResult ParseBody(buffer::QueuingBuffer &recieved);
 		LoadResult  LoadUntillDelim(
