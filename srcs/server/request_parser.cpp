@@ -144,12 +144,39 @@ namespace server
 
 	void RequestParser::ParseRequestTarget(buffer::QueuingBuffer &recieved)
 	{
-		(void)recieved;
+		LoadResult res = LoadUntillDelim(recieved, http::kSp, kMaxRequestTargetSize);
+		switch (res) {
+		case kParsable:
+			break;
+		case kNonParsable:
+			return;
+		case kOverMaxSize:
+			// TODO uri TOOLONG
+			throw http::BadRequestException();
+		}
+		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kSp.size());
+		ctx_.request->SetRequestTarget(TryConstructRequestTarget(ctx_.loaded_bytes));
+		SetStateAndClearLoadedBytes(kVersion);
 	}
 
 	void RequestParser::ParseHttpVersion(buffer::QueuingBuffer &recieved)
 	{
-		(void)recieved;
+
+	RequestTarget RequestParser::TryConstructRequestTarget(const ThinString &str)
+	{
+		const std::string &method = ctx_.request->GetMessage().GetMethod();
+
+		if (str.empty()) {
+			throw http::BadRequestException();
+		} else if (method == "CONNECT") {
+			return RequestTarget(AuthorityForm(str));
+		} else if (method == "OPTIONS" && str == "*") {
+			return RequestTarget(AsteriskForm(str));
+		} else if (str.at(0) == '/') {
+			return RequestTarget(OriginForm(str));
+		} else {
+			return RequestTarget(AbsoluteForm(str));
+		}
 	}
 
 	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::QueuingBuffer &recieved)

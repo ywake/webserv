@@ -89,12 +89,14 @@ namespace server
 		static IRequest      *CopyRequest(const IRequest *request);
 
 	  private:
-		void        InitParseContext();
-		ParseResult CreateRequestMessage(buffer::QueuingBuffer &recieved);
-		void        ParseStartLine(buffer::QueuingBuffer &recieved);
-		void        ParseMethod(buffer::QueuingBuffer &recieved);
-		void        ParseRequestTarget(buffer::QueuingBuffer &recieved);
-		void        ParseHttpVersion(buffer::QueuingBuffer &recieved);
+		void          InitParseContext();
+		ParseResult   CreateRequestMessage(buffer::QueuingBuffer &recieved);
+		void          ParseStartLine(buffer::QueuingBuffer &recieved);
+		void          ParseMethod(buffer::QueuingBuffer &recieved);
+		void          ParseRequestTarget(buffer::QueuingBuffer &recieved);
+		void          ParseHttpVersion(buffer::QueuingBuffer &recieved);
+		RequestTarget TryConstructRequestTarget(const ThinString &str);
+
 		ParseResult ParseHeaderSection(buffer::QueuingBuffer &recieved);
 		ParseResult ParseBody(buffer::QueuingBuffer &recieved);
 		LoadResult  LoadUntillDelim(
