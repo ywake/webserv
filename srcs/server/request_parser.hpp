@@ -17,7 +17,7 @@ namespace server
 	  private:
 		class Request : public IRequest
 		{
-		  public:
+		  private:
 			http::RequestMessage request_msg_;
 			http::StatusCode     error_code_;
 			ErrorType            error_type_;
@@ -31,9 +31,15 @@ namespace server
 			Request(const Request &other);
 			Request(const http::StatusCode &error_code, ErrorType error_type);
 			~Request();
-			void SetError(const http::StatusCode &error_code, ErrorType error_type);
+
 			bool IsErr() const;
 			bool IsFatal() const;
+			bool HasMessageBody() const;
+
+			void SetError(const http::StatusCode &error_code, ErrorType error_type);
+			void SetRequestLine(const RequestLine &request_line);
+			void SetHeaderSection(const HeaderSection &field_lines);
+			void SetBody(const std::string &body);
 
 			const http::RequestMessage &GetMessage() const;
 			const http::StatusCode     &GetErrStatusCode() const;
