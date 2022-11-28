@@ -37,7 +37,9 @@ namespace server
 			bool HasMessageBody() const;
 
 			void SetError(const http::StatusCode &error_code, ErrorType error_type);
-			void SetRequestLine(const RequestLine &request_line);
+			void SetMethod(const std::string &method);
+			void SetRequestTarget(const RequestTarget &request_target);
+			void SetHttpVersion(const std::string &http_version);
 			void SetHeaderSection(const HeaderSection &field_lines);
 			void SetBody(const std::string &body);
 
@@ -49,7 +51,9 @@ namespace server
 	  private:
 		enum State {
 			kStandBy,
-			kStartLine,
+			kMethod,
+			kTarget,
+			kVersion,
 			kHeader,
 			kBody
 		};
@@ -59,10 +63,13 @@ namespace server
 		};
 		enum LoadResult {
 			kParsable,
-			kNonParsable
+			kNonParsable,
+			kOverMaxSize
 		};
 
 	  private:
+		static const std::size_t kMaxRequestTargetSize;
+		static const std::size_t kMaxHeaderSectonSize;
 		struct Context {
 			State       state;
 			std::string loaded_bytes;
@@ -82,13 +89,20 @@ namespace server
 		static IRequest      *CopyRequest(const IRequest *request);
 
 	  private:
-		void        InitParseContext();
-		ParseResult CreateRequestMessage(buffer::QueuingBuffer &recieved);
-		ParseResult ParseStartLine(buffer::QueuingBuffer &recieved);
+		void          InitParseContext();
+		ParseResult   CreateRequestMessage(buffer::QueuingBuffer &recieved);
+		void          ParseStartLine(buffer::QueuingBuffer &recieved);
+		void          ParseMethod(buffer::QueuingBuffer &recieved);
+		void          ParseRequestTarget(buffer::QueuingBuffer &recieved);
+		void          ParseHttpVersion(buffer::QueuingBuffer &recieved);
+		RequestTarget TryConstructRequestTarget(const ThinString &str);
+
 		ParseResult ParseHeaderSection(buffer::QueuingBuffer &recieved);
 		ParseResult ParseBody(buffer::QueuingBuffer &recieved);
-		LoadResult  LoadUntillDelim(buffer::QueuingBuffer &recieved, const std::string &delim);
-		void        SetStateAndClearLoadedBytes(State new_state);
+		LoadResult  LoadUntillDelim(
+			 buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
+		 );
+		void SetStateAndClearLoadedBytes(State new_state);
 	};
 } // namespace server
 #endif
