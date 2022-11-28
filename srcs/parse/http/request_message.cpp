@@ -22,19 +22,9 @@ namespace http
 		request_line_ = request_line;
 	}
 
-	const std::string &RequestMessage::GetMethod() const
+	const RequestLine &RequestMessage::GetRequestLine() const
 	{
-		return method_;
-	}
-
-	const RequestTarget &RequestMessage::GetRequestTarget() const
-	{
-		return request_target_;
-	}
-
-	const std::string &RequestMessage::GetHttpVersion() const
-	{
-		return http_version_;
+		return request_line_;
 	}
 
 	RequestMessage &RequestMessage::operator=(const RequestMessage &rhs)
