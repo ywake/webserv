@@ -6,11 +6,11 @@
 #include "buffer.hpp"
 #include "emptiable.hpp"
 #include "i_request.hpp"
+#include "request_line_parser.hpp"
 #include "request_message.hpp"
 #include "result.hpp"
 #include "stateful_parser.hpp"
 #include "status_code.hpp"
-
 namespace server
 {
 	class RequestParser : public StatefulParser
@@ -50,19 +50,17 @@ namespace server
 	  private:
 		enum State {
 			kStandBy,
-			kMethod,
-			kTarget,
-			kVersion,
+			kStartLine,
 			kHeader,
 			kBody
 		};
 
 	  private:
-		static const std::size_t kMaxRequestTargetSize;
 		static const std::size_t kMaxHeaderSectonSize;
 		struct Context {
-			State    state;
-			Request *request;
+			State             state;
+			RequestLineParser request_line_parser;
+			Request          *request;
 		} ctx_;
 
 	  public:
@@ -73,21 +71,15 @@ namespace server
 		Emptiable<IRequest *> Parse(buffer::QueuingBuffer &recieved);
 		bool                  HasInCompleteData();
 		Emptiable<IRequest *> OnEof();
-		void                  DestroyParseContext();
 		static void           DestroyRequest(IRequest *&request);
 		static IRequest      *CopyRequest(const IRequest *request);
 
 	  private:
 		void        InitParseContext();
+		void        DestroyParseContext();
 		ParseResult CreateRequestMessage(buffer::QueuingBuffer &recieved);
-
-		ParseResult   ParseEachPhase(buffer::QueuingBuffer &recieved);
-		ParseResult   ParseStartLine(buffer::QueuingBuffer &recieved);
-		ParseResult   ParseMethod(buffer::QueuingBuffer &recieved);
-		ParseResult   ParseRequestTarget(buffer::QueuingBuffer &recieved);
-		ParseResult   ParseHttpVersion(buffer::QueuingBuffer &recieved);
-		RequestTarget TryConstructRequestTarget(const ThinString &str);
-
+		ParseResult ParseEachPhase(buffer::QueuingBuffer &recieved);
+		ParseResult ParseStartLine(buffer::QueuingBuffer &recieved);
 		ParseResult ParseHeaderSection(buffer::QueuingBuffer &recieved);
 		ParseResult ParseBody(buffer::QueuingBuffer &recieved);
 		State       GetNextState(State old_state);
