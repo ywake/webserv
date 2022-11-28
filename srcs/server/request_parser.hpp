@@ -58,8 +58,8 @@ namespace server
 			kBody
 		};
 		enum ParseResult {
-			kComplete,
-			kInComplete
+			kDone,
+			kInProgress
 		};
 		enum LoadResult {
 			kParsable,

@@ -65,7 +65,7 @@ namespace server
 			return Emptiable<IRequest *>();
 		}
 		try {
-			if (CreateRequestMessage(recieved) == kComplete) {
+			if (CreateRequestMessage(recieved) == kDone) {
 				Request *req = ctx_.request;
 				InitParseContext();
 				return req;
@@ -88,13 +88,13 @@ namespace server
 		case kTarget:
 		case kVersion:
 			ParseStartLine(recieved);
-			return kInComplete;
+			return kInProgress;
 		case kHeader:
 			return ParseHeaderSection(recieved);
 		case kBody:
 			return ParseBody(recieved);
 		}
-		return kInComplete;
+		return kInProgress;
 	}
 
 	void RequestParser::ParseStartLine(buffer::QueuingBuffer &recieved)
@@ -202,7 +202,7 @@ namespace server
 		case kParsable:
 			break;
 		case kNonParsable:
-			return kInComplete;
+			return kInProgress;
 		case kOverMaxSize:
 			throw http::BadRequestException();
 		}
@@ -211,14 +211,14 @@ namespace server
 		http::headers::ValidateHeaderSection(headers);
 		ctx_.request->SetHeaderSection(headers);
 		SetStateAndClearLoadedBytes(kBody);
-		return ctx_.request->HasMessageBody() ? kInComplete : kComplete;
+		return ctx_.request->HasMessageBody() ? kInProgress : kDone;
 	}
 
 	// TODO body
 	RequestParser::ParseResult RequestParser::ParseBody(buffer::QueuingBuffer &recieved)
 	{
 		(void)recieved;
-		return kComplete;
+		return kDone;
 	}
 
 	RequestParser::LoadResult RequestParser::LoadBytesWithDelim(
