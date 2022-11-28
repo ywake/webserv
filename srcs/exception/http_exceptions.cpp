@@ -20,4 +20,7 @@ namespace http
 
 	NotImplementedException::NotImplementedException() : HttpException(StatusCode::kNotImplemented)
 	{}
+
+	UriTooLongException ::UriTooLongException() : HttpException(StatusCode::kURITooLong) {}
+
 } // namespace http

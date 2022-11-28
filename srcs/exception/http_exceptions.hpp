@@ -1,5 +1,5 @@
-#ifndef HTTP_EXCEPTION_HPP
-#define HTTP_EXCEPTION_HPP
+#ifndef HTTP_EXCEPTIONS_HPP
+#define HTTP_EXCEPTIONS_HPP
 
 #include "status_code.hpp"
 #include <stdexcept>
@@ -28,6 +28,12 @@ namespace http
 	{
 	  public:
 		NotImplementedException();
+	};
+
+	class UriTooLongException : public HttpException
+	{
+	  public:
+		UriTooLongException();
 	};
 } // namespace http
 
