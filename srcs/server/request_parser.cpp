@@ -7,8 +7,8 @@
 
 namespace server
 {
-	const std::size_t kMaxRequestTargetSize = 8196;
-	const std::size_t kMaxHeaderSectonSize  = 8196 * 4;
+	const std::size_t RequestParser::kMaxRequestTargetSize = 8196;
+	const std::size_t RequestParser::kMaxHeaderSectonSize  = 8196 * 4;
 
 	RequestParser::RequestParser()
 	{
