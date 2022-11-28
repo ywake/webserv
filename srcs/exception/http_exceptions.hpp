@@ -14,8 +14,8 @@ namespace http
 	  public:
 		HttpException(StatusCode status_code);
 
-		StatusCode  GetStatusCode() const;
-		const char *what() const throw();
+		const StatusCode &GetStatusCode() const;
+		const char       *what() const throw();
 	};
 
 	class BadRequestException : public HttpException
