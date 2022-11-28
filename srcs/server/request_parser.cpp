@@ -2,7 +2,9 @@
 #include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
+#include "method_pool.hpp"
 #include "validate_headers.hpp"
+#include "validate_request_line.hpp"
 #include "webserv_utils.hpp"
 
 namespace server
@@ -114,7 +116,24 @@ namespace server
 
 	void RequestParser::ParseMethod(buffer::QueuingBuffer &recieved)
 	{
-		(void)recieved;
+		LoadResult res = LoadUntillDelim(recieved, http::kSp, http::MethodPool::kMaxMethodLength);
+		switch (res) {
+		case kParsable:
+			break;
+		case kNonParsable:
+			return;
+		case kOverMaxSize:
+			throw http::BadRequestException();
+		}
+		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kSp.size());
+		if (!http::abnf::IsMethod(ctx_.loaded_bytes)) {
+			throw http::BadRequestException();
+		}
+		if (!http::MethodPool::Contains(ctx_.loaded_bytes)) {
+			// TODO throw NotIMplemented
+		}
+		ctx_.request->SetMethod(ctx_.loaded_bytes);
+		SetStateAndClearLoadedBytes(kTarget);
 	}
 
 	void RequestParser::ParseRequestTarget(buffer::QueuingBuffer &recieved)
