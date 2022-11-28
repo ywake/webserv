@@ -106,8 +106,14 @@ namespace server
 
 	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::QueuingBuffer &recieved)
 	{
-		if (LoadUntillDelim(recieved, http::kEmptyLine) != kParsable) {
+		LoadResult res = LoadUntillDelim(recieved, http::kEmptyLine, kMaxHeaderSectonSize);
+		switch (res) {
+		case kParsable:
+			break;
+		case kNonParsable:
 			return kInComplete;
+		case kOverMaxSize:
+			throw http::BadRequestException();
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
 		const HeaderSection headers = HeaderSection(ctx_.loaded_bytes);
