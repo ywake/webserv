@@ -40,6 +40,21 @@ namespace http
 		http_version_ = http_version;
 	}
 
+	const std::string &RequestMessage::GetMethod() const
+	{
+		return method_;
+	}
+
+	const RequestTarget &RequestMessage::GetRequestTarget() const
+	{
+		return request_target_;
+	}
+
+	const std::string &RequestMessage::GetHttpVersion() const
+	{
+		return http_version_;
+	}
+
 	RequestMessage &RequestMessage::operator=(const RequestMessage &rhs)
 	{
 		if (this == &rhs) {
