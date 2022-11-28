@@ -91,7 +91,7 @@ namespace server
 	  private:
 		void        InitParseContext();
 		ParseResult CreateRequestMessage(buffer::QueuingBuffer &recieved);
-		ParseResult ParseStartLine(buffer::QueuingBuffer &recieved);
+		void        ParseStartLine(buffer::QueuingBuffer &recieved);
 		void        ParseMethod(buffer::QueuingBuffer &recieved);
 		void        ParseRequestTarget(buffer::QueuingBuffer &recieved);
 		void        ParseHttpVersion(buffer::QueuingBuffer &recieved);

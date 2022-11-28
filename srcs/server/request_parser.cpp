@@ -95,10 +95,20 @@ namespace server
 		return kInComplete;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::QueuingBuffer &recieved)
+	void RequestParser::ParseStartLine(buffer::QueuingBuffer &recieved)
 	{
-		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
-			return kInComplete;
+		switch (ctx_.state) {
+		case kMethod:
+			ParseMethod(recieved);
+			/* Falls through. */
+		case kTarget:
+			ParseRequestTarget(recieved);
+			/* Falls through. */
+		case kVersion:
+			ParseHttpVersion(recieved);
+			/* Falls through. */
+		default:
+			return;
 		}
 	}
 
