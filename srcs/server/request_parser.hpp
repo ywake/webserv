@@ -66,8 +66,8 @@ namespace server
 		};
 
 	  private:
-		static const std::size_t kMaxRequestTargetBytes;
-		static const std::size_t kMaxHeaderSectonBytes;
+		static const std::size_t kMaxRequestTargetSize;
+		static const std::size_t kMaxHeaderSectonSize;
 		static const k;
 		struct Context {
 			State       state;
