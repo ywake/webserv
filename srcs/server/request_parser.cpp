@@ -122,7 +122,8 @@ namespace server
 
 	void RequestParser::ParseMethod(buffer::QueuingBuffer &recieved)
 	{
-		LoadResult res = LoadUntillDelim(recieved, http::kSp, http::MethodPool::kMaxMethodLength);
+		LoadResult res =
+			LoadBytesWithDelim(recieved, http::kSp, http::MethodPool::kMaxMethodLength);
 		switch (res) {
 		case kParsable:
 			break;
@@ -144,7 +145,7 @@ namespace server
 
 	void RequestParser::ParseRequestTarget(buffer::QueuingBuffer &recieved)
 	{
-		LoadResult res = LoadUntillDelim(recieved, http::kSp, kMaxRequestTargetSize);
+		LoadResult res = LoadBytesWithDelim(recieved, http::kSp, kMaxRequestTargetSize);
 		switch (res) {
 		case kParsable:
 			break;
@@ -160,7 +161,7 @@ namespace server
 
 	void RequestParser::ParseHttpVersion(buffer::QueuingBuffer &recieved)
 	{
-		LoadResult res = LoadUntillDelim(recieved, http::kCrLf, http::kHttpVersion.size());
+		LoadResult res = LoadBytesWithDelim(recieved, http::kCrLf, http::kHttpVersion.size());
 		switch (res) {
 		case kParsable:
 			break;
@@ -196,7 +197,7 @@ namespace server
 
 	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::QueuingBuffer &recieved)
 	{
-		LoadResult res = LoadUntillDelim(recieved, http::kEmptyLine, kMaxHeaderSectonSize);
+		LoadResult res = LoadBytesWithDelim(recieved, http::kEmptyLine, kMaxHeaderSectonSize);
 		switch (res) {
 		case kParsable:
 			break;
@@ -220,7 +221,7 @@ namespace server
 		return kComplete;
 	}
 
-	RequestParser::LoadResult RequestParser::LoadUntillDelim(
+	RequestParser::LoadResult RequestParser::LoadBytesWithDelim(
 		buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
 	)
 	{

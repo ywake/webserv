@@ -99,7 +99,7 @@ namespace server
 
 		ParseResult ParseHeaderSection(buffer::QueuingBuffer &recieved);
 		ParseResult ParseBody(buffer::QueuingBuffer &recieved);
-		LoadResult  LoadUntillDelim(
+		LoadResult  LoadBytesWithDelim(
 			 buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
 		 );
 		void SetStateAndClearLoadedBytes(State new_state);
