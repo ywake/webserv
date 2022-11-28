@@ -80,10 +80,13 @@ namespace server
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			SetStateAndClearLoadedBytes(kStartLine);
+			SetStateAndClearLoadedBytes(kMethod);
 			/* Falls through. */
-		case kStartLine:
-			return ParseStartLine(recieved);
+		case kMethod:
+		case kTarget:
+		case kVersion:
+			ParseStartLine(recieved);
+			return kInComplete;
 		case kHeader:
 			return ParseHeaderSection(recieved);
 		case kBody:

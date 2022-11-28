@@ -51,7 +51,9 @@ namespace server
 	  private:
 		enum State {
 			kStandBy,
-			kStartLine,
+			kMethod,
+			kTarget,
+			kVersion,
 			kHeader,
 			kBody
 		};
