@@ -123,12 +123,12 @@ namespace server
 	void RequestParser::ParseMethod(buffer::QueuingBuffer &recieved)
 	{
 		switch (LoadBytesWithDelim(recieved, http::kSp, http::MethodPool::kMaxMethodLength)) {
+		case kOverMaxSize:
+			throw http::NotImplementedException();
 		case kParsable:
 			break;
 		case kNonParsable:
 			return;
-		case kOverMaxSize:
-			throw http::NotImplementedException();
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kSp.size());
 		if (!http::abnf::IsMethod(ctx_.loaded_bytes)) {
@@ -144,12 +144,12 @@ namespace server
 	void RequestParser::ParseRequestTarget(buffer::QueuingBuffer &recieved)
 	{
 		switch (LoadBytesWithDelim(recieved, http::kSp, kMaxRequestTargetSize)) {
+		case kOverMaxSize:
+			throw http::UriTooLongException();
 		case kParsable:
 			break;
 		case kNonParsable:
 			return;
-		case kOverMaxSize:
-			throw http::UriTooLongException();
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kSp.size());
 		ctx_.request->SetRequestTarget(TryConstructRequestTarget(ctx_.loaded_bytes));
@@ -159,12 +159,12 @@ namespace server
 	void RequestParser::ParseHttpVersion(buffer::QueuingBuffer &recieved)
 	{
 		switch (LoadBytesWithDelim(recieved, http::kCrLf, http::kHttpVersion.size())) {
+		case kOverMaxSize:
+			throw http::BadRequestException();
 		case kParsable:
 			break;
 		case kNonParsable:
 			return;
-		case kOverMaxSize:
-			throw http::BadRequestException();
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
 		if (!http::abnf::IsHttpVersion(ctx_.loaded_bytes)) {
@@ -194,12 +194,12 @@ namespace server
 	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::QueuingBuffer &recieved)
 	{
 		switch (LoadBytesWithDelim(recieved, http::kEmptyLine, kMaxHeaderSectonSize)) {
+		case kOverMaxSize:
+			throw http::BadRequestException();
 		case kParsable:
 			break;
 		case kNonParsable:
 			return kInProgress;
-		case kOverMaxSize:
-			throw http::BadRequestException();
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
 		const HeaderSection headers = HeaderSection(ctx_.loaded_bytes);
