@@ -129,14 +129,14 @@ namespace server
 		case kNonParsable:
 			return;
 		case kOverMaxSize:
-			throw http::BadRequestException(); // TODO NOtImpl
+			throw http::NotImplementedException();
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kSp.size());
 		if (!http::abnf::IsMethod(ctx_.loaded_bytes)) {
 			throw http::BadRequestException();
 		}
 		if (!http::MethodPool::Contains(ctx_.loaded_bytes)) {
-			// TODO throw NotIMplemented
+			throw http::NotImplementedException();
 		}
 		ctx_.request->SetMethod(ctx_.loaded_bytes);
 		SetStateAndClearLoadedBytes(kTarget);
@@ -151,8 +151,7 @@ namespace server
 		case kNonParsable:
 			return;
 		case kOverMaxSize:
-			// TODO uri TOOLONG
-			throw http::BadRequestException();
+			throw http::UriTooLongException();
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kSp.size());
 		ctx_.request->SetRequestTarget(TryConstructRequestTarget(ctx_.loaded_bytes));
