@@ -102,9 +102,15 @@ namespace server
 		switch (ctx_.state) {
 		case kMethod:
 			ParseMethod(recieved);
+			if (recieved.empty()) {
+				return;
+			}
 			/* Falls through. */
 		case kTarget:
 			ParseRequestTarget(recieved);
+			if (recieved.empty()) {
+				return;
+			}
 			/* Falls through. */
 		case kVersion:
 			ParseHttpVersion(recieved);
