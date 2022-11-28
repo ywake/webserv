@@ -61,10 +61,14 @@ namespace server
 		};
 		enum LoadResult {
 			kParsable,
-			kNonParsable
+			kNonParsable,
+			kOverMaxSize
 		};
 
 	  private:
+		static const std::size_t kMaxRequestTargetBytes;
+		static const std::size_t kMaxHeaderSectonBytes;
+		static const k;
 		struct Context {
 			State       state;
 			std::string loaded_bytes;
@@ -89,8 +93,10 @@ namespace server
 		ParseResult ParseStartLine(buffer::QueuingBuffer &recieved);
 		ParseResult ParseHeaderSection(buffer::QueuingBuffer &recieved);
 		ParseResult ParseBody(buffer::QueuingBuffer &recieved);
-		LoadResult  LoadUntillDelim(buffer::QueuingBuffer &recieved, const std::string &delim);
-		void        SetStateAndClearLoadedBytes(State new_state);
+		LoadResult  LoadUntillDelim(
+			 buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
+		 );
+		void SetStateAndClearLoadedBytes(State new_state);
 	};
 } // namespace server
 #endif

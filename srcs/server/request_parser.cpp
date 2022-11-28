@@ -7,6 +7,9 @@
 
 namespace server
 {
+	const std::size_t kMaxRequestTargetBytes = 8196;
+	const std::size_t kMaxHeaderSectonBytes  = 8196 * 4;
+
 	RequestParser::RequestParser()
 	{
 		InitParseContext();
@@ -121,8 +124,9 @@ namespace server
 		return kComplete;
 	}
 
-	RequestParser::LoadResult
-	RequestParser::LoadUntillDelim(buffer::QueuingBuffer &recieved, const std::string &delim)
+	RequestParser::LoadResult RequestParser::LoadUntillDelim(
+		buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
+	)
 	{
 		for (;;) {
 			if (recieved.empty()) {
@@ -130,6 +134,9 @@ namespace server
 			}
 			Emptiable<char> c = recieved.PopChar();
 			ctx_.loaded_bytes += c.Value();
+			if (ctx_.loaded_bytes.size() > max_bytes) {
+				return kOverMaxSize;
+			}
 			if (utils::EndWith(ctx_.loaded_bytes, delim)) {
 				return kParsable;
 			}
