@@ -88,3 +88,33 @@ bool RequestLine::operator==(const RequestLine &rhs) const
 	return method_ == rhs.method_ && request_target_ == rhs.request_target_ &&
 		   http_version_ == rhs.http_version_;
 }
+
+void RequestLine::SetMethod(const std::string &method)
+{
+	method_ = method;
+}
+
+void RequestLine::SetRequestTarget(const RequestTarget &request_target)
+{
+	request_target_ = request_target;
+}
+
+void RequestLine::SetHttpVersion(const std::string &http_version)
+{
+	http_version_ = http_version;
+}
+
+const std::string &RequestLine::GetMethod() const
+{
+	return method_;
+}
+
+const RequestTarget &RequestLine::GetRequestTarget() const
+{
+	return request_target_;
+}
+
+const std::string &RequestLine::GetHttpVersion() const
+{
+	return http_version_;
+}
