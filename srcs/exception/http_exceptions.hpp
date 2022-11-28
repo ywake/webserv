@@ -1,5 +1,5 @@
-#ifndef HTTP_EXCEPTION_HPP
-#define HTTP_EXCEPTION_HPP
+#ifndef HTTP_EXCEPTIONS_HPP
+#define HTTP_EXCEPTIONS_HPP
 
 #include "status_code.hpp"
 #include <stdexcept>
@@ -14,8 +14,8 @@ namespace http
 	  public:
 		HttpException(StatusCode status_code);
 
-		StatusCode  GetStatusCode() const;
-		const char *what() const throw();
+		const StatusCode &GetStatusCode() const;
+		const char       *what() const throw();
 	};
 
 	class BadRequestException : public HttpException
@@ -28,6 +28,12 @@ namespace http
 	{
 	  public:
 		NotImplementedException();
+	};
+
+	class UriTooLongException : public HttpException
+	{
+	  public:
+		UriTooLongException();
 	};
 } // namespace http
 
