@@ -58,15 +58,6 @@ namespace server
 			kHeader,
 			kBody
 		};
-		enum ParseResult {
-			kDone,
-			kInProgress
-		};
-		enum LoadResult {
-			kParsable,
-			kNonParsable,
-			kOverMaxSize
-		};
 
 	  private:
 		static const std::size_t kMaxRequestTargetSize;
