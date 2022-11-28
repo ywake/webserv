@@ -21,9 +21,10 @@ namespace http
 			const std::string   &message_body
 		);
 		~RequestMessage();
-		void            SetRequestLine(const RequestLine &request_line);
-		RequestMessage &operator=(const RequestMessage &rhs);
-		bool            operator==(const RequestMessage &rhs) const;
+		void               SetRequestLine(const RequestLine &request_line);
+		const RequestLine &GetRequestLine() const;
+		RequestMessage    &operator=(const RequestMessage &rhs);
+		bool               operator==(const RequestMessage &rhs) const;
 	};
 } // namespace http
 #endif
