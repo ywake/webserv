@@ -129,7 +129,7 @@ namespace server
 		case kNonParsable:
 			return;
 		case kOverMaxSize:
-			throw http::BadRequestException();
+			throw http::BadRequestException(); // TODO NOtImpl
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kSp.size());
 		if (!http::abnf::IsMethod(ctx_.loaded_bytes)) {
@@ -161,6 +161,22 @@ namespace server
 
 	void RequestParser::ParseHttpVersion(buffer::QueuingBuffer &recieved)
 	{
+		LoadResult res = LoadUntillDelim(recieved, http::kCrLf, http::kHttpVersion.size());
+		switch (res) {
+		case kParsable:
+			break;
+		case kNonParsable:
+			return;
+		case kOverMaxSize:
+			throw http::BadRequestException();
+		}
+		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
+		if (!http::abnf::IsHttpVersion(ctx_.loaded_bytes)) {
+			throw http::BadRequestException();
+		}
+		ctx_.request->SetHttpVersion(ctx_.loaded_bytes);
+		SetStateAndClearLoadedBytes(kHeader);
+	}
 
 	RequestTarget RequestParser::TryConstructRequestTarget(const ThinString &str)
 	{
