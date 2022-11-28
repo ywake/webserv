@@ -68,7 +68,6 @@ namespace server
 	  private:
 		static const std::size_t kMaxRequestTargetSize;
 		static const std::size_t kMaxHeaderSectonSize;
-		static const k;
 		struct Context {
 			State       state;
 			std::string loaded_bytes;
