@@ -30,6 +30,14 @@ class RequestLine
 	RequestLine &operator=(const RequestLine &rhs);
 	bool         operator==(const RequestLine &rhs) const;
 
+	void SetMethod(const std::string &method);
+	void SetRequestTarget(const RequestTarget &request_target);
+	void SetHttpVersion(const std::string &http_version);
+
+	const std::string   &GetMethod() const;
+	const RequestTarget &GetRequestTarget() const;
+	const std::string   &GetHttpVersion() const;
+
   private:
 	RequestTarget TryConstructRequestTarget(const ThinString &str);
 };
