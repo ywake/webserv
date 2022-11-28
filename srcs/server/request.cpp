@@ -44,9 +44,19 @@ namespace server
 		error_type_ = error_type;
 	}
 
-	void RequestParser::Request::SetRequestLine(const RequestLine &request_line)
+	void RequestParser::Request::SetMethod(const std::string &method)
 	{
-		request_msg_.SetRequestLine(request_line);
+		request_msg_.SetMethod(method);
+	}
+
+	void RequestParser::Request::SetRequestTarget(const RequestTarget &request_target)
+	{
+		request_msg_.SetRequestTarget(request_target);
+	}
+
+	void RequestParser::Request::SetHttpVersion(const std::string &http_version)
+	{
+		request_msg_.SetHttpVersion(http_version);
 	}
 
 	void RequestParser::Request::SetHeaderSection(const HeaderSection &field_lines)

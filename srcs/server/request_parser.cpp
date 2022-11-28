@@ -95,7 +95,7 @@ namespace server
 			return kInComplete;
 		}
 		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
-		ctx_.request->SetRequestLine(RequestLine(ctx_.loaded_bytes));
+		// ctx_.request->SetRequestLine(RequestLine(ctx_.loaded_bytes));
 		SetStateAndClearLoadedBytes(kHeader);
 		return kInComplete;
 	}
