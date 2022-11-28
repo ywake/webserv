@@ -25,9 +25,14 @@ namespace http
 			const std::string   &message_body
 		);
 		~RequestMessage();
-		void            SetMethod(const std::string &method);
-		void            SetRequestTarget(const RequestTarget &request_target);
-		void            SetHttpVersion(const std::string &http_version);
+		void SetMethod(const std::string &method);
+		void SetRequestTarget(const RequestTarget &request_target);
+		void SetHttpVersion(const std::string &http_version);
+
+		const std::string   &GetMethod() const;
+		const RequestTarget &GetRequestTarget() const;
+		const std::string   &GetHttpVersion() const;
+
 		RequestMessage &operator=(const RequestMessage &rhs);
 		bool            operator==(const RequestMessage &rhs) const;
 	};
