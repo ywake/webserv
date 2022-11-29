@@ -37,7 +37,9 @@ namespace server
 			bool HasMessageBody() const;
 
 			void SetError(const http::StatusCode &error_code, ErrorType error_type);
-			void SetRequestLine(const RequestLine &request_line);
+			void SetMethod(const std::string &method);
+			void SetRequestTarget(const RequestTarget &request_target);
+			void SetHttpVersion(const std::string &http_version);
 			void SetHeaderSection(const HeaderSection &field_lines);
 			void SetBody(const std::string &body);
 
