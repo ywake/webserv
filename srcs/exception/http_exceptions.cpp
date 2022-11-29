@@ -6,9 +6,9 @@ namespace http
 		: std::exception(), status_code_(status_code)
 	{}
 
-	StatusCode HttpException::GetStatusCode() const
+	const StatusCode &HttpException::GetStatusCode() const
 	{
-		return status_code_.GetCode();
+		return status_code_;
 	}
 
 	const char *HttpException::what() const throw()
@@ -20,4 +20,7 @@ namespace http
 
 	NotImplementedException::NotImplementedException() : HttpException(StatusCode::kNotImplemented)
 	{}
+
+	UriTooLongException ::UriTooLongException() : HttpException(StatusCode::kURITooLong) {}
+
 } // namespace http
