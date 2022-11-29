@@ -54,9 +54,9 @@ namespace server
 
 	void RequestParser::InitParseContext()
 	{
-		ctx_.loaded_bytes = std::string();
-		ctx_.state        = kStandBy;
-		ctx_.request      = new Request();
+		ClearLoadedBytes();
+		ctx_.state   = kStandBy;
+		ctx_.request = new Request();
 	}
 
 	Emptiable<IRequest *> RequestParser::Parse(buffer::QueuingBuffer &recieved)
@@ -77,18 +77,34 @@ namespace server
 		}
 	}
 
-	// TODO トレイラ無視してる
 	RequestParser::ParseResult RequestParser::CreateRequestMessage(buffer::QueuingBuffer &recieved)
+	{
+		while (!recieved.empty()) {
+			switch (ParseEachPhase(recieved)) {
+			case kInProgress:
+				return kInProgress;
+			case kDone:
+				if (ctx_.state == kBody ||
+					(ctx_.state == kHeader && !ctx_.request->HasMessageBody())) {
+					return kDone;
+				}
+				ctx_.state = GetNextState(ctx_.state);
+				ClearLoadedBytes();
+			}
+		}
+		return kInProgress;
+	}
+
+	// TODO トレイラ無視してる
+	RequestParser::ParseResult RequestParser::ParseEachPhase(buffer::QueuingBuffer &recieved)
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			SetStateAndClearLoadedBytes(kMethod);
-			/* Falls through. */
+			return kInProgress;
 		case kMethod:
 		case kTarget:
 		case kVersion:
-			ParseStartLine(recieved);
-			return kInProgress;
+			return ParseStartLine(recieved);
 		case kHeader:
 			return ParseHeaderSection(recieved);
 		case kBody:
@@ -97,30 +113,21 @@ namespace server
 		return kInProgress;
 	}
 
-	void RequestParser::ParseStartLine(buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::QueuingBuffer &recieved)
 	{
 		switch (ctx_.state) {
 		case kMethod:
-			ParseMethod(recieved);
-			if (recieved.empty()) {
-				return;
-			}
-			/* Falls through. */
+			return ParseMethod(recieved);
 		case kTarget:
-			ParseRequestTarget(recieved);
-			if (recieved.empty()) {
-				return;
-			}
-			/* Falls through. */
+			return ParseRequestTarget(recieved);
 		case kVersion:
-			ParseHttpVersion(recieved);
-			/* Falls through. */
+			return ParseHttpVersion(recieved);
 		default:
-			return;
+			return kInProgress;
 		}
 	}
 
-	void RequestParser::ParseMethod(buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseMethod(buffer::QueuingBuffer &recieved)
 	{
 		switch (LoadBytesWithDelim(recieved, http::kSp, http::MethodPool::kMaxMethodLength)) {
 		case kOverMaxSize:
@@ -134,14 +141,14 @@ namespace server
 				throw http::NotImplementedException();
 			}
 			ctx_.request->SetMethod(ctx_.loaded_bytes);
-			SetStateAndClearLoadedBytes(kTarget);
-			break;
+			return kDone;
 		case kNonParsable:
-			return;
+			return kInProgress;
 		}
+		return kInProgress;
 	}
 
-	void RequestParser::ParseRequestTarget(buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseRequestTarget(buffer::QueuingBuffer &recieved)
 	{
 		switch (LoadBytesWithDelim(recieved, http::kSp, kMaxRequestTargetSize)) {
 		case kOverMaxSize:
@@ -149,14 +156,14 @@ namespace server
 		case kParsable:
 			ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kSp.size());
 			ctx_.request->SetRequestTarget(TryConstructRequestTarget(ctx_.loaded_bytes));
-			SetStateAndClearLoadedBytes(kVersion);
-			break;
+			return kDone;
 		case kNonParsable:
-			return;
+			return kInProgress;
 		}
+		return kInProgress;
 	}
 
-	void RequestParser::ParseHttpVersion(buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseHttpVersion(buffer::QueuingBuffer &recieved)
 	{
 		switch (LoadBytesWithDelim(recieved, http::kCrLf, http::kHttpVersion.size())) {
 		case kOverMaxSize:
@@ -167,11 +174,11 @@ namespace server
 				throw http::BadRequestException();
 			}
 			ctx_.request->SetHttpVersion(ctx_.loaded_bytes);
-			SetStateAndClearLoadedBytes(kHeader);
-			break;
+			return kDone;
 		case kNonParsable:
-			return;
+			return kInProgress;
 		}
+		return kInProgress;
 	}
 
 	RequestTarget RequestParser::TryConstructRequestTarget(const ThinString &str)
@@ -201,8 +208,7 @@ namespace server
 			const HeaderSection headers = HeaderSection(ctx_.loaded_bytes);
 			http::headers::ValidateHeaderSection(headers);
 			ctx_.request->SetHeaderSection(headers);
-			SetStateAndClearLoadedBytes(kBody);
-			return ctx_.request->HasMessageBody() ? kInProgress : kDone;
+			return kDone;
 		}
 		case kNonParsable:
 			return kInProgress;
@@ -236,10 +242,28 @@ namespace server
 		}
 	}
 
-	void RequestParser::SetStateAndClearLoadedBytes(State new_state)
+	RequestParser::State RequestParser::GetNextState(State old_state)
+	{
+		switch (old_state) {
+		case kStandBy:
+			return kMethod;
+		case kMethod:
+			return kTarget;
+		case kTarget:
+			return kVersion;
+		case kVersion:
+			return kHeader;
+		case kHeader:
+			return kBody;
+		case kBody:
+			return kStandBy;
+		}
+		return kStandBy;
+	}
+
+	void RequestParser::ClearLoadedBytes()
 	{
 		ctx_.loaded_bytes = std::string();
-		ctx_.state        = new_state;
 	}
 
 	void RequestParser::DestroyParseContext()

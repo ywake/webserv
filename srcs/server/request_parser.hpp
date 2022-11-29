@@ -89,12 +89,14 @@ namespace server
 		static IRequest      *CopyRequest(const IRequest *request);
 
 	  private:
-		void          InitParseContext();
-		ParseResult   CreateRequestMessage(buffer::QueuingBuffer &recieved);
-		void          ParseStartLine(buffer::QueuingBuffer &recieved);
-		void          ParseMethod(buffer::QueuingBuffer &recieved);
-		void          ParseRequestTarget(buffer::QueuingBuffer &recieved);
-		void          ParseHttpVersion(buffer::QueuingBuffer &recieved);
+		void        InitParseContext();
+		ParseResult CreateRequestMessage(buffer::QueuingBuffer &recieved);
+
+		ParseResult   ParseEachPhase(buffer::QueuingBuffer &recieved);
+		ParseResult   ParseStartLine(buffer::QueuingBuffer &recieved);
+		ParseResult   ParseMethod(buffer::QueuingBuffer &recieved);
+		ParseResult   ParseRequestTarget(buffer::QueuingBuffer &recieved);
+		ParseResult   ParseHttpVersion(buffer::QueuingBuffer &recieved);
 		RequestTarget TryConstructRequestTarget(const ThinString &str);
 
 		ParseResult ParseHeaderSection(buffer::QueuingBuffer &recieved);
@@ -102,7 +104,8 @@ namespace server
 		LoadResult  LoadBytesWithDelim(
 			 buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
 		 );
-		void SetStateAndClearLoadedBytes(State new_state);
+		State GetNextState(State old_state);
+		void  ClearLoadedBytes();
 	};
 } // namespace server
 #endif
