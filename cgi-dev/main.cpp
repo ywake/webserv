@@ -4,14 +4,19 @@
 
 int child_task(int fd[2])
 {
-	(void)fd;
+	close(fd[0]);
+	dup2(fd[1], STDOUT_FILENO);
+	close(fd[1]);
+
+	char *argv[] = {(char *)"/usr/bin/python3", (char *)"index.py", NULL};
+	execve("/usr/bin/python3", argv, NULL);
+	return 0;
 
 	return 0;
 }
 
 void parent_task(int pid, int fd[2])
 {
-	(void)fd;
 	int status;
 
 	waitpid(pid, &status, 0);
@@ -21,6 +26,13 @@ void parent_task(int pid, int fd[2])
 		std::cout << "Child exited with signal " << WTERMSIG(status) << std::endl;
 	else
 		std::cout << "Child exited with unknown status" << std::endl;
+
+	close(fd[1]);
+
+	char buf[1024];
+	int  res = read(fd[0], buf, 1023);
+	buf[res] = '\0';
+	std::cout << buf << std::endl;
 }
 
 int main(void)
