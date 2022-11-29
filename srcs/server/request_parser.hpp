@@ -8,11 +8,12 @@
 #include "i_request.hpp"
 #include "request_message.hpp"
 #include "result.hpp"
+#include "stateful_parser.hpp"
 #include "status_code.hpp"
 
 namespace server
 {
-	class RequestParser
+	class RequestParser : public StatefulParser
 	{
 	  private:
 		class Request : public IRequest
@@ -57,23 +58,13 @@ namespace server
 			kHeader,
 			kBody
 		};
-		enum ParseResult {
-			kDone,
-			kInProgress
-		};
-		enum LoadResult {
-			kParsable,
-			kNonParsable,
-			kOverMaxSize
-		};
 
 	  private:
 		static const std::size_t kMaxRequestTargetSize;
 		static const std::size_t kMaxHeaderSectonSize;
 		struct Context {
-			State       state;
-			std::string loaded_bytes;
-			Request    *request;
+			State    state;
+			Request *request;
 		} ctx_;
 
 	  public:
@@ -101,11 +92,7 @@ namespace server
 
 		ParseResult ParseHeaderSection(buffer::QueuingBuffer &recieved);
 		ParseResult ParseBody(buffer::QueuingBuffer &recieved);
-		LoadResult  LoadBytesWithDelim(
-			 buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
-		 );
-		State GetNextState(State old_state);
-		void  ClearLoadedBytes();
+		State       GetNextState(State old_state);
 	};
 } // namespace server
 #endif
