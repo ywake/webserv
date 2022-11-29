@@ -2,57 +2,29 @@
 
 namespace http
 {
-	RequestMessage::RequestMessage() : HttpMessage(), method_(), request_target_(), http_version_()
-	{}
+	RequestMessage::RequestMessage() : HttpMessage(), request_line_() {}
 
 	RequestMessage::RequestMessage(const RequestMessage &other) : HttpMessage(other)
 	{
-		method_         = other.method_;
-		request_target_ = other.request_target_;
-		http_version_   = other.http_version_;
+		*this = other;
 	}
 
 	RequestMessage::RequestMessage(
-		const std::string   &method,
-		const RequestTarget &request_target,
-		const std::string   &http_version,
+		const RequestLine   &request_line,
 		const HeaderSection &field_lines,
 		const std::string   &message_body
 	)
-		: HttpMessage(field_lines, message_body),
-		  method_(method),
-		  request_target_(request_target),
-		  http_version_(http_version)
+		: HttpMessage(field_lines, message_body), request_line_(request_line)
 	{}
 
-	void RequestMessage::SetMethod(const std::string &method)
+	void RequestMessage::SetRequestLine(const RequestLine &request_line)
 	{
-		method_ = method;
+		request_line_ = request_line;
 	}
 
-	void RequestMessage::SetRequestTarget(const RequestTarget &request_target)
+	const RequestLine &RequestMessage::GetRequestLine() const
 	{
-		request_target_ = request_target;
-	}
-
-	void RequestMessage::SetHttpVersion(const std::string &http_version)
-	{
-		http_version_ = http_version;
-	}
-
-	const std::string &RequestMessage::GetMethod() const
-	{
-		return method_;
-	}
-
-	const RequestTarget &RequestMessage::GetRequestTarget() const
-	{
-		return request_target_;
-	}
-
-	const std::string &RequestMessage::GetHttpVersion() const
-	{
-		return http_version_;
+		return request_line_;
 	}
 
 	RequestMessage &RequestMessage::operator=(const RequestMessage &rhs)
@@ -60,17 +32,14 @@ namespace http
 		if (this == &rhs) {
 			return *this;
 		}
+		request_line_ = rhs.request_line_;
 		HttpMessage::operator=(rhs);
-		method_         = rhs.method_;
-		request_target_ = rhs.request_target_;
-		http_version_   = rhs.http_version_;
 		return *this;
 	}
 
 	bool RequestMessage::operator==(const RequestMessage &rhs) const
 	{
-		return HttpMessage::operator==(rhs) && method_ == rhs.method_ &&
-			   request_target_ == rhs.request_target_ && http_version_ == rhs.http_version_;
+		return HttpMessage::operator==(rhs) && request_line_ == rhs.request_line_;
 	}
 
 	RequestMessage::~RequestMessage() {}

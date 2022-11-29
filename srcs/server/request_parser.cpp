@@ -9,18 +9,16 @@
 
 namespace server
 {
-	const std::size_t RequestParser::kMaxRequestTargetSize = 8196;
-	const std::size_t RequestParser::kMaxHeaderSectonSize  = 8196 * 4;
+	const std::size_t RequestParser::kMaxHeaderSectonSize = 8196 * 4;
 
 	RequestParser::RequestParser()
 	{
 		InitParseContext();
 	}
 
-	RequestParser::RequestParser(const RequestParser &other) : StatefulParser(other)
+	RequestParser::RequestParser(const RequestParser &other) : StatefulParser()
 	{
-		ctx_.state    = other.ctx_.state;
-		*ctx_.request = *other.ctx_.request;
+		*this = other;
 	}
 
 	RequestParser &RequestParser::operator=(const RequestParser &rhs)
@@ -29,8 +27,9 @@ namespace server
 			return *this;
 		}
 		StatefulParser::operator=(rhs);
-		ctx_.state    = rhs.ctx_.state;
-		*ctx_.request = *rhs.ctx_.request;
+		ctx_.request_line_parser = rhs.ctx_.request_line_parser;
+		ctx_.state               = rhs.ctx_.state;
+		*ctx_.request            = *rhs.ctx_.request;
 		return *this;
 	}
 
@@ -56,8 +55,9 @@ namespace server
 	void RequestParser::InitParseContext()
 	{
 		ClearLoadedBytes();
-		ctx_.state   = kStandBy;
-		ctx_.request = new Request();
+		ctx_.request_line_parser = RequestLineParser();
+		ctx_.state               = kStandBy;
+		ctx_.request             = new Request();
 	}
 
 	Emptiable<IRequest *> RequestParser::Parse(buffer::QueuingBuffer &recieved)
@@ -102,9 +102,7 @@ namespace server
 		switch (ctx_.state) {
 		case kStandBy:
 			return kInProgress;
-		case kMethod:
-		case kTarget:
-		case kVersion:
+		case kStartLine:
 			return ParseStartLine(recieved);
 		case kHeader:
 			return ParseHeaderSection(recieved);
@@ -116,87 +114,12 @@ namespace server
 
 	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::QueuingBuffer &recieved)
 	{
-		switch (ctx_.state) {
-		case kMethod:
-			return ParseMethod(recieved);
-		case kTarget:
-			return ParseRequestTarget(recieved);
-		case kVersion:
-			return ParseHttpVersion(recieved);
-		default:
+		Emptiable<RequestLine> req_line = ctx_.request_line_parser.Parse(recieved);
+		if (req_line.empty()) {
 			return kInProgress;
 		}
-	}
-
-	RequestParser::ParseResult RequestParser::ParseMethod(buffer::QueuingBuffer &recieved)
-	{
-		switch (LoadBytesWithDelim(recieved, http::kSp, http::MethodPool::kMaxMethodLength)) {
-		case kOverMaxSize:
-			throw http::NotImplementedException();
-		case kParsable:
-			loaded_bytes_.erase(loaded_bytes_.size() - http::kSp.size());
-			if (!http::abnf::IsMethod(loaded_bytes_)) {
-				throw http::BadRequestException();
-			}
-			if (!http::MethodPool::Contains(loaded_bytes_)) {
-				throw http::NotImplementedException();
-			}
-			ctx_.request->SetMethod(loaded_bytes_);
-			return kDone;
-		case kNonParsable:
-			return kInProgress;
-		}
-		return kInProgress;
-	}
-
-	RequestParser::ParseResult RequestParser::ParseRequestTarget(buffer::QueuingBuffer &recieved)
-	{
-		switch (LoadBytesWithDelim(recieved, http::kSp, kMaxRequestTargetSize)) {
-		case kOverMaxSize:
-			throw http::UriTooLongException();
-		case kParsable:
-			loaded_bytes_.erase(loaded_bytes_.size() - http::kSp.size());
-			ctx_.request->SetRequestTarget(TryConstructRequestTarget(loaded_bytes_));
-			return kDone;
-		case kNonParsable:
-			return kInProgress;
-		}
-		return kInProgress;
-	}
-
-	RequestParser::ParseResult RequestParser::ParseHttpVersion(buffer::QueuingBuffer &recieved)
-	{
-		switch (LoadBytesWithDelim(recieved, http::kCrLf, http::kHttpVersion.size())) {
-		case kOverMaxSize:
-			throw http::BadRequestException();
-		case kParsable:
-			loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
-			if (!http::abnf::IsHttpVersion(loaded_bytes_)) {
-				throw http::BadRequestException();
-			}
-			ctx_.request->SetHttpVersion(loaded_bytes_);
-			return kDone;
-		case kNonParsable:
-			return kInProgress;
-		}
-		return kInProgress;
-	}
-
-	RequestTarget RequestParser::TryConstructRequestTarget(const ThinString &str)
-	{
-		const std::string &method = ctx_.request->GetMessage().GetMethod();
-
-		if (str.empty()) {
-			throw http::BadRequestException();
-		} else if (method == "CONNECT") {
-			return RequestTarget(AuthorityForm(str));
-		} else if (method == "OPTIONS" && str == "*") {
-			return RequestTarget(AsteriskForm(str));
-		} else if (str.at(0) == '/') {
-			return RequestTarget(OriginForm(str));
-		} else {
-			return RequestTarget(AbsoluteForm(str));
-		}
+		ctx_.request->SetRequestLine(req_line.Value());
+		return kDone;
 	}
 
 	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::QueuingBuffer &recieved)
@@ -228,12 +151,8 @@ namespace server
 	{
 		switch (old_state) {
 		case kStandBy:
-			return kMethod;
-		case kMethod:
-			return kTarget;
-		case kTarget:
-			return kVersion;
-		case kVersion:
+			return kStartLine;
+		case kStartLine:
 			return kHeader;
 		case kHeader:
 			return kBody;
