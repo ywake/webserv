@@ -51,20 +51,25 @@ namespace server
 	  private:
 		enum State {
 			kStandBy,
-			kStartLine,
+			kMethod,
+			kTarget,
+			kVersion,
 			kHeader,
 			kBody
 		};
 		enum ParseResult {
-			kComplete,
-			kInComplete
+			kDone,
+			kInProgress
 		};
 		enum LoadResult {
 			kParsable,
-			kNonParsable
+			kNonParsable,
+			kOverMaxSize
 		};
 
 	  private:
+		static const std::size_t kMaxRequestTargetSize;
+		static const std::size_t kMaxHeaderSectonSize;
 		struct Context {
 			State       state;
 			std::string loaded_bytes;
@@ -84,13 +89,20 @@ namespace server
 		static IRequest      *CopyRequest(const IRequest *request);
 
 	  private:
-		void        InitParseContext();
-		ParseResult CreateRequestMessage(buffer::QueuingBuffer &recieved);
-		ParseResult ParseStartLine(buffer::QueuingBuffer &recieved);
+		void          InitParseContext();
+		ParseResult   CreateRequestMessage(buffer::QueuingBuffer &recieved);
+		void          ParseStartLine(buffer::QueuingBuffer &recieved);
+		void          ParseMethod(buffer::QueuingBuffer &recieved);
+		void          ParseRequestTarget(buffer::QueuingBuffer &recieved);
+		void          ParseHttpVersion(buffer::QueuingBuffer &recieved);
+		RequestTarget TryConstructRequestTarget(const ThinString &str);
+
 		ParseResult ParseHeaderSection(buffer::QueuingBuffer &recieved);
 		ParseResult ParseBody(buffer::QueuingBuffer &recieved);
-		LoadResult  LoadUntillDelim(buffer::QueuingBuffer &recieved, const std::string &delim);
-		void        SetStateAndClearLoadedBytes(State new_state);
+		LoadResult  LoadBytesWithDelim(
+			 buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
+		 );
+		void SetStateAndClearLoadedBytes(State new_state);
 	};
 } // namespace server
 #endif
