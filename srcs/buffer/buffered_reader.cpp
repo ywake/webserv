@@ -6,6 +6,25 @@ namespace q_buffer
 {
 	const std::size_t BufferedReader::kDefaultBufferSize = 1024;
 
+	BufferedReader::BufferedReader(std::size_t buffer_size)
+		: QueuingBuffer(), buffer_size_(buffer_size)
+	{}
+
+	BufferedReader::BufferedReader(const BufferedReader &other) : QueuingBuffer()
+	{
+		*this = other;
+	}
+
+	BufferedReader &BufferedReader::operator=(const BufferedReader &rhs)
+	{
+		if (&rhs == this) {
+			return *this;
+		}
+		QueuingBuffer::operator=(rhs);
+		buffer_size_ = rhs.buffer_size_;
+		return *this;
+	}
+
 	ssize_t BufferedReader::Read(int fd)
 	{
 		buf_.push_back(ByteArray(buffer_size_));

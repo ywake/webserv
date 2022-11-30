@@ -16,7 +16,7 @@ namespace q_buffer
 	  public:
 		BufferedReader(std::size_t buffer_size = kDefaultBufferSize);
 		BufferedReader(const BufferedReader &other);
-		BufferedReader &operator=(const BufferedReader &other);
+		BufferedReader &operator=(const BufferedReader &rhs);
 		ssize_t         Read(int fd);
 	};
 } // namespace q_buffer
