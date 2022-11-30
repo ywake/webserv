@@ -1,5 +1,5 @@
-#ifndef BUFFER_HPP
-#define BUFFER_HPP
+#ifndef QUEUING_BUFFER_HPP
+#define QUEUING_BUFFER_HPP
 
 #include <deque>
 #include <vector>
@@ -7,10 +7,8 @@
 #include "emptiable.hpp"
 #include "result.hpp"
 
-// TODO rename
-namespace buffer
+namespace q_buffer
 {
-	// TODO rename
 	class QueuingBuffer
 	{
 	  protected:
@@ -19,7 +17,7 @@ namespace buffer
 
 	  protected:
 		InnerBuffer buf_;
-		std::size_t idx_;
+		std::size_t front_idx_;
 
 	  public:
 		QueuingBuffer();
@@ -30,10 +28,7 @@ namespace buffer
 		bool              empty() const;
 		QueuingBuffer    &operator=(const QueuingBuffer &other);
 		std::size_t       size();
-
-	  private:
-		void PopFront();
 	};
-} // namespace buffer
+} // namespace q_buffer
 
 #endif

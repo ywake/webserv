@@ -1,13 +1,13 @@
 #ifndef RECIEVER_HPP
 #define RECIEVER_HPP
 
-#include "buffer.hpp"
 #include "instruction.hpp"
+#include "queuing_buffer.hpp"
 #include "result.hpp"
 
 namespace server
 {
-	class Reciever : public buffer::QueuingBuffer
+	class Reciever : public q_buffer::QueuingBuffer
 	{
 	  private:
 		static const std::size_t kDefaultBufferSize;
