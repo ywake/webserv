@@ -9,9 +9,11 @@ namespace q_buffer
 {
 	class QueuingReader : public virtual QueuingBuffer
 	{
-	  private:
+	  protected:
 		static const std::size_t kDefaultBufferSize;
-		size_t                   buffer_size_;
+
+	  private:
+		size_t buffer_size_;
 
 	  public:
 		QueuingReader(std::size_t buffer_size = kDefaultBufferSize);
