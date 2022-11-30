@@ -4,6 +4,8 @@
 
 namespace q_buffer
 {
+	const std::size_t BufferedReader::kDefaultBufferSize = 1024;
+
 	ssize_t BufferedReader::Read(int fd)
 	{
 		buf_.push_back(ByteArray(buffer_size_));
