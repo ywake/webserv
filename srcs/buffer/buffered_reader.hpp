@@ -7,17 +7,17 @@
 
 namespace q_buffer
 {
-	class BufferedReader : public virtual QueuingBuffer
+	class QueuingReader : public virtual QueuingBuffer
 	{
 	  private:
 		static const std::size_t kDefaultBufferSize;
 		size_t                   buffer_size_;
 
 	  public:
-		BufferedReader(std::size_t buffer_size = kDefaultBufferSize);
-		BufferedReader(const BufferedReader &other);
-		BufferedReader &operator=(const BufferedReader &rhs);
-		ssize_t         Read(int fd);
+		QueuingReader(std::size_t buffer_size = kDefaultBufferSize);
+		QueuingReader(const QueuingReader &other);
+		QueuingReader &operator=(const QueuingReader &rhs);
+		ssize_t        Read(int fd);
 	};
 } // namespace q_buffer
 

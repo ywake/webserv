@@ -4,18 +4,18 @@
 
 namespace q_buffer
 {
-	const std::size_t BufferedReader::kDefaultBufferSize = 1024;
+	const std::size_t QueuingReader::kDefaultBufferSize = 1024;
 
-	BufferedReader::BufferedReader(std::size_t buffer_size)
+	QueuingReader::QueuingReader(std::size_t buffer_size)
 		: QueuingBuffer(), buffer_size_(buffer_size)
 	{}
 
-	BufferedReader::BufferedReader(const BufferedReader &other) : QueuingBuffer()
+	QueuingReader::QueuingReader(const QueuingReader &other) : QueuingBuffer()
 	{
 		*this = other;
 	}
 
-	BufferedReader &BufferedReader::operator=(const BufferedReader &rhs)
+	QueuingReader &QueuingReader::operator=(const QueuingReader &rhs)
 	{
 		if (&rhs == this) {
 			return *this;
@@ -25,7 +25,7 @@ namespace q_buffer
 		return *this;
 	}
 
-	ssize_t BufferedReader::Read(int fd)
+	ssize_t QueuingReader::Read(int fd)
 	{
 		buf_.push_back(ByteArray(buffer_size_));
 		void   *buf       = buf_.back().data();
