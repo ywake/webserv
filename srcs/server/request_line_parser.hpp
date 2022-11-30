@@ -28,17 +28,17 @@ namespace server
 		RequestLineParser(const RequestLineParser &other);
 		RequestLineParser &operator=(const RequestLineParser &rhs);
 
-		Emptiable<RequestLine> Parse(buffer::QueuingBuffer &recieved);
+		Emptiable<RequestLine> Parse(q_buffer::QueuingBuffer &recieved);
 		bool                   HasInCompleteData();
 
 	  private:
 		void          InitParseContext();
 		void          DestroyParseContext();
-		ParseResult   CreateRequestLine(buffer::QueuingBuffer &recieved);
-		ParseResult   ParseEachPhase(buffer::QueuingBuffer &recieved);
-		ParseResult   ParseMethod(buffer::QueuingBuffer &recieved);
-		ParseResult   ParseRequestTarget(buffer::QueuingBuffer &recieved);
-		ParseResult   ParseHttpVersion(buffer::QueuingBuffer &recieved);
+		ParseResult   CreateRequestLine(q_buffer::QueuingBuffer &recieved);
+		ParseResult   ParseEachPhase(q_buffer::QueuingBuffer &recieved);
+		ParseResult   ParseMethod(q_buffer::QueuingBuffer &recieved);
+		ParseResult   ParseRequestTarget(q_buffer::QueuingBuffer &recieved);
+		ParseResult   ParseHttpVersion(q_buffer::QueuingBuffer &recieved);
 		RequestTarget TryConstructRequestTarget(const ThinString &str);
 		State         GetNextState(State old_state);
 	};

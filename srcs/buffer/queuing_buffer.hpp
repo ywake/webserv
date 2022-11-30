@@ -8,7 +8,7 @@
 #include "result.hpp"
 
 // TODO rename
-namespace buffer
+namespace q_buffer
 {
 	// TODO rename
 	class QueuingBuffer
@@ -34,6 +34,6 @@ namespace buffer
 	  protected:
 		void PopFront();
 	};
-} // namespace buffer
+} // namespace q_buffer
 
 #endif
