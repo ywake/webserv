@@ -2,7 +2,7 @@
 
 namespace q_buffer
 {
-	QueuingBuffer::QueuingBuffer() : buf_(), idx_() {}
+	QueuingBuffer::QueuingBuffer() : buf_(), front_idx_() {}
 
 	QueuingBuffer::QueuingBuffer(const QueuingBuffer &other)
 	{
@@ -23,10 +23,11 @@ namespace q_buffer
 			return Emptiable<char>();
 		}
 		ByteArray &bytes = buf_.front();
-		char       c     = bytes.at(idx_); // 例外は起きないはず
-		idx_++;
-		if (idx_ == bytes.size()) {
-			PopFront();
+		char       c     = bytes.at(front_idx_); // 例外は起きないはず
+		front_idx_++;
+		if (front_idx_ == bytes.size()) {
+			front_idx_ = 0;
+			buf_.pop_front();
 		}
 		return c;
 	}
@@ -37,12 +38,13 @@ namespace q_buffer
 			return std::vector<char>();
 		}
 		ByteArray &front = buf_.front();
-		ByteArray  all(front.begin() + idx_, front.end());
-		PopFront();
+		ByteArray  all(front.begin() + front_idx_, front.end());
+		front_idx_ = 0;
+		buf_.pop_front();
 		for (; !buf_.empty();) {
 			ByteArray &buf = buf_.front();
 			std::copy(buf.begin(), buf.end(), std::back_inserter(all));
-			PopFront();
+			buf_.pop_front();
 		}
 		return all;
 	}
@@ -57,18 +59,9 @@ namespace q_buffer
 		if (this == &other) {
 			return *this;
 		}
-		buf_ = other.buf_;
-		idx_ = other.idx_;
+		buf_       = other.buf_;
+		front_idx_ = other.front_idx_;
 		return *this;
-	}
-
-	void QueuingBuffer::PopFront()
-	{
-		if (buf_.empty()) {
-			return;
-		}
-		idx_ = 0;
-		buf_.pop_front();
 	}
 
 	std::size_t QueuingBuffer::size()

@@ -1,5 +1,5 @@
-#include "buffer.hpp"
 #include "gtest.h"
+#include "queuing_buffer.hpp"
 
 TEST(read_buffer, basic_test)
 {
