@@ -9,9 +9,11 @@ namespace server
 	class IResponse
 	{
 	  public:
-		int                         GetFd() const = 0;
-		event::Instructions         Perform()     = 0;
-		Result<event::Instructions> Send()        = 0;
+		virtual ~IResponse() {}
+
+		virtual int                         GetFd() const = 0;
+		virtual event::Instructions         Perform()     = 0;
+		virtual Result<event::Instructions> Send()        = 0;
 	};
 } // namespace server
 
