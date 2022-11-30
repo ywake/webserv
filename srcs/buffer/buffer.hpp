@@ -31,7 +31,7 @@ namespace buffer
 		QueuingBuffer    &operator=(const QueuingBuffer &other);
 		std::size_t       size();
 
-	  private:
+	  protected:
 		void PopFront();
 	};
 } // namespace buffer
