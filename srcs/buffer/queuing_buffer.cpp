@@ -26,7 +26,8 @@ namespace q_buffer
 		char       c     = bytes.at(idx_); // 例外は起きないはず
 		idx_++;
 		if (idx_ == bytes.size()) {
-			PopFront();
+			idx_ = 0;
+			buf_.pop_front();
 		}
 		return c;
 	}
@@ -38,11 +39,12 @@ namespace q_buffer
 		}
 		ByteArray &front = buf_.front();
 		ByteArray  all(front.begin() + idx_, front.end());
-		PopFront();
+		idx_ = 0;
+		buf_.pop_front();
 		for (; !buf_.empty();) {
 			ByteArray &buf = buf_.front();
 			std::copy(buf.begin(), buf.end(), std::back_inserter(all));
-			PopFront();
+			buf_.pop_front();
 		}
 		return all;
 	}
@@ -60,15 +62,6 @@ namespace q_buffer
 		buf_ = other.buf_;
 		idx_ = other.idx_;
 		return *this;
-	}
-
-	void QueuingBuffer::PopFront()
-	{
-		if (buf_.empty()) {
-			return;
-		}
-		idx_ = 0;
-		buf_.pop_front();
 	}
 
 	std::size_t QueuingBuffer::size()

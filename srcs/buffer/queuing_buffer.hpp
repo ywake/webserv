@@ -30,9 +30,6 @@ namespace q_buffer
 		bool              empty() const;
 		QueuingBuffer    &operator=(const QueuingBuffer &other);
 		std::size_t       size();
-
-	  protected:
-		void PopFront();
 	};
 } // namespace q_buffer
 
