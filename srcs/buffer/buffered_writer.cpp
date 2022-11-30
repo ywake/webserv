@@ -6,14 +6,14 @@
 
 namespace q_buffer
 {
-	BufferedWriter::BufferedWriter() : QueuingBuffer() {}
+	QueuingWriter::QueuingWriter() : QueuingBuffer() {}
 
-	BufferedWriter::BufferedWriter(const BufferedWriter &other) : QueuingBuffer()
+	QueuingWriter::QueuingWriter(const QueuingWriter &other) : QueuingBuffer()
 	{
 		*this = other;
 	}
 
-	BufferedWriter &BufferedWriter::operator=(const BufferedWriter &rhs)
+	QueuingWriter &QueuingWriter::operator=(const QueuingWriter &rhs)
 	{
 		if (&rhs == this) {
 			return *this;
@@ -22,7 +22,7 @@ namespace q_buffer
 		return *this;
 	}
 
-	Result<void> BufferedWriter::Write(int fd)
+	Result<void> QueuingWriter::Write(int fd)
 	{
 		if (QueuingBuffer::empty()) {
 			return Result<void>();

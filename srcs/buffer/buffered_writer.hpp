@@ -5,13 +5,13 @@
 
 namespace q_buffer
 {
-	class BufferedWriter : public virtual QueuingBuffer
+	class QueuingWriter : public virtual QueuingBuffer
 	{
 	  public:
-		BufferedWriter();
-		BufferedWriter(const BufferedWriter &other);
-		BufferedWriter &operator=(const BufferedWriter &rhs);
-		Result<void>    Write(int fd);
+		QueuingWriter();
+		QueuingWriter(const QueuingWriter &other);
+		QueuingWriter &operator=(const QueuingWriter &rhs);
+		Result<void>   Write(int fd);
 	};
 } // namespace q_buffer
 
