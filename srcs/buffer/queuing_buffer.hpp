@@ -19,7 +19,7 @@ namespace q_buffer
 
 	  protected:
 		InnerBuffer buf_;
-		std::size_t idx_;
+		std::size_t front_idx_;
 
 	  public:
 		QueuingBuffer();
