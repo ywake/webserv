@@ -11,9 +11,9 @@ namespace server
 	  public:
 		virtual ~IResponse() {}
 
-		virtual int                         GetFd() const = 0;
-		virtual event::Instructions         Perform()     = 0;
-		virtual Result<event::Instructions> Send(int fd)  = 0;
+		virtual int                 GetFd() const = 0;
+		virtual event::Instructions Perform()     = 0;
+		virtual Result<void>        Send(int fd)  = 0;
 	};
 } // namespace server
 
