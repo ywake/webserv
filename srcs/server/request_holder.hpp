@@ -3,8 +3,8 @@
 
 #include <deque>
 
-#include "buffer.hpp"
 #include "emptiable.hpp"
+#include "queuing_buffer.hpp"
 #include "request_parser.hpp"
 #include "result.hpp"
 #include "status_code.hpp"

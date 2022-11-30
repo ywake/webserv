@@ -1,8 +1,8 @@
 #ifndef RECIEVER_HPP
 #define RECIEVER_HPP
 
-#include "buffer.hpp"
 #include "instruction.hpp"
+#include "queuing_buffer.hpp"
 #include "result.hpp"
 
 namespace server

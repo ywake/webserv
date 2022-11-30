@@ -1,5 +1,5 @@
-#ifndef BUFFER_HPP
-#define BUFFER_HPP
+#ifndef QUEUING_BUFFER_HPP
+#define QUEUING_BUFFER_HPP
 
 #include <deque>
 #include <vector>

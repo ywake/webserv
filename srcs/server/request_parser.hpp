@@ -3,9 +3,9 @@
 
 #include <deque>
 
-#include "buffer.hpp"
 #include "emptiable.hpp"
 #include "i_request.hpp"
+#include "queuing_buffer.hpp"
 #include "request_line_parser.hpp"
 #include "request_message.hpp"
 #include "result.hpp"
