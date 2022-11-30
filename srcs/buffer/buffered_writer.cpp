@@ -6,6 +6,22 @@
 
 namespace q_buffer
 {
+	BufferedWriter::BufferedWriter() : QueuingBuffer() {}
+
+	BufferedWriter::BufferedWriter(const BufferedWriter &other) : QueuingBuffer()
+	{
+		*this = other;
+	}
+
+	BufferedWriter &BufferedWriter::operator=(const BufferedWriter &rhs)
+	{
+		if (&rhs == this) {
+			return *this;
+		}
+		QueuingBuffer::operator=(rhs);
+		return *this;
+	}
+
 	Result<void> BufferedWriter::Write(int fd)
 	{
 		if (QueuingBuffer::empty()) {
