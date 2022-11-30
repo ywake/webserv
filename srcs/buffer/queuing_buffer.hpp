@@ -7,10 +7,8 @@
 #include "emptiable.hpp"
 #include "result.hpp"
 
-// TODO rename
 namespace q_buffer
 {
-	// TODO rename
 	class QueuingBuffer
 	{
 	  protected:
