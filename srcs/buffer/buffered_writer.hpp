@@ -7,9 +7,6 @@ namespace q_buffer
 {
 	class BufferedWriter : public virtual QueuingBuffer
 	{
-	  private:
-		std::size_t i;
-
 	  public:
 		BufferedWriter();
 		BufferedWriter(const BufferedWriter &other);
