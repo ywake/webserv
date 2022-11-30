@@ -1,6 +1,6 @@
 #include <unistd.h>
 
-#include "buffered_reader.hpp"
+#include "queuing_reader.hpp"
 
 namespace q_buffer
 {
