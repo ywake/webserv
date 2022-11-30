@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "buffer.hpp"
+#include "queuing_buffer.hpp"
 
 namespace server
 {
@@ -30,7 +30,7 @@ namespace server
 
 	  protected:
 		LoadResult LoadBytesWithDelim(
-			buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
+			q_buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
 		);
 		void ClearLoadedBytes();
 	};
