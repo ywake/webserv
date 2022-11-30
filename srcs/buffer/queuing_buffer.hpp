@@ -1,5 +1,5 @@
-#ifndef BUFFER_HPP
-#define BUFFER_HPP
+#ifndef QUEUING_BUFFER_HPP
+#define QUEUING_BUFFER_HPP
 
 #include <deque>
 #include <vector>
@@ -8,7 +8,7 @@
 #include "result.hpp"
 
 // TODO rename
-namespace buffer
+namespace q_buffer
 {
 	// TODO rename
 	class QueuingBuffer
@@ -31,9 +31,9 @@ namespace buffer
 		QueuingBuffer    &operator=(const QueuingBuffer &other);
 		std::size_t       size();
 
-	  private:
+	  protected:
 		void PopFront();
 	};
-} // namespace buffer
+} // namespace q_buffer
 
 #endif

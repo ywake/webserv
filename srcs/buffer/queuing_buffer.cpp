@@ -1,6 +1,6 @@
-#include "buffer.hpp"
+#include "queuing_buffer.hpp"
 
-namespace buffer
+namespace q_buffer
 {
 	QueuingBuffer::QueuingBuffer() : buf_(), idx_() {}
 
@@ -76,4 +76,4 @@ namespace buffer
 		return buf_.size();
 	}
 
-} // namespace buffer
+} // namespace q_buffer
