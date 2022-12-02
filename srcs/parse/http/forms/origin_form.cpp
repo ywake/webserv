@@ -3,8 +3,6 @@
 #include "parse_path.hpp"
 #include "parse_uri.hpp"
 
-static const ThinString kEmpty = "";
-
 OriginForm::OriginForm() : path_(), query_() {}
 
 // origin-form = absolute-path [ "?" query ]
@@ -45,26 +43,6 @@ bool OriginForm::operator==(const OriginForm &other) const
 bool OriginForm::operator!=(const OriginForm &other) const
 {
 	return !(*this == other);
-}
-
-const ThinString &OriginForm::GetScheme() const
-{
-	return kEmpty;
-}
-
-const ThinString &OriginForm::GetUserinfo() const
-{
-	return kEmpty;
-}
-
-const ThinString &OriginForm::GetHost() const
-{
-	return kEmpty;
-}
-
-const ThinString &OriginForm::GetPort() const
-{
-	return kEmpty;
 }
 
 const ThinString &OriginForm::GetPath() const
