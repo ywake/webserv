@@ -3,7 +3,6 @@
 
 #include "i_request.hpp"
 #include "i_response.hpp"
-#include "instruction.hpp"
 #include "location_conf.hpp"
 #include "managed_fd.hpp"
 #include "queuing_reader.hpp"
