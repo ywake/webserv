@@ -36,17 +36,12 @@ namespace conf
 		return true;
 	}
 
-	Result<const ServerConf &> VirtualServerConfs::operator[](const Host &host)
+	const ServerConf &VirtualServerConfs::operator[](const Host &host) const
 	{
 		try {
-			return *server_confs_[host];
+			return *server_confs_.at(host);
 		} catch (const std::out_of_range &e) {
-		}
-
-		try {
-			return *server_confs_[default_host_.Value()];
-		} catch (const std::out_of_range &e) {
-			return Error("default_host is not set");
+			return *server_confs_.at(default_host_); // 例外は出ないはず
 		}
 	}
 
