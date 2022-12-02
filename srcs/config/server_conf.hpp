@@ -40,6 +40,7 @@ namespace conf
 		static const ErrorPages        kDefaultErrorPages;
 		static const ClientMaxBodySize kDefaultClientMaxBodySize;
 		static const LocationConfs     kDefaultLocationConfs;
+		static const LocationConf      kDefaultLocationConf;
 
 	  public:
 		ServerConf(
@@ -75,7 +76,7 @@ namespace conf
 		const Path          &GetRowRoot() const;
 
 		// Methods
-		Result<const LocationConf &> FindMatchingLocationConf(Path uri_path) const;
+		const LocationConf &FindMatchingLocationConf(Path uri_path) const;
 
 		// Operators
 		bool operator==(const ServerConf &rhs) const;

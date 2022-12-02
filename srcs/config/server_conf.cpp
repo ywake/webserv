@@ -11,6 +11,7 @@ namespace conf
 	const ServerConf::ServerName        ServerConf::kDefaultServerName = ServerConf::ServerName();
 	const ServerConf::ErrorPages        ServerConf::kDefaultErrorPages = ServerConf::ErrorPages();
 	const ServerConf::ClientMaxBodySize ServerConf::kDefaultClientMaxBodySize = 1 << 20;
+	const LocationConf                  ServerConf::kDefaultLocationConf      = LocationConf();
 	// ListenPort({"80"})がC++98で出来ないので
 	static const char           *kDefaultListenPortArray[]      = {"80"};
 	const ServerConf::ListenPort ServerConf::kDefaultListenPort = ServerConf::ListenPort(
@@ -270,7 +271,7 @@ namespace conf
 	/**
 	 * Methods
 	 */
-	Result<const LocationConf &> ServerConf::FindMatchingLocationConf(Path uri_path) const
+	const LocationConf &ServerConf::FindMatchingLocationConf(Path uri_path) const
 	{
 		for (LocationConfs::const_iterator it = location_confs_.begin();
 			 it != location_confs_.end();
@@ -279,7 +280,7 @@ namespace conf
 				return *it;
 			}
 		}
-		return Error("No matching location");
+		return kDefaultLocationConf;
 	}
 
 	/**

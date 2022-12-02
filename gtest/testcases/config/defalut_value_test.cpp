@@ -11,6 +11,7 @@ TEST(config, default_server_conf)
 	EXPECT_EQ(server_conf.GetErrorPages(), conf::ServerConf::ErrorPages());
 	EXPECT_EQ(server_conf.GetClientMaxBodySize(), 1 << 20);
 	EXPECT_EQ(server_conf.GetLocationConfs(), conf::ServerConf::LocationConfs());
+	EXPECT_EQ(server_conf.FindMatchingLocationConf("/"), conf::LocationConf());
 }
 
 // location
