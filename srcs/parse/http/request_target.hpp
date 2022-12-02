@@ -28,6 +28,7 @@ class RequestTarget
 	RequestTarget(const AbsoluteForm &form);
 	RequestTarget(const AuthorityForm &form);
 	RequestTarget(const AsteriskForm &form);
+	RequestTarget(const RequestFormData &request_target);
 
 	RequestTarget &operator=(const RequestTarget &other);
 	bool           operator==(const RequestTarget &rhs) const;

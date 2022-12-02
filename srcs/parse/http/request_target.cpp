@@ -46,6 +46,7 @@ RequestTarget::RequestTarget(const AsteriskForm &form) : form_data_()
 	form_type_ = kAsteriskForm;
 }
 
+RequestTarget::RequestTarget(const RequestFormData &request_target) : form_data_(request_target) {}
 
 RequestTarget &RequestTarget::operator=(const RequestTarget &other)
 {
