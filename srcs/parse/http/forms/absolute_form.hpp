@@ -4,7 +4,7 @@
 #include "absolute_uri.hpp"
 #include "thin_string.hpp"
 
-class AbsoluteForm : public ITargetForm
+class AbsoluteForm
 {
   private:
 	AbsoluteUri uri_;
