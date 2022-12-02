@@ -2,6 +2,10 @@
 
 namespace http
 {
+	const std::string MethodPool::kGet    = "GET";
+	const std::string MethodPool::kDelete = "DELETE";
+	const std::string MethodPool::kPost   = "POST";
+
 	const MethodPool::Pool MethodPool::pool_            = MethodPool::InitPool();
 	const std::size_t      MethodPool::kMaxMethodLength = MethodPool::InitMaxLength();
 
@@ -9,9 +13,9 @@ namespace http
 	{
 		Pool pool;
 
-		pool.insert("GET");
-		pool.insert("DELETE");
-		pool.insert("POST");
+		pool.insert(kGet);
+		pool.insert(kDelete);
+		pool.insert(kPost);
 		return pool;
 	}
 

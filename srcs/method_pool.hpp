@@ -15,6 +15,9 @@ namespace http
 
 	  public:
 		static const std::size_t kMaxMethodLength;
+		static const std::string kGet;
+		static const std::string kDelete;
+		static const std::string kPost;
 
 	  private:
 		static Pool        InitPool();
