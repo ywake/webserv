@@ -3,27 +3,49 @@
 #include "asterisk_form.hpp"
 #include "authority_form.hpp"
 #include "error.hpp"
+#include "http_exceptions.hpp"
 #include "origin_form.hpp"
 #include "parse_path.hpp"
 #include "parse_uri.hpp"
 #include "thin_string.hpp"
+#include "webserv_utils.hpp"
 
 #include <string>
 #include <vector>
 
 RequestTarget::RequestTarget() : form_data_() {}
 
-RequestTarget::RequestTarget(const ITargetForm &form)
+RequestTarget::RequestTarget(const OriginForm &form) : form_data_()
 {
-	form_data_.scheme_   = form.GetScheme().ToString();
+	form_type_        = kOriginForm;
+	form_data_.path_  = form.GetPath().ToString();
+	form_data_.query_ = form.GetQuery().ToString();
+}
+
+RequestTarget::RequestTarget(const AbsoluteForm &form) : form_data_()
+{
+	form_type_           = kAbsoluteForm;
+	form_data_.scheme_   = utils::ToLowerString(form.GetScheme().ToString());
 	form_data_.userinfo_ = form.GetUserinfo().ToString();
-	form_data_.host_     = form.GetHost().ToString();
+	form_data_.host_     = utils::ToLowerString(form.GetHost().ToString());
 	form_data_.port_     = form.GetPort().ToString();
 	form_data_.path_     = form.GetPath().ToString();
 	form_data_.query_    = form.GetQuery().ToString();
 }
 
-RequestTarget::RequestTarget(RequestFormData request_target) : form_data_(request_target) {}
+RequestTarget::RequestTarget(const AuthorityForm &form) : form_data_()
+{
+	form_type_       = kAuthorityForm;
+	form_data_.host_ = utils::ToLowerString(form.GetHost().ToString());
+	form_data_.port_ = form.GetPort().ToString();
+}
+
+RequestTarget::RequestTarget(const AsteriskForm &form) : form_data_()
+{
+	(void)form;
+	form_type_ = kAsteriskForm;
+}
+
 
 RequestTarget &RequestTarget::operator=(const RequestTarget &other)
 {

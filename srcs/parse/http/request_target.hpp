@@ -24,8 +24,10 @@ class RequestTarget
 
   public:
 	RequestTarget();
-	RequestTarget(const ITargetForm &form);
-	RequestTarget(RequestFormData request_target);
+	RequestTarget(const OriginForm &form);
+	RequestTarget(const AbsoluteForm &form);
+	RequestTarget(const AuthorityForm &form);
+	RequestTarget(const AsteriskForm &form);
 
 	RequestTarget &operator=(const RequestTarget &other);
 	bool           operator==(const RequestTarget &rhs) const;
