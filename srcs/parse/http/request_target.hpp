@@ -11,7 +11,7 @@
 class RequestTarget
 {
   public:
-	enum FromType {
+	enum FormType {
 		kOriginForm,
 		kAbsoluteForm,
 		kAuthorityForm,
@@ -19,7 +19,7 @@ class RequestTarget
 	};
 
   private:
-	FromType        form_type_;
+	FormType        form_type_;
 	RequestFormData form_data_;
 
   public:
