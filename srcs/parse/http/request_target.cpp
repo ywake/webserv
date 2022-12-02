@@ -3,7 +3,6 @@
 #include "asterisk_form.hpp"
 #include "authority_form.hpp"
 #include "error.hpp"
-#include "http_exceptions.hpp"
 #include "origin_form.hpp"
 #include "parse_path.hpp"
 #include "parse_uri.hpp"
