@@ -8,7 +8,7 @@
 AbsoluteForm::AbsoluteForm(const ThinString request_target) : uri_(request_target)
 {
 	bool is_pathrootless = !GetPath().empty() && GetPath().at(0) != '/';
-	bool is_http_family  = GetScheme() == "http" || GetScheme() == "https";
+	bool is_http_family  = GetScheme() == "http";
 	if (is_pathrootless || !is_http_family || GetHost().empty()) {
 		throw http::BadRequestException();
 	}
