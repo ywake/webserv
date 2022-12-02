@@ -3,6 +3,9 @@
 namespace conf
 {
 	VirtualServerConfs::VirtualServerConfs(/* args */) : default_host_(), server_confs_() {}
+	VirtualServerConfs::VirtualServerConfs(Host default_host)
+		: default_host_(default_host), server_confs_()
+	{}
 
 	VirtualServerConfs::VirtualServerConfs(const Host &default_host, const HostMap &server_confs)
 		: default_host_(default_host), server_confs_(server_confs)
@@ -47,17 +50,14 @@ namespace conf
 		}
 	}
 
-	void VirtualServerConfs::Add(const Host &host, ServerConf &server_conf)
+	void VirtualServerConfs::Add(const Host &host, const ServerConf &server_conf)
 	{
-		if (default_host_.empty()) {
-			default_host_ = host;
-		}
-		server_confs_.insert(std::pair<Host, ServerConf *>(host, &server_conf));
+		server_confs_.insert(std::pair<Host, const ServerConf *>(host, &server_conf));
 	}
 
 	void VirtualServerConfs::Print(std::ostream &os) const
 	{
-		os << "default_host_: " << default_host_.Value() << std::endl;
+		os << "default_host_: " << default_host_ << std::endl;
 		os << "server_confs_: " << std::endl;
 		for (HostMap::const_iterator it = server_confs_.begin(); it != server_confs_.end(); it++) {
 			os << "▽ ▽ " << it->first << "▽ ▽" << std::endl;
