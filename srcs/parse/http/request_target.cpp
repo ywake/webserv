@@ -13,7 +13,12 @@
 #include <string>
 #include <vector>
 
-RequestTarget::RequestTarget() : form_data_() {}
+RequestTarget::RequestTarget() : form_type_(), form_data_() {}
+
+RequestTarget::RequestTarget(const RequestTarget &other) : form_type_(), form_data_()
+{
+	*this = other;
+}
 
 RequestTarget::RequestTarget(const OriginForm &form) : form_data_()
 {
@@ -55,6 +60,7 @@ RequestTarget &RequestTarget::operator=(const RequestTarget &other)
 	if (this == &other) {
 		return *this;
 	}
+	form_type_ = other.form_type_;
 	form_data_ = other.form_data_;
 	return *this;
 }
@@ -77,8 +83,29 @@ const RequestFormData &RequestTarget::GetRequestFormData() const
 	return form_data_;
 }
 
+RequestTarget::FormType RequestTarget::GetFormType() const
+{
+	return form_type_;
+}
+
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target)
 {
 	os << "\n" << request_target.GetRequestFormData();
+	std::string form_type;
+	switch (request_target.GetFormType()) {
+	case RequestTarget::kOriginForm:
+		form_type = "OriginForm";
+		break;
+	case RequestTarget::kAbsoluteForm:
+		form_type = "AbsoluteForm";
+		break;
+	case RequestTarget::kAuthorityForm:
+		form_type = "AuthorityForm";
+		break;
+	case RequestTarget::kAsteriskForm:
+		form_type = "AsteriskForm";
+		break;
+	}
+	os << "\n" << form_type;
 	return os;
 }

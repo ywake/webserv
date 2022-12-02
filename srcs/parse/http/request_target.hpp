@@ -24,6 +24,7 @@ class RequestTarget
 
   public:
 	RequestTarget();
+	RequestTarget(const RequestTarget &other);
 	RequestTarget(const OriginForm &form);
 	RequestTarget(const AbsoluteForm &form);
 	RequestTarget(const AuthorityForm &form);
@@ -35,6 +36,7 @@ class RequestTarget
 	bool           operator!=(const RequestTarget &rhs) const;
 
 	const RequestFormData &GetRequestFormData() const;
+	FormType               GetFormType() const;
 };
 
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target);
