@@ -184,7 +184,9 @@ namespace conf
 		return match_pattern;
 	}
 
-	void ServerConf::AddLocation(const ThinString &location, const std::vector<ThinString> &params)
+	void ServerConf::AddLocation(
+		const ThinString &location, const Path &default_root, const std::vector<ThinString> &params
+	)
 	{
 		std::vector<ThinString> splitted_location = utils::TrimEmpty(Split(location, " "));
 
@@ -199,7 +201,7 @@ namespace conf
 		Path                       path_pattern  = GetPathPattern(splitted_location);
 		LocationConf::MatchPattern match_pattern = GetMatchPattern(splitted_location);
 
-		location_confs_.push_back(LocationConf(path_pattern, match_pattern, params));
+		location_confs_.push_back(LocationConf(path_pattern, match_pattern, default_root, params));
 	}
 
 	void ServerConf::AddRoot(const std::vector<ThinString> &tokens)
@@ -258,6 +260,11 @@ namespace conf
 		}
 		Emptiable<Path> location_root = matched_location.Val().GetRoot();
 		return location_root.empty() ? root_.Value() : location_root.Value();
+	}
+
+	const Path &ServerConf::GetRowRoot() const
+	{
+		return root_.Value();
 	}
 
 	/**

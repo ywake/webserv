@@ -90,7 +90,9 @@ namespace conf
 		if (parse_stack.TopHeader() == "server") {
 			v_servers.back().SetParams(parse_stack.TopContents());
 		} else if (parse_stack.TopHeader().StartWith("location ")) {
-			v_servers.back().AddLocation(parse_stack.TopHeader(), parse_stack.TopContents());
+			v_servers.back().AddLocation(
+				parse_stack.TopHeader(), v_servers.back().GetRowRoot(), parse_stack.TopContents()
+			);
 		}
 
 		parse_stack.pop();

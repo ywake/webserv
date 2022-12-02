@@ -23,7 +23,7 @@ TEST(config, default_location_conf)
 		location_conf.GetAllowMethods(), conf::LocationConf::AllowMethods({"GET", "POST", "DELETE"})
 	);
 	EXPECT_EQ(location_conf.GetRedirect(), conf::LocationConf::Redirect());
-	EXPECT_EQ(location_conf.GetRoot(), conf::LocationConf::Root());
+	EXPECT_EQ(location_conf.GetRoot(), conf::Path("/var/www/html"));
 	EXPECT_EQ(location_conf.GetIndexFiles(), conf::LocationConf::IndexFiles({"index.html"}));
 	EXPECT_EQ(location_conf.GetAutoindex(), conf::LocationConf::AutoIndex());
 	EXPECT_EQ(location_conf.GetCgiPath(), conf::LocationConf::CgiPath());

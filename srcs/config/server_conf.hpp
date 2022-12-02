@@ -58,7 +58,11 @@ namespace conf
 		void AddServerName(const std::vector<ThinString> &tokens);
 		void AddErrorPages(const std::vector<ThinString> &tokens);
 		void AddClientMaxBodySize(const std::vector<ThinString> &tokens);
-		void AddLocation(const ThinString &location, const std::vector<ThinString> &params);
+		void AddLocation(
+			const ThinString              &location,
+			const Path                    &default_root,
+			const std::vector<ThinString> &params
+		);
 		void AddRoot(const std::vector<ThinString> &tokens);
 
 		// Getters
@@ -68,6 +72,7 @@ namespace conf
 		const std::size_t   &GetClientMaxBodySize() const;
 		const LocationConfs &GetLocationConfs() const;
 		const Path          &GetRoot(Path uri_path) const;
+		const Path          &GetRowRoot() const;
 
 		// Methods
 		Result<const LocationConf &> FindMatchingLocationConf(Path uri_path) const;

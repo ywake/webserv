@@ -32,24 +32,28 @@ namespace conf
 	  private:
 		PathPattern  path_pattern_;
 		MatchPattern match_pattern_;
-
 		AllowMethods allow_methods_;
 		Redirect     redirect_;
 		Root         root_;
 		IndexFiles   index_files_;
 		AutoIndex    autoindex_;
 		CgiPath      cgi_path_;
+		const Path  &default_root_;
 
 	  private:
 		static const AllowMethods kDefaultAllowMethods;
 		static const IndexFiles   kDefaultIndexFiles;
+		static const Path         kDefaultRootForTest;
 
 	  public:
 		LocationConf(
 			const PathPattern             &path_pattern,
 			MatchPattern                   match_pattern,
+			const Path                    &default_root,
 			const std::vector<ThinString> &params
 		);
+
+		// for test
 		LocationConf(
 			PathPattern  path_pattern  = PathPattern(),
 			MatchPattern match_pattern = kPrefix,
@@ -58,7 +62,8 @@ namespace conf
 			Root         root          = Root(),
 			IndexFiles   index_files   = IndexFiles(),
 			AutoIndex    autoindex     = AutoIndex(),
-			CgiPath      cgi_path      = CgiPath()
+			CgiPath      cgi_path      = CgiPath(),
+			const Path  &default_root  = kDefaultRootForTest
 		);
 		~LocationConf();
 
@@ -73,7 +78,8 @@ namespace conf
 		MatchPattern        GetMatchPattern() const;
 		const AllowMethods &GetAllowMethods() const;
 		const Redirect     &GetRedirect() const;
-		const Root         &GetRoot() const;
+		const Path         &GetRoot() const;
+		const Root         &GetRowRoot() const;
 		const IndexFiles   &GetIndexFiles() const;
 		const AutoIndex    &GetAutoindex() const;
 		const CgiPath      &GetCgiPath() const;
