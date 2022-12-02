@@ -101,8 +101,7 @@ namespace server
 
 	RequestLineParser::ParseResult RequestLineParser::ParseMethod(q_buffer::QueuingBuffer &recieved)
 	{
-		switch (LoadBytesWithDelim(recieved, http::kSp, http::ImplementedMethods::kMaxMethodLength)
-		) {
+		switch (LoadBytesWithDelim(recieved, http::kSp, http::ImplementedMethods::kMaxLength)) {
 		case kOverMaxSize:
 			throw http::NotImplementedException();
 		case kParsable:

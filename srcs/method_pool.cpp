@@ -7,7 +7,7 @@ namespace http
 	const std::string ImplementedMethods::kPost   = "POST";
 
 	const ImplementedMethods::Pool ImplementedMethods::pool_ = ImplementedMethods::InitPool();
-	const std::size_t ImplementedMethods::kMaxMethodLength   = ImplementedMethods::InitMaxLength();
+	const std::size_t ImplementedMethods::kMaxLength         = ImplementedMethods::InitMaxLength();
 
 	ImplementedMethods::Pool ImplementedMethods::InitPool()
 	{
