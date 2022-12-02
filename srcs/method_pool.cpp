@@ -2,14 +2,14 @@
 
 namespace http
 {
-	const std::string MethodPool::kGet    = "GET";
-	const std::string MethodPool::kDelete = "DELETE";
-	const std::string MethodPool::kPost   = "POST";
+	const std::string ImplementedMethods::kGet    = "GET";
+	const std::string ImplementedMethods::kDelete = "DELETE";
+	const std::string ImplementedMethods::kPost   = "POST";
 
-	const MethodPool::Pool MethodPool::pool_            = MethodPool::InitPool();
-	const std::size_t      MethodPool::kMaxMethodLength = MethodPool::InitMaxLength();
+	const ImplementedMethods::Pool ImplementedMethods::pool_ = ImplementedMethods::InitPool();
+	const std::size_t ImplementedMethods::kMaxMethodLength   = ImplementedMethods::InitMaxLength();
 
-	MethodPool::Pool MethodPool::InitPool()
+	ImplementedMethods::Pool ImplementedMethods::InitPool()
 	{
 		Pool pool;
 
@@ -19,7 +19,7 @@ namespace http
 		return pool;
 	}
 
-	std::size_t MethodPool::InitMaxLength()
+	std::size_t ImplementedMethods::InitMaxLength()
 	{
 		std::size_t len = 0;
 
@@ -31,7 +31,7 @@ namespace http
 		return len;
 	}
 
-	bool MethodPool::Contains(const std::string &method)
+	bool ImplementedMethods::Contains(const std::string &method)
 	{
 		return pool_.find(method) != pool_.end();
 	}

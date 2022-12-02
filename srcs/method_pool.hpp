@@ -6,7 +6,7 @@
 
 namespace http
 {
-	class MethodPool
+	class ImplementedMethods
 	{
 	  private:
 		typedef std::set<std::string> Pool;
