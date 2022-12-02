@@ -24,6 +24,9 @@ class AbsoluteForm : public ITargetForm
 	bool operator!=(const AbsoluteForm &rhs) const;
 
 	const AbsoluteUri &GetUri() const;
+
+  private:
+	bool IsValidHttpScheme();
 };
 
 std::ostream &operator<<(std::ostream &os, const AbsoluteForm &form);
