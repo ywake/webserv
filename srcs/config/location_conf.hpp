@@ -38,7 +38,7 @@ namespace conf
 		IndexFiles   index_files_;
 		AutoIndex    autoindex_;
 		CgiPath      cgi_path_;
-		const Path  &default_root_;
+		const Path  *default_root_;
 
 	  private:
 		static const AllowMethods kDefaultAllowMethods;
@@ -63,7 +63,7 @@ namespace conf
 			IndexFiles   index_files   = IndexFiles(),
 			AutoIndex    autoindex     = AutoIndex(),
 			CgiPath      cgi_path      = CgiPath(),
-			const Path  &default_root  = kDefaultRootForTest
+			const Path  *default_root  = NULL
 		);
 		~LocationConf();
 
