@@ -28,6 +28,18 @@ namespace utils
 		return dot_removed;
 	}
 
+	std::string JoinPath(const Strings &segments)
+	{
+		if (segments.empty()) {
+			return "";
+		}
+		std::string path;
+		for (Strings::const_iterator it = segments.begin(); it != segments.end(); ++it) {
+			path += it->ToString() + "/";
+		}
+		return path.erase(path.size() - 1);
+	}
+
 	ThinString NromalizePath(const ThinString &path)
 	{
 			(void)path;
