@@ -28,7 +28,8 @@ namespace conf
 		Root         root,
 		IndexFiles   index_files,
 		AutoIndex    autoindex,
-		CgiPath      cgi_path
+		CgiPath      cgi_path,
+		const Path  *default_root
 	)
 		: path_pattern_(path_pattern),
 		  match_pattern_(match_pattern),
@@ -37,12 +38,14 @@ namespace conf
 		  root_(root),
 		  index_files_(index_files),
 		  autoindex_(autoindex),
-		  cgi_path_(cgi_path)
+		  cgi_path_(cgi_path),
+		  default_root_(default_root)
 	{}
 
 	LocationConf::LocationConf(
 		const PathPattern             &path_pattern,
 		MatchPattern                   match_pattern,
+		const Path					&default_root,
 		const std::vector<ThinString> &params
 	)
 		: path_pattern_(path_pattern),
@@ -52,7 +55,8 @@ namespace conf
 		  root_(),
 		  index_files_(),
 		  autoindex_(),
-		  cgi_path_()
+		  cgi_path_(),
+		  default_root_(&default_root)
 	{
 		for (std::vector<ThinString>::const_iterator it = params.begin(); it != params.end();
 			 ++it) {
@@ -189,7 +193,14 @@ namespace conf
 		return redirect_;
 	}
 
-	const LocationConf::Root &LocationConf::GetRoot() const
+	const Path &LocationConf::GetRoot() const
+	{
+		if (root_.empty()) {
+			return *default_root_;
+		}
+		return root_.Value();
+	}
+	const LocationConf::Root &LocationConf::GetRawRoot() const
 	{
 		return root_;
 	}
@@ -275,7 +286,7 @@ namespace conf
 		}
 		os << ", ";
 
-		LocationConf::Root root = conf.GetRoot();
+		LocationConf::Root root = conf.GetRawRoot();
 		os << "root: " << (root.empty() ? "" : root.Value()) << ", ";
 
 		os << "index_files: [ ";
