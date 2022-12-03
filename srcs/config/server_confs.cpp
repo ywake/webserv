@@ -89,6 +89,9 @@ namespace conf
 		}
 		if (parse_stack.TopHeader() == "server") {
 			v_servers.back().SetParams(parse_stack.TopContents());
+			if (v_servers.back().GetDefaultRoot().empty()) {
+				throw ConfigException("Invalid server config: root is not set");
+			}
 		} else if (parse_stack.TopHeader().StartWith("location ")) {
 			v_servers.back().AddLocation(
 				parse_stack.TopHeader(),
