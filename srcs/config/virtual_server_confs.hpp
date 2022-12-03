@@ -21,7 +21,7 @@ namespace conf
 
 	  public:
 		VirtualServerConfs();
-		VirtualServerConfs(Host default_host);
+		VirtualServerConfs(const Host &default_host);
 
 		// for test
 		VirtualServerConfs(const Host &default_host, const HostMap &server_confs);
