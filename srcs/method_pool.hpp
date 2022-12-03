@@ -6,7 +6,7 @@
 
 namespace http
 {
-	class MethodPool
+	class ImplementedMethods
 	{
 	  private:
 		typedef std::set<std::string> Pool;
@@ -14,7 +14,10 @@ namespace http
 		static const Pool pool_;
 
 	  public:
-		static const std::size_t kMaxMethodLength;
+		static const std::size_t kMaxLength;
+		static const std::string kGet;
+		static const std::string kDelete;
+		static const std::string kPost;
 
 	  private:
 		static Pool        InitPool();
