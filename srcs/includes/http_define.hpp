@@ -10,6 +10,13 @@ namespace http
 	extern const std::string kWhiteSpaces;
 	extern const std::string kSp;
 	extern const std::string kHttpVersion;
+
+	namespace methods
+	{
+		extern const std::string kGet;
+		extern const std::string kDelete;
+		extern const std::string kPost;
+	} // namespace methods
 } // namespace http
 
 #endif

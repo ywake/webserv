@@ -2,7 +2,7 @@
 #include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
-#include "method_pool.hpp"
+#include "implemented_methods.hpp"
 #include "validate_headers.hpp"
 #include "validate_request_line.hpp"
 #include "webserv_utils.hpp"
@@ -60,7 +60,7 @@ namespace server
 		ctx_.request             = new Request();
 	}
 
-	Emptiable<IRequest *> RequestParser::Parse(buffer::QueuingBuffer &recieved)
+	Emptiable<IRequest *> RequestParser::Parse(q_buffer::QueuingBuffer &recieved)
 	{
 		if (recieved.empty()) {
 			return Emptiable<IRequest *>();
@@ -78,7 +78,8 @@ namespace server
 		}
 	}
 
-	RequestParser::ParseResult RequestParser::CreateRequestMessage(buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::CreateRequestMessage(q_buffer::QueuingBuffer &recieved
+	)
 	{
 		while (!recieved.empty()) {
 			switch (ParseEachPhase(recieved)) {
@@ -97,7 +98,7 @@ namespace server
 	}
 
 	// TODO トレイラ無視してる
-	RequestParser::ParseResult RequestParser::ParseEachPhase(buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseEachPhase(q_buffer::QueuingBuffer &recieved)
 	{
 		switch (ctx_.state) {
 		case kStandBy:
@@ -112,7 +113,7 @@ namespace server
 		return kInProgress;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseStartLine(q_buffer::QueuingBuffer &recieved)
 	{
 		Emptiable<RequestLine> req_line = ctx_.request_line_parser.Parse(recieved);
 		if (req_line.empty()) {
@@ -122,7 +123,7 @@ namespace server
 		return kDone;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseHeaderSection(q_buffer::QueuingBuffer &recieved)
 	{
 		switch (LoadBytesWithDelim(recieved, http::kEmptyLine, kMaxHeaderSectonSize)) {
 		case kOverMaxSize:
@@ -141,7 +142,7 @@ namespace server
 	}
 
 	// TODO body
-	RequestParser::ParseResult RequestParser::ParseBody(buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseBody(q_buffer::QueuingBuffer &recieved)
 	{
 		(void)recieved;
 		return kDone;
