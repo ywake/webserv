@@ -44,6 +44,10 @@ TEST(request_line, ok_case)
 		RequestLine("OPTIONS / HTTP/1.1"), RequestLine("OPTIONS", OriginForm("/"), "HTTP/1.1")
 	);
 	EXPECT_EQ(
+		RequestLine("GET http://a/b/ HTTP/1.1"),
+		RequestLine("GET", AbsoluteForm("http://a/b/"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
 		RequestLine("GET http://a/b HTTP/1.1"),
 		RequestLine("GET", AbsoluteForm("http://a/b"), "HTTP/1.1")
 	);
@@ -65,6 +69,38 @@ TEST(request_line, ok_case)
 	);
 	EXPECT_EQ(
 		RequestLine("OPTIONS * HTTP/1.1"), RequestLine("OPTIONS", AsteriskForm("*"), "HTTP/1.1")
+	);
+}
+
+TEST(request_line, relative_case)
+{
+	EXPECT_EQ(
+		RequestLine("GET http://a/b/../ HTTP/1.1"),
+		RequestLine("GET", AbsoluteForm("http://a/"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("GET http://a/../b HTTP/1.1"),
+		RequestLine("GET", AbsoluteForm("http://a/b"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("GET http://a/b/../ HTTP/1.1"),
+		RequestLine("GET", AbsoluteForm("http://a/"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("GET http://a/../b HTTP/1.1"),
+		RequestLine("GET", AbsoluteForm("http://a/b"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("GET /a/b/../ HTTP/1.1"), RequestLine("GET", OriginForm("/a/"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("GET /a/../b HTTP/1.1"), RequestLine("GET", OriginForm("/b"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("GET /a/b/../ HTTP/1.1"), RequestLine("GET", OriginForm("/a/"), "HTTP/1.1")
+	);
+	EXPECT_EQ(
+		RequestLine("GET /a/../b HTTP/1.1"), RequestLine("GET", OriginForm("/b"), "HTTP/1.1")
 	);
 }
 
