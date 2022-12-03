@@ -11,7 +11,6 @@ namespace conf
 	const ServerConf::ServerName        ServerConf::kDefaultServerName = ServerConf::ServerName();
 	const ServerConf::ErrorPages        ServerConf::kDefaultErrorPages = ServerConf::ErrorPages();
 	const ServerConf::ClientMaxBodySize ServerConf::kDefaultClientMaxBodySize = 1 << 20;
-	const LocationConf                  ServerConf::kDefaultLocationConf      = LocationConf();
 	// ListenPort({"80"})がC++98で出来ないので
 	static const char           *kDefaultListenPortArray[]      = {"80"};
 	const ServerConf::ListenPort ServerConf::kDefaultListenPort = ServerConf::ListenPort(
@@ -31,7 +30,18 @@ namespace conf
 		  error_pages_(error_pages),
 		  client_max_body_size_(client_max_body_size),
 		  location_confs_(location_confs),
-		  root_(root)
+		  root_(root),
+		  defaultLocationConf(LocationConf(
+			  LocationConf::PathPattern(),
+			  LocationConf::kPrefix,
+			  LocationConf::AllowMethods(),
+			  LocationConf::Redirect(),
+			  LocationConf::Root(),
+			  LocationConf::IndexFiles(),
+			  LocationConf::AutoIndex(),
+			  LocationConf::CgiPath(),
+			  &root_.Value()
+		  ))
 	{}
 
 	ServerConf::~ServerConf() {}
@@ -280,7 +290,7 @@ namespace conf
 				return *it;
 			}
 		}
-		return kDefaultLocationConf;
+		return defaultLocationConf;
 	}
 
 	/**
