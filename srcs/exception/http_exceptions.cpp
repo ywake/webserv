@@ -23,4 +23,16 @@ namespace http
 
 	UriTooLongException ::UriTooLongException() : HttpException(StatusCode::kURITooLong) {}
 
+	NotFoundException::NotFoundException() : HttpException(StatusCode::kNotFound) {}
+
+	ForbiddenException::ForbiddenException() : HttpException(StatusCode::kForbidden) {}
+
+	MethodNotAllowedException::MethodNotAllowedException()
+		: HttpException(StatusCode::kMethodNotAllowed)
+	{}
+
+	InternalServerErrorException::InternalServerErrorException()
+		: HttpException(StatusCode::kInternalServerError)
+	{}
+
 } // namespace http
