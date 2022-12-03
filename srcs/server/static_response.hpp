@@ -14,10 +14,11 @@ namespace server
 						   public q_buffer::QueuingReader,
 						   public q_buffer::QueuingWriter
 	{
-	  public:
+	  private:
 		const IRequest           &request_;
 		const conf::LocationConf &config_;
 		ManagedFd                 managed_fd_;
+		bool                      is_finished_;
 
 	  public:
 		StaticResponse(const IRequest &request, const conf::LocationConf &conf);
@@ -27,6 +28,9 @@ namespace server
 		bool           HasFd() const;
 		Emptiable<int> GetFd() const;
 		bool           IsFinished() const;
+
+	  private:
+		void InitGetMethod();
 	};
 } // namespace server
 
