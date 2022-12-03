@@ -15,7 +15,7 @@ namespace server
 		bool   is_eof_;
 
 	  public:
-		Reciever(int fd = -1, std::size_t buffer_size = QueuingReader::kDefaultBufferSize);
+		Reciever(int fd = -1, std::size_t recv_buf_size = QueuingReader::kDefaultReadBufSize);
 		Result<void> Recv();
 		bool         IsEof();
 	};
