@@ -4,7 +4,7 @@
 #include "absolute_uri.hpp"
 #include "thin_string.hpp"
 
-class AbsoluteForm : public ITargetForm
+class AbsoluteForm
 {
   private:
 	AbsoluteUri uri_;
@@ -24,6 +24,9 @@ class AbsoluteForm : public ITargetForm
 	bool operator!=(const AbsoluteForm &rhs) const;
 
 	const AbsoluteUri &GetUri() const;
+
+  private:
+	bool IsValidHttpScheme();
 };
 
 std::ostream &operator<<(std::ostream &os, const AbsoluteForm &form);

@@ -10,8 +10,16 @@ TEST(uri_parse, valid_absolute_form)
 		AbsoluteForm(AbsoluteUri("http", HierPart(Authority("", "example.com", ""), ""), ""))
 	);
 	EXPECT_EQ(
-		AbsoluteForm("https://example.com"),
-		AbsoluteForm(AbsoluteUri("https", HierPart(Authority("", "example.com", ""), ""), ""))
+		AbsoluteForm("hTtp://example.com"),
+		AbsoluteForm(AbsoluteUri("hTtp", HierPart(Authority("", "example.com", ""), ""), ""))
+	);
+	EXPECT_EQ(
+		AbsoluteForm("HTTP://example.com"),
+		AbsoluteForm(AbsoluteUri("HTTP", HierPart(Authority("", "example.com", ""), ""), ""))
+	);
+	EXPECT_EQ(
+		AbsoluteForm("Http://example.com"),
+		AbsoluteForm(AbsoluteUri("Http", HierPart(Authority("", "example.com", ""), ""), ""))
 	);
 	EXPECT_EQ(
 		AbsoluteForm("http://example.com/"),
@@ -81,8 +89,9 @@ TEST(uri_parse, invalid_absolute_form)
 	// no-scheme and no-host
 	EXPECT_THROW(AbsoluteForm("://"), http::BadRequestException);
 
-	// scheme is not http or https
+	// scheme is not http
 	EXPECT_THROW(AbsoluteForm("ftp://example.com"), http::BadRequestException);
+	EXPECT_THROW(AbsoluteForm("https://example.com"), http::BadRequestException);
 
 	// hierpart path-rootless
 	EXPECT_THROW(AbsoluteForm("http:path/index.html"), http::BadRequestException);

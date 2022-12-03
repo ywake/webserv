@@ -28,7 +28,7 @@ namespace utils
 	std::vector<ThinString> TrimEmpty(const std::vector<ThinString> &vec);
 	bool                    EndWith(const std::string &src, const std::string &target);
 	void                    Close(int fd);
-
+	std::string             NromalizePath(const ThinString &path);
 } // namespace utils
 
 #endif
