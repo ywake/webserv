@@ -263,7 +263,7 @@ namespace conf
 		return location_confs_;
 	}
 
-	const Path &ServerConf::GetRoot(Path uri_path) const
+	const Path &ServerConf::GetRoot(const Path &uri_path) const
 	{
 		Result<const LocationConf &> matched_location = FindMatchingLocationConf(uri_path);
 		if (matched_location.IsErr()) {
@@ -281,7 +281,7 @@ namespace conf
 	/**
 	 * Methods
 	 */
-	const LocationConf &ServerConf::FindMatchingLocationConf(Path uri_path) const
+	const LocationConf &ServerConf::FindMatchingLocationConf(const Path &uri_path) const
 	{
 		for (LocationConfs::const_iterator it = location_confs_.begin();
 			 it != location_confs_.end();
