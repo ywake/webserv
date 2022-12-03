@@ -101,7 +101,7 @@ namespace server
 
 	RequestLineParser::ParseResult RequestLineParser::ParseMethod(q_buffer::QueuingBuffer &recieved)
 	{
-		switch (LoadBytesWithDelim(recieved, http::kSp, http::MethodPool::kMaxMethodLength)) {
+		switch (LoadBytesWithDelim(recieved, http::kSp, http::ImplementedMethods::kMaxLength)) {
 		case kOverMaxSize:
 			throw http::NotImplementedException();
 		case kParsable:
@@ -109,7 +109,7 @@ namespace server
 			if (!http::abnf::IsMethod(loaded_bytes_)) {
 				throw http::BadRequestException();
 			}
-			if (!http::MethodPool::Contains(loaded_bytes_)) {
+			if (!http::ImplementedMethods::Contains(loaded_bytes_)) {
 				throw http::NotImplementedException();
 			}
 			ctx_.request_line.SetMethod(loaded_bytes_);
