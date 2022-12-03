@@ -58,6 +58,20 @@ namespace server
 	{
 		request_msg_.SetBody(body);
 	}
+	const std::string &RequestParser::Request::Method() const
+	{
+		return request_msg_.GetRequestLine().GetMethod();
+	}
+
+	const std::string &RequestParser::Request::Path() const
+	{
+		return request_msg_.GetRequestLine().GetRequestTarget().GetRequestFormData().path_;
+	}
+
+	const HeaderSection &RequestParser::Request::Headers() const
+	{
+		return request_msg_.GetHeaderSection();
+	}
 
 	const http::RequestMessage &RequestParser::Request::GetMessage() const
 	{
