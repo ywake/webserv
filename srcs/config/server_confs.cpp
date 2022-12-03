@@ -92,7 +92,7 @@ namespace conf
 		} else if (parse_stack.TopHeader().StartWith("location ")) {
 			v_servers.back().AddLocation(
 				parse_stack.TopHeader(),
-				v_servers.back().GetDefaultRoot(),
+				v_servers.back().GetDefaultRoot().Value(),
 				parse_stack.TopContents()
 			);
 		}

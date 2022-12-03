@@ -273,9 +273,9 @@ namespace conf
 		return location_root.empty() ? default_root_.Value() : location_root.Value();
 	}
 
-	const Path &ServerConf::GetDefaultRoot() const
+	const ServerConf::Root &ServerConf::GetDefaultRoot() const
 	{
-		return default_root_.Value();
+		return default_root_;
 	}
 
 	/**
