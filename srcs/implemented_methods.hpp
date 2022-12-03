@@ -3,28 +3,27 @@
 
 #include <set>
 #include <string>
-
+#include <vector>
 namespace http
 {
 	class ImplementedMethods
 	{
 	  private:
-		typedef std::set<std::string> Pool;
+		typedef std::set<std::string>    Pool;
+		typedef std::vector<std::string> Array;
 
-		static const Pool pool_;
+		static const Pool  kPool;
+		static const Array kArray;
 
 	  public:
 		static const std::size_t kMaxLength;
-		static const std::string kGet;
-		static const std::string kDelete;
-		static const std::string kPost;
 
 	  private:
-		static Pool        InitPool();
 		static std::size_t InitMaxLength();
 
 	  public:
-		static bool Contains(const std::string &method);
+		static bool         Contains(const std::string &method);
+		static const Array &GetMethods();
 	};
 } // namespace http
 

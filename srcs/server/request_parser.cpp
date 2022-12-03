@@ -2,7 +2,7 @@
 #include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
-#include "method_pool.hpp"
+#include "implemented_methods.hpp"
 #include "validate_headers.hpp"
 #include "validate_request_line.hpp"
 #include "webserv_utils.hpp"
