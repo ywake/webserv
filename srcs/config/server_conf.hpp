@@ -32,7 +32,7 @@ namespace conf
 		ErrorPages        error_pages_;
 		ClientMaxBodySize client_max_body_size_;
 		LocationConfs     location_confs_;
-		Root              root_;
+		Root              default_root_;
 		LocationConf      defaultLocationConf;
 
 	  private:

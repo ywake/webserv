@@ -30,7 +30,7 @@ namespace conf
 		  error_pages_(error_pages),
 		  client_max_body_size_(client_max_body_size),
 		  location_confs_(location_confs),
-		  root_(root),
+		  default_root_(root),
 		  defaultLocationConf(LocationConf(
 			  LocationConf::PathPattern(),
 			  LocationConf::kPrefix,
@@ -40,7 +40,7 @@ namespace conf
 			  LocationConf::IndexFiles(),
 			  LocationConf::AutoIndex(),
 			  LocationConf::CgiPath(),
-			  &root_.Value()
+			  &default_root_.Value()
 		  ))
 	{}
 
@@ -70,7 +70,7 @@ namespace conf
 			}
 		}
 		// TODO ここのエラー処理どこでやるべきか考えたいかも
-		if (root_.empty()) {
+		if (default_root_.empty()) {
 			throw ConfigException("Invalid server config: root is not set");
 		}
 	}
@@ -220,7 +220,7 @@ namespace conf
 		if (tokens.size() != 2) {
 			throw ConfigException("Invalid root");
 		}
-		root_ = tokens[1].ToString();
+		default_root_ = tokens[1].ToString();
 	}
 
 	/**
@@ -267,15 +267,15 @@ namespace conf
 	{
 		Result<const LocationConf &> matched_location = FindMatchingLocationConf(uri_path);
 		if (matched_location.IsErr()) {
-			return root_.Value();
+			return default_root_.Value();
 		}
 		Emptiable<Path> location_root = matched_location.Val().GetRoot();
-		return location_root.empty() ? root_.Value() : location_root.Value();
+		return location_root.empty() ? default_root_.Value() : location_root.Value();
 	}
 
 	const Path &ServerConf::GetDefaultRoot() const
 	{
-		return root_.Value();
+		return default_root_.Value();
 	}
 
 	/**
