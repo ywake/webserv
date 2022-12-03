@@ -40,7 +40,7 @@ namespace utils
 		return path.erase(path.size() - 1);
 	}
 
-	ThinString NromalizePath(const ThinString &path)
+	std::string NromalizePath(const ThinString &path)
 	{
 		const Strings segments    = Split(path, "/");
 		Strings       dot_removed = RemoveDotSegments(TrimEmpty(segments));
