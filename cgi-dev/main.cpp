@@ -3,12 +3,29 @@
 #include <unistd.h>
 
 int  err_check(int ret);
+void exec_cgi();
 void child_task(int fd[2]);
 void parent_task(int pid, int fd[2]);
 
 int main(void)
 {
 	// TODO: リソースの存在確認
+	exec_cgi();
+
+	return 0;
+}
+
+int err_check(int ret)
+{
+	if (ret == -1) {
+		std::perror("Error");
+		std::exit(1);
+	}
+	return ret;
+}
+
+void exec_cgi()
+{
 	int fd[2];
 	err_check(socketpair(AF_UNIX, SOCK_STREAM, 0, fd));
 	int pid = err_check(fork());
@@ -22,17 +39,6 @@ int main(void)
 	}
 	err_check(close(fd[0]));
 	err_check(close(fd[1]));
-
-	return 0;
-}
-
-int err_check(int ret)
-{
-	if (ret == -1) {
-		std::perror("Error");
-		std::exit(1);
-	}
-	return ret;
 }
 
 void child_task(int fd[2])
