@@ -1,8 +1,6 @@
 #include "authority_form.hpp"
 #include "http_exceptions.hpp"
 
-static const ThinString kEmpty = "";
-
 AuthorityForm::AuthorityForm() : host_port_() {}
 
 // authority-form = uri-host ":" port
@@ -40,16 +38,6 @@ bool AuthorityForm::operator!=(const AuthorityForm &other) const
 	return !(*this == other);
 }
 
-const ThinString &AuthorityForm::GetScheme() const
-{
-	return kEmpty;
-}
-
-const ThinString &AuthorityForm::GetUserinfo() const
-{
-	return kEmpty;
-}
-
 const ThinString &AuthorityForm::GetHost() const
 {
 	return host_port_.GetHost();
@@ -58,16 +46,6 @@ const ThinString &AuthorityForm::GetHost() const
 const ThinString &AuthorityForm::GetPort() const
 {
 	return host_port_.GetPort();
-}
-
-const ThinString &AuthorityForm::GetPath() const
-{
-	return kEmpty;
-}
-
-const ThinString &AuthorityForm::GetQuery() const
-{
-	return kEmpty;
 }
 
 std::ostream &operator<<(std::ostream &os, const AuthorityForm &authority)

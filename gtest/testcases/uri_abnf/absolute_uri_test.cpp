@@ -11,6 +11,7 @@ TEST(absolute_uri, ok)
 		AbsoluteUri("http://www.google.com/"),
 		AbsoluteUri("http", HierPart("//www.google.com/"), "")
 	);
+	EXPECT_EQ(AbsoluteUri("http://"), AbsoluteUri("http", HierPart("//"), ""));
 	// path-absolute
 	EXPECT_EQ(AbsoluteUri("scheme:/"), AbsoluteUri("scheme", HierPart("/"), ""));
 	// path-rootless
