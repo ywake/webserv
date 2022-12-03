@@ -17,6 +17,7 @@ namespace server
 		virtual bool           HasReadyData() const               = 0;
 		virtual bool           HasFd() const                      = 0;
 		virtual Emptiable<int> GetFd() const                      = 0;
+		virtual std::size_t    size() const                       = 0;
 		virtual bool           IsFinished() const                 = 0;
 	};
 } // namespace server
