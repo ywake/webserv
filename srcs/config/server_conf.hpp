@@ -32,7 +32,8 @@ namespace conf
 		ErrorPages        error_pages_;
 		ClientMaxBodySize client_max_body_size_;
 		LocationConfs     location_confs_;
-		Root              root_;
+		Root              default_root_;
+		LocationConf      defaultLocationConf;
 
 	  private:
 		static const ListenPort        kDefaultListenPort;
@@ -58,7 +59,11 @@ namespace conf
 		void AddServerName(const std::vector<ThinString> &tokens);
 		void AddErrorPages(const std::vector<ThinString> &tokens);
 		void AddClientMaxBodySize(const std::vector<ThinString> &tokens);
-		void AddLocation(const ThinString &location, const std::vector<ThinString> &params);
+		void AddLocation(
+			const ThinString              &location,
+			const Path                    &default_root,
+			const std::vector<ThinString> &params
+		);
 		void AddRoot(const std::vector<ThinString> &tokens);
 
 		// Getters
@@ -67,10 +72,11 @@ namespace conf
 		const ErrorPages    &GetErrorPages() const;
 		const std::size_t   &GetClientMaxBodySize() const;
 		const LocationConfs &GetLocationConfs() const;
-		const Path          &GetRoot(Path uri_path) const;
+		const Path          &GetRoot(const Path &uri_path) const;
+		const Root          &GetDefaultRoot() const;
 
 		// Methods
-		Result<const LocationConf &> FindMatchingLocationConf(Path uri_path) const;
+		const LocationConf &FindMatchingLocationConf(const Path &uri_path) const;
 
 		// Operators
 		bool operator==(const ServerConf &rhs) const;

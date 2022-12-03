@@ -13,6 +13,11 @@ namespace http
 		: field_lines_(field_lines), message_body_(message_body)
 	{}
 
+	const HeaderSection &HttpMessage::GetHeaderSection() const
+	{
+		return field_lines_;
+	}
+
 	void HttpMessage::SetHeaderSection(const HeaderSection &field_lines)
 	{
 		field_lines_ = field_lines;

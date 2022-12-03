@@ -8,13 +8,28 @@
 AbsoluteForm::AbsoluteForm(const ThinString request_target) : uri_(request_target)
 {
 	bool is_pathrootless = !GetPath().empty() && GetPath().at(0) != '/';
-	bool is_http_family  = GetScheme() == "http" || GetScheme() == "https";
-	if (is_pathrootless || !is_http_family || GetHost().empty()) {
+	if (is_pathrootless || !IsValidHttpScheme() || GetHost().empty()) {
 		throw http::BadRequestException();
 	}
 }
 
 AbsoluteForm::AbsoluteForm(const AbsoluteUri uri) : uri_(uri) {}
+
+bool AbsoluteForm::IsValidHttpScheme()
+{
+	const std::string http_scheme = "http";
+	const ThinString &scheme      = GetScheme();
+	if (scheme.size() != http_scheme.size()) {
+		return false;
+	}
+	std::size_t i = 0;
+	for (ThinString::const_iterator it = scheme.begin(); it != scheme.end(); it++, i++) {
+		if (*it != http_scheme[i] && *it != std::toupper(http_scheme[i])) {
+			return false;
+		}
+	}
+	return true;
+}
 
 const ThinString &AbsoluteForm::GetScheme() const
 {

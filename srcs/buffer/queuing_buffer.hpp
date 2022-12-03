@@ -7,10 +7,8 @@
 #include "emptiable.hpp"
 #include "result.hpp"
 
-// TODO rename
 namespace q_buffer
 {
-	// TODO rename
 	class QueuingBuffer
 	{
 	  protected:
@@ -20,6 +18,7 @@ namespace q_buffer
 	  protected:
 		InnerBuffer buf_;
 		std::size_t front_idx_;
+		std::size_t size_;
 
 	  public:
 		QueuingBuffer();
