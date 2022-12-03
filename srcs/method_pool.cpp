@@ -1,29 +1,32 @@
 #include "method_pool.hpp"
+#include "http_define.hpp"
+#include "webserv_utils.hpp"
 
 namespace http
 {
-	const std::string ImplementedMethods::kGet    = "GET";
-	const std::string ImplementedMethods::kDelete = "DELETE";
-	const std::string ImplementedMethods::kPost   = "POST";
+	// C++98ではコンテナのリスト初期化が使えないので
+	static const char *kImplementedMethods[] = {
+		methods::kGet.c_str(),
+		methods::kDelete.c_str(),
+		methods::kPost.c_str(),
+	};
 
-	const ImplementedMethods::Pool ImplementedMethods::pool_ = ImplementedMethods::InitPool();
-	const std::size_t ImplementedMethods::kMaxLength         = ImplementedMethods::InitMaxLength();
+	static const char **kImplementedMethodsEnd =
+		kImplementedMethods + ARRAY_SIZE(kImplementedMethods);
 
-	ImplementedMethods::Pool ImplementedMethods::InitPool()
-	{
-		Pool pool;
+	const ImplementedMethods::Pool ImplementedMethods::kPool =
+		ImplementedMethods::Pool(kImplementedMethods, kImplementedMethodsEnd);
 
-		pool.insert(kGet);
-		pool.insert(kDelete);
-		pool.insert(kPost);
-		return pool;
-	}
+	const ImplementedMethods::Array ImplementedMethods::kArray =
+		ImplementedMethods::Array(kImplementedMethods, kImplementedMethodsEnd);
+
+	const std::size_t ImplementedMethods::kMaxLength = ImplementedMethods::InitMaxLength();
 
 	std::size_t ImplementedMethods::InitMaxLength()
 	{
 		std::size_t len = 0;
 
-		for (Pool::const_iterator it = pool_.begin(); it != pool_.end(); it++) {
+		for (Pool::const_iterator it = kPool.begin(); it != kPool.end(); it++) {
 			if (len < it->size()) {
 				len = it->size();
 			}
@@ -33,7 +36,12 @@ namespace http
 
 	bool ImplementedMethods::Contains(const std::string &method)
 	{
-		return pool_.find(method) != pool_.end();
+		return kPool.find(method) != kPool.end();
+	}
+
+	const ImplementedMethods::Array &ImplementedMethods::GetMethods()
+	{
+		return kArray;
 	}
 
 } // namespace http
