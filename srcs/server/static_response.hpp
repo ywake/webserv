@@ -28,6 +28,7 @@ namespace server
 		bool           HasFd() const;
 		Emptiable<int> GetFd() const;
 		bool           IsFinished() const;
+		std::size_t    size() const;
 
 	  private:
 		void InitGetMethod();

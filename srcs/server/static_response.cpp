@@ -71,4 +71,10 @@ namespace server
 	{
 		return is_finished_;
 	}
+
+	std::size_t StaticResponse::size() const
+	{
+		return q_buffer::QueuingBuffer::size();
+	}
+
 } // namespace server
