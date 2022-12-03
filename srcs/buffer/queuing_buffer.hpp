@@ -27,7 +27,7 @@ namespace q_buffer
 		std::vector<char> PopAll();
 		bool              empty() const;
 		QueuingBuffer    &operator=(const QueuingBuffer &other);
-		std::size_t       size();
+		std::size_t       size() const;
 	};
 } // namespace q_buffer
 
