@@ -10,19 +10,33 @@
 
 class RequestTarget
 {
+  public:
+	enum FormType {
+		kOriginForm,
+		kAbsoluteForm,
+		kAuthorityForm,
+		kAsteriskForm
+	};
+
   private:
+	FormType        form_type_;
 	RequestFormData form_data_;
 
   public:
 	RequestTarget();
-	RequestTarget(const ITargetForm &form);
-	RequestTarget(RequestFormData request_target);
+	RequestTarget(const RequestTarget &other);
+	RequestTarget(const OriginForm &form);
+	RequestTarget(const AbsoluteForm &form);
+	RequestTarget(const AuthorityForm &form);
+	RequestTarget(const AsteriskForm &form);
+	RequestTarget(const RequestFormData &request_target, FormType form_type);
 
 	RequestTarget &operator=(const RequestTarget &other);
 	bool           operator==(const RequestTarget &rhs) const;
 	bool           operator!=(const RequestTarget &rhs) const;
 
 	const RequestFormData &GetRequestFormData() const;
+	FormType               GetFormType() const;
 };
 
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target);
