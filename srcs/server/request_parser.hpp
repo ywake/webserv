@@ -2,8 +2,10 @@
 #define REQUEST_PARSER_HPP
 
 #include <deque>
+#include <string>
 
 #include "emptiable.hpp"
+#include "header_section.hpp"
 #include "i_request.hpp"
 #include "queuing_buffer.hpp"
 #include "request_line_parser.hpp"
@@ -42,6 +44,9 @@ namespace server
 			void SetHeaderSection(const HeaderSection &field_lines);
 			void SetBody(const std::string &body);
 
+			const std::string          &Method() const;
+			const std::string          &Path() const;
+			const HeaderSection        &Headers() const;
 			const http::RequestMessage &GetMessage() const;
 			const http::StatusCode     &GetErrStatusCode() const;
 			const ErrorType            &GetErrorType() const;
