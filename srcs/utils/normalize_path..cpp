@@ -8,12 +8,12 @@ namespace utils
 {
 	typedef std::vector<ThinString> Strings;
 
-	bool IsDotSegment(const ThinString &path_segment)
+	static bool IsDotSegment(const ThinString &path_segment)
 	{
 		return path_segment == "." || path_segment == "..";
 	}
 
-	Strings RemoveDotSegments(const Strings &segments)
+	static Strings RemoveDotSegments(const Strings &segments)
 	{
 		Strings dot_removed;
 
@@ -42,7 +42,15 @@ namespace utils
 
 	ThinString NromalizePath(const ThinString &path)
 	{
-			(void)path;
+		const Strings segments    = Split(path, "/");
+		Strings       dot_removed = RemoveDotSegments(TrimEmpty(segments));
+		std::string   normalized  = JoinPath(dot_removed);
+		if (normalized.empty()) { // including path.empty() && segments.empty()
 			return "/";
+		}
+		if (path.back() == '/' || IsDotSegment(segments.back())) {
+			normalized += "/";
+		}
+		return "/" + normalized;
 	}
 } // namespace utils
