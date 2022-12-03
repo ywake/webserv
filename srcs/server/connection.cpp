@@ -7,8 +7,8 @@ namespace server
 {
 	using namespace event;
 
-	const std::size_t              Connection::kMaxRecverBufSize    = 10;
-	const std::size_t              Connection::kMaxSenderBufSize    = 10;
+	const std::size_t              Connection::kMaxRecverBufSize    = 8196;
+	const std::size_t              Connection::kMaxSenderBufSize    = 8196;
 	const std::size_t              Connection::kMaxRequestQueueSize = 3;
 	const conf::VirtualServerConfs Connection::kEmptyConfs          = conf::VirtualServerConfs();
 
