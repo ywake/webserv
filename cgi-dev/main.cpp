@@ -7,11 +7,16 @@ void exec_cgi();
 void child_task(int fd[2]);
 void parent_task(int pid, int fd[2]);
 
-int main(void)
+int main(int argc, char *argv[], char *envp[])
 {
-	// TODO: リソースの存在確認
-	exec_cgi();
-
+	Resource resource;
+	is_exist(resource);
+	set_meta_env(resource, envp);
+	char **cmd_line_arg = create_cmd_line_arg(resource);
+	input_body(resource);
+	exec_cgi(cmd_line_arg, envp);
+	read_cgi_output();
+	parse_cgi_output();
 	return 0;
 }
 
