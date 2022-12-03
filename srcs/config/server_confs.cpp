@@ -133,22 +133,34 @@ namespace conf
 
 	void ServerConfs::CreatePortHostMap()
 	{
-		typedef std::vector<ServerConf>::iterator  ConfsItr;
-		typedef std::vector<std::string>::iterator StrItr;
+		typedef std::vector<ServerConf>::const_iterator  ConfsItr;
+		typedef std::vector<std::string>::const_iterator StrItr;
 
+		// ConfArray loop
 		for (ConfsItr it = confs_.begin(); it != confs_.end(); ++it) {
-
-			ServerConf::ListenPort port = it->GetListenPort();
-
-			for (StrItr port_it = port.begin(); port_it != port.end(); ++port_it) {
-
-				ServerConf::ServerName hosts = it->GetServerName();
+			const ServerConf             &serverConf = *it;
+			const ServerConf::ListenPort &ports      = serverConf.GetListenPort();
+			// PortArray loop
+			for (StrItr port_it = ports.begin(); port_it != ports.end(); ++port_it) {
+				const Port                   &port  = *port_it;
+				const ServerConf::ServerName &hosts = serverConf.GetServerName();
+				// HostArray loop
 				for (StrItr host_it = hosts.begin(); host_it != hosts.end(); ++host_it) {
-
-					confs_map_[*port_it].Add(*host_it, *it);
+					RegisterServerConf(port, *host_it, serverConf);
 				}
 			}
 		}
+	}
+
+	void ServerConfs::RegisterServerConf(const Port &port, const Host &host, const ServerConf &conf)
+	{
+		typedef ServerConfs::ConfsMap::const_iterator ConfsMapItr;
+
+		ConfsMapItr confs_map_it = confs_map_.find(port);
+		if (confs_map_it == confs_map_.end()) {
+			confs_map_[port] = VirtualServerConfs(host); // 一瞬デフォルトホストが空文字列になる
+		}
+		confs_map_[port].Add(host, conf);
 	}
 
 	ServerConfs::ConfsMap::const_iterator ServerConfs::begin() const

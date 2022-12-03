@@ -46,6 +46,7 @@ namespace conf
 
 	  private:
 		void CreatePortHostMap();
+		void RegisterServerConf(const Port &port, const Host &host, const ServerConf &server_conf);
 	};
 
 	std::ostream &operator<<(std::ostream &out, const ServerConfs &server_confs);
