@@ -35,6 +35,30 @@ namespace http
 	  public:
 		UriTooLongException();
 	};
+
+	class NotFoundException : public HttpException
+	{
+	  public:
+		NotFoundException();
+	};
+
+	class ForbiddenException : public HttpException
+	{
+	  public:
+		ForbiddenException();
+	};
+
+	class MethodNotAllowedException : public HttpException
+	{
+	  public:
+		MethodNotAllowedException();
+	};
+
+	class InternalServerErrorException : public HttpException
+	{
+	  public:
+		InternalServerErrorException();
+	};
 } // namespace http
 
 #endif
