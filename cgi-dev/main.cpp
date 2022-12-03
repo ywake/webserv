@@ -2,6 +2,30 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+int  err_check(int ret);
+void child_task(int fd[2]);
+void parent_task(int pid, int fd[2]);
+
+int main(void)
+{
+	// TODO: リソースの存在確認
+	int fd[2];
+	err_check(socketpair(AF_UNIX, SOCK_STREAM, 0, fd));
+	int pid = err_check(fork());
+	switch (pid) {
+	case 0:
+		child_task(fd);
+		break;
+	default:
+		parent_task(pid, fd);
+		break;
+	}
+	err_check(close(fd[0]));
+	err_check(close(fd[1]));
+
+	return 0;
+}
+
 int err_check(int ret)
 {
 	if (ret == -1) {
@@ -37,23 +61,4 @@ void parent_task(int pid, int fd[2])
 	int  res = err_check(read(fd[0], buf, 1023));
 	buf[res] = '\0';
 	std::cout << buf << std::endl;
-}
-
-int main(void)
-{
-	// TODO: リソースの存在確認
-	int fd[2];
-	err_check(socketpair(AF_UNIX, SOCK_STREAM, 0, fd));
-	int pid = err_check(fork());
-	switch (pid) {
-	case 0:
-		child_task(fd);
-		break;
-	default:
-		parent_task(pid, fd);
-		break;
-	}
-	err_check(close(fd[0]));
-	err_check(close(fd[1]));
-	return 0;
 }
