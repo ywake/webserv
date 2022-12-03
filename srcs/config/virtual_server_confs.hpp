@@ -21,7 +21,7 @@ namespace conf
 
 	  public:
 		VirtualServerConfs();
-		VirtualServerConfs(Host default_host);
+		VirtualServerConfs(const Host &default_host);
 
 		// for test
 		VirtualServerConfs(const Host &default_host, const HostMap &server_confs);
@@ -37,7 +37,6 @@ namespace conf
 		 * @param host
 		 * @return const ServerConf*
 		 */
-		// Result<const ServerConf &> operator[](const Host &host);
 		const ServerConf &operator[](const Host &host) const;
 
 		void Add(const Host &host, const ServerConf &server_conf);
