@@ -2,15 +2,24 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "i_request.hpp"
+#include "location_conf.hpp"
+
 int  err_check(int ret);
+bool is_accessible(const std::string &path);
 void exec_cgi();
 void child_task(int fd[2]);
 void parent_task(int pid, int fd[2]);
 
 int main(int argc, char *argv[], char *envp[])
 {
-	Resource resource;
-	is_exist(resource);
+	server::IRequest   resource;
+	conf::LocationConf conf;
+
+	std::string resource_path = conf.GetRoot() + request.Path();
+	if (is_accessible(resource_path) == false) {
+		return EXIT_FAILURE; // 404
+	}
 	set_meta_env(resource, envp);
 	char **cmd_line_arg = create_cmd_line_arg(resource);
 	input_body(resource);
@@ -27,6 +36,14 @@ int err_check(int ret)
 		std::exit(1);
 	}
 	return ret;
+}
+
+bool is_accessible(const std::string &path)
+{
+	if (access(path.c_str(), R_OK) != 0) {
+		return false;
+	}
+	return true;
 }
 
 void exec_cgi()
