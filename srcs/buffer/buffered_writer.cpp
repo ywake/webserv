@@ -38,6 +38,7 @@ namespace q_buffer
 			buf_.pop_front();
 			front_idx_ = 0;
 		}
+		size_ -= write_size;
 		return Result<void>();
 	}
 } // namespace q_buffer

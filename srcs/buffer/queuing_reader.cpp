@@ -32,6 +32,7 @@ namespace q_buffer
 		ssize_t read_size = read(fd, buf, buffer_size_);
 		if (read_size > 0) {
 			buf_.back().resize(read_size);
+			size_ += read_size;
 		} else {
 			buf_.pop_back();
 		}
