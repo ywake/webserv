@@ -79,7 +79,7 @@ namespace conf
 		const AllowMethods &GetAllowMethods() const;
 		const Redirect     &GetRedirect() const;
 		const Path         &GetRoot() const;
-		const Root         &GetRowRoot() const;
+		const Root         &GetRawRoot() const;
 		const IndexFiles   &GetIndexFiles() const;
 		const AutoIndex    &GetAutoindex() const;
 		const CgiPath      &GetCgiPath() const;

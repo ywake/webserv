@@ -263,7 +263,7 @@ namespace conf
 		return location_root.empty() ? root_.Value() : location_root.Value();
 	}
 
-	const Path &ServerConf::GetRowRoot() const
+	const Path &ServerConf::GetRawRoot() const
 	{
 		return root_.Value();
 	}

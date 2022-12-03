@@ -46,7 +46,7 @@ namespace conf
 	LocationConf::LocationConf(
 		const PathPattern             &path_pattern,
 		MatchPattern                   match_pattern,
-		const Path					&default_root,
+		const Path                    &default_root,
 		const std::vector<ThinString> &params
 	)
 		: path_pattern_(path_pattern),
@@ -201,7 +201,7 @@ namespace conf
 		}
 		return root_.Value();
 	}
-	const LocationConf::Root &LocationConf::GetRowRoot() const
+	const LocationConf::Root &LocationConf::GetRawRoot() const
 	{
 		return root_;
 	}
@@ -287,7 +287,7 @@ namespace conf
 		}
 		os << ", ";
 
-		LocationConf::Root root = conf.GetRowRoot();
+		LocationConf::Root root = conf.GetRawRoot();
 		os << "root: " << (root.empty() ? "" : root.Value()) << ", ";
 
 		os << "index_files: [ ";

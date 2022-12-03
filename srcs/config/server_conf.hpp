@@ -73,7 +73,7 @@ namespace conf
 		const std::size_t   &GetClientMaxBodySize() const;
 		const LocationConfs &GetLocationConfs() const;
 		const Path          &GetRoot(Path uri_path) const;
-		const Path          &GetRowRoot() const;
+		const Path          &GetRawRoot() const;
 
 		// Methods
 		const LocationConf &FindMatchingLocationConf(Path uri_path) const;
