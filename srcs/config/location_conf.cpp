@@ -30,7 +30,7 @@ namespace conf
 		IndexFiles   index_files,
 		AutoIndex    autoindex,
 		CgiPath      cgi_path,
-		const Path  &default_root
+		const Path  *default_root
 	)
 		: path_pattern_(path_pattern),
 		  match_pattern_(match_pattern),
@@ -57,7 +57,7 @@ namespace conf
 		  index_files_(),
 		  autoindex_(),
 		  cgi_path_(),
-		  default_root_(default_root)
+		  default_root_(&default_root)
 	{
 		for (std::vector<ThinString>::const_iterator it = params.begin(); it != params.end();
 			 ++it) {
@@ -197,11 +197,12 @@ namespace conf
 	const Path &LocationConf::GetRoot() const
 	{
 		if (root_.empty()) {
-			return default_root_;
+			return *default_root_;
 		}
 		return root_.Value();
 	}
-	const LocationConf::Root &LocationConf::GetRowRoot() const
+
+	const LocationConf::Root &LocationConf::GetRawRoot() const
 	{
 		return root_;
 	}
@@ -287,7 +288,7 @@ namespace conf
 		}
 		os << ", ";
 
-		LocationConf::Root root = conf.GetRowRoot();
+		LocationConf::Root root = conf.GetRawRoot();
 		os << "root: " << (root.empty() ? "" : root.Value()) << ", ";
 
 		os << "index_files: [ ";

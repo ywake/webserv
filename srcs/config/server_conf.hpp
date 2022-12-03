@@ -32,7 +32,8 @@ namespace conf
 		ErrorPages        error_pages_;
 		ClientMaxBodySize client_max_body_size_;
 		LocationConfs     location_confs_;
-		Root              root_;
+		Root              default_root_;
+		LocationConf      defaultLocationConf;
 
 	  private:
 		static const ListenPort        kDefaultListenPort;
@@ -72,11 +73,11 @@ namespace conf
 		const ErrorPages    &GetErrorPages() const;
 		const std::size_t   &GetClientMaxBodySize() const;
 		const LocationConfs &GetLocationConfs() const;
-		const Path          &GetRoot(Path uri_path) const;
-		const Path          &GetRowRoot() const;
+		const Path          &GetRoot(const Path &uri_path) const;
+		const Root          &GetDefaultRoot() const;
 
 		// Methods
-		const LocationConf &FindMatchingLocationConf(Path uri_path) const;
+		const LocationConf &FindMatchingLocationConf(const Path &uri_path) const;
 
 		// Operators
 		bool operator==(const ServerConf &rhs) const;

@@ -3,7 +3,7 @@
 namespace conf
 {
 	VirtualServerConfs::VirtualServerConfs(/* args */) : default_host_(), server_confs_() {}
-	VirtualServerConfs::VirtualServerConfs(Host default_host)
+	VirtualServerConfs::VirtualServerConfs(const Host &default_host)
 		: default_host_(default_host), server_confs_()
 	{}
 

@@ -89,9 +89,14 @@ namespace conf
 		}
 		if (parse_stack.TopHeader() == "server") {
 			v_servers.back().SetParams(parse_stack.TopContents());
+			if (v_servers.back().GetDefaultRoot().empty()) {
+				throw ConfigException("Invalid server config: root is not set");
+			}
 		} else if (parse_stack.TopHeader().StartWith("location ")) {
 			v_servers.back().AddLocation(
-				parse_stack.TopHeader(), v_servers.back().GetRowRoot(), parse_stack.TopContents()
+				parse_stack.TopHeader(),
+				v_servers.back().GetDefaultRoot().Value(),
+				parse_stack.TopContents()
 			);
 		}
 
@@ -160,7 +165,7 @@ namespace conf
 
 		ConfsMapItr confs_map_it = confs_map_.find(port);
 		if (confs_map_it == confs_map_.end()) {
-			confs_map_[port] = VirtualServerConfs(host); // 一瞬デフォルトホストが空文字列になる
+			confs_map_.insert(std::pair<Port, VirtualServerConfs>(port, VirtualServerConfs(host)));
 		}
 		confs_map_[port].Add(host, conf);
 	}
