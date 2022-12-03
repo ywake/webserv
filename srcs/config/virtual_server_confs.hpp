@@ -37,7 +37,6 @@ namespace conf
 		 * @param host
 		 * @return const ServerConf*
 		 */
-		// Result<const ServerConf &> operator[](const Host &host);
 		const ServerConf &operator[](const Host &host) const;
 
 		void Add(const Host &host, const ServerConf &server_conf);
