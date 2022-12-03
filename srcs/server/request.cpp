@@ -23,12 +23,6 @@ namespace server
 
 	RequestParser::Request::~Request() {}
 
-	void RequestParser::Request::SetError(const http::StatusCode &error_code, ErrorType error_type)
-	{
-		error_code_ = error_code;
-		error_type_ = error_type;
-	}
-
 	bool RequestParser::Request::IsErr() const
 	{
 		return error_type_ != kNotError;
@@ -37,6 +31,46 @@ namespace server
 	bool RequestParser::Request::IsFatal() const
 	{
 		return error_type_ == kFatal;
+	}
+
+	bool RequestParser::Request::HasMessageBody() const
+	{
+		return request_msg_.HasMessageBody();
+	}
+
+	void RequestParser::Request::SetError(const http::StatusCode &error_code, ErrorType error_type)
+	{
+		error_code_ = error_code;
+		error_type_ = error_type;
+	}
+
+	void RequestParser::Request::SetRequestLine(const RequestLine &request_line)
+	{
+		request_msg_.SetRequestLine(request_line);
+	}
+
+	void RequestParser::Request::SetHeaderSection(const HeaderSection &field_lines)
+	{
+		request_msg_.SetHeaderSection(field_lines);
+	}
+
+	void RequestParser::Request::SetBody(const std::string &body)
+	{
+		request_msg_.SetBody(body);
+	}
+	const std::string &RequestParser::Request::Method() const
+	{
+		return request_msg_.GetRequestLine().GetMethod();
+	}
+
+	const std::string &RequestParser::Request::Path() const
+	{
+		return request_msg_.GetRequestLine().GetRequestTarget().GetRequestFormData().path_;
+	}
+
+	const HeaderSection &RequestParser::Request::Headers() const
+	{
+		return request_msg_.GetHeaderSection();
 	}
 
 	const http::RequestMessage &RequestParser::Request::GetMessage() const

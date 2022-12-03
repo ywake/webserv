@@ -2,17 +2,21 @@
 #include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
+#include "implemented_methods.hpp"
 #include "validate_headers.hpp"
+#include "validate_request_line.hpp"
 #include "webserv_utils.hpp"
 
 namespace server
 {
+	const std::size_t RequestParser::kMaxHeaderSectonSize = 8196 * 4;
+
 	RequestParser::RequestParser()
 	{
 		InitParseContext();
 	}
 
-	RequestParser::RequestParser(const RequestParser &other)
+	RequestParser::RequestParser(const RequestParser &other) : StatefulParser()
 	{
 		*this = other;
 	}
@@ -22,9 +26,10 @@ namespace server
 		if (this == &rhs) {
 			return *this;
 		}
-		ctx_.state        = rhs.ctx_.state;
-		ctx_.loaded_bytes = rhs.ctx_.loaded_bytes;
-		*ctx_.request     = *rhs.ctx_.request;
+		StatefulParser::operator=(rhs);
+		ctx_.request_line_parser = rhs.ctx_.request_line_parser;
+		ctx_.state               = rhs.ctx_.state;
+		*ctx_.request            = *rhs.ctx_.request;
 		return *this;
 	}
 
@@ -49,18 +54,19 @@ namespace server
 
 	void RequestParser::InitParseContext()
 	{
-		ctx_.loaded_bytes = std::string();
-		ctx_.state        = kStandBy;
-		ctx_.request      = new Request();
+		ClearLoadedBytes();
+		ctx_.request_line_parser = RequestLineParser();
+		ctx_.state               = kStandBy;
+		ctx_.request             = new Request();
 	}
 
-	Emptiable<IRequest *> RequestParser::Parse(buffer::Buffer &recieved)
+	Emptiable<IRequest *> RequestParser::Parse(q_buffer::QueuingBuffer &recieved)
 	{
 		if (recieved.empty()) {
 			return Emptiable<IRequest *>();
 		}
 		try {
-			if (CreateRequestMessage(recieved) == kComplete) {
+			if (CreateRequestMessage(recieved) == kDone) {
 				Request *req = ctx_.request;
 				InitParseContext();
 				return req;
@@ -72,13 +78,31 @@ namespace server
 		}
 	}
 
+	RequestParser::ParseResult RequestParser::CreateRequestMessage(q_buffer::QueuingBuffer &recieved
+	)
+	{
+		while (!recieved.empty()) {
+			switch (ParseEachPhase(recieved)) {
+			case kInProgress:
+				return kInProgress;
+			case kDone:
+				if (ctx_.state == kBody ||
+					(ctx_.state == kHeader && !ctx_.request->HasMessageBody())) {
+					return kDone;
+				}
+				ctx_.state = GetNextState(ctx_.state);
+				ClearLoadedBytes();
+			}
+		}
+		return kInProgress;
+	}
+
 	// TODO トレイラ無視してる
-	RequestParser::ParseResult RequestParser::CreateRequestMessage(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseEachPhase(q_buffer::QueuingBuffer &recieved)
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			SetStateAndClearLoadedBytes(kStartLine);
-			/* Falls through. */
+			return kInProgress;
 		case kStartLine:
 			return ParseStartLine(recieved);
 		case kHeader:
@@ -86,59 +110,57 @@ namespace server
 		case kBody:
 			return ParseBody(recieved);
 		}
-		return kInComplete;
+		return kInProgress;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseStartLine(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseStartLine(q_buffer::QueuingBuffer &recieved)
 	{
-		if (LoadUntillDelim(recieved, http::kCrLf) != kParsable) {
-			return kInComplete;
+		Emptiable<RequestLine> req_line = ctx_.request_line_parser.Parse(recieved);
+		if (req_line.empty()) {
+			return kInProgress;
 		}
-		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
-		ctx_.request->request_msg_.SetRequestLine(RequestLine(ctx_.loaded_bytes));
-		SetStateAndClearLoadedBytes(kHeader);
-		return kInComplete;
+		ctx_.request->SetRequestLine(req_line.Value());
+		return kDone;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseHeaderSection(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseHeaderSection(q_buffer::QueuingBuffer &recieved)
 	{
-		if (LoadUntillDelim(recieved, http::kEmptyLine) != kParsable) {
-			return kInComplete;
+		switch (LoadBytesWithDelim(recieved, http::kEmptyLine, kMaxHeaderSectonSize)) {
+		case kOverMaxSize:
+			throw http::BadRequestException();
+		case kParsable: {
+			loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
+			const HeaderSection headers = HeaderSection(loaded_bytes_);
+			http::headers::ValidateHeaderSection(headers);
+			ctx_.request->SetHeaderSection(headers);
+			return kDone;
 		}
-		ctx_.loaded_bytes.erase(ctx_.loaded_bytes.size() - http::kCrLf.size());
-		const HeaderSection headers = HeaderSection(ctx_.loaded_bytes);
-		http::headers::ValidateHeaderSection(headers);
-		ctx_.request->request_msg_.SetHeaderSection(headers);
-		SetStateAndClearLoadedBytes(kBody);
-		return ctx_.request->request_msg_.HasMessageBody() ? kInComplete : kComplete;
+		case kNonParsable:
+			return kInProgress;
+		}
+		return kInProgress;
 	}
 
 	// TODO body
-	RequestParser::ParseResult RequestParser::ParseBody(buffer::Buffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseBody(q_buffer::QueuingBuffer &recieved)
 	{
 		(void)recieved;
-		return kComplete;
+		return kDone;
 	}
 
-	RequestParser::LoadResult
-	RequestParser::LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim)
+	RequestParser::State RequestParser::GetNextState(State old_state)
 	{
-		for (;;) {
-			if (recieved.empty()) {
-				return kNonParsable;
-			}
-			Emptiable<char> c = recieved.PopChar();
-			ctx_.loaded_bytes += c.Value();
-			if (utils::EndWith(ctx_.loaded_bytes, delim)) {
-				return kParsable;
-			}
+		switch (old_state) {
+		case kStandBy:
+			return kStartLine;
+		case kStartLine:
+			return kHeader;
+		case kHeader:
+			return kBody;
+		case kBody:
+			return kStandBy;
 		}
-	}
-
-	void RequestParser::SetStateAndClearLoadedBytes(State new_state)
-	{
-		ctx_.loaded_bytes = std::string();
-		ctx_.state        = new_state;
+		return kStandBy;
 	}
 
 	void RequestParser::DestroyParseContext()

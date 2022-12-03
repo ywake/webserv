@@ -22,6 +22,11 @@ namespace http
 		request_line_ = request_line;
 	}
 
+	const RequestLine &RequestMessage::GetRequestLine() const
+	{
+		return request_line_;
+	}
+
 	RequestMessage &RequestMessage::operator=(const RequestMessage &rhs)
 	{
 		if (this == &rhs) {

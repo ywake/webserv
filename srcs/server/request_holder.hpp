@@ -3,9 +3,8 @@
 
 #include <deque>
 
-#include "buffer.hpp"
 #include "emptiable.hpp"
-#include "request.hpp"
+#include "queuing_buffer.hpp"
 #include "request_parser.hpp"
 #include "result.hpp"
 #include "status_code.hpp"
@@ -28,7 +27,7 @@ namespace server
 
 		RequestHolder &operator=(const RequestHolder &rhs);
 
-		void                  Parse(buffer::Buffer &recieved);
+		void                  Parse(q_buffer::QueuingBuffer &recieved);
 		Emptiable<IRequest *> PopFront();
 		std::size_t           size();
 		void                  OnEof();

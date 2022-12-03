@@ -1,9 +1,9 @@
-#include "buffer.hpp"
 #include "gtest.h"
+#include "queuing_buffer.hpp"
 
 TEST(read_buffer, basic_test)
 {
-	buffer::Buffer buf;
+	q_buffer::QueuingBuffer buf;
 
 	EXPECT_TRUE(buf.PopChar().empty());
 	EXPECT_TRUE(buf.PopChar().empty());
@@ -30,7 +30,7 @@ TEST(read_buffer, basic_test)
 
 TEST(read_buffer, get_all_test)
 {
-	buffer::Buffer buf;
+	q_buffer::QueuingBuffer buf;
 
 	EXPECT_EQ(buf.PopAll(), std::vector<char>());
 	EXPECT_EQ(buf.PopAll(), std::vector<char>());
@@ -45,7 +45,7 @@ TEST(read_buffer, get_all_test)
 
 TEST(read_buffer, empty_test)
 {
-	buffer::Buffer buf;
+	q_buffer::QueuingBuffer buf;
 
 	EXPECT_TRUE(buf.empty());
 	EXPECT_TRUE(buf.empty());

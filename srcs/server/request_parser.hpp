@@ -2,22 +2,25 @@
 #define REQUEST_PARSER_HPP
 
 #include <deque>
+#include <string>
 
-#include "buffer.hpp"
 #include "emptiable.hpp"
+#include "header_section.hpp"
 #include "i_request.hpp"
+#include "queuing_buffer.hpp"
+#include "request_line_parser.hpp"
 #include "request_message.hpp"
 #include "result.hpp"
+#include "stateful_parser.hpp"
 #include "status_code.hpp"
-
 namespace server
 {
-	class RequestParser
+	class RequestParser : public StatefulParser
 	{
 	  private:
 		class Request : public IRequest
 		{
-		  public:
+		  private:
 			http::RequestMessage request_msg_;
 			http::StatusCode     error_code_;
 			ErrorType            error_type_;
@@ -31,10 +34,19 @@ namespace server
 			Request(const Request &other);
 			Request(const http::StatusCode &error_code, ErrorType error_type);
 			~Request();
-			void SetError(const http::StatusCode &error_code, ErrorType error_type);
+
 			bool IsErr() const;
 			bool IsFatal() const;
+			bool HasMessageBody() const;
 
+			void SetError(const http::StatusCode &error_code, ErrorType error_type);
+			void SetRequestLine(const RequestLine &request_line);
+			void SetHeaderSection(const HeaderSection &field_lines);
+			void SetBody(const std::string &body);
+
+			const std::string          &Method() const;
+			const std::string          &Path() const;
+			const HeaderSection        &Headers() const;
 			const http::RequestMessage &GetMessage() const;
 			const http::StatusCode     &GetErrStatusCode() const;
 			const ErrorType            &GetErrorType() const;
@@ -47,20 +59,13 @@ namespace server
 			kHeader,
 			kBody
 		};
-		enum ParseResult {
-			kComplete,
-			kInComplete
-		};
-		enum LoadResult {
-			kParsable,
-			kNonParsable
-		};
 
 	  private:
+		static const std::size_t kMaxHeaderSectonSize;
 		struct Context {
-			State       state;
-			std::string loaded_bytes;
-			Request    *request;
+			State             state;
+			RequestLineParser request_line_parser;
+			Request          *request;
 		} ctx_;
 
 	  public:
@@ -68,21 +73,21 @@ namespace server
 		RequestParser(const RequestParser &other);
 		~RequestParser();
 		RequestParser        &operator=(const RequestParser &rhs);
-		Emptiable<IRequest *> Parse(buffer::Buffer &recieved);
+		Emptiable<IRequest *> Parse(q_buffer::QueuingBuffer &recieved);
 		bool                  HasInCompleteData();
 		Emptiable<IRequest *> OnEof();
-		void                  DestroyParseContext();
 		static void           DestroyRequest(IRequest *&request);
 		static IRequest      *CopyRequest(const IRequest *request);
 
 	  private:
 		void        InitParseContext();
-		ParseResult CreateRequestMessage(buffer::Buffer &recieved);
-		ParseResult ParseStartLine(buffer::Buffer &recieved);
-		ParseResult ParseHeaderSection(buffer::Buffer &recieved);
-		ParseResult ParseBody(buffer::Buffer &recieved);
-		LoadResult  LoadUntillDelim(buffer::Buffer &recieved, const std::string &delim);
-		void        SetStateAndClearLoadedBytes(State new_state);
+		void        DestroyParseContext();
+		ParseResult CreateRequestMessage(q_buffer::QueuingBuffer &recieved);
+		ParseResult ParseEachPhase(q_buffer::QueuingBuffer &recieved);
+		ParseResult ParseStartLine(q_buffer::QueuingBuffer &recieved);
+		ParseResult ParseHeaderSection(q_buffer::QueuingBuffer &recieved);
+		ParseResult ParseBody(q_buffer::QueuingBuffer &recieved);
+		State       GetNextState(State old_state);
 	};
 } // namespace server
 #endif
