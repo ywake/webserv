@@ -1,10 +1,9 @@
 #ifndef ORIGIN_FORM_HPP
 #define ORIGIN_FORM_HPP
 
-#include "i_target_form.hpp"
 #include "thin_string.hpp"
 
-class OriginForm : public ITargetForm
+class OriginForm
 {
   private:
 	ThinString path_;
@@ -20,10 +19,6 @@ class OriginForm : public ITargetForm
 	bool        operator==(const OriginForm &other) const;
 	bool        operator!=(const OriginForm &other) const;
 
-	const ThinString &GetScheme() const;
-	const ThinString &GetUserinfo() const;
-	const ThinString &GetHost() const;
-	const ThinString &GetPort() const;
 	const ThinString &GetPath() const;
 	const ThinString &GetQuery() const;
 };
