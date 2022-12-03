@@ -28,7 +28,7 @@ namespace utils
 		return dot_removed;
 	}
 
-	std::string JoinPath(const Strings &segments)
+	static std::string JoinPathSegments(const Strings &segments)
 	{
 		if (segments.empty()) {
 			return "";
@@ -44,7 +44,7 @@ namespace utils
 	{
 		const Strings segments    = Split(path, "/");
 		Strings       dot_removed = RemoveDotSegments(TrimEmpty(segments));
-		std::string   normalized  = JoinPath(dot_removed);
+		std::string   normalized  = JoinPathSegments(dot_removed);
 		if (normalized.empty()) { // including path.empty() && segments.empty()
 			return "/";
 		}

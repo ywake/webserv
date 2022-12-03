@@ -29,7 +29,6 @@ namespace utils
 	bool                    EndWith(const std::string &src, const std::string &target);
 	void                    Close(int fd);
 	ThinString              NromalizePath(const ThinString &path);
-	std::string             JoinPath(const std::vector<ThinString> &segments);
 } // namespace utils
 
 #endif
