@@ -160,7 +160,7 @@ namespace conf
 
 		ConfsMapItr confs_map_it = confs_map_.find(port);
 		if (confs_map_it == confs_map_.end()) {
-			confs_map_[port] = VirtualServerConfs(host); // 一瞬デフォルトホストが空文字列になる
+			confs_map_.insert(std::pair<Port, VirtualServerConfs>(port, VirtualServerConfs(host)));
 		}
 		confs_map_[port].Add(host, conf);
 	}
