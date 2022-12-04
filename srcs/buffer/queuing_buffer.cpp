@@ -18,6 +18,14 @@ namespace q_buffer
 		size_ += data.size();
 	}
 
+	void QueuingBuffer::push_back(const std::string &data)
+	{
+		if (data.empty()) {
+			return;
+		}
+		buf_.push_back(ByteArray(data.begin(), data.end()));
+	}
+
 	Emptiable<char> QueuingBuffer::PopChar()
 	{
 		if (empty()) {
@@ -68,7 +76,7 @@ namespace q_buffer
 		return *this;
 	}
 
-	std::size_t QueuingBuffer::size()
+	std::size_t QueuingBuffer::size() const
 	{
 		return size_;
 	}

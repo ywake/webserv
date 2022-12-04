@@ -24,11 +24,12 @@ namespace q_buffer
 		QueuingBuffer();
 		QueuingBuffer(const QueuingBuffer &other);
 		void              push_back(const std::vector<char> &data);
+		void              push_back(const std::string &data);
 		Emptiable<char>   PopChar();
 		std::vector<char> PopAll();
 		bool              empty() const;
 		QueuingBuffer    &operator=(const QueuingBuffer &other);
-		std::size_t       size();
+		std::size_t       size() const;
 	};
 } // namespace q_buffer
 
