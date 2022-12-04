@@ -16,6 +16,7 @@
 #include "reciever.hpp"
 #include "request_holder.hpp"
 #include "request_message.hpp"
+#include "response_holder.hpp"
 #include "socket.hpp"
 #include "status_code.hpp"
 
@@ -45,6 +46,8 @@ namespace server
 		const SockAddrStorage           client_;
 		Reciever                        reciever_;
 		RequestHolder                   request_holder_;
+		ResponseHolder                  response_holder_;
+		bool                            is_finished_;
 		// State                           state_;
 		// Sender						 *sender_;
 
@@ -53,18 +56,18 @@ namespace server
 		Connection(
 			int managed_fd, const conf::VirtualServerConfs &conf, const SockAddrStorage &client
 		);
-		Connection(const Connection &other);
+		// Connection(const Connection &other);
 		~Connection();
 		bool                operator<(const Connection &other) const;
 		event::Instructions CommunicateWithClient(uint32_t event_type);
-
 		event::Instructions Proceed(const event::Event &event);
-		// bool             IsFinished();
+		bool                IsFinished();
 
 	  private:
 		event::Instructions Recieve();
 		event::Instructions Send();
 		event::Instructions OnEof();
+		event::Instructions StartResponse();
 	};
 } // namespace server
 #endif

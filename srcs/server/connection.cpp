@@ -17,12 +17,21 @@ namespace server
 	Connection::Connection(
 		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
 	)
-		: Socket(fd), configs_(configs), client_(client), reciever_(fd), request_holder_()
+		: Socket(fd),
+		  configs_(configs),
+		  client_(client),
+		  reciever_(fd),
+		  request_holder_(),
+		  response_holder_(fd, configs, RequestHolder::DestroyRequest)
 	{}
 
-	Connection::Connection(const Connection &other)
-		: Socket(other), configs_(other.configs_), client_(other.client_)
-	{}
+	// Connection::Connection(const Connection &other)
+	// 	: Socket(other),
+	// 	  configs_(other.configs_),
+	// 	  client_(other.client_),
+	// 	  request_holder_(other.request_holder_),
+	// 	  response_holder_(-1, kEmptyConfs, RequestHolder::DestroyRequest) // tmp
+	// {}
 
 	bool Connection::operator<(const Connection &other) const
 	{
@@ -36,8 +45,8 @@ namespace server
 		if (event.fd == this->GetFd()) {
 			return CommunicateWithClient(event.event_type);
 		} else {
+			return response_holder_.Perform(event);
 		}
-		return Instructions();
 	}
 
 	Instructions Connection::CommunicateWithClient(uint32_t event_type)
@@ -67,7 +76,10 @@ namespace server
 			// TDDO 500
 		}
 		request_holder_.OnEof();
-		// if (CanResPonsStart0) {}
+		if (response_holder_.size() == 0) { // TODO fix tmp とか
+			Instructions tmp = StartResponse();
+			insts.splice(insts.end(), tmp);
+		}
 		return insts;
 	}
 
@@ -94,13 +106,37 @@ namespace server
 		if (!is_holder_full) {
 			request_holder_.Parse(reciever_);
 		}
-		// if (CanResPonsStart0) {}
+		if (response_holder_.size() == 0) { // TODO fix tmp とか
+			Instructions tmp = StartResponse();
+			insts.splice(insts.end(), tmp);
+		}
 		return Instructions();
 	}
 
 	Instructions Connection::Send()
 	{
-		return Instructions();
+		Result<Instructions> res = response_holder_.Send();
+		if (res.IsErr() || response_holder_.IsFatal()) {
+			is_finished_ = true;
+			return response_holder_.UnregisterAll();
+		}
+		return res.Val();
+	}
+
+	event::Instructions Connection::StartResponse()
+	{
+		Instructions insts;
+
+		Emptiable<IRequest *> req = request_holder_.PopFront();
+		if (!req.empty()) {
+			insts = response_holder_.StartNewResponse(req.Value());
+		}
+		return insts;
+	}
+
+	bool Connection::IsFinished()
+	{
+		return is_finished_;
 	}
 
 } // namespace server
