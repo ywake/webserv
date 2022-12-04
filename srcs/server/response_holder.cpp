@@ -7,12 +7,18 @@ namespace server
 {
 	using namespace event;
 
+	static const conf::VirtualServerConfs kEmptyConf = conf::VirtualServerConfs();
+
 	const std::size_t ResponseHolder::kMaxBufSize = 8196;
 
 	inline const std::string &GetHost(const IRequest &request)
 	{
 		return request.Headers()["host"].front().GetValue();
 	}
+
+	ResponseHolder::ResponseHolder()
+		: conn_fd_(-1), config_(kEmptyConf), in_progress_(), request_del_(NULL), is_fatal_(false)
+	{}
 
 	ResponseHolder::ResponseHolder(
 		int conn_fd, const conf::VirtualServerConfs &conf, RequestDelFunc del
