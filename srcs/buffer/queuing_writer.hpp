@@ -1,5 +1,5 @@
-#ifndef BUFFERED_WRITER_HPP
-#define BUFFERED_WRITER_HPP
+#ifndef QUEUING_WRITER_HPP
+#define QUEUING_WRITER_HPP
 
 #include "queuing_buffer.hpp"
 
