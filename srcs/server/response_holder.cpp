@@ -21,9 +21,7 @@ namespace server
 		if (request->IsErr()) {
 			in_progress_.back().second =
 				new ErrorResponse(request->GetErrStatusCode(), config_[GetHost(*request)]);
-			Instructions insts;
-			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
-			return insts;
+			return CreateInstructionsForNewResopnse(*in_progress_.back().second);
 		}
 		IResponse *new_response    = CreateNewResponse(*request);
 		in_progress_.back().second = new_response;
