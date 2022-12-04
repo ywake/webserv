@@ -2,10 +2,10 @@
 #define ERROR_RESPONSE_HPP
 
 #include "i_response.hpp"
-#include "location_conf.hpp"
 #include "managed_fd.hpp"
 #include "queuing_reader.hpp"
 #include "queuing_writer.hpp"
+#include "server_conf.hpp"
 #include "status_code.hpp"
 
 namespace server
@@ -15,12 +15,12 @@ namespace server
 						  public q_buffer::QueuingWriter
 	{
 	  private:
-		const conf::LocationConf &config_;
-		ManagedFd                 managed_fd_;
-		bool                      is_finished_;
+		const conf::ServerConf &config_;
+		ManagedFd               managed_fd_;
+		bool                    is_finished_;
 
 	  public:
-		ErrorResponse(const http::StatusCode &status_code, const conf::LocationConf &conf);
+		ErrorResponse(const http::StatusCode &status_code, const conf::ServerConf &conf);
 		void           Perform(const event::Event &event);
 		Result<void>   Send(int fd);
 		bool           HasReadyData() const;
