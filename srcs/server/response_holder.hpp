@@ -29,7 +29,7 @@ namespace server
 		bool                            is_fatal_;
 
 	  public:
-		ResponseHolder(const conf::VirtualServerConfs &conf, RequestDelFunc del);
+		ResponseHolder(int conn_fd, const conf::VirtualServerConfs &conf, RequestDelFunc del);
 		~ResponseHolder();
 		event::Instructions         StartNewResponse(IRequest *request);
 		event::Instructions         Perform(const event::Event &event);

@@ -14,6 +14,12 @@ namespace server
 		return request.Headers()["host"].front().GetValue();
 	}
 
+	ResponseHolder::ResponseHolder(
+		int conn_fd, const conf::VirtualServerConfs &conf, RequestDelFunc del
+	)
+		: conn_fd_(conn_fd), config_(conf), in_progress_(), request_del_(del), is_fatal_(false)
+	{}
+
 	Instructions ResponseHolder::StartNewResponse(IRequest *request)
 	{
 		in_progress_.push_back(ReqRes(request, NULL));
