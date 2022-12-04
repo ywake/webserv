@@ -16,7 +16,6 @@ namespace server
 
 	Instructions ResponseHolder::StartNewResponse(IRequest *request)
 	{
-
 		in_progress_.push_back(ReqRes(request, NULL));
 		if (request->IsErr()) {
 			in_progress_.back().second =
