@@ -118,4 +118,15 @@ namespace server
 		return insts;
 	}
 
+	event::Instructions ResponseHolder::UnregisterAll()
+	{
+		event::Instructions insts;
+
+		for (; !in_progress_.empty();) {
+			event::Instructions i = FinishFrontResponse();
+			insts.splice(insts.end(), i);
+		}
+		return insts;
+	}
+
 } // namespace server

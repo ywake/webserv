@@ -30,6 +30,7 @@ namespace server
 		event::Instructions         Perform(const event::Event &event);
 		Result<event::Instructions> Send();
 		std::size_t                 size();
+		event::Instructions         UnregisterAll();
 
 	  private:
 		event::Instructions FinishFrontResponse();
