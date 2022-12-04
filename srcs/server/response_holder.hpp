@@ -16,7 +16,7 @@ namespace server
 {
 	class ResponseHolder
 	{
-		typedef void (*RequestDelFunc)(IRequest *);
+		typedef void (*RequestDelFunc)(IRequest *&);
 		typedef std::pair<IRequest *, IResponse *> ReqRes;
 
 	  private:
