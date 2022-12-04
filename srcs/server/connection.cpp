@@ -2,6 +2,7 @@
 #include <cstdio>
 
 #include "connection.hpp"
+#include "debug.hpp"
 
 namespace server
 {
@@ -57,11 +58,13 @@ namespace server
 			insts = response_holder_.Perform(event);
 		}
 		SetConnectionPtr(insts);
+		log("conn proceed inst size", insts.size());
 		return insts;
 	}
 
 	Instructions Connection::CommunicateWithClient(uint32_t event_type)
 	{
+		log("perform to client, type", event_type);
 		event::Instructions insts;
 
 		if (event_type & event::Event::kRead) {
@@ -72,6 +75,7 @@ namespace server
 			Instructions send_insts = Send();
 			insts.splice(insts.end(), send_insts);
 		}
+		log("conn commu inst size", insts.size());
 		return insts;
 	}
 
@@ -96,6 +100,7 @@ namespace server
 
 	Instructions Connection::Recieve()
 	{
+		log("recieve", "");
 		Instructions insts;
 
 		if (reciever_.IsEof() && reciever_.empty()) {
@@ -114,6 +119,7 @@ namespace server
 				// TDDO 500
 			}
 		}
+		log("req holder_size", request_holder_.size());
 		if (!is_holder_full) {
 			request_holder_.Parse(reciever_);
 		}
@@ -121,7 +127,7 @@ namespace server
 			Instructions tmp = StartResponse();
 			insts.splice(insts.end(), tmp);
 		}
-		return Instructions();
+		return insts;
 	}
 
 	Instructions Connection::Send()
@@ -131,6 +137,7 @@ namespace server
 			is_finished_ = true;
 			return response_holder_.UnregisterAll();
 		}
+		log("conn send inst size", res.Val().size());
 		return res.Val();
 	}
 

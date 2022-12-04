@@ -1,5 +1,7 @@
 #include "virtual_server_confs.hpp"
+#include "debug.hpp"
 #include <cassert>
+
 namespace conf
 {
 	VirtualServerConfs::VirtualServerConfs(/* args */) : default_host_(), server_confs_() {}
@@ -38,6 +40,7 @@ namespace conf
 
 	const ServerConf &VirtualServerConfs::operator[](const Host &host) const
 	{
+		log("host", host);
 		try {
 			return *server_confs_.at(host);
 		} catch (const std::out_of_range &e) {

@@ -63,6 +63,7 @@ namespace server
 	Emptiable<IRequest *> RequestParser::Parse(q_buffer::QueuingBuffer &recieved)
 	{
 		if (recieved.empty()) {
+			log("req parser ", "recv empty return");
 			return Emptiable<IRequest *>();
 		}
 		try {
@@ -71,9 +72,11 @@ namespace server
 				InitParseContext();
 				return req;
 			}
+			log("req parser root", "inprogress return");
 			return Emptiable<IRequest *>();
 		} catch (http::HttpException &e) {
 			DestroyParseContext();
+			log("req parser except", e.GetStatusCode().GetCode());
 			return new Request(e.GetStatusCode(), Request::kFatal);
 		}
 	}
@@ -84,6 +87,7 @@ namespace server
 		while (!recieved.empty()) {
 			switch (ParseEachPhase(recieved)) {
 			case kInProgress:
+				log("req parser", "inprogress return");
 				return kInProgress;
 			case kDone:
 				if (ctx_.state == kBody ||
@@ -102,7 +106,8 @@ namespace server
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			return kInProgress;
+			log("req parser", "stanby return");
+			return kDone;
 		case kStartLine:
 			return ParseStartLine(recieved);
 		case kHeader:

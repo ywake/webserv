@@ -23,6 +23,7 @@ namespace server
 	{
 		Emptiable<IRequest *> req = parser_.Parse(recieved);
 		if (req.empty()) {
+			log("holder parse", "empty return");
 			return;
 		}
 		request_queue_.push_back(req.Value());

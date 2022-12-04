@@ -1,9 +1,11 @@
 #include <cerrno>
 #include <fcntl.h>
 
+#include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "static_response.hpp"
+#include <stdio.h>
 
 namespace server
 {
@@ -22,8 +24,10 @@ namespace server
 		const std::string &root = config_.GetRoot();
 		const std::string  path = root + request_.Path();
 
+		log("init GET res", path);
 		int fd = open(path.c_str(), O_RDONLY | O_NONBLOCK | O_CLOEXEC);
 		if (fd == -1) {
+			perror("static get open: ");
 			switch (errno) {
 			case EACCES:
 				throw http::ForbiddenException();

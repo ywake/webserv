@@ -2,10 +2,10 @@
 
 #include "epoll.hpp"
 
+#include "debug.hpp"
+#include "webserv_utils.hpp"
 #include <cerrno>
 #include <cstring>
-
-#include "webserv_utils.hpp"
 
 // TODO 何もテストしてない
 namespace io_multiplexer
@@ -31,12 +31,14 @@ namespace io_multiplexer
 
 	Result<Epoll::EpollEvents> Epoll::WaitBlockingEvents(int timeout)
 	{
+		log("epoll wait timeout", timeout);
 		int         num_of_events = blocking_pool_.size();
 		EpollEvents events(num_of_events);
 		EpollEvent *events_ptr = events.data();
 
 		while (true) {
 			int events_size = epoll_wait(epoll_fd_.GetFd(), events_ptr, num_of_events, timeout);
+			log("fired fd wait", events_ptr->data.fd);
 			if (events_size != -1) {
 				events.resize(events_size);
 				return events;
@@ -70,6 +72,7 @@ namespace io_multiplexer
 		for (event::Instructions::const_iterator it = instructions.begin();
 			 it != instructions.end();
 			 it++) {
+			log("epoll instruct", *it);
 			Result<void> res = Instruct(*it);
 			if (res.IsErr()) {
 				err_events.push_back((*it, Error(res.Err())));
@@ -116,7 +119,9 @@ namespace io_multiplexer
 	{
 		EventPool::iterator it;
 
+		log("trim event", "head!");
 		it = non_blocking_pool_.find(event.fd);
+		log("trim event non blocking", "head!");
 		if (it != non_blocking_pool_.end()) {
 			event::Event &base_event = it->second;
 			base_event.event_type &= ~event.event_type;
@@ -124,6 +129,7 @@ namespace io_multiplexer
 		}
 		it = blocking_pool_.find(event.fd);
 		if (it != blocking_pool_.end()) {
+			log("trim event blocking", "in!");
 			event::Event new_event = it->second;
 			new_event.event_type &= ~event.event_type;
 			return Overwrite(new_event);
@@ -139,6 +145,7 @@ namespace io_multiplexer
 		}
 		const bool is_regular = res.Val();
 		if (is_regular) {
+			log("register non blocking event", event);
 			non_blocking_pool_[event.fd] = event;
 			return Result<void>();
 		} else {
@@ -149,7 +156,7 @@ namespace io_multiplexer
 	Result<void> Epoll::RegisterBlockingEvent(const event::Event &event)
 	{
 		EpollEvent ev = ConvertToEpollEvent(event);
-
+		log("register blocking event", event);
 		if (epoll_ctl(epoll_fd_.GetFd(), EPOLL_CTL_ADD, event.fd, &ev) == -1) {
 			return Error(std::string("epoll add: ") + strerror(errno));
 		} // TODO ENOMEM
@@ -198,7 +205,7 @@ namespace io_multiplexer
 	{
 		EpollEvent epoll_event = {};
 
-		epoll_event.data.ptr = event.data;
+		epoll_event.data.fd = event.fd;
 		if (event.event_type & event::Event::kWrite) {
 			epoll_event.events |= EPOLLOUT;
 		}
@@ -215,8 +222,9 @@ namespace io_multiplexer
 		for (EpollEvents::const_iterator it = epoll_events.begin(); it != epoll_events.end();
 			 ++it) {
 			const EpollEvent &epoll_event = *it;
-			int               fd          = epoll_event.data.fd;
-			event::Event      ev          = blocking_pool_[fd];
+			event::Event      ev          = {};
+			ev.fd                         = epoll_event.data.fd;
+			ev.data                       = blocking_pool_.at(ev.fd).data;
 			if (epoll_event.events & EPOLLOUT) {
 				ev.event_type |= event::Event::kWrite;
 			}
@@ -224,6 +232,7 @@ namespace io_multiplexer
 				ev.event_type |= event::Event::kRead;
 			}
 			events.push_back(ev);
+			log("fired converted ev", events.back());
 		}
 		return events;
 	}

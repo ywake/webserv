@@ -1,4 +1,5 @@
 #include "response_holder.hpp"
+#include "debug.hpp"
 #include "error_response.hpp"
 #include "http_exceptions.hpp"
 #include "static_response.hpp"
@@ -13,7 +14,12 @@ namespace server
 
 	inline const std::string &GetHost(const IRequest &request)
 	{
-		return request.Headers()["host"].front().GetValue();
+		static const std::string     kEmpty = "";
+		const HeaderSection::Values &host   = request.Headers()["host"];
+		if (host.empty()) {
+			return kEmpty;
+		}
+		return host.front().GetValue();
 	}
 
 	ResponseHolder::ResponseHolder()
@@ -71,6 +77,9 @@ namespace server
 		if (response.HasReadyData()) { // ほんとはfrontのときだけ
 			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
 		}
+		for (Instructions::iterator it = insts.begin(); it != insts.end(); ++it) {
+			log("carete inst for new res", *it);
+		}
 		return insts;
 	}
 
@@ -111,16 +120,19 @@ namespace server
 	{
 		Instructions insts;
 
-		IResponse   *response    = in_progress_.front().second;
+		IResponse *response = in_progress_.front().second;
+		log("send size", response->size());
 		Result<void> send_result = response->Send(conn_fd_);
 		if (send_result.IsErr()) {
 			is_fatal_ = true;
 			return send_result.Err();
 		}
+		log("send size2", response->size());
 		insts.push_back(
 			Instruction(Instruction::kAppendEventType, response->GetFd().Value(), Event::kRead)
 		);
 		if (!response->HasReadyData()) {
+			log("send not HasReadyData", "empty");
 			insts.push_back(Instruction(Instruction::kTrimEventType, conn_fd_, Event::kWrite));
 		}
 		if (!response->HasReadyData() && response->IsFinished()) {

@@ -27,6 +27,7 @@ namespace server
 			Instruction instruction = Instruction(
 				Instruction::kRegister, it->GetFd(), Event::kWrite | Event::kRead, &*it
 			);
+			log("listener ptr: ", &*it);
 			Result<void> intruct_result = io_monitor_.Instruct(instruction);
 			if (intruct_result.IsErr()) {
 				return intruct_result.Err();
@@ -45,6 +46,7 @@ namespace server
 			Instructions instructions            = RunEvents(events.Val());
 			Instructions unregister_instructions = CloseFinishedConnections();
 			instructions.splice(instructions.end(), unregister_instructions);
+			log("instructions size", instructions.size());
 			io_multiplexer::ErrEvents err = io_monitor_.InstructMulti(instructions);
 			if (!err.empty()) {
 				log(err);

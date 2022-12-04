@@ -1,9 +1,10 @@
 #include "request_line_parser.hpp"
+#include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "implemented_methods.hpp"
 #include "validate_request_line.hpp"
-
+#include "webserv_utils.hpp"
 namespace server
 {
 	const std::size_t RequestLineParser::kMaxRequestTargetSize = 8196;
@@ -61,6 +62,7 @@ namespace server
 			return Emptiable<RequestLine>();
 		} catch (http::HttpException &e) {
 			DestroyParseContext();
+			log("start line", "throw");
 			throw e;
 		}
 	}
@@ -88,7 +90,7 @@ namespace server
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			return kInProgress;
+			return kDone;
 		case kMethod:
 			return ParseMethod(recieved);
 		case kTarget:
@@ -115,6 +117,10 @@ namespace server
 			ctx_.request_line.SetMethod(loaded_bytes_);
 			return kDone;
 		case kNonParsable:
+			if (utils::EndWith(loaded_bytes_, http::kCrLf)) {
+				log("method bad req", "throw");
+				throw http::BadRequestException();
+			}
 			return kInProgress;
 		}
 		return kInProgress;
@@ -131,6 +137,10 @@ namespace server
 			ctx_.request_line.SetRequestTarget(TryConstructRequestTarget(loaded_bytes_));
 			return kDone;
 		case kNonParsable:
+			if (utils::EndWith(loaded_bytes_, http::kCrLf)) {
+				log("uri bad req", "throw");
+				throw http::BadRequestException();
+			}
 			return kInProgress;
 		}
 		return kInProgress;
@@ -139,12 +149,16 @@ namespace server
 	RequestLineParser::ParseResult
 	RequestLineParser::ParseHttpVersion(q_buffer::QueuingBuffer &recieved)
 	{
-		switch (LoadBytesWithDelim(recieved, http::kCrLf, http::kHttpVersion.size())) {
+		log("version", "in");
+		switch (LoadBytesWithDelim(
+			recieved, http::kCrLf, http::kHttpVersion.size() + http::kCrLf.size()
+		)) {
 		case kOverMaxSize:
 			throw http::BadRequestException();
 		case kParsable:
 			loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
 			if (!http::abnf::IsHttpVersion(loaded_bytes_)) {
+				log("version bad req", "throw");
 				throw http::BadRequestException();
 			}
 			ctx_.request_line.SetHttpVersion(loaded_bytes_);
@@ -159,6 +173,7 @@ namespace server
 	{
 		const std::string &method = ctx_.request_line.GetMethod();
 
+		log("try construct", "in");
 		if (str.empty()) {
 			throw http::BadRequestException();
 		} else if (method == "CONNECT") {

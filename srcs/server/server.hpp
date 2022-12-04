@@ -18,7 +18,7 @@ namespace server
 		typedef std::set<Connection>  Connections;
 
 	  private:
-		static const int      kEpollTimeout = 10; // TODO cppで初期化かも
+		static const int      kEpollTimeout = 1000; // TODO cppで初期化かも
 		Connections           connections_;
 		Listeners             listeners_;
 		conf::ServerConfs     configs_;
