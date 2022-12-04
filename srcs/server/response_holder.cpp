@@ -102,6 +102,7 @@ namespace server
 		IResponse   *response    = in_progress_.front().second;
 		Result<void> send_result = response->Send(conn_fd_);
 		if (send_result.IsErr()) {
+			is_fatal_ = true;
 			return send_result.Err();
 		}
 		insts.push_back(
@@ -111,7 +112,9 @@ namespace server
 			insts.push_back(Instruction(Instruction::kTrimEventType, conn_fd_, Event::kWrite));
 		}
 		if (!response->HasReadyData() && response->IsFinished()) {
-			Instructions i = FinishFrontResponse();
+			IRequest *request = in_progress_.front().first;
+			is_fatal_         = request->IsFatal();
+			Instructions i    = FinishFrontResponse();
 			insts.splice(insts.end(), i);
 			// ここでqueueに残ってれば開始したいけど今max queue size() 1だからやってない
 		}
@@ -150,6 +153,11 @@ namespace server
 			insts.splice(insts.end(), i);
 		}
 		return insts;
+	}
+
+	bool ResponseHolder::IsFatal()
+	{
+		return is_fatal_;
 	}
 
 	ResponseHolder::~ResponseHolder()

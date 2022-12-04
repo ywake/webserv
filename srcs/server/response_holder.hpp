@@ -22,10 +22,11 @@ namespace server
 	  private:
 		static const std::size_t kMaxBufSize;
 
-		RequestDelFunc                  request_del_;
 		int                             conn_fd_;
 		const conf::VirtualServerConfs &config_;
 		std::deque<ReqRes>              in_progress_;
+		RequestDelFunc                  request_del_;
+		bool                            is_fatal_;
 
 	  public:
 		ResponseHolder(const conf::VirtualServerConfs &conf, RequestDelFunc del);
@@ -35,6 +36,7 @@ namespace server
 		Result<event::Instructions> Send();
 		std::size_t                 size();
 		event::Instructions         UnregisterAll();
+		bool                        IsFatal();
 
 	  private:
 		event::Instructions FinishFrontResponse();
