@@ -42,8 +42,8 @@ namespace utils
 
 	std::string NromalizePath(const ThinString &path)
 	{
-		const Strings segments    = Split(path, "/");
-		Strings       dot_removed = RemoveDotSegments(TrimEmpty(segments));
+		const Strings segments    = TrimEmpty(Split(path, "/"));
+		Strings       dot_removed = RemoveDotSegments(segments);
 		std::string   normalized  = JoinPathSegments(dot_removed);
 		if (normalized.empty()) { // including path.empty() && segments.empty()
 			return "/";
