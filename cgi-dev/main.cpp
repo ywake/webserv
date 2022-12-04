@@ -13,16 +13,16 @@ void ParentTask(int pid, int fd[2]);
 
 int main(int argc, char *argv[], char *envp[])
 {
-	server::IRequest   resource;
-	conf::LocationConf conf;
+	server::IRequest   request;
+	conf::LocationConf location_conf;
 
-	std::string resource_path = conf.GetRoot() + request.Path();
+	std::string resource_path = location_conf.GetRoot() + request.Path();
 	if (IsAccessible(resource_path) == false) {
 		return EXIT_FAILURE; // 404
 	}
-	SetMetaEnv(resource, envp);
-	char **cmd_line_arg = CreateCmdLineArg(resource);
-	InputBody(resource);
+	SetMetaEnv(request, envp);
+	char **cmd_line_arg = CreateCmdLineArg(request);
+	InputBody(request);
 	ExecCgi(cmd_line_arg, envp);
 	ReadCgiOutput();
 	ParseCgiOutput();
