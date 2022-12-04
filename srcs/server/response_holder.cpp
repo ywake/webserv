@@ -57,7 +57,7 @@ namespace server
 				event::Instruction::kRegister, response.GetFd().Value(), event::Event::kRead
 			));
 		}
-		if (response.HasReadyData()) {
+		if (response.HasReadyData()) { // ほんとはfront
 			insts.push_back(event::Instruction(
 				event::Instruction::kAppendEventType, conn_fd_, event::Event::kWrite
 			));
