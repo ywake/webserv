@@ -23,6 +23,7 @@ namespace q_buffer
 		QueuingBuffer();
 		QueuingBuffer(const QueuingBuffer &other);
 		void              push_back(const std::vector<char> &data);
+		void              push_back(const std::string &data);
 		Emptiable<char>   PopChar();
 		std::vector<char> PopAll();
 		bool              empty() const;

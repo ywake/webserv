@@ -17,6 +17,14 @@ namespace q_buffer
 		buf_.push_back(data);
 	}
 
+	void QueuingBuffer::push_back(const std::string &data)
+	{
+		if (data.empty()) {
+			return;
+		}
+		buf_.push_back(ByteArray(data.begin(), data.end()));
+	}
+
 	Emptiable<char> QueuingBuffer::PopChar()
 	{
 		if (empty()) {
