@@ -65,8 +65,35 @@ namespace server
 
 	Instructions ResponseHolder::Perform(const event::Event &event)
 	{
-		IResponse *response = in_progress_.front().second;
-		response->Perform(event);
+		Instructions insts;
+
+		IResponse *response = in_progress_.front().second; // ほんとはmap[fd][resreq]から探す
+		try {
+			response->Perform(event);
+			if (response->size() > kMaxBufSize) {
+				insts.push_back(Instruction(
+					Instruction::kTrimEventType, response->GetFd().Value(), Event::kRead
+				));
+			}
+			if (response->HasReadyData()) { // ほんとはfrontのときだけ
+				insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite)
+				);
+			}
+			if (response->IsFinished()) {
+				insts.push_back(Instruction(
+					Instruction::kTrimEventType,
+					response->GetFd().Value(),
+					Event::kRead | Event::kWrite
+				));
+			}
+			return insts;
+		} catch (http::HttpException &e) {
+			IRequest *request = in_progress_.front().first;
+			delete response;
+			in_progress_.back().second =
+				new ErrorResponse(request->GetErrStatusCode(), config_[GetHost(*request)]);
+			return CreateInstructionsForNewResopnse(*in_progress_.back().second);
+		} // TODO local redir
 	}
 
 	Result<Instructions> ResponseHolder::Send()
