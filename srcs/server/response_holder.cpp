@@ -77,20 +77,23 @@ namespace server
 
 		IResponse   *response    = in_progress_.front().second;
 		Result<void> send_result = response->Send(conn_fd_);
-		if (send_result.IsErr()) { // TODO conn_fdのwriteを外すべきか？
-			insts.push_back(
-				event::Instruction(event::Instruction::kUnregister, response->GetFd().Value())
-			);
-			delete response;
-			request_del_(in_progress_.front().first);
-			in_progress_.pop_front();
-			return Result<event::Instructions>(insts, send_result.Err());
+		if (send_result.IsErr()) {
+			return send_result.Err();
 		}
+		insts.push_back(event::Instruction(
+			event::Instruction::kAppendEventType, response->GetFd().Value(), event::Event::kRead
+		));
 		if (!response->HasReadyData()) {
 			insts.push_back(event::Instruction(
 				event::Instruction::kTrimEventType, conn_fd_, event::Event::kWrite
 			));
 		}
+		if (!response->HasReadyData() && response->IsFinished()) {
+			event::Instructions i = FinishFrontResponse();
+			insts.splice(insts.end(), i);
+			// ここでqueueに残ってれば開始したいけど今max queue size() 1だからやってない
+		}
+		return insts;
 	}
 
 	std::size_t ResponseHolder::size()
