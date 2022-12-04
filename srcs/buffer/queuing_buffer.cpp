@@ -68,7 +68,7 @@ namespace q_buffer
 		return *this;
 	}
 
-	std::size_t QueuingBuffer::size()
+	std::size_t QueuingBuffer::size() const
 	{
 		return size_;
 	}
