@@ -40,13 +40,24 @@ namespace server
 
 	Connection::~Connection() {}
 
+	void Connection::SetConnectionPtr(Instructions &insts)
+	{
+		for (Instructions::iterator it = insts.begin(); it != insts.end(); ++it) {
+			it->event.data = this;
+		}
+	}
+
 	Instructions Connection::Proceed(const Event &event)
 	{
+		Instructions insts;
+
 		if (event.fd == this->GetFd()) {
-			return CommunicateWithClient(event.event_type);
+			insts = CommunicateWithClient(event.event_type);
 		} else {
-			return response_holder_.Perform(event);
+			insts = response_holder_.Perform(event);
 		}
+		SetConnectionPtr(insts);
+		return insts;
 	}
 
 	Instructions Connection::CommunicateWithClient(uint32_t event_type)
