@@ -3,6 +3,12 @@
 namespace conf
 {
 	VirtualServerConfs::VirtualServerConfs(/* args */) : default_host_(), server_confs_() {}
+
+	VirtualServerConfs::VirtualServerConfs(const VirtualServerConfs &other)
+	{
+		*this = other;
+	}
+
 	VirtualServerConfs::VirtualServerConfs(const Host &default_host)
 		: default_host_(default_host), server_confs_()
 	{}
@@ -12,6 +18,16 @@ namespace conf
 	{}
 
 	VirtualServerConfs::~VirtualServerConfs() {}
+
+	VirtualServerConfs &VirtualServerConfs::operator=(const VirtualServerConfs &other)
+	{
+		if (this != &other) {
+			return *this;
+		}
+		default_host_ = other.default_host_;
+		server_confs_ = other.server_confs_;
+		return *this;
+	}
 
 	bool VirtualServerConfs::operator==(const VirtualServerConfs &rhs) const
 	{

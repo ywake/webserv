@@ -21,13 +21,15 @@ namespace conf
 
 	  public:
 		VirtualServerConfs();
+		VirtualServerConfs(const VirtualServerConfs &other);
 		VirtualServerConfs(const Host &default_host);
 
 		// for test
 		VirtualServerConfs(const Host &default_host, const HostMap &server_confs);
 		~VirtualServerConfs();
 
-		bool operator==(const VirtualServerConfs &rhs) const;
+		VirtualServerConfs &operator=(const VirtualServerConfs &other);
+		bool                operator==(const VirtualServerConfs &rhs) const;
 		/**
 		 * @brief hostに対応するVirtualServerConfを返す。
 		 * @brief ない場合はdefault_hostのVirtualServerConfを返す。

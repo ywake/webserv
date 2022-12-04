@@ -42,6 +42,11 @@ namespace conf
 		  default_root_(default_root)
 	{}
 
+	LocationConf::LocationConf(const LocationConf &other)
+	{
+		*this = other;
+	}
+
 	LocationConf::LocationConf(
 		const PathPattern             &path_pattern,
 		MatchPattern                   match_pattern,
@@ -224,6 +229,14 @@ namespace conf
 	}
 
 	/**
+	 * Setters
+	 */
+	void LocationConf::SetDefaultRoot(const Path &path)
+	{
+		default_root_ = &path;
+	}
+
+	/**
 	 * Operators
 	 */
 	bool LocationConf::operator==(const LocationConf &rhs) const
@@ -236,16 +249,18 @@ namespace conf
 
 	const LocationConf &LocationConf::operator=(const LocationConf &rhs)
 	{
-		if (this != &rhs) {
-			path_pattern_  = rhs.path_pattern_;
-			match_pattern_ = rhs.match_pattern_;
-			allow_methods_ = rhs.allow_methods_;
-			redirect_      = rhs.redirect_;
-			root_          = rhs.root_;
-			index_files_   = rhs.index_files_;
-			autoindex_     = rhs.autoindex_;
-			cgi_path_      = rhs.cgi_path_;
+		if (this == &rhs) {
+			return *this;
 		}
+		path_pattern_  = rhs.path_pattern_;
+		match_pattern_ = rhs.match_pattern_;
+		allow_methods_ = rhs.allow_methods_;
+		redirect_      = rhs.redirect_;
+		root_          = rhs.root_;
+		index_files_   = rhs.index_files_;
+		autoindex_     = rhs.autoindex_;
+		cgi_path_      = rhs.cgi_path_;
+		default_root_  = rhs.default_root_;
 		return *this;
 	}
 
