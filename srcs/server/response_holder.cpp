@@ -152,4 +152,15 @@ namespace server
 		return insts;
 	}
 
+	ResponseHolder::~ResponseHolder()
+	{
+		for (; !in_progress_.empty();) {
+			IRequest  *request  = in_progress_.front().first;
+			IResponse *response = in_progress_.front().second;
+			request_del_(request);
+			delete (response);
+			in_progress_.pop_front();
+		}
+	}
+
 } // namespace server

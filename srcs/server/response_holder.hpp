@@ -29,6 +29,7 @@ namespace server
 
 	  public:
 		ResponseHolder(const conf::VirtualServerConfs &conf, RequestDelFunc del);
+		~ResponseHolder();
 		event::Instructions         StartNewResponse(IRequest *request);
 		event::Instructions         Perform(const event::Event &event);
 		Result<event::Instructions> Send();
