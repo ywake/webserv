@@ -2,7 +2,7 @@
 #include <cstring>
 #include <unistd.h>
 
-#include "buffered_writer.hpp"
+#include "queuing_writer.hpp"
 
 namespace q_buffer
 {
@@ -38,6 +38,7 @@ namespace q_buffer
 			buf_.pop_front();
 			front_idx_ = 0;
 		}
+		size_ -= write_size;
 		return Result<void>();
 	}
 } // namespace q_buffer

@@ -5,8 +5,8 @@
 
 namespace server
 {
-	Reciever::Reciever(int fd, std::size_t buffer_size)
-		: fd_(fd), buffer_size_(buffer_size), is_eof_(false)
+	Reciever::Reciever(int fd, std::size_t recv_buf_size)
+		: QueuingReader(recv_buf_size), fd_(fd), is_eof_(false)
 	{}
 
 	Result<void> Reciever::Recv()

@@ -18,6 +18,7 @@ namespace q_buffer
 	  protected:
 		InnerBuffer buf_;
 		std::size_t front_idx_;
+		std::size_t size_;
 
 	  public:
 		QueuingBuffer();
@@ -28,7 +29,7 @@ namespace q_buffer
 		std::vector<char> PopAll();
 		bool              empty() const;
 		QueuingBuffer    &operator=(const QueuingBuffer &other);
-		std::size_t       size();
+		std::size_t       size() const;
 	};
 } // namespace q_buffer
 
