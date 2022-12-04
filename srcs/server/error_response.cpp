@@ -7,9 +7,7 @@
 
 namespace server
 {
-	ErrorResponse::ErrorResponse(
-		const http::StatusCode &status_code, const conf::LocationConf &conf
-	)
+	ErrorResponse::ErrorResponse(const http::StatusCode &status_code, const conf::ServerConf &conf)
 		: config_(conf), is_finished_(false)
 	{
 		push_back(status_code.GetReasonPhrase());
