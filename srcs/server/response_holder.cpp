@@ -98,4 +98,24 @@ namespace server
 		return in_progress_.size();
 	}
 
+	event::Instructions ResponseHolder::FinishFrontResponse()
+	{
+		event::Instructions insts;
+
+		if (in_progress_.empty()) {
+			return insts;
+		}
+		IRequest  *request  = in_progress_.front().first;
+		IResponse *response = in_progress_.front().second;
+		if (response->HasFd()) {
+			insts.push_back(
+				event::Instruction(event::Instruction::kUnregister, response->GetFd().Value())
+			);
+		}
+		request_del_(request);
+		delete (response);
+		in_progress_.pop_front();
+		return insts;
+	}
+
 } // namespace server

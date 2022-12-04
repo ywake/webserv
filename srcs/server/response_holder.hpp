@@ -32,7 +32,8 @@ namespace server
 		std::size_t                 size();
 
 	  private:
-		IResponse *CreateNewResponse(const IRequest &request);
+		event::Instructions FinishFrontResponse();
+		IResponse          *CreateNewResponse(const IRequest &request);
 		// IResponse *CreateCgiResponse(const IRequest &request);
 		IResponse *
 		CreateErrorResponse(const http::StatusCode &status_code, IRequest::ErrorType e_type);
