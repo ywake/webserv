@@ -208,20 +208,6 @@ namespace io_multiplexer
 		return epoll_event;
 	}
 
-	event::Event Epoll::ConvertToEvent(const EpollEvent &epoll_event)
-	{
-		event::Event event = {};
-
-		event.data = epoll_event.data.ptr;
-		if (epoll_event.events & EPOLLOUT) {
-			event.event_type |= event::Event::kWrite;
-		}
-		if (epoll_event.events & EPOLLIN) {
-			event.event_type |= event::Event::kRead;
-		}
-		return event;
-	}
-
 	event::Events Epoll::ConvertToEvents(const EpollEvents &epoll_events)
 	{
 		event::Events events;
@@ -229,7 +215,15 @@ namespace io_multiplexer
 		for (EpollEvents::const_iterator it = epoll_events.begin(); it != epoll_events.end();
 			 ++it) {
 			const EpollEvent &epoll_event = *it;
-			events.push_back(ConvertToEvent(epoll_event));
+			int               fd          = epoll_event.data.fd;
+			event::Event      ev          = blocking_pool_[fd];
+			if (epoll_event.events & EPOLLOUT) {
+				ev.event_type |= event::Event::kWrite;
+			}
+			if (epoll_event.events & EPOLLIN) {
+				ev.event_type |= event::Event::kRead;
+			}
+			events.push_back(ev);
 		}
 		return events;
 	}
