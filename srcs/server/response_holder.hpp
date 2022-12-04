@@ -11,6 +11,7 @@
 #include "status_code.hpp"
 #include "virtual_server_confs.hpp"
 
+// パイプラインに必要な機能は未実装。max queue sizeは1でしか使えない
 namespace server
 {
 	class ResponseHolder
