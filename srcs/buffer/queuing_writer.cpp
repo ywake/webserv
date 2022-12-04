@@ -2,7 +2,7 @@
 #include <cstring>
 #include <unistd.h>
 
-#include "buffered_writer.hpp"
+#include "queuing_writer.hpp"
 
 namespace q_buffer
 {
