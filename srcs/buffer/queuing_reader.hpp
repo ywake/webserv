@@ -1,5 +1,5 @@
-#ifndef BUFFERED_READER_HPP
-#define BUFFERED_READER_HPP
+#ifndef QUEUING_READER_HPP
+#define QUEUING_READER_HPP
 
 #include <unistd.h>
 
