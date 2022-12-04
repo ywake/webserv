@@ -7,6 +7,8 @@ namespace server
 {
 	using namespace event;
 
+	const std::size_t ResponseHolder::kMaxBufSize = 8196;
+
 	inline const std::string &GetHost(const IRequest &request)
 	{
 		return request.Headers()["host"].front().GetValue();

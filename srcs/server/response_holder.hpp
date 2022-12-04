@@ -20,6 +20,8 @@ namespace server
 		typedef std::pair<IRequest *, IResponse *> ReqRes;
 
 	  private:
+		static const std::size_t kMaxBufSize;
+
 		RequestDelFunc                  request_del_;
 		int                             conn_fd_;
 		const conf::VirtualServerConfs &config_;
