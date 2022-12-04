@@ -5,22 +5,22 @@
 
 namespace server
 {
+	using namespace event;
+
 	inline const std::string &GetHost(const IRequest &request)
 	{
 		return request.Headers()["host"].front().GetValue();
 	}
 
-	event::Instructions ResponseHolder::StartNewResponse(IRequest *request)
+	Instructions ResponseHolder::StartNewResponse(IRequest *request)
 	{
 
 		in_progress_.push_back(ReqRes(request, NULL));
 		if (request->IsErr()) {
 			in_progress_.back().second =
 				new ErrorResponse(request->GetErrStatusCode(), config_[GetHost(*request)]);
-			event::Instructions insts;
-			insts.push_back(event::Instruction(
-				event::Instruction::kAppendEventType, conn_fd_, event::Event::kWrite
-			));
+			Instructions insts;
+			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
 			return insts;
 		}
 		IResponse *new_response    = CreateNewResponse(*request);
@@ -48,48 +48,44 @@ namespace server
 		return new_response;
 	}
 
-	event::Instructions ResponseHolder::CreateInstructionsForNewResopnse(const IResponse &response)
+	Instructions ResponseHolder::CreateInstructionsForNewResopnse(const IResponse &response)
 	{
-		event::Instructions insts;
+		Instructions insts;
 
 		if (response.HasFd()) { // TODO cgiはread | write
-			insts.push_back(event::Instruction(
-				event::Instruction::kRegister, response.GetFd().Value(), event::Event::kRead
-			));
+			insts.push_back(
+				Instruction(Instruction::kRegister, response.GetFd().Value(), Event::kRead)
+			);
 		}
 		if (response.HasReadyData()) { // ほんとはfront
-			insts.push_back(event::Instruction(
-				event::Instruction::kAppendEventType, conn_fd_, event::Event::kWrite
-			));
+			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
 		}
 		return insts;
 	}
 
-	event::Instructions ResponseHolder::Perform(const event::Event &event)
+	Instructions ResponseHolder::Perform(const event::Event &event)
 	{
 		IResponse *response = in_progress_.front().second;
 		response->Perform(event);
 	}
 
-	Result<event::Instructions> ResponseHolder::Send()
+	Result<Instructions> ResponseHolder::Send()
 	{
-		event::Instructions insts;
+		Instructions insts;
 
 		IResponse   *response    = in_progress_.front().second;
 		Result<void> send_result = response->Send(conn_fd_);
 		if (send_result.IsErr()) {
 			return send_result.Err();
 		}
-		insts.push_back(event::Instruction(
-			event::Instruction::kAppendEventType, response->GetFd().Value(), event::Event::kRead
-		));
+		insts.push_back(
+			Instruction(Instruction::kAppendEventType, response->GetFd().Value(), Event::kRead)
+		);
 		if (!response->HasReadyData()) {
-			insts.push_back(event::Instruction(
-				event::Instruction::kTrimEventType, conn_fd_, event::Event::kWrite
-			));
+			insts.push_back(Instruction(Instruction::kTrimEventType, conn_fd_, Event::kWrite));
 		}
 		if (!response->HasReadyData() && response->IsFinished()) {
-			event::Instructions i = FinishFrontResponse();
+			Instructions i = FinishFrontResponse();
 			insts.splice(insts.end(), i);
 			// ここでqueueに残ってれば開始したいけど今max queue size() 1だからやってない
 		}
@@ -101,9 +97,9 @@ namespace server
 		return in_progress_.size();
 	}
 
-	event::Instructions ResponseHolder::FinishFrontResponse()
+	Instructions ResponseHolder::FinishFrontResponse()
 	{
-		event::Instructions insts;
+		Instructions insts;
 
 		if (in_progress_.empty()) {
 			return insts;
@@ -111,9 +107,7 @@ namespace server
 		IRequest  *request  = in_progress_.front().first;
 		IResponse *response = in_progress_.front().second;
 		if (response->HasFd()) {
-			insts.push_back(
-				event::Instruction(event::Instruction::kUnregister, response->GetFd().Value())
-			);
+			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
 		}
 		request_del_(request);
 		delete (response);
@@ -121,12 +115,12 @@ namespace server
 		return insts;
 	}
 
-	event::Instructions ResponseHolder::UnregisterAll()
+	Instructions ResponseHolder::UnregisterAll()
 	{
-		event::Instructions insts;
+		Instructions insts;
 
 		for (; !in_progress_.empty();) {
-			event::Instructions i = FinishFrontResponse();
+			Instructions i = FinishFrontResponse();
 			insts.splice(insts.end(), i);
 		}
 		return insts;
