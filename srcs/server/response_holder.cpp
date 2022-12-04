@@ -1,4 +1,5 @@
 #include "response_holder.hpp"
+#include "error_response.hpp"
 #include "http_exceptions.hpp"
 #include "static_response.hpp"
 
@@ -11,14 +12,19 @@ namespace server
 
 	event::Instructions ResponseHolder::StartNewResponse(IRequest *request)
 	{
+
 		in_progress_.push_back(ReqRes(request, NULL));
 		if (request->IsErr()) {
-			// in_progress_.back().second = CreateErrorResponse(code , type, conf)
-			// return Instr(AppendEvent conn write);
+			in_progress_.back().second =
+				new ErrorResponse(request->GetErrStatusCode(), config_[GetHost(*request)]);
+			event::Instructions insts;
+			insts.push_back(event::Instruction(
+				event::Instruction::kAppendEventType, conn_fd_, event::Event::kWrite
+			));
+			return insts;
 		}
 		IResponse *new_response    = CreateNewResponse(*request);
 		in_progress_.back().second = new_response;
-
 		return CreateInstructionsForNewResopnse(*new_response);
 	}
 
@@ -37,7 +43,7 @@ namespace server
 			}
 		} catch (http::HttpException &e) {
 			delete new_response;
-			new_response = NULL;
+			new_response = new ErrorResponse(request.GetErrStatusCode(), vs_conf);
 		}
 		return new_response;
 	}
