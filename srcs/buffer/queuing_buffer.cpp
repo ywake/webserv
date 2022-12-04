@@ -2,7 +2,7 @@
 
 namespace q_buffer
 {
-	QueuingBuffer::QueuingBuffer() : buf_(), front_idx_() {}
+	QueuingBuffer::QueuingBuffer() : buf_(), front_idx_(), size_() {}
 
 	QueuingBuffer::QueuingBuffer(const QueuingBuffer &other)
 	{
@@ -15,6 +15,15 @@ namespace q_buffer
 			return;
 		}
 		buf_.push_back(data);
+		size_ += data.size();
+	}
+
+	void QueuingBuffer::push_back(const std::string &data)
+	{
+		if (data.empty()) {
+			return;
+		}
+		buf_.push_back(ByteArray(data.begin(), data.end()));
 	}
 
 	Emptiable<char> QueuingBuffer::PopChar()
@@ -29,6 +38,7 @@ namespace q_buffer
 			front_idx_ = 0;
 			buf_.pop_front();
 		}
+		size_--;
 		return c;
 	}
 
@@ -46,6 +56,7 @@ namespace q_buffer
 			std::copy(buf.begin(), buf.end(), std::back_inserter(all));
 			buf_.pop_front();
 		}
+		size_ = 0;
 		return all;
 	}
 
@@ -61,12 +72,13 @@ namespace q_buffer
 		}
 		buf_       = other.buf_;
 		front_idx_ = other.front_idx_;
+		size_      = other.size_;
 		return *this;
 	}
 
-	std::size_t QueuingBuffer::size()
+	std::size_t QueuingBuffer::size() const
 	{
-		return buf_.size();
+		return size_;
 	}
 
 } // namespace q_buffer
