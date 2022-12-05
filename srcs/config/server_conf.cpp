@@ -31,7 +31,7 @@ namespace conf
 		  client_max_body_size_(client_max_body_size),
 		  location_confs_(location_confs),
 		  default_root_(root),
-		  defaultLocationConf_(LocationConf(
+		  default_location_conf_(LocationConf(
 			  LocationConf::PathPattern(),
 			  LocationConf::kPrefix,
 			  LocationConf::AllowMethods(),
@@ -291,7 +291,7 @@ namespace conf
 				return *it;
 			}
 		}
-		return defaultLocationConf_;
+		return default_location_conf_;
 	}
 
 	/**
@@ -315,14 +315,14 @@ namespace conf
 		if (this == &rhs) {
 			return *this;
 		}
-		listen_port_          = rhs.listen_port_;
-		server_name_          = rhs.server_name_;
-		error_pages_          = rhs.error_pages_;
-		client_max_body_size_ = rhs.client_max_body_size_;
-		location_confs_       = rhs.location_confs_;
-		default_root_         = rhs.default_root_;
-		defaultLocationConf_  = rhs.defaultLocationConf_;
-		defaultLocationConf_.SetDefaultRoot(default_root_.Value());
+		listen_port_           = rhs.listen_port_;
+		server_name_           = rhs.server_name_;
+		error_pages_           = rhs.error_pages_;
+		client_max_body_size_  = rhs.client_max_body_size_;
+		location_confs_        = rhs.location_confs_;
+		default_root_          = rhs.default_root_;
+		default_location_conf_ = rhs.default_location_conf_;
+		default_location_conf_.SetDefaultRoot(default_root_.Value());
 		for (LocationConfs::iterator it = location_confs_.begin(); it != location_confs_.end();
 			 ++it) {
 			LocationConf &location_conf = *it;

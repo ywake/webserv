@@ -33,7 +33,7 @@ namespace conf
 		ClientMaxBodySize client_max_body_size_;
 		LocationConfs     location_confs_;
 		Root              default_root_;
-		LocationConf      defaultLocationConf_;
+		LocationConf      default_location_conf_;
 
 	  private:
 		static const ListenPort        kDefaultListenPort;
