@@ -58,7 +58,7 @@ namespace server
 			}
 			utils::Close(sock_fd);
 		}
-		return Error("bind fail");
+		return Error(std::string("listener: ") + strerror(errno));
 	}
 
 	Result<void> Listener::Listen() const
