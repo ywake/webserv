@@ -109,7 +109,12 @@ namespace server
 
 	Instructions Connection::Send()
 	{
-		return Instructions();
+		Result<Instructions> res = response_holder_.Send();
+		if (res.IsErr() || response_holder_.IsFatal()) {
+			is_finished_ = true;
+			return response_holder_.UnregisterAll();
+		}
+		return res.Val();
 	}
 
 	event::Instructions Connection::StartResponse()
