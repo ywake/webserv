@@ -39,9 +39,9 @@ namespace conf
 		 */
 		const ServerConf &operator[](const Host &host) const;
 
-		void Add(const Host &host, const ServerConf &server_conf);
-
-		void Print(std::ostream &os) const;
+		const ServerConf &GetDefaultServerConf() const;
+		void              Add(const Host &host, const ServerConf &server_conf);
+		void              Print(std::ostream &os) const;
 	};
 
 	std::ostream &operator<<(std::ostream &os, const VirtualServerConfs &virtual_server_confs);
