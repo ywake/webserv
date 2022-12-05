@@ -88,7 +88,7 @@ namespace server
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			return kInProgress;
+			return kDone;
 		case kMethod:
 			return ParseMethod(recieved);
 		case kTarget:
