@@ -42,11 +42,14 @@ namespace server
 
 	Instructions Connection::Proceed(const Event &event)
 	{
+		Instructions insts;
+
 		if (event.fd == this->GetFd()) {
-			return CommunicateWithClient(event.event_type);
+			insts = CommunicateWithClient(event.event_type);
 		} else {
+			insts = response_holder_.Perform(event);
 		}
-		return Instructions();
+		return insts;
 	}
 
 	Instructions Connection::CommunicateWithClient(uint32_t event_type)
@@ -98,7 +101,7 @@ namespace server
 			Result<void> res = reciever_.Recv();
 			if (res.IsErr()) {
 				std::cerr << res.Err() << std::endl;
-				// TDDO 500
+				// TDDO 500 専用のappend taskみたいのをholderに作る
 			}
 		}
 		if (!is_holder_full) {
