@@ -123,4 +123,9 @@ namespace server
 		return insts;
 	}
 
+	bool Connection::IsFinished()
+	{
+		return is_finished_;
+	}
+
 } // namespace server
