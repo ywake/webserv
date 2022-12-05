@@ -198,7 +198,7 @@ namespace io_multiplexer
 	{
 		EpollEvent epoll_event = {};
 
-		epoll_event.data.ptr = event.data;
+		epoll_event.data.fd = event.fd;
 		if (event.event_type & event::Event::kWrite) {
 			epoll_event.events |= EPOLLOUT;
 		}
