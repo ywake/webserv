@@ -119,7 +119,7 @@ namespace server
 			Instructions tmp = StartResponse();
 			insts.splice(insts.end(), tmp);
 		}
-		return Instructions();
+		return insts;
 	}
 
 	Instructions Connection::Send()
