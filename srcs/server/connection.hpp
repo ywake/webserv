@@ -16,6 +16,7 @@
 #include "reciever.hpp"
 #include "request_holder.hpp"
 #include "request_message.hpp"
+#include "response_holder.hpp"
 #include "socket.hpp"
 #include "status_code.hpp"
 
@@ -45,6 +46,7 @@ namespace server
 		const SockAddrStorage           client_;
 		Reciever                        reciever_;
 		RequestHolder                   request_holder_;
+		ResponseHolder                  response_holder_;
 		// State                           state_;
 		// Sender						 *sender_;
 
