@@ -133,4 +133,10 @@ namespace server
 		return is_finished_;
 	}
 
+	// TODO パイプラインは冪等かどうかの判定と、response holder内部の変更が必要
+	bool Connection::CanStartNewTask()
+	{
+		return request_holder_.size() != 0 && response_holder_.size() == 0;
+	}
+
 } // namespace server

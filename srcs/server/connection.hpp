@@ -68,6 +68,7 @@ namespace server
 		event::Instructions Send();
 		event::Instructions OnEof();
 		event::Instructions StartResponse();
+		bool                CanStartNewTask();
 	};
 } // namespace server
 #endif
