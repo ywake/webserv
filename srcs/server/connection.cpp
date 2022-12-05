@@ -20,9 +20,13 @@ namespace server
 		: Socket(fd), configs_(configs), client_(client), reciever_(fd), request_holder_()
 	{}
 
-	Connection::Connection(const Connection &other)
-		: Socket(other), configs_(other.configs_), client_(other.client_)
-	{}
+	// Connection::Connection(const Connection &other)
+	// 	: Socket(other),
+	// 	  configs_(other.configs_),
+	// 	  client_(other.client_),
+	// 	  request_holder_(other.request_holder_),
+	// 	  response_holder_(-1, kEmptyConfs, RequestHolder::DestroyRequest) // tmp
+	// {}
 
 	bool Connection::operator<(const Connection &other) const
 	{
