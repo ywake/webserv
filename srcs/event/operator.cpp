@@ -4,7 +4,7 @@
 std::ostream &operator<<(std::ostream &os, const event::Event &event)
 {
 	os << "fd: " << event.fd << std::endl;
-	os << "type: " << event.event_type << std::endl;
+	os << "type: " << event.event_type << " ";
 	if (event.event_type & event::Event::kWrite) {
 		os << "Write ";
 	}
@@ -15,6 +15,7 @@ std::ostream &operator<<(std::ostream &os, const event::Event &event)
 		os << "Empty ";
 	}
 	os << std::endl;
+	os << "ptr: " << event.data << std::endl;
 	return os;
 }
 
