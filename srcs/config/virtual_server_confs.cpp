@@ -45,6 +45,11 @@ namespace conf
 		}
 	}
 
+	const ServerConf &VirtualServerConfs::GetDefaultServerConf() const
+	{
+		return *server_confs_.at(default_host_); // 例外は出ないはず
+	}
+
 	void VirtualServerConfs::Add(const Host &host, const ServerConf &server_conf)
 	{
 		server_confs_.insert(std::pair<Host, const ServerConf *>(host, &server_conf));

@@ -4,6 +4,13 @@
 
 namespace http
 {
+	namespace methods
+	{
+		const std::string kGet    = "GET";
+		const std::string kDelete = "DELETE";
+		const std::string kPost   = "POST";
+	} // namespace methods
+
 	// C++98ではコンテナのリスト初期化が使えないので
 	static const char *kImplementedMethods[] = {
 		methods::kGet.c_str(),
