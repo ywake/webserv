@@ -45,10 +45,8 @@ namespace conf
 	}
 
 	ServerConfs::ServerConfs(const ConfsStore &confs, const ConfsMap &confs_map)
-	{
-		confs_     = confs;
-		confs_map_ = confs_map;
-	}
+		: confs_(confs), confs_map_(confs_map)
+	{}
 
 	ServerConfs::~ServerConfs() {}
 

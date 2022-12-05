@@ -21,7 +21,7 @@ namespace conf
 
 	VirtualServerConfs &VirtualServerConfs::operator=(const VirtualServerConfs &other)
 	{
-		if (this != &other) {
+		if (this == &other) {
 			return *this;
 		}
 		default_host_ = other.default_host_;
