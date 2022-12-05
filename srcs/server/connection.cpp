@@ -112,4 +112,15 @@ namespace server
 		return Instructions();
 	}
 
+	event::Instructions Connection::StartResponse()
+	{
+		Instructions insts;
+
+		Emptiable<IRequest *> req = request_holder_.PopFront();
+		if (!req.empty()) {
+			insts = response_holder_.StartNewResponse(req.Value());
+		}
+		return insts;
+	}
+
 } // namespace server

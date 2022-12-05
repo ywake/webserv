@@ -67,6 +67,7 @@ namespace server
 		event::Instructions Recieve();
 		event::Instructions Send();
 		event::Instructions OnEof();
+		event::Instructions StartResponse();
 	};
 } // namespace server
 #endif
