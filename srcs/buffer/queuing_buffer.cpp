@@ -24,6 +24,7 @@ namespace q_buffer
 			return;
 		}
 		buf_.push_back(ByteArray(data.begin(), data.end()));
+		size_ += data.size();
 	}
 
 	Emptiable<char> QueuingBuffer::PopChar()

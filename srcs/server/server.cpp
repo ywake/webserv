@@ -6,6 +6,8 @@ namespace server
 {
 	using namespace event;
 
+	const int Server::kEpollTimeout = 5000;
+
 	Server::Server(const conf::ServerConfs &configs) : configs_(configs), io_monitor_(kEpollTimeout)
 	{
 		typedef conf::ServerConfs::ConfsMap::const_iterator ConfsItr;
