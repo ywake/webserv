@@ -66,8 +66,6 @@ namespace server
 
 	Instructions Connection::OnEof()
 	{
-		// TODO 最初の時用にリソース処理追加
-
 		Instructions insts;
 
 		insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
@@ -76,7 +74,10 @@ namespace server
 			// TDDO 500
 		}
 		request_holder_.OnEof();
-		// if (CanResPonsStart0) {}
+		if (CanStartNewTask()) { // TODO fix tmp とか
+			Instructions tmp = StartResponse();
+			insts.splice(insts.end(), tmp);
+		}
 		return insts;
 	}
 
@@ -103,7 +104,10 @@ namespace server
 		if (!is_holder_full) {
 			request_holder_.Parse(reciever_);
 		}
-		// if (CanResPonsStart0) {}
+		if (CanStartNewTask()) { // TODO fix tmp とか
+			Instructions tmp = StartResponse();
+			insts.splice(insts.end(), tmp);
+		}
 		return Instructions();
 	}
 
@@ -113,6 +117,10 @@ namespace server
 		if (res.IsErr() || response_holder_.IsFatal()) {
 			is_finished_ = true;
 			return response_holder_.UnregisterAll();
+		}
+		if (CanStartNewTask()) {
+			Instructions tmp = StartResponse();
+			res.Val().splice(res.Val().end(), tmp);
 		}
 		return res.Val();
 	}
