@@ -139,7 +139,8 @@ namespace server
 	RequestLineParser::ParseResult
 	RequestLineParser::ParseHttpVersion(q_buffer::QueuingBuffer &recieved)
 	{
-		switch (LoadBytesWithDelim(recieved, http::kCrLf, http::kHttpVersion.size())) {
+		const std::size_t max_length = http::kHttpVersion.size() + http::kCrLf.size();
+		switch (LoadBytesWithDelim(recieved, http::kCrLf, max_length)) {
 		case kOverMaxSize:
 			throw http::BadRequestException();
 		case kParsable:
