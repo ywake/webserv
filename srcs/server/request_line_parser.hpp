@@ -41,6 +41,7 @@ namespace server
 		ParseResult   ParseHttpVersion(q_buffer::QueuingBuffer &recieved);
 		RequestTarget TryConstructRequestTarget(const ThinString &str);
 		State         GetNextState(State old_state);
+		LoadResult TryLoadBytesUntilSpace(q_buffer::QueuingBuffer &recieved, std::size_t max_bytes);
 	};
 } // namespace server
 
