@@ -11,9 +11,14 @@ namespace server
 
 	const std::size_t ResponseHolder::kMaxBufSize = 8196;
 
-	inline const std::string &GetHost(const IRequest &request)
+	inline const conf::ServerConf &ResponseHolder::GetServerConf(const IRequest &request)
 	{
-		return request.Headers()["host"].front().GetValue();
+		if (request.Headers()["host"].empty()) {
+			return config_.GetDefaultServerConf();
+		} else {
+			const std::string &host = request.Headers()["host"].front().GetValue();
+			return config_[host];
+		}
 	}
 
 	ResponseHolder::ResponseHolder()
@@ -31,7 +36,7 @@ namespace server
 		in_progress_.push_back(ReqRes(request, NULL));
 		if (request->IsErr()) {
 			in_progress_.back().second =
-				new ErrorResponse(request->GetErrStatusCode(), config_[GetHost(*request)]);
+				new ErrorResponse(request->GetErrStatusCode(), GetServerConf(*request));
 			return CreateInstructionsForNewResopnse(*in_progress_.back().second);
 		}
 		IResponse *new_response    = CreateNewResponse(*request);
@@ -42,7 +47,7 @@ namespace server
 	IResponse *ResponseHolder::CreateNewResponse(const IRequest &request)
 	{
 		IResponse                *new_response = NULL;
-		const std::string        &host         = GetHost(request);
+		const std::string        &host         = request.Headers()["host"].front().GetValue();
 		const conf::ServerConf   &vs_conf      = config_[host];
 		const conf::LocationConf &location     = vs_conf.FindMatchingLocationConf(request.Path());
 		bool                      is_cgi       = !location.GetCgiPath().empty();
@@ -100,10 +105,10 @@ namespace server
 			return insts;
 		} catch (http::HttpException &e) {
 			IRequest *request = in_progress_.front().first;
-			delete response;
-			in_progress_.back().second =
-				new ErrorResponse(request->GetErrStatusCode(), config_[GetHost(*request)]);
-			return CreateInstructionsForNewResopnse(*in_progress_.back().second);
+			delete in_progress_.front().second;
+			in_progress_.front().second =
+				new ErrorResponse(request->GetErrStatusCode(), GetServerConf(*request));
+			return CreateInstructionsForNewResopnse(*in_progress_.front().second);
 		} // TODO local redir
 	}
 

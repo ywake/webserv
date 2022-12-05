@@ -45,7 +45,8 @@ namespace server
 		// IResponse *CreateCgiResponse(const IRequest &request);
 		IResponse *
 		CreateErrorResponse(const http::StatusCode &status_code, IRequest::ErrorType e_type);
-		event::Instructions CreateInstructionsForNewResopnse(const IResponse &response);
+		event::Instructions            CreateInstructionsForNewResopnse(const IResponse &response);
+		inline const conf::ServerConf &GetServerConf(const IRequest &request);
 	};
 } // namespace server
 
