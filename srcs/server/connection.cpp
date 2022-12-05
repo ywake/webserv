@@ -40,6 +40,13 @@ namespace server
 
 	Connection::~Connection() {}
 
+	void Connection::SetConnectionPtr(Instructions &insts)
+	{
+		for (Instructions::iterator it = insts.begin(); it != insts.end(); ++it) {
+			it->event.data = this;
+		}
+	}
+
 	Instructions Connection::Proceed(const Event &event)
 	{
 		Instructions insts;
@@ -49,6 +56,7 @@ namespace server
 		} else {
 			insts = response_holder_.Perform(event);
 		}
+		SetConnectionPtr(insts);
 		return insts;
 	}
 

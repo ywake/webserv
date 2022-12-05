@@ -69,6 +69,7 @@ namespace server
 		event::Instructions OnEof();
 		event::Instructions StartResponse();
 		bool                CanStartNewTask();
+		void                SetConnectionPtr(event::Instructions &insts);
 	};
 } // namespace server
 #endif
