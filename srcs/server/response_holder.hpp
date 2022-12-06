@@ -17,14 +17,14 @@ namespace server
 	class ResponseHolder
 	{
 		typedef void (*RequestDelFunc)(IRequest *&);
-		typedef std::pair<IRequest *, IResponse *> ReqRes;
+		typedef std::pair<IRequest *, IResponse *> Task;
 
 	  private:
 		static const std::size_t kMaxBufSize;
 
 		int                             conn_fd_;
 		const conf::VirtualServerConfs &config_;
-		std::deque<ReqRes>              in_progress_;
+		std::deque<Task>                in_progress_;
 		RequestDelFunc                  request_del_;
 		bool                            is_fatal_;
 

@@ -102,7 +102,7 @@ namespace server
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			return kInProgress;
+			return kDone;
 		case kStartLine:
 			return ParseStartLine(recieved);
 		case kHeader:

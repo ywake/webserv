@@ -33,7 +33,7 @@ namespace server
 
 	Instructions ResponseHolder::StartNewResponse(IRequest *request)
 	{
-		in_progress_.push_back(ReqRes(request, NULL));
+		in_progress_.push_back(Task(request, NULL));
 		if (request->IsErr()) {
 			in_progress_.back().second =
 				new ErrorResponse(request->GetErrStatusCode(), GetServerConf(*request));
@@ -83,7 +83,9 @@ namespace server
 	{
 		Instructions insts;
 
-		IResponse *response = in_progress_.front().second; // ほんとはmap[fd][resreq]から探す
+		Task      &task     = in_progress_.front(); // ほんとはmap[fd][task]から探す
+		IRequest  *request  = task.first;
+		IResponse *response = task.second; // ほんとはmap[fd][task]から探す
 		try {
 			response->Perform(event);
 			if (response->size() > kMaxBufSize) {
@@ -104,10 +106,8 @@ namespace server
 			}
 			return insts;
 		} catch (http::HttpException &e) {
-			IRequest *request = in_progress_.front().first;
-			delete in_progress_.front().second;
-			in_progress_.front().second =
-				new ErrorResponse(request->GetErrStatusCode(), GetServerConf(*request));
+			delete response;
+			task.second = new ErrorResponse(request->GetErrStatusCode(), GetServerConf(*request));
 			return CreateInstructionsForNewResopnse(*in_progress_.front().second);
 		} // TODO local redir
 	}

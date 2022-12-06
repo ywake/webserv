@@ -47,7 +47,6 @@ namespace io_multiplexer
 		Result<EpollEvents> WaitBlockingEvents(int timeout);
 		event::Events       ExportNonBlockingEvents();
 		EpollEvent          ConvertToEpollEvent(const event::Event &event);
-		event::Event        ConvertToEvent(const EpollEvent &epoll_event);
 		event::Events       ConvertToEvents(const EpollEvents &epoll_events);
 	};
 } // namespace io_multiplexer

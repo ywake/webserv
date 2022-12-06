@@ -3,6 +3,7 @@
 #include "http_exceptions.hpp"
 #include "implemented_methods.hpp"
 #include "validate_request_line.hpp"
+#include "webserv_utils.hpp"
 
 namespace server
 {
@@ -88,7 +89,7 @@ namespace server
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			return kInProgress;
+			return kDone;
 		case kMethod:
 			return ParseMethod(recieved);
 		case kTarget:
@@ -99,9 +100,31 @@ namespace server
 		return kInProgress;
 	}
 
+	RequestLineParser::LoadResult RequestLineParser::TryLoadBytesUntilSpace(
+		q_buffer::QueuingBuffer &recieved, std::size_t max_bytes
+	)
+	{
+		for (;;) {
+			if (recieved.empty()) {
+				return kNonParsable;
+			}
+			Emptiable<char> c = recieved.PopChar();
+			loaded_bytes_ += c.Value();
+			if (loaded_bytes_.size() > max_bytes) {
+				return kOverMaxSize;
+			}
+			if (utils::EndWith(loaded_bytes_, http::kSp)) {
+				return kParsable;
+			}
+			if (utils::EndWith(loaded_bytes_, http::kCrLf)) {
+				throw http::BadRequestException();
+			}
+		}
+	}
+
 	RequestLineParser::ParseResult RequestLineParser::ParseMethod(q_buffer::QueuingBuffer &recieved)
 	{
-		switch (LoadBytesWithDelim(recieved, http::kSp, http::ImplementedMethods::kMaxLength)) {
+		switch (TryLoadBytesUntilSpace(recieved, http::ImplementedMethods::kMaxLength)) {
 		case kOverMaxSize:
 			throw http::NotImplementedException();
 		case kParsable:
@@ -123,7 +146,7 @@ namespace server
 	RequestLineParser::ParseResult
 	RequestLineParser::ParseRequestTarget(q_buffer::QueuingBuffer &recieved)
 	{
-		switch (LoadBytesWithDelim(recieved, http::kSp, kMaxRequestTargetSize)) {
+		switch (TryLoadBytesUntilSpace(recieved, kMaxRequestTargetSize)) {
 		case kOverMaxSize:
 			throw http::UriTooLongException();
 		case kParsable:
@@ -139,7 +162,8 @@ namespace server
 	RequestLineParser::ParseResult
 	RequestLineParser::ParseHttpVersion(q_buffer::QueuingBuffer &recieved)
 	{
-		switch (LoadBytesWithDelim(recieved, http::kCrLf, http::kHttpVersion.size())) {
+		const std::size_t max_length = http::kHttpVersion.size() + http::kCrLf.size();
+		switch (LoadBytesWithDelim(recieved, http::kCrLf, max_length)) {
 		case kOverMaxSize:
 			throw http::BadRequestException();
 		case kParsable:
