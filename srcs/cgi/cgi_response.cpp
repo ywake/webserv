@@ -4,14 +4,25 @@
 
 namespace cgi
 {
+	CgiResponse::CgiResponse(const CgiResponse &other)
+		: request_(other.request_), location_conf_(other.location_conf_)
+	{}
 
-	CgiResponse::CgiResponse() {}
+	CgiResponse(const server::IRequest &request, const conf::LocationConf &location_conf)
+		: request_(request), location_conf_(location_conf)
+	{}
 
-	CgiResponse::CgiResponse(const CgiResponse &other) {}
+	CgiResponse::~CgiResponse() {}
 
-	CgiResponse(server::IRequest &request, conf::LocationConf &location_conf) {}
-
-	Cgi::~Cgi() {}
+	CgiResponse &CgiResponse::operator=(const CgiResponse &other)
+	{
+		if (this == &other) {
+			return *this;
+		}
+		request_       = other.request_;
+		location_conf_ = other.location_conf_;
+		return *this;
+	}
 
 	/**
 	 * IResponse

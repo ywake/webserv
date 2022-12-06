@@ -7,11 +7,12 @@ namespace cgi
 	class CgiResponse : public server::IResponse
 	{
 	  private:
-		/* data */
+		server::IRequest   &request_;
+		conf::LocationConf &location_conf_;
+
 	  public:
-		CgiResponse();
 		CgiResponse(const CgiResponse &other);
-		CgiResponse(server::IRequest &request, conf::LocationConf &location_conf);
+		CgiResponse(const server::IRequest &request, const conf::LocationConf &location_conf);
 		~CgiResponse();
 
 		// IResponse
