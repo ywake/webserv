@@ -72,7 +72,7 @@ namespace io_multiplexer
 			 it++) {
 			Result<void> res = Instruct(*it);
 			if (res.IsErr()) {
-				err_events.push_back((*it, Error(res.Err())));
+				err_events.push_back(Result<const event::Instruction>(*it, Error(res.Err())));
 			}
 		}
 		return err_events;
