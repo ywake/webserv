@@ -31,7 +31,7 @@ namespace conf
 		  client_max_body_size_(client_max_body_size),
 		  location_confs_(location_confs),
 		  default_root_(root),
-		  defaultLocationConf(LocationConf(
+		  default_location_conf_(LocationConf(
 			  LocationConf::PathPattern(),
 			  LocationConf::kPrefix,
 			  LocationConf::AllowMethods(),
@@ -43,6 +43,11 @@ namespace conf
 			  &default_root_.Value()
 		  ))
 	{}
+
+	ServerConf::ServerConf(const ServerConf &other)
+	{
+		*this = other;
+	}
 
 	ServerConf::~ServerConf() {}
 
@@ -286,7 +291,7 @@ namespace conf
 				return *it;
 			}
 		}
-		return defaultLocationConf;
+		return default_location_conf_;
 	}
 
 	/**
@@ -303,6 +308,27 @@ namespace conf
 	bool ServerConf::operator!=(const ServerConf &rhs) const
 	{
 		return !(rhs == *this);
+	}
+
+	ServerConf &ServerConf::operator=(const ServerConf &rhs)
+	{
+		if (this == &rhs) {
+			return *this;
+		}
+		listen_port_           = rhs.listen_port_;
+		server_name_           = rhs.server_name_;
+		error_pages_           = rhs.error_pages_;
+		client_max_body_size_  = rhs.client_max_body_size_;
+		location_confs_        = rhs.location_confs_;
+		default_root_          = rhs.default_root_;
+		default_location_conf_ = rhs.default_location_conf_;
+		default_location_conf_.SetDefaultRoot(default_root_.Value());
+		for (LocationConfs::iterator it = location_confs_.begin(); it != location_confs_.end();
+			 ++it) {
+			LocationConf &location_conf = *it;
+			location_conf.SetDefaultRoot(default_root_.Value());
+		}
+		return *this;
 	}
 
 	std::ostream &operator<<(std::ostream &os, const ServerConf &conf)

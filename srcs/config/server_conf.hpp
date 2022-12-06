@@ -33,7 +33,7 @@ namespace conf
 		ClientMaxBodySize client_max_body_size_;
 		LocationConfs     location_confs_;
 		Root              default_root_;
-		LocationConf      defaultLocationConf;
+		LocationConf      default_location_conf_;
 
 	  private:
 		static const ListenPort        kDefaultListenPort;
@@ -51,6 +51,7 @@ namespace conf
 			ClientMaxBodySize client_max_body_size = ClientMaxBodySize(),
 			LocationConfs     location_conf        = LocationConfs()
 		);
+		ServerConf(const ServerConf &other);
 		~ServerConf();
 
 		// Setters
@@ -79,8 +80,9 @@ namespace conf
 		const LocationConf &FindMatchingLocationConf(const Path &uri_path) const;
 
 		// Operators
-		bool operator==(const ServerConf &rhs) const;
-		bool operator!=(const ServerConf &rhs) const;
+		bool        operator==(const ServerConf &rhs) const;
+		bool        operator!=(const ServerConf &rhs) const;
+		ServerConf &operator=(const ServerConf &rhs);
 	};
 
 	std::ostream &operator<<(std::ostream &os, const ServerConf &conf);

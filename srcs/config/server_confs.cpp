@@ -11,6 +11,14 @@
 
 namespace conf
 {
+
+	ServerConfs::ServerConfs() : confs_(), confs_map_() {}
+
+	ServerConfs::ServerConfs(const ServerConfs &other)
+	{
+		*this = other;
+	}
+
 	/**
 	 * @brief Construct a new Server Confs
 	 *
@@ -37,12 +45,17 @@ namespace conf
 	}
 
 	ServerConfs::ServerConfs(const ConfsStore &confs, const ConfsMap &confs_map)
-	{
-		confs_     = confs;
-		confs_map_ = confs_map;
-	}
+		: confs_(confs), confs_map_(confs_map)
+	{}
 
 	ServerConfs::~ServerConfs() {}
+
+	ServerConfs &ServerConfs::operator=(const ServerConfs &other)
+	{
+		confs_ = other.confs_;
+		CreatePortHostMap();
+		return *this;
+	}
 
 	bool ServerConfs::operator==(const ServerConfs &rhs) const
 	{

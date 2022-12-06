@@ -46,13 +46,6 @@ namespace conf
 		static const Path         kDefaultRootForTest;
 
 	  public:
-		LocationConf(
-			const PathPattern             &path_pattern,
-			MatchPattern                   match_pattern,
-			const Path                    &default_root,
-			const std::vector<ThinString> &params
-		);
-
 		// for test
 		LocationConf(
 			PathPattern  path_pattern  = PathPattern(),
@@ -64,6 +57,13 @@ namespace conf
 			AutoIndex    autoindex     = AutoIndex(),
 			CgiPath      cgi_path      = CgiPath(),
 			const Path  *default_root  = NULL
+		);
+		LocationConf(const LocationConf &other);
+		LocationConf(
+			const PathPattern             &path_pattern,
+			MatchPattern                   match_pattern,
+			const Path                    &default_root,
+			const std::vector<ThinString> &params
 		);
 		~LocationConf();
 
@@ -83,6 +83,9 @@ namespace conf
 		const IndexFiles   &GetIndexFiles() const;
 		const AutoIndex    &GetAutoindex() const;
 		const CgiPath      &GetCgiPath() const;
+
+		// Setters
+		void SetDefaultRoot(const Path &root);
 
 		bool                operator==(const LocationConf &rhs) const;
 		const LocationConf &operator=(const LocationConf &rhs);
