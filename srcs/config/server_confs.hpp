@@ -22,15 +22,18 @@ namespace conf
 		ConfsMap   confs_map_;
 
 	  public:
+		ServerConfs();
+		ServerConfs(const ServerConfs &other);
+
 		static ServerConfs FromFilePath(const std::string &config_file_path);
 		ServerConfs(const std::string &config_file_content);
-
 		// for test. expect値のため
 		ServerConfs(const ConfsStore &confs, const ConfsMap &confs_map);
 
 		~ServerConfs();
 
-		bool operator==(const ServerConfs &rhs) const;
+		ServerConfs &operator=(const ServerConfs &other);
+		bool         operator==(const ServerConfs &rhs) const;
 		/**
 		 * @brief portに対応するstd::map<Host, ServerConf>を返す
 		 * @brief ない場合はemptyなmapを返す
