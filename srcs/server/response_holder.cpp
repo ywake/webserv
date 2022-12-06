@@ -59,7 +59,7 @@ namespace server
 			}
 		} catch (http::HttpException &e) {
 			delete new_response;
-			new_response = new ErrorResponse(request.GetErrStatusCode(), vs_conf);
+			new_response = new ErrorResponse(e.GetStatusCode(), vs_conf);
 		}
 		return new_response;
 	}
