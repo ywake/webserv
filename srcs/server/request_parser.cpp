@@ -40,7 +40,7 @@ namespace server
 
 	bool RequestParser::HasInCompleteData()
 	{
-		return ctx_.state != kStandBy;
+		return ctx_.state != kStandBy || !loaded_bytes_.empty();
 	}
 
 	Emptiable<IRequest *> RequestParser::OnEof()
@@ -97,12 +97,31 @@ namespace server
 		return kInProgress;
 	}
 
+	RequestParser::ParseResult RequestParser::SkipPriorCrLf(q_buffer::QueuingBuffer &recieved)
+	{
+		for (;;) {
+			if (recieved.empty()) {
+				return kInProgress;
+			}
+			Emptiable<char> c = recieved.PopChar();
+			loaded_bytes_ += c.Value();
+			if (utils::EndWith(loaded_bytes_, http::kCrLf)) {
+				ClearLoadedBytes();
+			}
+			if (loaded_bytes_.size() >= http::kCrLf.size()) {
+				recieved.push_front(loaded_bytes_);
+				ClearLoadedBytes();
+				return kDone;
+			}
+		}
+	}
+
 	// TODO トレイラ無視してる
 	RequestParser::ParseResult RequestParser::ParseEachPhase(q_buffer::QueuingBuffer &recieved)
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			return kDone;
+			return SkipPriorCrLf(recieved);
 		case kStartLine:
 			return ParseStartLine(recieved);
 		case kHeader:
