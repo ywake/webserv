@@ -122,9 +122,11 @@ namespace server
 			is_fatal_ = true;
 			return send_result.Err();
 		}
-		insts.push_back(
-			Instruction(Instruction::kAppendEventType, response->GetFd().Value(), Event::kRead)
-		);
+		if (response->HasFd()) {
+			insts.push_back(
+				Instruction(Instruction::kAppendEventType, response->GetFd().Value(), Event::kRead)
+			);
+		}
 		if (!response->HasReadyData()) {
 			insts.push_back(Instruction(Instruction::kTrimEventType, conn_fd_, Event::kWrite));
 		}
