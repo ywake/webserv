@@ -4,6 +4,7 @@
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "static_response.hpp"
+#include "webserv_utils.hpp"
 
 namespace server
 {
@@ -20,7 +21,7 @@ namespace server
 	void StaticResponse::InitGetMethod()
 	{
 		const std::string &root = config_.GetRoot();
-		const std::string  path = root + request_.Path();
+		const std::string  path = utils::JoinPath(root, request_.Path());
 
 		int fd = open(path.c_str(), O_RDONLY | O_NONBLOCK | O_CLOEXEC);
 		if (fd == -1) {
