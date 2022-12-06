@@ -72,7 +72,7 @@ namespace io_multiplexer
 			 it++) {
 			Result<void> res = Instruct(*it);
 			if (res.IsErr()) {
-				err_events.push_back((*it, Error(res.Err())));
+				err_events.push_back(Result<const event::Instruction>(*it, Error(res.Err())));
 			}
 		}
 		return err_events;
@@ -215,8 +215,9 @@ namespace io_multiplexer
 		for (EpollEvents::const_iterator it = epoll_events.begin(); it != epoll_events.end();
 			 ++it) {
 			const EpollEvent &epoll_event = *it;
-			int               fd          = epoll_event.data.fd;
-			event::Event      ev          = blocking_pool_[fd];
+			event::Event      ev          = {};
+			ev.fd                         = epoll_event.data.fd;
+			ev.data                       = blocking_pool_[ev.fd].data;
 			if (epoll_event.events & EPOLLOUT) {
 				ev.event_type |= event::Event::kWrite;
 			}

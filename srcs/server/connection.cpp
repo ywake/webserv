@@ -126,8 +126,10 @@ namespace server
 	{
 		Result<Instructions> res = response_holder_.Send();
 		if (res.IsErr() || response_holder_.IsFatal()) {
-			is_finished_ = true;
-			return response_holder_.UnregisterAll();
+			is_finished_     = true;
+			Instructions tmp = response_holder_.UnregisterAll();
+			res.Val().splice(res.Val().end(), tmp);
+			return res.Val(); // TODO refactor;
 		}
 		if (CanStartNewTask()) {
 			Instructions tmp = StartResponse();
