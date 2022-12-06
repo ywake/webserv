@@ -27,6 +27,40 @@ namespace q_buffer
 		size_ += data.size();
 	}
 
+	void QueuingBuffer::push_front(const std::vector<char> &data)
+	{
+		if (data.empty()) {
+			return;
+		}
+		size_ += data.size();
+		ByteArray  &front = buf_.front();
+		std::size_t size  = data.size();
+		for (; front_idx_ > 0; size--, front_idx_--) {
+			if (size == 0) {
+				return;
+			}
+			front[front_idx_ - 1] = data[size - 1];
+		}
+		buf_.push_back(ByteArray(data.begin(), data.begin() + size));
+	}
+
+	void QueuingBuffer::push_front(const std::string &data)
+	{
+		if (data.empty()) {
+			return;
+		}
+		size_ += data.size();
+		ByteArray  &front = buf_.front();
+		std::size_t size  = data.size();
+		for (; front_idx_ > 0; size--, front_idx_--) {
+			if (size == 0) {
+				return;
+			}
+			front[front_idx_ - 1] = data[size - 1];
+		}
+		buf_.push_back(ByteArray(data.begin(), data.begin() + size));
+	}
+
 	Emptiable<char> QueuingBuffer::PopChar()
 	{
 		if (empty()) {
