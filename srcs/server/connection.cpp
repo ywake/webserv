@@ -7,8 +7,8 @@ namespace server
 {
 	using namespace event;
 
-	const std::size_t              Connection::kMaxRecverBufSize    = 10;
-	const std::size_t              Connection::kMaxSenderBufSize    = 10;
+	const std::size_t              Connection::kMaxRecverBufSize    = 8196;
+	const std::size_t              Connection::kMaxSenderBufSize    = 8196;
 	const std::size_t              Connection::kMaxRequestQueueSize = 3;
 	const conf::VirtualServerConfs Connection::kEmptyConfs          = conf::VirtualServerConfs();
 
@@ -17,12 +17,21 @@ namespace server
 	Connection::Connection(
 		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
 	)
-		: Socket(fd), configs_(configs), client_(client), reciever_(fd), request_holder_()
+		: Socket(fd),
+		  configs_(configs),
+		  client_(client),
+		  reciever_(fd),
+		  request_holder_(),
+		  response_holder_(fd, configs, RequestHolder::DestroyRequest)
 	{}
 
-	Connection::Connection(const Connection &other)
-		: Socket(other), configs_(other.configs_), client_(other.client_)
-	{}
+	// Connection::Connection(const Connection &other)
+	// 	: Socket(other),
+	// 	  configs_(other.configs_),
+	// 	  client_(other.client_),
+	// 	  request_holder_(other.request_holder_),
+	// 	  response_holder_(-1, kEmptyConfs, RequestHolder::DestroyRequest) // tmp
+	// {}
 
 	bool Connection::operator<(const Connection &other) const
 	{
@@ -31,13 +40,24 @@ namespace server
 
 	Connection::~Connection() {}
 
+	void Connection::SetConnectionPtr(Instructions &insts)
+	{
+		for (Instructions::iterator it = insts.begin(); it != insts.end(); ++it) {
+			it->event.data = this;
+		}
+	}
+
 	Instructions Connection::Proceed(const Event &event)
 	{
+		Instructions insts;
+
 		if (event.fd == this->GetFd()) {
-			return CommunicateWithClient(event.event_type);
+			insts = CommunicateWithClient(event.event_type);
 		} else {
+			insts = response_holder_.Perform(event);
 		}
-		return Instructions();
+		SetConnectionPtr(insts);
+		return insts;
 	}
 
 	Instructions Connection::CommunicateWithClient(uint32_t event_type)
@@ -57,8 +77,6 @@ namespace server
 
 	Instructions Connection::OnEof()
 	{
-		// TODO 最初の時用にリソース処理追加
-
 		Instructions insts;
 
 		insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
@@ -67,7 +85,10 @@ namespace server
 			// TDDO 500
 		}
 		request_holder_.OnEof();
-		// if (CanResPonsStart0) {}
+		if (CanStartNewTask()) { // TODO fix tmp とか
+			Instructions tmp = StartResponse();
+			insts.splice(insts.end(), tmp);
+		}
 		return insts;
 	}
 
@@ -88,19 +109,53 @@ namespace server
 			Result<void> res = reciever_.Recv();
 			if (res.IsErr()) {
 				std::cerr << res.Err() << std::endl;
-				// TDDO 500
+				// TDDO 500 専用のappend taskみたいのをholderに作る
 			}
 		}
 		if (!is_holder_full) {
 			request_holder_.Parse(reciever_);
 		}
-		// if (CanResPonsStart0) {}
-		return Instructions();
+		if (CanStartNewTask()) { // TODO fix tmp とか
+			Instructions tmp = StartResponse();
+			insts.splice(insts.end(), tmp);
+		}
+		return insts;
 	}
 
 	Instructions Connection::Send()
 	{
-		return Instructions();
+		Result<Instructions> res = response_holder_.Send();
+		if (res.IsErr() || response_holder_.IsFatal()) {
+			is_finished_ = true;
+			return response_holder_.UnregisterAll();
+		}
+		if (CanStartNewTask()) {
+			Instructions tmp = StartResponse();
+			res.Val().splice(res.Val().end(), tmp);
+		}
+		return res.Val();
+	}
+
+	event::Instructions Connection::StartResponse()
+	{
+		Instructions insts;
+
+		Emptiable<IRequest *> req = request_holder_.PopFront();
+		if (!req.empty()) {
+			insts = response_holder_.StartNewResponse(req.Value());
+		}
+		return insts;
+	}
+
+	bool Connection::IsFinished()
+	{
+		return is_finished_;
+	}
+
+	// TODO パイプラインは冪等かどうかの判定と、response holder内部の変更が必要
+	bool Connection::CanStartNewTask()
+	{
+		return request_holder_.size() != 0 && response_holder_.size() == 0;
 	}
 
 } // namespace server
