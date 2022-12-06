@@ -34,6 +34,7 @@ namespace q_buffer
 		}
 		buf_.push_front(data);
 		size_ += data.size();
+		front_idx_ = 0;
 	}
 
 	void QueuingBuffer::push_front(const std::string &data)
@@ -43,6 +44,7 @@ namespace q_buffer
 		}
 		buf_.push_front(ByteArray(data.begin(), data.end()));
 		size_ += data.size();
+		front_idx_ = 0;
 	}
 
 	Emptiable<char> QueuingBuffer::PopChar()
