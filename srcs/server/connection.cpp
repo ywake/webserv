@@ -25,7 +25,11 @@ namespace server
 		  response_holder_(fd, configs, RequestHolder::DestroyRequest)
 	{}
 
-	// Connection::Connection(const Connection &other)
+	// setからeraseするためだけの存在
+	Connection::Connection(int fd) : Socket(fd), configs_(kEmptyConfs), client_(), request_holder_()
+	{}
+
+	// // Connection::Connection(const Connection &other)
 	// 	: Socket(other),
 	// 	  configs_(other.configs_),
 	// 	  client_(other.client_),
