@@ -14,6 +14,7 @@ class Stat
 	// factory
 	static Result<Stat> FromPath(const std::string &path);
 	// constructor
+	Stat();
 	Stat(const std::string &path, const struct stat &stat);
 	// FileCond(const std::string &path);
 	~Stat();

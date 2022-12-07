@@ -14,6 +14,8 @@ Result<Stat> Stat::FromPath(const std::string &path)
 	return Stat(path, stat_buf);
 }
 
+Stat::Stat() : path_(), stat_() {}
+
 Stat::Stat(const std::string &path, const struct stat &stat) : path_(path), stat_(stat) {}
 
 Stat::~Stat() {}
