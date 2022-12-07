@@ -48,11 +48,11 @@ namespace q_buffer
 			size_ += data.size();
 			ByteArray  &front = buf_.front();
 			std::size_t size  = data.size();
-			for (; front_idx_ > 0; size--, front_idx_--) {
-				if (size == 0) {
-					return;
-				}
+			for (; front_idx_ > 0 && size > 0; size--, front_idx_--) {
 				front[front_idx_ - 1] = data[size - 1];
+			}
+			if (size == 0) {
+				return;
 			}
 			buf_.push_front(ByteArray(data.begin(), data.begin() + size));
 		}
