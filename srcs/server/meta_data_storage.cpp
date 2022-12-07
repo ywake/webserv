@@ -1,5 +1,3 @@
-#include <sstream>
-
 #include "meta_data_storage.hpp"
 
 namespace server
@@ -25,10 +23,8 @@ namespace server
 		const std::string &version, const http::StatusCode &status_code
 	)
 	{
-		std::stringstream ss;
-
-		ss << status_code.GetCode();
-		meta_data_ += version + " " + ss.str() + " " + status_code.GetReasonPhrase() + http::kCrLf;
+		meta_data_ += version + " " + status_code.GetCodeStr() + " " +
+					  status_code.GetReasonPhrase() + http::kCrLf;
 	}
 
 	void MetaDataStorage::StoreHeader(const std::string &name, const std::string &value)
