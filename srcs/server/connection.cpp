@@ -160,4 +160,12 @@ namespace server
 		return request_holder_.size() != 0 && response_holder_.size() == 0;
 	}
 
+	Instructions Connection::Disconnect()
+	{
+		Instructions insts = response_holder_.UnregisterAll();
+		int          fd    = managed_fd_.GetFd();
+		insts.push_back(Instruction(Instruction::kUnregister, fd));
+		return insts;
+	}
+
 } // namespace server

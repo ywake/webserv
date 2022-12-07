@@ -62,6 +62,7 @@ namespace server
 		event::Instructions CommunicateWithClient(uint32_t event_type);
 		event::Instructions Proceed(const event::Event &event);
 		bool                IsFinished();
+		event::Instructions Disconnect();
 
 	  private:
 		event::Instructions Recieve();
