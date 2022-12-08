@@ -25,7 +25,11 @@ namespace server
 		  response_holder_(fd, configs, RequestHolder::DestroyRequest)
 	{}
 
-	// Connection::Connection(const Connection &other)
+	// setからeraseするためだけの存在
+	Connection::Connection(int fd) : Socket(fd), configs_(kEmptyConfs), client_(), request_holder_()
+	{}
+
+	// // Connection::Connection(const Connection &other)
 	// 	: Socket(other),
 	// 	  configs_(other.configs_),
 	// 	  client_(other.client_),
@@ -158,6 +162,14 @@ namespace server
 	bool Connection::CanStartNewTask()
 	{
 		return request_holder_.size() != 0 && response_holder_.size() == 0;
+	}
+
+	Instructions Connection::Disconnect()
+	{
+		Instructions insts = response_holder_.UnregisterAll();
+		int          fd    = managed_fd_.GetFd();
+		insts.push_back(Instruction(Instruction::kUnregister, fd));
+		return insts;
 	}
 
 } // namespace server
