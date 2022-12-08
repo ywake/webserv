@@ -4,24 +4,6 @@
 #include "epoll.hpp"
 #include "instruction.hpp"
 
-#ifdef NDEBUG
-inline void log(const std::string &title)
-{
-	(void)title;
-}
-
-inline void loge(const Error &err)
-{
-	(void)err;
-}
-
-inline void loge(const io_multiplexer::ErrEvents &err)
-{
-	(void)err;
-}
-
-#else
-
 void loge(const Error &err)
 {
 	std::cerr << err << std::endl;
@@ -58,4 +40,3 @@ std::string BaseName(std::string s)
 	}
 	return name.substr(0, pos);
 }
-#endif
