@@ -39,6 +39,38 @@ namespace q_buffer
 			size_ += data.size();
 		}
 
+		/*
+		o ... empty
+		x ... filled
+
+		buf	[o o x x]<-[x x x x]
+				 |
+				 front_idx_ == 2
+		==============================
+		input [x x x x x]
+					 | |
+		buf			[o o x x]<-[x x x x]
+						 |
+						 front_idx_ == 2
+		==============================
+		input [x x x]x x
+					 | |
+		buf          [x x x x]<-[x x x x]
+					  |
+					  front_idx_ == 0
+		==============================
+		input [x x x]
+			   | | |
+		buf   [     ]<-[x x x x]<-[x x x x]
+						|
+						front_idx_ == 0
+		==============================
+		input []
+
+		buf   [x x x]<-[x x x x]<-[x x x x]
+			   |
+			   front_idx_ == 0
+		*/
 		template <typename T>
 		void push_front(const T &data)
 		{
