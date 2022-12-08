@@ -48,17 +48,17 @@ bool Stat::IsFifo() const
 Stat::FileType Stat::GetFileType() const
 {
 	if (IsRegularFile()) {
-		return FileType::kRegularFile;
+		return Stat::kRegularFile;
 	} else if (IsDirectory()) {
-		return FileType::kDirectory;
+		return Stat::kDirectory;
 	} else if (IsCharacterDevice()) {
-		return FileType::kCharacterDevice;
+		return Stat::kCharacterDevice;
 	} else if (IsBlockDevice()) {
-		return FileType::kBlockDevice;
+		return Stat::kBlockDevice;
 	} else if (IsFifo()) {
-		return FileType::kFifo;
+		return Stat::kFifo;
 	} else {
-		return FileType::kUnknown;
+		return Stat::kUnknown;
 	}
 }
 

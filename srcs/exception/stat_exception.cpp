@@ -1,5 +1,6 @@
 #include "stat_exception.hpp"
 
+#include <cerrno>
 #include <cstring>
 
 StatException::StatException(int error_number) : error_number_(error_number) {}
@@ -13,28 +14,28 @@ StatException::StatError StatException::error() const
 {
 	switch (error_number_) {
 	case EACCES:
-		return StatError::kEAcces;
+		return StatException::kEAcces;
 	case EBADF:
-		return StatError::kEBadFd;
+		return StatException::kEBadFd;
 	case EFAULT:
-		return StatError::kEFault;
+		return StatException::kEFault;
 	case EIO:
-		return StatError::kEIO;
+		return StatException::kEIO;
 	case ELOOP:
-		return StatError::kELoop;
+		return StatException::kELoop;
 	case ENAMETOOLONG:
-		return StatError::kENameTooLong;
+		return StatException::kENameTooLong;
 	case ENOENT:
-		return StatError::kNoEnt;
+		return StatException::kNoEnt;
 	case ENOTDIR:
-		return StatError::kENotDir;
+		return StatException::kENotDir;
 	case EOVERFLOW:
-		return StatError::kEOverFlow;
+		return StatException::kEOverFlow;
 	case ENOMEM:
-		return StatError::kENoMem;
+		return StatException::kENoMem;
 	case EINVAL:
-		return StatError::kEInval;
+		return StatException::kEInval;
 	default:
-		return StatError::kUnknown;
+		return StatException::kUnknown;
 	}
 }
