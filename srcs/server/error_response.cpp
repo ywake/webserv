@@ -10,8 +10,25 @@ namespace server
 	ErrorResponse::ErrorResponse(const http::StatusCode &status_code, const conf::ServerConf &conf)
 		: config_(conf), is_finished_(false)
 	{
-		push_back(status_code.GetReasonPhrase());
+		PushDefaultErrorPage(status_code);
 		is_finished_ = true;
+	}
+
+	void ErrorResponse::PushDefaultErrorPage(const http::StatusCode &code)
+	{
+		std::string err_msg  = code.GetCodeStr() + " " + code.GetReasonPhrase();
+		std::string err_page = "<html>\n"
+							   "<head><title>" +
+							   err_msg +
+							   "</title></head>\n"
+							   "<body>\n"
+							   "<center><h1>" +
+							   err_msg +
+							   "</h1></center>\n"
+							   "<hr><center>webserv/1.0</center>\n"
+							   "</body>\n"
+							   "</html>\n";
+		push_back(err_page);
 	}
 
 	void ErrorResponse::Perform(const event::Event &event)
