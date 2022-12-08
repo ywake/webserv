@@ -53,6 +53,7 @@ namespace server
 
 	  public:
 		Connection();
+		Connection(int fd);
 		Connection(
 			int managed_fd, const conf::VirtualServerConfs &conf, const SockAddrStorage &client
 		);
@@ -62,6 +63,7 @@ namespace server
 		event::Instructions CommunicateWithClient(uint32_t event_type);
 		event::Instructions Proceed(const event::Event &event);
 		bool                IsFinished();
+		event::Instructions Disconnect();
 
 	  private:
 		event::Instructions Recieve();

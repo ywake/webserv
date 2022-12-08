@@ -96,7 +96,21 @@ namespace server
 
 	Instructions Server::CloseFinishedConnections()
 	{
-		return Instructions();
+		std::vector<Connection> finished;
+		Instructions            insts;
+		for (Connections::iterator it = connections_.begin(); it != connections_.end(); ++it) {
+			Connection &con = const_cast<Connection &>(*it);
+			if (con.IsFinished()) {
+				log("finish fd", con.GetFd());
+				Instructions i = con.Disconnect();
+				insts.splice(insts.end(), i);
+				finished.push_back(con.GetFd());
+			}
+		}
+		for (std::vector<Connection>::iterator it = finished.begin(); it != finished.end(); it++) {
+			connections_.erase(*it);
+		}
+		return insts;
 	}
 
 } // namespace server
