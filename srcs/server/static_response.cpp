@@ -1,6 +1,7 @@
 #include <cerrno>
 #include <fcntl.h>
 
+#include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "static_response.hpp"
@@ -11,6 +12,7 @@ namespace server
 	StaticResponse::StaticResponse(const IRequest &request, const conf::LocationConf &conf)
 		: request_(request), config_(conf), is_finished_(false)
 	{
+		log("static res construct");
 		if (request_.Method() == http::methods::kGet) {
 			InitGetMethod();
 		} else {

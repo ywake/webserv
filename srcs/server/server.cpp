@@ -42,7 +42,7 @@ namespace server
 		while (true) {
 			Result<Events> events = io_monitor_.Wait();
 			if (events.IsErr()) {
-				log(events.Err());
+				loge(events.Err());
 			}
 			Instructions instructions            = RunEvents(events.Val());
 			Instructions unregister_instructions = CloseFinishedConnections();

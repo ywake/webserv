@@ -2,7 +2,7 @@
 #include <cstdio>
 
 #include "connection.hpp"
-
+#include "debug.hpp"
 namespace server
 {
 	using namespace event;
@@ -66,13 +66,16 @@ namespace server
 
 	Instructions Connection::CommunicateWithClient(uint32_t event_type)
 	{
+		DBG_INFO;
 		event::Instructions insts;
 
 		if (event_type & event::Event::kRead) {
+			log("con recv");
 			Instructions recv_insts = Recieve();
 			insts.splice(insts.end(), recv_insts);
 		}
 		if (event_type & event::Event::kWrite) {
+			log("con write");
 			Instructions send_insts = Send();
 			insts.splice(insts.end(), send_insts);
 		}
@@ -101,6 +104,7 @@ namespace server
 		Instructions insts;
 
 		if (reciever_.IsEof() && reciever_.empty()) {
+			log("con eof");
 			return OnEof();
 		}
 		bool is_reciever_full = reciever_.size() >= kMaxRecverBufSize;
