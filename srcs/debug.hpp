@@ -21,11 +21,8 @@
 #define COL_WHITE "\x1b[37m"
 
 #ifdef NDEBUG
-template <typename T, typename U>
-inline void log(const T &title, const U &contents, const std::string &delim = "");
-inline void log(const std::string &title);
-inline void loge(const Error &err);
-inline void loge(const io_multiplexer::ErrEvents &err);
+inline void log(...) {}
+inline void loge(...) {}
 #define DBG_INFO ((void)0)
 #else
 std::string BaseName(std::string s);
