@@ -5,9 +5,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "debug.hpp"
 #include "listen_exception.hpp"
 #include "webserv_utils.hpp"
-
 namespace server
 {
 	typedef struct sockaddr SockAddr;
@@ -82,6 +82,7 @@ namespace server
 			utils::Close(conn_fd);
 			return Error("fcntl: " + std::string(strerror(errno)));
 		}
+		log("accept", conn_fd);
 		return Connection(conn_fd, configs_, client);
 	}
 

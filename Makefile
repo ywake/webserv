@@ -13,7 +13,6 @@ INCLUDES := $(addprefix -I,$(SRCDIRS))
 
 CXX		:= c++
 CXXFLAGS:= -Wall -Werror -Wextra -std=c++98 -pedantic
-
 BUILDDIR:= build/
 OBJDIR	:= $(BUILDDIR)release/
 OBJDIRS := $(SRCDIRS:$(SRCDIR)%=$(OBJDIR)%)

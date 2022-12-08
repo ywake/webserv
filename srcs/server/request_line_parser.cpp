@@ -1,4 +1,5 @@
 #include "request_line_parser.hpp"
+#include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "implemented_methods.hpp"
@@ -91,10 +92,13 @@ namespace server
 		case kStandBy:
 			return kDone;
 		case kMethod:
+			log("method");
 			return ParseMethod(recieved);
 		case kTarget:
+			log("uri");
 			return ParseRequestTarget(recieved);
 		case kVersion:
+			log("version");
 			return ParseHttpVersion(recieved);
 		}
 		return kInProgress;

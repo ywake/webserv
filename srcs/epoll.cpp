@@ -5,6 +5,7 @@
 #include <cerrno>
 #include <cstring>
 
+#include "debug.hpp"
 #include "webserv_utils.hpp"
 
 // TODO 何もテストしてない
@@ -35,6 +36,7 @@ namespace io_multiplexer
 		EpollEvents events(num_of_events);
 		EpollEvent *events_ptr = events.data();
 
+		log("====================== epoll wait ===========================");
 		while (true) {
 			int events_size = epoll_wait(epoll_fd_.GetFd(), events_ptr, num_of_events, timeout);
 			if (events_size != -1) {
@@ -80,6 +82,7 @@ namespace io_multiplexer
 
 	Result<void> Epoll::Instruct(const event::Instruction &instruction)
 	{
+		log("epoll instruct", instruction, "\n");
 		switch (instruction.command) {
 		case event::Instruction::kAppendEventType:
 			return AppendEventType(instruction.event);
@@ -225,6 +228,7 @@ namespace io_multiplexer
 				ev.event_type |= event::Event::kRead;
 			}
 			events.push_back(ev);
+			log("fired blocking", ev, "\n");
 		}
 		return events;
 	}

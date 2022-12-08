@@ -92,6 +92,7 @@ namespace server
 				}
 				ctx_.state = GetNextState(ctx_.state);
 				ClearLoadedBytes();
+				log("next parse state");
 			}
 		}
 		return kInProgress;
@@ -123,10 +124,13 @@ namespace server
 		case kStandBy:
 			return SkipPriorCrLf(recieved);
 		case kStartLine:
+			log("start line");
 			return ParseStartLine(recieved);
 		case kHeader:
+			log("header");
 			return ParseHeaderSection(recieved);
 		case kBody:
+			log("body");
 			return ParseBody(recieved);
 		}
 		return kInProgress;
