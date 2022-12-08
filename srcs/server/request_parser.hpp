@@ -88,6 +88,7 @@ namespace server
 		ParseResult ParseHeaderSection(q_buffer::QueuingBuffer &recieved);
 		ParseResult ParseBody(q_buffer::QueuingBuffer &recieved);
 		State       GetNextState(State old_state);
+		ParseResult SkipPriorCrLf(q_buffer::QueuingBuffer &recieved);
 	};
 } // namespace server
 #endif

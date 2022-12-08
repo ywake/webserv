@@ -1,4 +1,5 @@
 #include "status_code.hpp"
+#include <sstream>
 #include <stdexcept>
 
 namespace http
@@ -29,6 +30,13 @@ namespace http
 		} catch (const std::out_of_range &e) {
 			return reason_phrase_.at(kUndefinedCode);
 		}
+	}
+
+	std::string StatusCode::GetCodeStr() const
+	{
+		std::stringstream ss;
+		ss << code_;
+		return ss.str();
 	}
 
 	StatusCode::ReasonPhrase StatusCode::InitReasonPhrase()
