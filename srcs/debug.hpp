@@ -32,7 +32,7 @@ std::string BaseName(std::string s);
 template <typename T, typename U>
 void log(const T &title, const U &contents, const std::string &delim = "")
 {
-	std::cerr << "[ " << std::setw(13) << std::left << title << " ]" << delim << contents
+	std::cerr << "[ " << std::setw(13) << std::left << title << " ] " << delim << contents
 			  << std::endl;
 }
 
