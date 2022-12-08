@@ -9,24 +9,6 @@ namespace q_buffer
 		*this = other;
 	}
 
-	void QueuingBuffer::push_back(const std::vector<char> &data)
-	{
-		if (data.empty()) {
-			return;
-		}
-		buf_.push_back(data);
-		size_ += data.size();
-	}
-
-	void QueuingBuffer::push_back(const std::string &data)
-	{
-		if (data.empty()) {
-			return;
-		}
-		buf_.push_back(ByteArray(data.begin(), data.end()));
-		size_ += data.size();
-	}
-
 	Emptiable<char> QueuingBuffer::PopChar()
 	{
 		if (empty()) {
