@@ -12,7 +12,9 @@ namespace server
 	const std::size_t              Connection::kMaxRequestQueueSize = 3;
 	const conf::VirtualServerConfs Connection::kEmptyConfs          = conf::VirtualServerConfs();
 
-	Connection::Connection() : Socket(), configs_(kEmptyConfs), client_(), request_holder_() {}
+	Connection::Connection()
+		: Socket(), configs_(kEmptyConfs), client_(), request_holder_(), is_finished_(false)
+	{}
 
 	Connection::Connection(
 		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
@@ -22,7 +24,8 @@ namespace server
 		  client_(client),
 		  reciever_(fd),
 		  request_holder_(),
-		  response_holder_(fd, configs, RequestHolder::DestroyRequest)
+		  response_holder_(fd, configs, RequestHolder::DestroyRequest),
+		  is_finished_(false)
 	{}
 
 	// setからeraseするためだけの存在
