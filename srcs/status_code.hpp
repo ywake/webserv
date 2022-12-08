@@ -73,6 +73,7 @@ namespace http
 
 		bool               empty() const;
 		Code               GetCode() const;
+		std::string        GetCodeStr() const;
 		const std::string &GetReasonPhrase() const;
 
 	  private:

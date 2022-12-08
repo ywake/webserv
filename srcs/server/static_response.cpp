@@ -1,15 +1,18 @@
 #include <cerrno>
 #include <fcntl.h>
 
+#include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "static_response.hpp"
+#include "webserv_utils.hpp"
 
 namespace server
 {
 	StaticResponse::StaticResponse(const IRequest &request, const conf::LocationConf &conf)
 		: request_(request), config_(conf), is_finished_(false)
 	{
+		log("static res construct");
 		if (request_.Method() == http::methods::kGet) {
 			InitGetMethod();
 		} else {
@@ -20,7 +23,7 @@ namespace server
 	void StaticResponse::InitGetMethod()
 	{
 		const std::string &root = config_.GetRoot();
-		const std::string  path = root + request_.Path();
+		const std::string  path = utils::JoinPath(root, request_.Path());
 
 		int fd = open(path.c_str(), O_RDONLY | O_NONBLOCK | O_CLOEXEC);
 		if (fd == -1) {

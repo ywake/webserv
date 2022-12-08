@@ -40,7 +40,7 @@ namespace server
 
 	bool RequestParser::HasInCompleteData()
 	{
-		return ctx_.state != kStandBy;
+		return ctx_.state != kStandBy || !loaded_bytes_.empty();
 	}
 
 	Emptiable<IRequest *> RequestParser::OnEof()
@@ -92,9 +92,29 @@ namespace server
 				}
 				ctx_.state = GetNextState(ctx_.state);
 				ClearLoadedBytes();
+				log("next parse state");
 			}
 		}
 		return kInProgress;
+	}
+
+	RequestParser::ParseResult RequestParser::SkipPriorCrLf(q_buffer::QueuingBuffer &recieved)
+	{
+		for (;;) {
+			if (recieved.empty()) {
+				return kInProgress;
+			}
+			Emptiable<char> c = recieved.PopChar();
+			loaded_bytes_ += c.Value();
+			if (utils::EndWith(loaded_bytes_, http::kCrLf)) {
+				ClearLoadedBytes();
+			}
+			if (loaded_bytes_.size() >= http::kCrLf.size()) {
+				recieved.push_front(loaded_bytes_);
+				ClearLoadedBytes();
+				return kDone;
+			}
+		}
 	}
 
 	// TODO トレイラ無視してる
@@ -102,12 +122,15 @@ namespace server
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			return kDone;
+			return SkipPriorCrLf(recieved);
 		case kStartLine:
+			log("start line");
 			return ParseStartLine(recieved);
 		case kHeader:
+			log("header");
 			return ParseHeaderSection(recieved);
 		case kBody:
+			log("body");
 			return ParseBody(recieved);
 		}
 		return kInProgress;

@@ -2,7 +2,7 @@
 #include <cstdio>
 
 #include "connection.hpp"
-
+#include "debug.hpp"
 namespace server
 {
 	using namespace event;
@@ -12,7 +12,9 @@ namespace server
 	const std::size_t              Connection::kMaxRequestQueueSize = 3;
 	const conf::VirtualServerConfs Connection::kEmptyConfs          = conf::VirtualServerConfs();
 
-	Connection::Connection() : Socket(), configs_(kEmptyConfs), client_(), request_holder_() {}
+	Connection::Connection()
+		: Socket(), configs_(kEmptyConfs), client_(), request_holder_(), is_finished_(false)
+	{}
 
 	Connection::Connection(
 		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
@@ -22,10 +24,15 @@ namespace server
 		  client_(client),
 		  reciever_(fd),
 		  request_holder_(),
-		  response_holder_(fd, configs, RequestHolder::DestroyRequest)
+		  response_holder_(fd, configs, RequestHolder::DestroyRequest),
+		  is_finished_(false)
 	{}
 
-	// Connection::Connection(const Connection &other)
+	// setからeraseするためだけの存在
+	Connection::Connection(int fd) : Socket(fd), configs_(kEmptyConfs), client_(), request_holder_()
+	{}
+
+	// // Connection::Connection(const Connection &other)
 	// 	: Socket(other),
 	// 	  configs_(other.configs_),
 	// 	  client_(other.client_),
@@ -62,13 +69,16 @@ namespace server
 
 	Instructions Connection::CommunicateWithClient(uint32_t event_type)
 	{
+		DBG_INFO;
 		event::Instructions insts;
 
 		if (event_type & event::Event::kRead) {
+			log("con recv");
 			Instructions recv_insts = Recieve();
 			insts.splice(insts.end(), recv_insts);
 		}
 		if (event_type & event::Event::kWrite) {
+			log("con write");
 			Instructions send_insts = Send();
 			insts.splice(insts.end(), send_insts);
 		}
@@ -97,6 +107,7 @@ namespace server
 		Instructions insts;
 
 		if (reciever_.IsEof() && reciever_.empty()) {
+			log("con eof");
 			return OnEof();
 		}
 		bool is_reciever_full = reciever_.size() >= kMaxRecverBufSize;
@@ -158,6 +169,14 @@ namespace server
 	bool Connection::CanStartNewTask()
 	{
 		return request_holder_.size() != 0 && response_holder_.size() == 0;
+	}
+
+	Instructions Connection::Disconnect()
+	{
+		Instructions insts = response_holder_.UnregisterAll();
+		int          fd    = managed_fd_.GetFd();
+		insts.push_back(Instruction(Instruction::kUnregister, fd));
+		return insts;
 	}
 
 } // namespace server
