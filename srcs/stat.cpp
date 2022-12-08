@@ -2,14 +2,58 @@
 #include <cerrno>
 #include <unistd.h>
 
-Result<Stat> Stat::FromPath(const std::string &path)
+const result::ErrCode Stat::kEAcces = new Error("stat: " + std::string(strerror(EACCES)));
+const result::ErrCode Stat::kEBadFd = new Error("stat: " + std::string(strerror(EBADF)));
+const result::ErrCode Stat::kEFault = new Error("stat: " + std::string(strerror(EFAULT)));
+const result::ErrCode Stat::kEIO    = new Error("stat: " + std::string(strerror(EIO)));
+const result::ErrCode Stat::kELoop  = new Error("stat: " + std::string(strerror(ELOOP)));
+const result::ErrCode Stat::kENameTooLong =
+	new Error("stat: " + std::string(strerror(ENAMETOOLONG)));
+const result::ErrCode Stat::kNoEnt      = new Error("stat: " + std::string(strerror(ENOENT)));
+const result::ErrCode Stat::kENotDir    = new Error("stat: " + std::string(strerror(ENOTDIR)));
+const result::ErrCode Stat::kEOverFlow  = new Error("stat: " + std::string(strerror(EOVERFLOW)));
+const result::ErrCode Stat::kENoMem     = new Error("stat: " + std::string(strerror(ENOMEM)));
+const result::ErrCode Stat::kEInval     = new Error("stat: " + std::string(strerror(EINVAL)));
+const result::ErrCode Stat::kUnknownErr = new Error("stat: unknown error");
+
+result::ErrCode Stat::GetErrCode(int error_number_)
+{
+	switch (error_number_) {
+	case EACCES:
+		return kEAcces;
+	case EBADF:
+		return kEBadFd;
+	case EFAULT:
+		return kEFault;
+	case EIO:
+		return kEIO;
+	case ELOOP:
+		return kELoop;
+	case ENAMETOOLONG:
+		return kENameTooLong;
+	case ENOENT:
+		return kNoEnt;
+	case ENOTDIR:
+		return kENotDir;
+	case EOVERFLOW:
+		return kEOverFlow;
+	case ENOMEM:
+		return kENoMem;
+	case EINVAL:
+		return kEInval;
+	default:
+		return kUnknownErr;
+	}
+}
+
+result::Result<Stat> Stat::FromPath(const std::string &path)
 {
 	struct stat stat_buf;
 	int         res;
 
 	res = stat(path.c_str(), &stat_buf);
 	if (res == -1) {
-		return Error(errno);
+		return GetErrCode(errno);
 	}
 	return Stat(path, stat_buf);
 }
