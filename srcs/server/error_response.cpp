@@ -11,7 +11,7 @@ namespace server
 	ErrorResponse::ErrorResponse(const http::StatusCode &status_code, const conf::ServerConf &conf)
 		: config_(conf), is_finished_(false)
 	{
-		log("error res construct", status_code.GetCode());
+    log("error res construct", status_code.GetCode());
 		PushDefaultErrorPage(status_code);
 		is_finished_ = true;
 	}
