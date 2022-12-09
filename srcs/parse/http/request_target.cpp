@@ -22,7 +22,7 @@ RequestTarget::RequestTarget(const RequestTarget &other) : form_type_(), form_da
 RequestTarget::RequestTarget(const OriginForm &form) : form_data_()
 {
 	form_type_        = kOriginForm;
-	form_data_.path_  = utils::NromalizePath(form.GetPath());
+	form_data_.path_  = utils::NormalizePath(form.GetPath());
 	form_data_.query_ = form.GetQuery().ToString();
 }
 
@@ -33,7 +33,7 @@ RequestTarget::RequestTarget(const AbsoluteForm &form) : form_data_()
 	form_data_.userinfo_ = form.GetUserinfo().ToString();
 	form_data_.host_     = utils::ToLowerString(form.GetHost().ToString());
 	form_data_.port_     = form.GetPort().ToString();
-	form_data_.path_     = utils::NromalizePath(form.GetPath());
+	form_data_.path_     = utils::NormalizePath(form.GetPath());
 	form_data_.query_    = form.GetQuery().ToString();
 }
 

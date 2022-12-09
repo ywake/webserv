@@ -148,7 +148,23 @@ class Result
 		}
 		return *this;
 	}
+
+	bool operator==(const Result &r) const
+	{
+		return val_ == r.val_ && err_ == r.err_;
+	}
 };
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const Result<T> &r)
+{
+	if (r.IsOk()) {
+		os << "Ok: " << r.Val();
+	} else {
+		os << "Err: " << r.ErrMsg();
+	}
+	return os;
+}
 
 template <typename T>
 class Result<T &>
@@ -196,7 +212,23 @@ class Result<T &>
 		}
 		return *this;
 	}
+
+	bool operator==(const Result &r) const
+	{
+		return val_ == r.val_ && err_ == r.err_;
+	}
 };
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const Result<T &> &r)
+{
+	if (r.IsOk()) {
+		os << "Ok: " << r.Val();
+	} else {
+		os << "Err: " << r.ErrMsg();
+	}
+	return os;
+}
 
 template <>
 class Result<void>
@@ -230,6 +262,11 @@ class Result<void>
 			err_ = r.err_;
 		}
 		return *this;
+	}
+
+	bool operator==(const Result &r) const
+	{
+		return err_ == r.err_;
 	}
 };
 
