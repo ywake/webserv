@@ -2,7 +2,6 @@
 #include <sys/stat.h>
 
 #include "result.hpp"
-#include "stat_exception.hpp"
 
 class Stat
 {
