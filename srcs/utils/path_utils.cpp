@@ -13,7 +13,7 @@ namespace utils
 		return path_segment == "." || path_segment == "..";
 	}
 
-	static Strings RemoveDotSegments(const Strings &segments)
+	static Result<Strings> RemoveDotSegments(const Strings &segments)
 	{
 		Strings dot_removed;
 
@@ -21,7 +21,12 @@ namespace utils
 			const ThinString &segment = *it;
 			if (!IsDotSegment(segment)) {
 				dot_removed.push_back(segment);
-			} else if (segment == ".." && !dot_removed.empty()) {
+				continue;
+			}
+			if (segment == "..") {
+				if (dot_removed.empty()) {
+					return Error("Invalid path");
+				}
 				dot_removed.pop_back();
 			}
 		}
@@ -40,17 +45,38 @@ namespace utils
 		return path.erase(path.size() - 1);
 	}
 
-	std::string NormalizePath(const ThinString &path)
+	Result<std::string> NormalizePath(const ThinString &path)
 	{
-		const Strings segments    = TrimEmpty(Split(path, "/"));
-		Strings       dot_removed = RemoveDotSegments(segments);
-		std::string   normalized  = JoinPathSegments(dot_removed);
+		bool            is_absolute = *path.begin() == '/';
+		const Strings   segments    = TrimEmpty(Split(path, "/"));
+		Result<Strings> dot_removed = RemoveDotSegments(segments);
+		if (dot_removed.IsErr()) {
+			return dot_removed.Err();
+		}
+		std::string normalized = JoinPathSegments(dot_removed.Val());
+
 		if (normalized.empty()) { // including path.empty() && segments.empty()
-			return "/";
+			return std::string(is_absolute ? "/" : "");
 		}
 		if (path.back() == '/' || IsDotSegment(segments.back())) {
 			normalized += "/";
 		}
-		return "/" + normalized;
+		return (is_absolute ? "/" : "") + normalized;
+	}
+
+	Result<std::string> HttpNormalizePath(const ThinString &path)
+	{
+		Result<std::string> res = NormalizePath(ThinString(path));
+		if (res.IsErr()) {
+			return res.Err();
+		}
+		std::string &normalized = res.Val();
+		if (normalized.empty()) {
+			return std::string("/");
+		}
+		if (*normalized.begin() != '/') {
+			return "/" + normalized;
+		}
+		return normalized;
 	}
 } // namespace utils
