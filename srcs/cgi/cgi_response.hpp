@@ -6,6 +6,7 @@ namespace cgi
 {
 	class CgiResponse : public server::IResponse
 	{
+	  public:
 		typedef std::string Path;
 
 	  private:
@@ -18,7 +19,15 @@ namespace cgi
 		CgiResponse(server::IRequest &request, conf::LocationConf &location_conf);
 		~CgiResponse();
 
+		// Methods
+	  private:
+		std::vector<std::string> &GetResourcePathCandidates() const;
+		std::vector<Path>         CombineIndexFiles(const Path &base_path) const;
+		Result<Path>              FindAccessible(const std::vector<Path> &candidates) const;
+		void                      CgiStatErrorHandler(const result::ErrCode &error) const;
+		void                      CgiStatFileTypeHandler(const Stat &stat) const;
 		// IResponse
+	  public:
 		void                Perform(const event::Event &event);
 		Result<void>        Send(int fd);
 		bool                HasReadyData() const;
