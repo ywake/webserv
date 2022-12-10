@@ -2,11 +2,15 @@
 #include "i_response.hpp"
 #include "location_conf.hpp"
 #include "managed_fd.hpp"
+#include "queuing_reader.hpp"
+#include "queuing_writer.hpp"
 #include "stat.hpp"
 
 namespace cgi
 {
-	class CgiResponse : public server::IResponse
+	class CgiResponse : public server::IResponse,
+						public q_buffer::QueuingWriter,
+						public q_buffer::QueuingReader
 	{
 	  public:
 		typedef std::string Path;

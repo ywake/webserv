@@ -19,20 +19,32 @@ namespace cgi
 
 	// copy constructor
 	CgiResponse::CgiResponse(const CgiResponse &other)
-		: request_(other.request_),
+		: q_buffer::QueuingBuffer(other),
+		  q_buffer::QueuingWriter(other),
+		  q_buffer::QueuingReader(other),
+		  request_(other.request_),
 		  location_conf_(other.location_conf_),
-		  resource_path_(other.resource_path_)
+		  resource_path_(other.resource_path_),
+		  cgi_fd_in_(other.cgi_fd_in_),
+		  cgi_fd_out_(other.cgi_fd_out_),
+		  state_(other.state_)
 	{}
 
 	// main constructor
 	CgiResponse::CgiResponse(server::IRequest &request, conf::LocationConf &location_conf)
-		: request_(request), location_conf_(location_conf), resource_path_(), state_(kBeforeExec)
+		: q_buffer::QueuingWriter(),
+		  q_buffer::QueuingReader(),
+		  request_(request),
+		  location_conf_(location_conf),
+		  resource_path_(),
+		  state_(kBeforeExec)
 	{
 		GetResourcePath();
 		int fds[2];
 		ErrCheck(socketpair(AF_UNIX, SOCK_STREAM, 0, fds));
 		cgi_fd_in_  = ManagedFd(fds[0]);
 		cgi_fd_out_ = ManagedFd(fds[1]);
+		q_buffer::QueuingWriter::push_back(*request.GetBody());
 	}
 
 	void CgiResponse::GetResourcePath()
@@ -126,6 +138,11 @@ namespace cgi
 		request_       = other.request_;
 		location_conf_ = other.location_conf_;
 		resource_path_ = other.resource_path_;
+		cgi_fd_in_     = other.cgi_fd_in_;
+		cgi_fd_out_    = other.cgi_fd_out_;
+		state_         = other.state_;
+		q_buffer::QueuingWriter::operator=(other);
+		q_buffer::QueuingReader::operator=(other);
 		return *this;
 	}
 
