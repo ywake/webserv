@@ -78,18 +78,16 @@ TEST(request_line, relative_case)
 		RequestLine("GET http://a/b/../ HTTP/1.1"),
 		RequestLine("GET", AbsoluteForm("http://a/"), "HTTP/1.1")
 	);
-	EXPECT_EQ(
-		RequestLine("GET http://a/../b HTTP/1.1"),
-		RequestLine("GET", AbsoluteForm("http://a/b"), "HTTP/1.1")
-	);
+	EXPECT_THROW(
+		RequestLine("GET http://a/../b HTTP/1.1"), http::BadRequestException
+	); // aがドメイン、/../bがパスなのでエラー
 	EXPECT_EQ(
 		RequestLine("GET http://a/b/../ HTTP/1.1"),
 		RequestLine("GET", AbsoluteForm("http://a/"), "HTTP/1.1")
 	);
-	EXPECT_EQ(
-		RequestLine("GET http://a/../b HTTP/1.1"),
-		RequestLine("GET", AbsoluteForm("http://a/b"), "HTTP/1.1")
-	);
+	EXPECT_THROW(
+		RequestLine("GET http://a/../b HTTP/1.1"), http::BadRequestException
+	); // aがドメイン、/../bがパスなのでエラー
 	EXPECT_EQ(
 		RequestLine("GET /a/b/../ HTTP/1.1"), RequestLine("GET", OriginForm("/a/"), "HTTP/1.1")
 	);
