@@ -1,4 +1,0 @@
-#ifndef RESNPONSE_HOLDER_HPP
-#define RESNPONSE_HOLDER_HPP
-
-#endif
