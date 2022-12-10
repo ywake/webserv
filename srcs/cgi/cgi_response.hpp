@@ -6,7 +6,7 @@
 
 namespace cgi
 {
-	class CgiResponse : public server::IResponse, public q_buffer::QueuingWriter
+	class CgiResponse : public server::IResponse
 	{
 	  public:
 		typedef std::string Path;
@@ -32,7 +32,7 @@ namespace cgi
 
 		// Methods
 	  private:
-		void CgiResponse::GetResourcePath();
+		void GetResourcePath();
 		void GetResourcePathCandidates(std::vector<CgiResponse::Path> &candidates) const;
 		std::vector<Path> CombineIndexFiles(const Path &base_path) const;
 		Result<Path>      FindAccessible(const std::vector<Path> &candidates) const;

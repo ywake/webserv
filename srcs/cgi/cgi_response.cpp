@@ -4,6 +4,7 @@
 #include "webserv_utils.hpp"
 #include <sys/socket.h>
 #include <unistd.h>
+#include <vector>
 
 namespace cgi
 {
@@ -134,34 +135,23 @@ namespace cgi
 	void CgiResponse::Perform(const event::Event &event)
 	{
 		switch (state_) {
-		case CgiResponse::kBeforeExec:
-			if (event & event::kWrite) {
+		case kBeforeExec:
+			if (event.event_type & event::Event::kWrite) {
 				OnWriteCgiInput();
 			}
 			break;
-		case CgiResponse::kAfterExec:
-			if (event & event::kRead) {
+		case kAfterExec:
+			if (event.event_type & event::Event::kRead) {
 				OnReadCgiOutput();
 			}
-			break;
-		}
-	}
-
-	void CgiResponse::OnWriteCgiInput() {}
-	void CgiResponse::OnReadCgiOutput()
-	{
-		ssize_t read_size = Read(cgi_fd_out_.GetFd());
-		switch (read_size) {
-		case -1:
-			throw http::InternalServerErrorException();
-			break;
-		case 0:
-			state_ = kFinished;
 			break;
 		default:
 			break;
 		}
 	}
+
+	void CgiResponse::OnWriteCgiInput() {}
+	void CgiResponse::OnReadCgiOutput() {}
 
 	Result<void> CgiResponse::Send(int fd)
 	{
@@ -181,6 +171,8 @@ namespace cgi
 			return cgi_fd_in_.GetFd() != ManagedFd::kNofd;
 		case CgiResponse::kAfterExec:
 			return cgi_fd_out_.GetFd() != ManagedFd::kNofd;
+		default:
+			return false;
 		}
 	}
 
@@ -191,6 +183,8 @@ namespace cgi
 			return cgi_fd_in_.GetFd();
 		case CgiResponse::kAfterExec:
 			return cgi_fd_out_.GetFd();
+		default:
+			return Emptiable<int>();
 		}
 	}
 
