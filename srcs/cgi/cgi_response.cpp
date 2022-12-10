@@ -18,8 +18,9 @@ namespace cgi
 	CgiResponse::CgiResponse(server::IRequest &request, conf::LocationConf &location_conf)
 		: request_(request), location_conf_(location_conf), resource_path_()
 	{
-		std::vector<Path> candidate_paths = GetResourcePathCandidates();
-		Result<Path>      accessible_path = FindAccessible(candidate_paths);
+		std::vector<Path> candidate_paths;
+		GetResourcePathCandidates(candidate_paths);
+		Result<Path> accessible_path = FindAccessible(candidate_paths);
 		if (accessible_path.IsErr()) {
 			throw http::NotFoundException();
 		}
@@ -31,17 +32,14 @@ namespace cgi
 		resource_path_ = accessible_path.Val();
 	}
 
-	std::vector<CgiResponse::Path> &CgiResponse::GetResourcePathCandidates() const
+	void CgiResponse::GetResourcePathCandidates(std::vector<CgiResponse::Path> &candidates) const
 	{
-		std::vector<CgiResponse::Path> candidates;
-
 		CgiResponse::Path base_path = location_conf_.GetRoot() + request_.Path();
 		if (IsEndWithSlash(base_path)) {
 			candidates = CombineIndexFiles(base_path);
 		} else {
 			candidates.push_back(base_path);
 		}
-		return candidates;
 	}
 
 	bool IsEndWithSlash(const std::string &str)

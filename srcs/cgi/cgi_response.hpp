@@ -1,6 +1,7 @@
 #include "i_request.hpp"
 #include "i_response.hpp"
 #include "location_conf.hpp"
+#include "stat.hpp"
 
 namespace cgi
 {
@@ -21,11 +22,11 @@ namespace cgi
 
 		// Methods
 	  private:
-		std::vector<std::string> &GetResourcePathCandidates() const;
-		std::vector<Path>         CombineIndexFiles(const Path &base_path) const;
-		Result<Path>              FindAccessible(const std::vector<Path> &candidates) const;
-		void                      CgiStatErrorHandler(const result::ErrCode &error) const;
-		void                      CgiStatFileTypeHandler(const Stat &stat) const;
+		void GetResourcePathCandidates(std::vector<CgiResponse::Path> &candidates) const;
+		std::vector<Path> CombineIndexFiles(const Path &base_path) const;
+		Result<Path>      FindAccessible(const std::vector<Path> &candidates) const;
+		void              CgiStatErrorHandler(const result::ErrCode &error) const;
+		void              CgiStatFileTypeHandler(const Stat &stat) const;
 		// IResponse
 	  public:
 		void                Perform(const event::Event &event);
