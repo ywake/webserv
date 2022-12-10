@@ -35,9 +35,8 @@ namespace server
 		  response_holder_(fd, configs, RequestHolder::DestroyRequest),
 		  is_finished_(false),
 		  time_()
-
 	{
-		clock_gettime(CLOCK_MONOTONIC, &time_);
+		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
 	}
 
 	// setからeraseするためだけの存在
@@ -91,7 +90,7 @@ namespace server
 		DBG_INFO;
 		event::Instructions insts;
 
-		clock_gettime(CLOCK_MONOTONIC, &time_);
+		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
 		if (event_type & event::Event::kRead) {
 			log("con recv");
 			Instructions recv_insts = Recieve();
@@ -203,7 +202,7 @@ namespace server
 	bool Connection::IsTimeOut()
 	{
 		struct timespec now;
-		if (clock_gettime(CLOCK_MONOTONIC, &now) == -1) {
+		if (clock_gettime(CLOCK_MONOTONIC_RAW, &now) == -1) {
 			DBG_INFO;
 			log("istimeout clock_gettime", strerror(errno));
 		}
