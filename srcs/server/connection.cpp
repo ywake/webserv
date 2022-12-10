@@ -33,9 +33,9 @@ namespace server
 		  reciever_(fd),
 		  request_holder_(),
 		  response_holder_(fd, configs, RequestHolder::DestroyRequest),
+
 		  is_finished_(false),
 		  time_()
-
 	{
 		clock_gettime(CLOCK_MONOTONIC, &time_);
 	}
