@@ -2,10 +2,19 @@
 #include "http_exceptions.hpp"
 #include "stat.hpp"
 #include "webserv_utils.hpp"
+#include <sys/socket.h>
 #include <unistd.h>
+
 namespace cgi
 {
 	bool IsEndWithSlash(const std::string &str);
+	int  ErrCheck(int ret)
+	{
+		if (ret == -1) {
+			throw http::InternalServerErrorException();
+		}
+		return ret;
+	}
 
 	// copy constructor
 	CgiResponse::CgiResponse(const CgiResponse &other)
@@ -16,11 +25,20 @@ namespace cgi
 
 	// main constructor
 	CgiResponse::CgiResponse(server::IRequest &request, conf::LocationConf &location_conf)
-		: request_(request), location_conf_(location_conf), resource_path_()
+		: request_(request), location_conf_(location_conf), resource_path_(), state_(kBeforeExec)
 	{
-		std::vector<Path> candidate_paths;
+		GetResourcePath();
+		int fds[2];
+		ErrCheck(socketpair(AF_UNIX, SOCK_STREAM, 0, fds));
+		cgi_fd_in_  = ManagedFd(fds[0]);
+		cgi_fd_out_ = ManagedFd(fds[1]);
+	}
+
+	void CgiResponse::GetResourcePath()
+	{
+		std::vector<CgiResponse::Path> candidate_paths;
 		GetResourcePathCandidates(candidate_paths);
-		Result<Path> accessible_path = FindAccessible(candidate_paths);
+		Result<CgiResponse::Path> accessible_path = FindAccessible(candidate_paths);
 		if (accessible_path.IsErr()) {
 			throw http::NotFoundException();
 		}
@@ -115,7 +133,34 @@ namespace cgi
 	 */
 	void CgiResponse::Perform(const event::Event &event)
 	{
-		(void)event;
+		switch (state_) {
+		case CgiResponse::kBeforeExec:
+			if (event & event::kWrite) {
+				OnWriteCgiInput();
+			}
+			break;
+		case CgiResponse::kAfterExec:
+			if (event & event::kRead) {
+				OnReadCgiOutput();
+			}
+			break;
+		}
+	}
+
+	void CgiResponse::OnWriteCgiInput() {}
+	void CgiResponse::OnReadCgiOutput()
+	{
+		ssize_t read_size = Read(cgi_fd_out_.GetFd());
+		switch (read_size) {
+		case -1:
+			throw http::InternalServerErrorException();
+			break;
+		case 0:
+			state_ = kFinished;
+			break;
+		default:
+			break;
+		}
 	}
 
 	Result<void> CgiResponse::Send(int fd)
@@ -131,12 +176,22 @@ namespace cgi
 
 	bool CgiResponse::HasFd() const
 	{
-		return false;
+		switch (state_) {
+		case CgiResponse::kBeforeExec:
+			return cgi_fd_in_.GetFd() != ManagedFd::kNofd;
+		case CgiResponse::kAfterExec:
+			return cgi_fd_out_.GetFd() != ManagedFd::kNofd;
+		}
 	}
 
 	Emptiable<int> CgiResponse::GetFd() const
 	{
-		return Emptiable<int>();
+		switch (state_) {
+		case CgiResponse::kBeforeExec:
+			return cgi_fd_in_.GetFd();
+		case CgiResponse::kAfterExec:
+			return cgi_fd_out_.GetFd();
+		}
 	}
 
 	std::size_t CgiResponse::size() const
@@ -146,7 +201,7 @@ namespace cgi
 
 	bool CgiResponse::IsFinished() const
 	{
-		return false;
+		return state_ == kFinished;
 	}
 
 } // namespace cgi
