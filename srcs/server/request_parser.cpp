@@ -194,9 +194,6 @@ namespace server
 
 	void RequestParser::DestroyRequest(IRequest *&request)
 	{
-		if (request->IsErr()) {
-			return;
-		}
 		utils::DeleteSafe(request);
 	}
 

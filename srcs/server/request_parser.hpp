@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <string>
+#include <vector>
 
 #include "emptiable.hpp"
 #include "header_section.hpp"
@@ -22,6 +23,7 @@ namespace server
 		{
 		  private:
 			http::RequestMessage request_msg_;
+			std::vector<char>   *body;
 			http::StatusCode     error_code_;
 			ErrorType            error_type_;
 
@@ -49,6 +51,7 @@ namespace server
 			const HeaderSection        &Headers() const;
 			const http::RequestMessage &GetMessage() const;
 			const http::StatusCode     &GetErrStatusCode() const;
+			const std::vector<char>    *GetBody() const;
 			const ErrorType            &GetErrorType() const;
 		};
 

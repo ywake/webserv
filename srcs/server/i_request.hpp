@@ -2,6 +2,7 @@
 #define I_REQUEST_HPP
 
 #include <string>
+#include <vector>
 
 #include "header_section.hpp"
 #include "request_message.hpp"
@@ -29,6 +30,7 @@ namespace server
 		virtual const std::string          &Path() const             = 0;
 		virtual const HeaderSection        &Headers() const          = 0;
 		virtual const http::RequestMessage &GetMessage() const       = 0;
+		virtual const std::vector<char>    *GetBody() const          = 0;
 		virtual const http::StatusCode     &GetErrStatusCode() const = 0;
 		virtual const ErrorType            &GetErrorType() const     = 0;
 	};
