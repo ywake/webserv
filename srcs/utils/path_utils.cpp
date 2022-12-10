@@ -61,7 +61,7 @@ namespace utils
 		if (path.back() == '/' || IsDotSegment(segments.back())) {
 			normalized += "/";
 		}
-		return (is_absolute ? "/" : "") + normalized;
+		return is_absolute ? "/" + normalized : normalized;
 	}
 
 	Result<std::string> HttpNormalizePath(const ThinString &path)
