@@ -42,8 +42,15 @@ namespace cgi
 		Result<Path>      FindAccessible(const std::vector<Path> &candidates) const;
 		void              CgiStatErrorHandler(const result::ErrCode &error) const;
 		void              CgiStatFileTypeHandler(const Stat &stat) const;
-		void              OnWriteCgiInput();
-		void              OnReadCgiOutput();
+
+		void OnWriteCgiInput();
+		void ExecCgi();
+		void ExecCgiChild();
+		void ExecCgiParent(pid_t pid);
+		void CreateArgs(std::vector<char *> args);
+		void CreateEnvs(std::vector<char *> envs);
+
+		void OnReadCgiOutput();
 
 		// IResponse
 	  public:

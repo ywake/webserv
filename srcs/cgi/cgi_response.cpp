@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <vector>
 
+extern char **environ;
+
 namespace cgi
 {
 	bool IsEndWithSlash(const std::string &str);
@@ -167,7 +169,71 @@ namespace cgi
 		}
 	}
 
-	void CgiResponse::OnWriteCgiInput() {}
+	void CgiResponse::OnWriteCgiInput()
+	{
+		Result<void> res = Write(cgi_fd_in_.GetFd());
+		if (res.IsErr()) {
+			throw http::InternalServerErrorException();
+		}
+		if (q_buffer::QueuingWriter::empty()) {
+			ExecCgi();
+			state_ = kAfterExec;
+		}
+	}
+
+	void CgiResponse::ExecCgi()
+	{
+		pid_t pid = ErrCheck(fork());
+		switch (pid) {
+		case 0:
+			ExecCgiChild();
+			break;
+		default:
+			ExecCgiParent(pid);
+			break;
+		}
+	}
+
+	void CgiResponse::ExecCgiChild()
+	{
+		std::vector<char *> args;
+		std::vector<char *> envs;
+		CreateArgs(args);
+		CreateEnvs(envs);
+
+		ErrCheck(dup2(cgi_fd_in_.GetFd(), STDIN_FILENO));
+		ErrCheck(dup2(cgi_fd_out_.GetFd(), STDOUT_FILENO));
+		ErrCheck(close(cgi_fd_in_.GetFd()));
+		ErrCheck(close(cgi_fd_out_.GetFd()));
+		ErrCheck(execve(resource_path_.c_str(), args.data(), envs.data()));
+	}
+
+	void CgiResponse::CreateArgs(std::vector<char *> args)
+	{
+		Emptiable<std::string> cgi_path = location_conf_.GetCgiPath();
+		if (cgi_path.empty()) {
+			// cgi_pathがemptyでない時コンストラクトされるので、ありえないはず
+			throw http::InternalServerErrorException();
+		}
+		args.push_back(const_cast<char *>(cgi_path.Value().c_str()));
+		args.push_back(const_cast<char *>(resource_path_.c_str()));
+		args.push_back(NULL);
+	}
+
+	void CgiResponse::CreateEnvs(std::vector<char *> envs)
+	{
+		for (size_t i = 0; environ[i] != NULL; ++i) {
+			envs.push_back(environ[i]);
+		}
+		envs.push_back(NULL);
+	}
+
+	void CgiResponse::ExecCgiParent(pid_t pid)
+	{
+		(void)pid;
+		ErrCheck(close(cgi_fd_in_.GetFd()));
+	}
+
 	void CgiResponse::OnReadCgiOutput() {}
 
 	Result<void> CgiResponse::Send(int fd)
