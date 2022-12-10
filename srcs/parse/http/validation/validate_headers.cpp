@@ -1,6 +1,7 @@
 #include "validate_headers.hpp"
 #include "validate_field_line.hpp"
 
+#include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "webserv_utils.hpp"
 
@@ -33,7 +34,7 @@ namespace http
 		{
 			for (HeaderSection::Values::const_iterator it = values.begin(); it != values.end();
 				 ++it) {
-				if (it->GetValue() != "chunked") {
+				if (it->GetValue() != kChunked) {
 					return false;
 				}
 			}
@@ -42,13 +43,13 @@ namespace http
 
 		bool IsValidTransferEncoding(const HeaderSection::Values &values)
 		{
-			if (!values.empty() && values.back().GetValue() != "chunked") {
+			if (!values.empty() && values.back().GetValue() != kChunked) {
 				return false;
 			}
 			size_t chunked_count = 0;
 			for (HeaderSection::Values::const_iterator it = values.begin(); it != values.end();
 				 ++it) {
-				if (it->GetValue() == "chunked") {
+				if (it->GetValue() == kChunked) {
 					chunked_count++;
 				}
 				if (chunked_count > 1) {
@@ -77,15 +78,15 @@ namespace http
 			if (!HasSingleHost(field_lines["host"])) {
 				throw BadRequestException();
 			}
-			bool has_content_length    = field_lines.Contains("content-length");
-			bool has_transfer_encoding = field_lines.Contains("transfer-encoding");
+			bool has_content_length    = field_lines.Contains(kContentLength);
+			bool has_transfer_encoding = field_lines.Contains(kTransferEncoding);
 			if (has_content_length && has_transfer_encoding) {
 				throw BadRequestException();
 			} else if (has_transfer_encoding) {
-				if (!IsValidTransferEncoding(field_lines["transfer-encoding"])) {
+				if (!IsValidTransferEncoding(field_lines[kTransferEncoding])) {
 					throw BadRequestException();
 				}
-				if (!IsImplementedTransferCoding(field_lines["transfer-encoding"])) {
+				if (!IsImplementedTransferCoding(field_lines[kTransferEncoding])) {
 					throw NotImplementedException();
 				}
 			}
