@@ -46,7 +46,7 @@ namespace cgi
 
 	bool IsEndWithSlash(const std::string &str)
 	{
-		return str.back() == '/';
+		return !str.empty() && *str.end() == '/';
 	}
 
 	std::vector<CgiResponse::Path> CgiResponse::CombineIndexFiles(const CgiResponse::Path &base_path
