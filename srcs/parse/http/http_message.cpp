@@ -1,5 +1,5 @@
 #include "http_message.hpp"
-
+#include "http_define.hpp"
 namespace http
 {
 	HttpMessage::HttpMessage() : field_lines_(), message_body_() {}
@@ -30,8 +30,7 @@ namespace http
 
 	bool HttpMessage::HasMessageBody() const
 	{
-		return field_lines_.Contains("content-length") ||
-			   field_lines_.Contains("transfer-encoding");
+		return field_lines_.Contains(kContentLength) || field_lines_.Contains(kTransferEncoding);
 	}
 
 	HttpMessage &HttpMessage::operator=(const HttpMessage &rhs)

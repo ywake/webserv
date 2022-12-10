@@ -100,7 +100,7 @@ namespace server
 		Instructions            insts;
 		for (Connections::iterator it = connections_.begin(); it != connections_.end(); ++it) {
 			Connection &con = const_cast<Connection &>(*it);
-			if (con.IsFinished()) {
+			if (con.IsFinished() || con.IsTimeOut()) {
 				log("finish fd", con.GetFd());
 				Instructions i = con.Disconnect();
 				insts.splice(insts.end(), i);

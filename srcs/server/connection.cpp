@@ -1,5 +1,7 @@
 #include <cerrno>
 #include <cstdio>
+#include <sys/time.h>
+#include <time.h>
 
 #include "connection.hpp"
 #include "debug.hpp"
@@ -7,13 +9,19 @@ namespace server
 {
 	using namespace event;
 
+	const time_t                   Connection::kTimeoutDuration     = 60;
 	const std::size_t              Connection::kMaxRecverBufSize    = 8196;
 	const std::size_t              Connection::kMaxSenderBufSize    = 8196;
 	const std::size_t              Connection::kMaxRequestQueueSize = 3;
 	const conf::VirtualServerConfs Connection::kEmptyConfs          = conf::VirtualServerConfs();
 
 	Connection::Connection()
-		: Socket(), configs_(kEmptyConfs), client_(), request_holder_(), is_finished_(false)
+		: Socket(),
+		  configs_(kEmptyConfs),
+		  client_(),
+		  request_holder_(),
+		  is_finished_(false),
+		  time_()
 	{}
 
 	Connection::Connection(
@@ -25,11 +33,21 @@ namespace server
 		  reciever_(fd),
 		  request_holder_(),
 		  response_holder_(fd, configs, RequestHolder::DestroyRequest),
-		  is_finished_(false)
-	{}
+		  is_finished_(false),
+		  time_()
+	{
+		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
+	}
 
 	// setからeraseするためだけの存在
-	Connection::Connection(int fd) : Socket(fd), configs_(kEmptyConfs), client_(), request_holder_()
+	Connection::Connection(int fd)
+		: Socket(fd),
+		  configs_(kEmptyConfs),
+		  client_(),
+		  reciever_(-1),
+		  request_holder_(),
+		  is_finished_(false),
+		  time_()
 	{}
 
 	// // Connection::Connection(const Connection &other)
@@ -72,6 +90,7 @@ namespace server
 		DBG_INFO;
 		event::Instructions insts;
 
+		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
 		if (event_type & event::Event::kRead) {
 			log("con recv");
 			Instructions recv_insts = Recieve();
@@ -173,10 +192,22 @@ namespace server
 
 	Instructions Connection::Disconnect()
 	{
+		log("disconnect", GetFd());
 		Instructions insts = response_holder_.UnregisterAll();
 		int          fd    = managed_fd_.GetFd();
 		insts.push_back(Instruction(Instruction::kUnregister, fd));
 		return insts;
+	}
+
+	bool Connection::IsTimeOut()
+	{
+		struct timespec now;
+		if (clock_gettime(CLOCK_MONOTONIC_RAW, &now) == -1) {
+			DBG_INFO;
+			log("istimeout clock_gettime", strerror(errno));
+		}
+		log("time duration", now.tv_sec - time_.tv_sec);
+		return now.tv_sec - time_.tv_sec >= kTimeoutDuration;
 	}
 
 } // namespace server

@@ -88,4 +88,9 @@ namespace server
 		return error_type_;
 	}
 
+	const std::vector<char> *RequestParser::Request::GetBody() const
+	{
+		return body;
+	}
+
 } // namespace server

@@ -47,7 +47,7 @@ namespace utils
 
 	Result<std::string> NormalizePath(const ThinString &path)
 	{
-		bool            is_absolute = *path.begin() == '/';
+		bool            is_absolute = !path.empty() && *path.begin() == '/';
 		const Strings   segments    = TrimEmpty(Split(path, "/"));
 		Result<Strings> dot_removed = RemoveDotSegments(segments);
 		if (dot_removed.IsErr()) {
@@ -61,7 +61,7 @@ namespace utils
 		if (path.back() == '/' || IsDotSegment(segments.back())) {
 			normalized += "/";
 		}
-		return (is_absolute ? "/" : "") + normalized;
+		return is_absolute ? "/" + normalized : normalized;
 	}
 
 	Result<std::string> HttpNormalizePath(const ThinString &path)

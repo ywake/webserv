@@ -34,6 +34,7 @@ namespace server
 		// 		kFinished,
 		// 	};
 	  public:
+		static const time_t      kTimeoutDuration;
 		static const std::size_t kMaxRecverBufSize;
 		static const std::size_t kMaxSenderBufSize;
 		static const std::size_t kMaxRequestQueueSize;
@@ -48,6 +49,7 @@ namespace server
 		RequestHolder                   request_holder_;
 		ResponseHolder                  response_holder_;
 		bool                            is_finished_;
+		struct ::timespec               time_;
 		// State                           state_;
 		// Sender						 *sender_;
 
@@ -63,6 +65,7 @@ namespace server
 		event::Instructions CommunicateWithClient(uint32_t event_type);
 		event::Instructions Proceed(const event::Event &event);
 		bool                IsFinished();
+		bool                IsTimeOut();
 		event::Instructions Disconnect();
 
 	  private:
