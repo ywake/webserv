@@ -115,12 +115,40 @@ namespace cgi
 	/**
 	 * IResponse
 	 */
-	void           CgiResponse::Perform(const event::Event &event) {}
-	Result<void>   CgiResponse::Send(int fd) {}
-	bool           CgiResponse::HasReadyData() const {}
-	bool           CgiResponse::HasFd() const {}
-	Emptiable<int> CgiResponse::GetFd() const {}
-	std::size_t    CgiResponse::size() const {};
-	bool           CgiResponse::IsFinished() const {}
+	void CgiResponse::Perform(const event::Event &event)
+	{
+		(void)event;
+	}
+
+	Result<void> CgiResponse::Send(int fd)
+	{
+		(void)fd;
+		return Result<void>();
+	}
+
+	bool CgiResponse::HasReadyData() const
+	{
+		return false;
+	}
+
+	bool CgiResponse::HasFd() const
+	{
+		return false;
+	}
+
+	Emptiable<int> CgiResponse::GetFd() const
+	{
+		return Emptiable<int>();
+	}
+
+	std::size_t CgiResponse::size() const
+	{
+		return 0;
+	}
+
+	bool CgiResponse::IsFinished() const
+	{
+		return false;
+	}
 
 } // namespace cgi
