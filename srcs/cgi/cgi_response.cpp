@@ -145,7 +145,7 @@ namespace cgi
 
 	void CgiResponse::ExecCgi()
 	{
-		pid_t pid = ErrCheck(fork());
+		pid_t pid = fork();
 		switch (pid) {
 		case 0:
 			ChildProcess();
