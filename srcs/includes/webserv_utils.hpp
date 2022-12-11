@@ -31,6 +31,10 @@ namespace utils
 	Result<std::string>     NormalizePath(const ThinString &path);
 	Result<std::string>     HttpNormalizePath(const ThinString &path);
 	std::string             JoinPath(const std::string &parent, const std::string &child);
+
+	// string utils
+	char &GetLastChar(std::string str);
+
 } // namespace utils
 
 #endif
