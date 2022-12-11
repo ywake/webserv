@@ -1,4 +1,9 @@
 #include "chunked_parser.hpp"
+#include "debug.hpp"
+#include "http_define.hpp"
+#include "http_exceptions.hpp"
+#include "parse_chunked.hpp"
+#include "webserv_utils.hpp"
 
 namespace server
 {
