@@ -34,7 +34,7 @@ namespace cgi
 
 	void CgiResponse::GetResourcePathCandidates(std::vector<CgiResponse::Path> &candidates) const
 	{
-		CgiResponse::Path base_path = location_conf_.GetRoot() + request_.Path();
+		CgiResponse::Path base_path = utils::JoinPath(location_conf_.GetRoot(), request_.Path());
 		if (IsEndWithSlash(base_path)) {
 			candidates = CombineIndexFiles(base_path);
 		} else {
