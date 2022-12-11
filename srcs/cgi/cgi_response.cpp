@@ -10,7 +10,8 @@ extern char **environ;
 
 namespace cgi
 {
-	static bool IsEndWithSlash(const std::string &str);
+	static bool         IsEndWithSlash(const std::string &str);
+	static Result<void> Dup2(int old_fd, int new_fd);
 
 	// copy constructor
 	CgiResponse::CgiResponse(const CgiResponse &other)
@@ -163,11 +164,16 @@ namespace cgi
 		CreateArgs(args);
 		CreateEnvs(envs);
 
-		ErrCheck(dup2(parent_fd_.GetFd(), STDIN_FILENO));
-		ErrCheck(dup2(child_fd_.GetFd(), STDOUT_FILENO));
-		ErrCheck(close(parent_fd_.GetFd()));
-		ErrCheck(close(child_fd_.GetFd()));
-		ErrCheck(execve(resource_path_.c_str(), args.data(), envs.data()));
+		close(parent_fd_.GetFd());
+		if (Dup2(child_fd_.GetFd(), STDIN_FILENO).IsErr()) {
+			exit(1);
+		}
+		if (Dup2(child_fd_.GetFd(), STDOUT_FILENO).IsErr()) {
+			exit(1);
+		}
+		if (execve(resource_path_.c_str(), args.data(), envs.data()) < 0) {
+			exit(1);
+		}
 	}
 
 	void CgiResponse::CreateArgs(std::vector<char *> args)
@@ -231,6 +237,16 @@ namespace cgi
 	static bool IsEndWithSlash(const std::string &str)
 	{
 		return !str.empty() && utils::GetLastChar(str) == '/';
+	}
+
+	Result<void> Dup2(int old_fd, int new_fd)
+	{
+		if (old_fd == new_fd) {
+			return Result<void>();
+		}
+		if (dup2(old_fd, new_fd) != new_fd) {
+			return Error("dup2 error");
+		}
 	}
 
 } // namespace cgi
