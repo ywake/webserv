@@ -27,8 +27,9 @@ namespace cgi
 		result::Result<Stat> stat = Stat::FromPath(accessible_path.Val());
 		if (stat.IsErr()) {
 			throw http::InternalServerErrorException();
+		} else if (!stat.Val().IsRegularFile()) {
+			throw http::ForbiddenException();
 		}
-		CgiStatFileTypeHandler(stat.Val());
 		resource_path_ = accessible_path.Val();
 	}
 
@@ -72,18 +73,6 @@ namespace cgi
 			}
 		}
 		return Error("No accessible resource found");
-	}
-
-	void CgiResponse::CgiStatFileTypeHandler(const Stat &stat) const
-	{
-		switch (stat.GetFileType()) {
-		case Stat::kRegularFile:
-			break;
-		case Stat::kDirectory:
-			throw http::ForbiddenException();
-		default:
-			throw http::NotFoundException();
-		}
 	}
 
 	CgiResponse::~CgiResponse() {}
