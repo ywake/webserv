@@ -50,4 +50,33 @@ namespace server
 		InitParseContext();
 	}
 
+
+	ChunkedParser::State ChunkedParser::GetNextState(State old_state)
+	{
+		switch (old_state) {
+		case kStandby:
+			return kChunk;
+		case kChunk:
+			return kTrailer;
+		case kTrailer:
+			return kStandby;
+		default:
+			DBG_INFO;
+			throw std::logic_error("chunked parser logic error");
+		}
+	}
+
+	ChunkedParser::ChunkState ChunkedParser::GetNextChunkState(ChunkState old_state)
+	{
+		switch (old_state) {
+		case kChunkSize:
+			return kChunkData;
+		case kChunkData:
+			return kChunkSize;
+		default:
+			DBG_INFO;
+			throw std::logic_error("chunked parser logic error");
+		}
+	}
+
 } // namespace server
