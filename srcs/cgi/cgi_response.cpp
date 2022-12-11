@@ -6,8 +6,6 @@
 #include <unistd.h>
 #include <vector>
 
-extern char **environ;
-
 namespace cgi
 {
 	static bool IsEndWithSlash(const std::string &str);
