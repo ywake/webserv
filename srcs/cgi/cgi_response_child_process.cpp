@@ -1,4 +1,5 @@
 #include "cgi_response.hpp"
+#include "meta_env.hpp"
 
 extern char **environ;
 
@@ -53,8 +54,14 @@ namespace cgi
 		for (size_t i = 0; environ[i] != NULL; ++i) {
 			envs.push_back(environ[i]);
 		}
+		SetMetaEnv(envs);
 		envs.push_back(NULL);
 		return envs;
+	}
+
+	void CgiResponse::SetMetaEnv(std::vector<char *> &envs)
+	{
+		SetAuthType(envs, request_);
 	}
 
 	static Result<void> Dup2(int old_fd, int new_fd)

@@ -43,6 +43,7 @@ namespace cgi
 		void                               ParentProcess(pid_t pid);
 		Result<std::vector<const char *> > CreateArgs();
 		Result<std::vector<char *> >       CreateEnvs();
+		void                               SetMetaEnv(std::vector<char *> &envs);
 
 		void OnReadReady();
 
