@@ -10,8 +10,7 @@ extern char **environ;
 
 namespace cgi
 {
-	static bool         IsEndWithSlash(const std::string &str);
-	static Result<void> Dup2(int old_fd, int new_fd);
+	static bool IsEndWithSlash(const std::string &str);
 
 	// copy constructor
 	CgiResponse::CgiResponse(const CgiResponse &other)
@@ -125,128 +124,8 @@ namespace cgi
 		return *this;
 	}
 
-	/**
-	 * IResponse
-	 */
-	void CgiResponse::Perform(const event::Event &event)
-	{
-		if (event.event_type & event::Event::kWrite) {
-			OnWriteReady();
-		}
-		if (event.event_type & event::Event::kRead) {
-			OnReadReady();
-		}
-	}
-
-	void CgiResponse::OnWriteReady()
-	{
-		// BodyWrite();
-		ExecCgi();
-	}
-
-	void CgiResponse::ExecCgi()
-	{
-		pid_t pid = fork();
-		switch (pid) {
-		case 0:
-			ChildProcess();
-			break;
-		default:
-			ParentProcess(pid);
-			break;
-		}
-	}
-
-	void CgiResponse::ChildProcess()
-	{
-		std::vector<char *> args;
-		std::vector<char *> envs;
-		CreateArgs(args);
-		CreateEnvs(envs);
-
-		close(parent_fd_.GetFd());
-		if (Dup2(child_fd_.GetFd(), STDIN_FILENO).IsErr()) {
-			exit(1);
-		}
-		if (Dup2(child_fd_.GetFd(), STDOUT_FILENO).IsErr()) {
-			exit(1);
-		}
-		if (execve(resource_path_.c_str(), args.data(), envs.data()) < 0) {
-			exit(1);
-		}
-	}
-
-	void CgiResponse::CreateArgs(std::vector<char *> args)
-	{
-		Emptiable<std::string> cgi_path = location_conf_.GetCgiPath();
-		if (cgi_path.empty()) {
-			// cgi_pathがemptyでない時コンストラクトされるので、ありえないはず
-			throw http::InternalServerErrorException();
-		}
-		args.push_back(const_cast<char *>(cgi_path.Value().c_str()));
-		args.push_back(const_cast<char *>(resource_path_.c_str()));
-		args.push_back(NULL);
-	}
-
-	void CgiResponse::CreateEnvs(std::vector<char *> envs)
-	{
-		for (size_t i = 0; environ[i] != NULL; ++i) {
-			envs.push_back(environ[i]);
-		}
-		envs.push_back(NULL);
-	}
-
-	void CgiResponse::ParentProcess(pid_t pid)
-	{
-		(void)pid;
-		close(child_fd_.GetFd());
-	}
-
-	void CgiResponse::OnReadReady() {}
-
-	Result<void> CgiResponse::Send(int fd)
-	{
-		return Write(fd);
-	}
-
-	bool CgiResponse::HasReadyData() const
-	{
-		return !QueuingBuffer::empty();
-	}
-
-	bool CgiResponse::HasFd() const
-	{
-		return parent_fd_.GetFd() != ManagedFd::kNofd;
-	}
-
-	Emptiable<int> CgiResponse::GetFd() const
-	{
-		return parent_fd_.GetFd();
-	}
-
-	std::size_t CgiResponse::size() const
-	{
-		return q_buffer::QueuingBuffer::size();
-	}
-
-	bool CgiResponse::IsFinished() const
-	{
-		return is_finished_;
-	}
-
 	static bool IsEndWithSlash(const std::string &str)
 	{
 		return !str.empty() && utils::GetLastChar(str) == '/';
 	}
-
-	Result<void> Dup2(int old_fd, int new_fd)
-	{
-		if (old_fd == new_fd) {
-			return Result<void>();
-		}
-		if (dup2(old_fd, new_fd) != new_fd) {
-			return Error("dup2 error");
-		}
-	}
-
 } // namespace cgi
