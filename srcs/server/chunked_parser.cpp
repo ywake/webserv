@@ -32,6 +32,11 @@ namespace server
 	}
 
 
+	bool ChunkedParser::HasInCompleteData()
+	{
+		return ctx_.state != kStandby;
+	}
+
 	void ChunkedParser::InitParseContext()
 	{
 		ctx_.body       = new std::vector<char>();
