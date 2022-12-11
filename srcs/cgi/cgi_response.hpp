@@ -37,12 +37,12 @@ namespace cgi
 		Result<CgiResponse::Path> FindAccessiblePathFromArray(const std::vector<Path> &candidates
 		) const;
 
-		void                         OnWriteReady();
-		void                         ExecCgi();
-		void                         ChildProcess();
-		void                         ParentProcess(pid_t pid);
-		Result<std::vector<char *> > CreateArgs();
-		Result<std::vector<char *> > CreateEnvs();
+		void                               OnWriteReady();
+		void                               ExecCgi();
+		void                               ChildProcess();
+		void                               ParentProcess(pid_t pid);
+		Result<std::vector<const char *> > CreateArgs();
+		Result<std::vector<char *> >       CreateEnvs();
 
 		void OnReadReady();
 

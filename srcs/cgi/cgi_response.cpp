@@ -160,7 +160,7 @@ namespace cgi
 
 	void CgiResponse::ChildProcess()
 	{
-		Result<std::vector<char *> > args = CreateArgs();
+		Result<std::vector<const char *> > args = CreateArgs();
 		if (args.IsErr()) {
 			exit(1);
 		}
@@ -176,21 +176,25 @@ namespace cgi
 		if (Dup2(child_fd_.GetFd(), STDOUT_FILENO).IsErr()) {
 			exit(1);
 		}
-		if (execve(resource_path_.c_str(), args.Val().data(), envs.Val().data()) < 0) {
+		if (execve(
+				resource_path_.c_str(),
+				const_cast<char *const *>(args.Val().data()),
+				envs.Val().data()
+			) < 0) {
 			exit(1);
 		}
 	}
 
-	Result<std::vector<char *> > CgiResponse::CreateArgs()
+	Result<std::vector<const char *> > CgiResponse::CreateArgs()
 	{
 		Emptiable<std::string> cgi_path = location_conf_.GetCgiPath();
 		if (cgi_path.empty()) {
 			// cgi_pathがemptyでない時コンストラクトされるので、ありえないはず
 			return Error("cgi_path is empty");
 		}
-		std::vector<char *> args;
-		args.push_back(const_cast<char *>(cgi_path.Value().c_str()));
-		args.push_back(const_cast<char *>(resource_path_.c_str()));
+		std::vector<const char *> args;
+		args.push_back(cgi_path.Value().c_str());
+		args.push_back(resource_path_.c_str());
 		args.push_back(NULL);
 		return args;
 	}
