@@ -15,7 +15,7 @@ namespace server
 		};
 		enum ChunkState {
 			kChunkSize,
-			kChunkData,
+			kChunkData
 		};
 
 	  private:

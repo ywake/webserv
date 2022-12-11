@@ -180,6 +180,7 @@ namespace server
 	StatefulParser::ParseResult ChunkedParser::DiscardTrailer(q_buffer::QueuingBuffer &recieved)
 	{
 		// TODO
+		(void)recieved;
 		return kDone;
 	}
 
