@@ -43,6 +43,8 @@ TEST(chunk_size, error)
 	EXPECT_TRUE(http::ParseChunkSize("0x0").IsErr());
 	EXPECT_TRUE(http::ParseChunkSize("0;\r").IsErr());
 	EXPECT_TRUE(http::ParseChunkSize("0;\v").IsErr());
+	EXPECT_TRUE(http::ParseChunkSize("0;\xff").IsErr());
+	EXPECT_TRUE(http::ParseChunkSize("0;\x7f").IsErr());
 	EXPECT_TRUE(http::ParseChunkSize("0\r;").IsErr());
 	EXPECT_TRUE(http::ParseChunkSize("0\n;").IsErr());
 	EXPECT_TRUE(http::ParseChunkSize(" 0").IsErr());
