@@ -27,6 +27,10 @@ namespace http
 
 	ForbiddenException::ForbiddenException() : HttpException(StatusCode::kForbidden) {}
 
+	ContentTooLargeException::ContentTooLargeException()
+		: HttpException(StatusCode::kContentTooLarge)
+	{}
+
 	MethodNotAllowedException::MethodNotAllowedException()
 		: HttpException(StatusCode::kMethodNotAllowed)
 	{}
