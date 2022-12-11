@@ -21,7 +21,7 @@ namespace http
 			}
 		}
 		for (; i < s.size(); i++) {
-			if (s[i] < ' ' && s[i] != '\t') {
+			if (!ABNF::IsVchar(s[i]) && http::kWhiteSpaces.find(s[i]) == std::string::npos) {
 				return false;
 			}
 		}
