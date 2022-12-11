@@ -170,7 +170,7 @@ namespace cgi
 
 	bool CgiResponse::HasFd() const
 	{
-		parent_fd_ != ManagedFd::kNofd;
+		return parent_fd_.GetFd() != ManagedFd::kNofd;
 	}
 
 	Emptiable<int> CgiResponse::GetFd() const
