@@ -73,6 +73,21 @@ namespace server
 		}
 	}
 
+	StatefulParser::ParseResult ChunkedParser::ParseChunkData(q_buffer::QueuingBuffer &recieved)
+	{
+		if (ctx_.chunk_size == 0) {
+			return kDone;
+		}
+		for (; loaded_bytes_.size() < ctx_.chunk_size && !recieved.empty();) {
+			Emptiable<char> c = recieved.PopChar();
+			loaded_bytes_ += c.Value();
+		}
+		if (loaded_bytes_.size() < ctx_.chunk_size) {
+			return kInProgress;
+		}
+		ctx_.body->insert(ctx_.body->end(), loaded_bytes_.begin(), loaded_bytes_.end());
+		return kDone;
+	}
 
 	StatefulParser::ParseResult ChunkedParser::DiscardTrailer(q_buffer::QueuingBuffer &recieved)
 	{
