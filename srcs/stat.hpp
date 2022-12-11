@@ -1,3 +1,6 @@
+#ifndef STAT_HPP
+#define STAT_HPP
+
 #include <string>
 #include <sys/stat.h>
 
@@ -52,3 +55,4 @@ class Stat
 
 	std::size_t FileSize() const;
 };
+#endif
