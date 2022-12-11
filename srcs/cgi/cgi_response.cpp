@@ -18,7 +18,12 @@ namespace cgi
 	CgiResponse::CgiResponse(server::IRequest &request, conf::LocationConf &location_conf)
 		: request_(request), location_conf_(location_conf), resource_path_()
 	{
-		Result<Path> resource_path = GetResourcePath();
+		resource_path_ = GetResourcePath();
+	}
+
+	CgiResponse::Path CgiResponse::GetResourcePath() const
+	{
+		Result<CgiResponse::Path> resource_path = FindResourcePath();
 		if (resource_path.IsErr()) {
 			throw http::NotFoundException();
 		}
@@ -28,10 +33,10 @@ namespace cgi
 		} else if (!stat.Val().IsRegularFile()) {
 			throw http::ForbiddenException();
 		}
-		resource_path_ = resource_path.Val();
+		return resource_path.Val();
 	}
 
-	Result<CgiResponse::Path> CgiResponse::GetResourcePath() const
+	Result<CgiResponse::Path> CgiResponse::FindResourcePath() const
 	{
 		CgiResponse::Path base_path = utils::JoinPath(location_conf_.GetRoot(), request_.Path());
 		if (IsEndWithSlash(base_path)) {
