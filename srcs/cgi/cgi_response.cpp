@@ -41,6 +41,7 @@ namespace cgi
 		parent_fd_ = ManagedFd(fds[0]);
 		child_fd_  = ManagedFd(fds[1]);
 		q_buffer::QueuingWriter::push_back(*request.GetBody());
+		ExecCgi();
 	}
 
 	CgiResponse::Path CgiResponse::GetResourcePath() const
@@ -139,13 +140,15 @@ namespace cgi
 	void CgiResponse::OnWriteReady()
 	{
 		// BodyWrite();
-		ExecCgi();
 	}
 
 	void CgiResponse::ExecCgi()
 	{
 		pid_t pid = fork();
 		switch (pid) {
+		case -1:
+			throw http::InternalServerErrorException();
+			break;
 		case 0:
 			ChildProcess();
 			break;
