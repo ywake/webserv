@@ -2,7 +2,7 @@
 #include "http_exceptions.hpp"
 #include "stat.hpp"
 #include "webserv_utils.hpp"
-#include <sys/socket.h>
+// #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
 
@@ -27,7 +27,7 @@ namespace cgi
 		  resource_path_(other.resource_path_),
 		  parent_fd_(other.parent_fd_),
 		  child_fd_(other.child_fd_),
-		  state_(other.state_)
+		  is_finished_(false)
 	{}
 
 	// main constructor
@@ -37,7 +37,7 @@ namespace cgi
 		  request_(request),
 		  location_conf_(location_conf),
 		  resource_path_(),
-		  state_(kBeforeExec)
+		  is_finished_(false)
 	{
 		resource_path_ = GetResourcePath();
 		int fds[2];
@@ -128,7 +128,7 @@ namespace cgi
 		resource_path_ = other.resource_path_;
 		parent_fd_     = other.parent_fd_;
 		child_fd_      = other.child_fd_;
-		state_         = other.state_;
+		is_finished_   = other.is_finished_;
 		q_buffer::QueuingWriter::operator=(other);
 		q_buffer::QueuingReader::operator=(other);
 		return *this;
@@ -139,19 +139,11 @@ namespace cgi
 	 */
 	void CgiResponse::Perform(const event::Event &event)
 	{
-		switch (state_) {
-		case kBeforeExec:
-			if (event.event_type & event::Event::kWrite) {
-				OnWriteCgiInput();
-			}
-			break;
-		case kAfterExec:
-			if (event.event_type & event::Event::kRead) {
-				OnReadCgiOutput();
-			}
-			break;
-		default:
-			break;
+		if (event.event_type & event::Event::kWrite) {
+			OnWriteCgiInput();
+		}
+		if (event.event_type & event::Event::kRead) {
+			OnReadCgiOutput();
 		}
 	}
 
@@ -185,7 +177,7 @@ namespace cgi
 
 	bool CgiResponse::IsFinished() const
 	{
-		return state_ == kFinished;
+		return is_finished_;
 	}
 
 } // namespace cgi
