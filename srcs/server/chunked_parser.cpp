@@ -31,6 +31,23 @@ namespace server
 		return *this;
 	}
 
+	Emptiable<std::vector<char> *> ChunkedParser::Parse(q_buffer::QueuingBuffer &recieved)
+	{
+		if (recieved.empty()) {
+			return Emptiable<std::vector<char> *>();
+		}
+		try {
+			if (CreateBody(recieved) == kDone) {
+				std::vector<char> *body = ctx_.body;
+				InitParseContext();
+				return body;
+			}
+			return Emptiable<std::vector<char> *>();
+		} catch (http::HttpException &e) {
+			DestroyParseContext();
+			throw e;
+		}
+	}
 
 	bool ChunkedParser::HasInCompleteData()
 	{
@@ -50,6 +67,72 @@ namespace server
 		InitParseContext();
 	}
 
+	StatefulParser::ParseResult ChunkedParser::CreateBody(q_buffer::QueuingBuffer &recieved)
+	{
+		while (!recieved.empty()) {
+			switch (ParseEachPhase(recieved)) {
+			case kInProgress:
+				return kInProgress;
+			case kDone:
+				if (ctx_.state == kTrailer) {
+					return kDone;
+				}
+				ctx_.state = GetNextState(ctx_.state);
+				ClearLoadedBytes();
+				log("chunked next parse state");
+			}
+		}
+		return kInProgress;
+	}
+
+	StatefulParser::ParseResult ChunkedParser::ParseEachPhase(q_buffer::QueuingBuffer &recieved)
+	{
+		switch (ctx_.state) {
+		case kStandby:
+			return kDone;
+		case kChunk:
+			log("chunk");
+			return ParseChunked(recieved);
+		case kTrailer:
+			log("trailer");
+			return DiscardTrailer(recieved);
+		default:
+			DBG_INFO;
+			throw std::logic_error("chunked parser logic error");
+		}
+	}
+
+	StatefulParser::ParseResult ChunkedParser::ParseChunked(q_buffer::QueuingBuffer &recieved)
+	{
+		while (!recieved.empty()) {
+			switch (ParseEachChunkPhase(recieved)) {
+			case kInProgress:
+				return kInProgress;
+			case kDone:
+				if (ctx_.chunk_state == kChunkData && ctx_.chunk_size == 0) {
+					return kDone;
+				}
+				ctx_.chunk_state = GetNextChunkState(ctx_.chunk_state);
+				ClearLoadedBytes();
+				log("chunked next parse state");
+			}
+		}
+		return kInProgress;
+	}
+
+	StatefulParser::ParseResult ChunkedParser::ParseEachChunkPhase(q_buffer::QueuingBuffer &recieved
+	)
+	{
+		switch (ctx_.chunk_state) {
+		case kChunkSize:
+			return ParseChunkSize(recieved);
+		case kChunkData:
+			return ParseChunkData(recieved);
+		default:
+			DBG_INFO;
+			throw std::logic_error("chunked parser logic error");
+		}
+	}
 
 	StatefulParser::ParseResult ChunkedParser::ParseChunkSize(q_buffer::QueuingBuffer &recieved)
 	{
