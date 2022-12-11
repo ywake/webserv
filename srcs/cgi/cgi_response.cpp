@@ -18,28 +18,27 @@ namespace cgi
 	CgiResponse::CgiResponse(server::IRequest &request, conf::LocationConf &location_conf)
 		: request_(request), location_conf_(location_conf), resource_path_()
 	{
-		std::vector<Path> candidate_paths;
-		GetResourcePathCandidates(candidate_paths);
-		Result<Path> accessible_path = FindAccessible(candidate_paths);
-		if (accessible_path.IsErr()) {
+		Result<Path> resource_path = GetResourcePath();
+		if (resource_path.IsErr()) {
 			throw http::NotFoundException();
 		}
-		result::Result<Stat> stat = Stat::FromPath(accessible_path.Val());
+		result::Result<Stat> stat = Stat::FromPath(resource_path.Val());
 		if (stat.IsErr()) {
 			throw http::InternalServerErrorException();
 		} else if (!stat.Val().IsRegularFile()) {
 			throw http::ForbiddenException();
 		}
-		resource_path_ = accessible_path.Val();
+		resource_path_ = resource_path.Val();
 	}
 
-	void CgiResponse::GetResourcePathCandidates(std::vector<CgiResponse::Path> &candidates) const
+	Result<CgiResponse::Path> CgiResponse::GetResourcePath() const
 	{
 		CgiResponse::Path base_path = utils::JoinPath(location_conf_.GetRoot(), request_.Path());
 		if (IsEndWithSlash(base_path)) {
-			candidates = CombineIndexFiles(base_path);
+			std::vector<CgiResponse::Path> candidates = CombineIndexFiles(base_path);
+			return FindAccessiblePathFromArray(candidates);
 		} else {
-			candidates.push_back(base_path);
+			return GetAccessiblePath(base_path);
 		}
 	}
 
@@ -54,25 +53,34 @@ namespace cgi
 		std::vector<CgiResponse::Path> path_array;
 		std::vector<CgiResponse::Path> index_files = location_conf_.GetIndexFiles();
 		for (size_t i = 0; i < index_files.size(); ++i) {
-			CgiResponse::Path combined_path = base_path + index_files[i];
+			CgiResponse::Path combined_path = utils::JoinPath(base_path, index_files[i]);
 			path_array.push_back(combined_path);
 		}
 		return path_array;
 	}
 
 	Result<CgiResponse::Path>
-	CgiResponse::FindAccessible(const std::vector<CgiResponse::Path> &candidates) const
+	CgiResponse::FindAccessiblePathFromArray(const std::vector<Path> &candidates) const
 	{
 		for (size_t i = 0; i < candidates.size(); ++i) {
-			Result<CgiResponse::Path> path = utils::NormalizePath(candidates[i]);
-			if (path.IsErr()) {
-				continue;
-			}
-			if (access(path.Val().c_str(), R_OK) == 0) {
-				return path;
+			Result<CgiResponse::Path> accessible_path = GetAccessiblePath(candidates[i]);
+			if (accessible_path.IsOk()) {
+				return accessible_path;
 			}
 		}
-		return Error("No accessible resource found");
+		return Error("No accessible path");
+	}
+
+	Result<CgiResponse::Path> CgiResponse::GetAccessiblePath(const CgiResponse::Path &path) const
+	{
+		Result<CgiResponse::Path> normalized_path = utils::NormalizePath(path);
+		if (normalized_path.IsErr()) {
+			return Error("Normalize path failed");
+		}
+		if (access(normalized_path.Val().c_str(), R_OK) < 0) {
+			return Error("Access failed");
+		}
+		return normalized_path;
 	}
 
 	CgiResponse::~CgiResponse() {}
