@@ -130,14 +130,14 @@ namespace cgi
 	void CgiResponse::Perform(const event::Event &event)
 	{
 		if (event.event_type & event::Event::kWrite) {
-			OnWriteCgiInput();
+			OnWriteReady();
 		}
 		if (event.event_type & event::Event::kRead) {
-			OnReadCgiOutput();
+			OnReadReady();
 		}
 	}
 
-	void CgiResponse::OnWriteCgiInput()
+	void CgiResponse::OnWriteReady()
 	{
 		Result<void> res = Write(parent_fd_.GetFd());
 		if (res.IsErr()) {
@@ -154,15 +154,15 @@ namespace cgi
 		pid_t pid = ErrCheck(fork());
 		switch (pid) {
 		case 0:
-			ExecCgiChild();
+			ChildProcess();
 			break;
 		default:
-			ExecCgiParent(pid);
+			ParentProcess(pid);
 			break;
 		}
 	}
 
-	void CgiResponse::ExecCgiChild()
+	void CgiResponse::ChildProcess()
 	{
 		std::vector<char *> args;
 		std::vector<char *> envs;
@@ -196,13 +196,13 @@ namespace cgi
 		envs.push_back(NULL);
 	}
 
-	void CgiResponse::ExecCgiParent(pid_t pid)
+	void CgiResponse::ParentProcess(pid_t pid)
 	{
 		(void)pid;
 		ErrCheck(close(parent_fd_.GetFd()));
 	}
 
-	void CgiResponse::OnReadCgiOutput() {}
+	void CgiResponse::OnReadReady() {}
 
 	Result<void> CgiResponse::Send(int fd)
 	{
