@@ -2,7 +2,7 @@
 #include "http_exceptions.hpp"
 #include "stat.hpp"
 #include "webserv_utils.hpp"
-// #include <sys/socket.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
 
