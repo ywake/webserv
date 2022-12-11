@@ -51,6 +51,12 @@ namespace server
 	}
 
 
+	StatefulParser::ParseResult ChunkedParser::DiscardTrailer(q_buffer::QueuingBuffer &recieved)
+	{
+		// TODO
+		return kDone;
+	}
+
 	ChunkedParser::State ChunkedParser::GetNextState(State old_state)
 	{
 		switch (old_state) {
