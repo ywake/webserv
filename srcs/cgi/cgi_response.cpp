@@ -2,23 +2,51 @@
 #include "http_exceptions.hpp"
 #include "stat.hpp"
 #include "webserv_utils.hpp"
+#include <sys/socket.h>
 #include <unistd.h>
+#include <vector>
+
 namespace cgi
 {
 	bool IsEndWithSlash(const std::string &str);
+	int  ErrCheck(int ret)
+	{
+		if (ret == -1) {
+			throw http::InternalServerErrorException();
+		}
+		return ret;
+	}
 
 	// copy constructor
 	CgiResponse::CgiResponse(const CgiResponse &other)
-		: request_(other.request_),
+		: q_buffer::QueuingBuffer(other),
+		  q_buffer::QueuingWriter(other),
+		  q_buffer::QueuingReader(other),
+		  request_(other.request_),
 		  location_conf_(other.location_conf_),
-		  resource_path_(other.resource_path_)
+		  resource_path_(other.resource_path_),
+		  parent_fd_(other.parent_fd_),
+		  child_fd_(other.child_fd_),
+		  is_finished_(false)
 	{}
 
 	// main constructor
 	CgiResponse::CgiResponse(server::IRequest &request, conf::LocationConf &location_conf)
-		: request_(request), location_conf_(location_conf), resource_path_()
+		: q_buffer::QueuingWriter(),
+		  q_buffer::QueuingReader(),
+		  request_(request),
+		  location_conf_(location_conf),
+		  resource_path_(),
+		  is_finished_(false)
 	{
 		resource_path_ = GetResourcePath();
+		int fds[2];
+		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds)) {
+			throw http::InternalServerErrorException();
+		}
+		parent_fd_ = ManagedFd(fds[0]);
+		child_fd_  = ManagedFd(fds[1]);
+		q_buffer::QueuingWriter::push_back(*request.GetBody());
 	}
 
 	CgiResponse::Path CgiResponse::GetResourcePath() const
@@ -98,6 +126,11 @@ namespace cgi
 		request_       = other.request_;
 		location_conf_ = other.location_conf_;
 		resource_path_ = other.resource_path_;
+		parent_fd_     = other.parent_fd_;
+		child_fd_      = other.child_fd_;
+		is_finished_   = other.is_finished_;
+		q_buffer::QueuingWriter::operator=(other);
+		q_buffer::QueuingReader::operator=(other);
 		return *this;
 	}
 
@@ -106,38 +139,45 @@ namespace cgi
 	 */
 	void CgiResponse::Perform(const event::Event &event)
 	{
-		(void)event;
+		if (event.event_type & event::Event::kWrite) {
+			OnWriteCgiInput();
+		}
+		if (event.event_type & event::Event::kRead) {
+			OnReadCgiOutput();
+		}
 	}
+
+	void CgiResponse::OnWriteCgiInput() {}
+	void CgiResponse::OnReadCgiOutput() {}
 
 	Result<void> CgiResponse::Send(int fd)
 	{
-		(void)fd;
-		return Result<void>();
+		return Write(fd);
 	}
 
 	bool CgiResponse::HasReadyData() const
 	{
-		return false;
+		return !QueuingBuffer::empty();
 	}
 
 	bool CgiResponse::HasFd() const
 	{
-		return false;
+		return parent_fd_.GetFd() != ManagedFd::kNofd;
 	}
 
 	Emptiable<int> CgiResponse::GetFd() const
 	{
-		return Emptiable<int>();
+		return parent_fd_.GetFd();
 	}
 
 	std::size_t CgiResponse::size() const
 	{
-		return 0;
+		return q_buffer::QueuingBuffer::size();
 	}
 
 	bool CgiResponse::IsFinished() const
 	{
-		return false;
+		return is_finished_;
 	}
 
 } // namespace cgi

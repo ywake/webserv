@@ -1,11 +1,16 @@
 #include "i_request.hpp"
 #include "i_response.hpp"
 #include "location_conf.hpp"
+#include "managed_fd.hpp"
+#include "queuing_reader.hpp"
+#include "queuing_writer.hpp"
 #include "stat.hpp"
 
 namespace cgi
 {
-	class CgiResponse : public server::IResponse
+	class CgiResponse : public server::IResponse,
+						public q_buffer::QueuingWriter,
+						public q_buffer::QueuingReader
 	{
 	  public:
 		typedef std::string Path;
@@ -14,6 +19,9 @@ namespace cgi
 		server::IRequest   &request_;
 		conf::LocationConf &location_conf_;
 		Path                resource_path_;
+		ManagedFd           parent_fd_;
+		ManagedFd           child_fd_;
+		bool                is_finished_;
 
 	  public:
 		CgiResponse(const CgiResponse &other);
@@ -28,6 +36,9 @@ namespace cgi
 		std::vector<Path>         CombineIndexFiles(const Path &base_path) const;
 		Result<CgiResponse::Path> FindAccessiblePathFromArray(const std::vector<Path> &candidates
 		) const;
+
+		void OnWriteCgiInput();
+		void OnReadCgiOutput();
 
 		// IResponse
 	  public:
