@@ -25,8 +25,8 @@ namespace cgi
 		server::IRequest   &request_;
 		conf::LocationConf &location_conf_;
 		Path                resource_path_;
-		ManagedFd           cgi_fd_in_;
-		ManagedFd           cgi_fd_out_;
+		ManagedFd           parent_fd_;
+		ManagedFd           child_fd_;
 		CgiState            state_;
 
 	  public:
@@ -36,12 +36,12 @@ namespace cgi
 
 		// Methods
 	  private:
-		void GetResourcePath();
-		void GetResourcePathCandidates(std::vector<CgiResponse::Path> &candidates) const;
-		std::vector<Path> CombineIndexFiles(const Path &base_path) const;
-		Result<Path>      FindAccessible(const std::vector<Path> &candidates) const;
-		void              CgiStatErrorHandler(const result::ErrCode &error) const;
-		void              CgiStatFileTypeHandler(const Stat &stat) const;
+		CgiResponse::Path         GetResourcePath() const;
+		Result<CgiResponse::Path> FindResourcePath() const;
+		Result<CgiResponse::Path> GetAccessiblePath(const CgiResponse::Path &path) const;
+		std::vector<Path>         CombineIndexFiles(const Path &base_path) const;
+		Result<CgiResponse::Path> FindAccessiblePathFromArray(const std::vector<Path> &candidates
+		) const;
 
 		void OnWriteCgiInput();
 		void ExecCgi();

@@ -27,8 +27,8 @@ namespace cgi
 		  request_(other.request_),
 		  location_conf_(other.location_conf_),
 		  resource_path_(other.resource_path_),
-		  cgi_fd_in_(other.cgi_fd_in_),
-		  cgi_fd_out_(other.cgi_fd_out_),
+		  parent_fd_(other.parent_fd_),
+		  child_fd_(other.child_fd_),
 		  state_(other.state_)
 	{}
 
@@ -41,43 +41,45 @@ namespace cgi
 		  resource_path_(),
 		  state_(kBeforeExec)
 	{
-		GetResourcePath();
+		resource_path_ = GetResourcePath();
 		int fds[2];
-		ErrCheck(socketpair(AF_UNIX, SOCK_STREAM, 0, fds));
-		cgi_fd_in_  = ManagedFd(fds[0]);
-		cgi_fd_out_ = ManagedFd(fds[1]);
+		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds)) {
+			throw http::InternalServerErrorException();
+		}
+		parent_fd_ = ManagedFd(fds[0]);
+		child_fd_  = ManagedFd(fds[1]);
 		q_buffer::QueuingWriter::push_back(*request.GetBody());
 	}
 
-	void CgiResponse::GetResourcePath()
+	CgiResponse::Path CgiResponse::GetResourcePath() const
 	{
-		std::vector<CgiResponse::Path> candidate_paths;
-		GetResourcePathCandidates(candidate_paths);
-		Result<CgiResponse::Path> accessible_path = FindAccessible(candidate_paths);
-		if (accessible_path.IsErr()) {
+		Result<CgiResponse::Path> resource_path = FindResourcePath();
+		if (resource_path.IsErr()) {
 			throw http::NotFoundException();
 		}
-		result::Result<Stat> stat = Stat::FromPath(accessible_path.Val());
+		result::Result<Stat> stat = Stat::FromPath(resource_path.Val());
 		if (stat.IsErr()) {
-			CgiStatErrorHandler(stat.Err());
+			throw http::InternalServerErrorException();
+		} else if (!stat.Val().IsRegularFile()) {
+			throw http::ForbiddenException();
 		}
-		CgiStatFileTypeHandler(stat.Val());
-		resource_path_ = accessible_path.Val();
+		return resource_path.Val();
 	}
 
-	void CgiResponse::GetResourcePathCandidates(std::vector<CgiResponse::Path> &candidates) const
+	Result<CgiResponse::Path> CgiResponse::FindResourcePath() const
 	{
-		CgiResponse::Path base_path = location_conf_.GetRoot() + request_.Path();
+		CgiResponse::Path base_path = utils::JoinPath(location_conf_.GetRoot(), request_.Path());
 		if (IsEndWithSlash(base_path)) {
-			candidates = CombineIndexFiles(base_path);
+			std::vector<CgiResponse::Path> candidates = CombineIndexFiles(base_path);
+			return FindAccessiblePathFromArray(candidates);
 		} else {
-			candidates.push_back(base_path);
+			return GetAccessiblePath(base_path);
 		}
 	}
 
 	bool IsEndWithSlash(const std::string &str)
 	{
-		return !str.empty() && *str.end() == '/';
+		return !str.empty() && utils::GetLastChar(str) == '/';
 	}
 
 	std::vector<CgiResponse::Path> CgiResponse::CombineIndexFiles(const CgiResponse::Path &base_path
@@ -86,48 +88,34 @@ namespace cgi
 		std::vector<CgiResponse::Path> path_array;
 		std::vector<CgiResponse::Path> index_files = location_conf_.GetIndexFiles();
 		for (size_t i = 0; i < index_files.size(); ++i) {
-			CgiResponse::Path combined_path = base_path + index_files[i];
+			CgiResponse::Path combined_path = utils::JoinPath(base_path, index_files[i]);
 			path_array.push_back(combined_path);
 		}
 		return path_array;
 	}
 
 	Result<CgiResponse::Path>
-	CgiResponse::FindAccessible(const std::vector<CgiResponse::Path> &candidates) const
+	CgiResponse::FindAccessiblePathFromArray(const std::vector<Path> &candidates) const
 	{
 		for (size_t i = 0; i < candidates.size(); ++i) {
-			Result<CgiResponse::Path> path = utils::NormalizePath(candidates[i]);
-			if (path.IsErr()) {
-				continue;
-			}
-			if (access(path.Val().c_str(), R_OK) == 0) {
-				return candidates[i];
+			Result<CgiResponse::Path> accessible_path = GetAccessiblePath(candidates[i]);
+			if (accessible_path.IsOk()) {
+				return accessible_path;
 			}
 		}
-		return Error("No accessible resource found");
+		return Error("No accessible path");
 	}
 
-	void CgiResponse::CgiStatErrorHandler(const result::ErrCode &error_code) const
+	Result<CgiResponse::Path> CgiResponse::GetAccessiblePath(const CgiResponse::Path &path) const
 	{
-		if (error_code == Stat::kEAcces) {
-			throw http::ForbiddenException();
-		} else if (error_code == Stat::kNoEnt) {
-			throw http::NotFoundException();
-		} else {
-			throw http::InternalServerErrorException();
+		Result<CgiResponse::Path> normalized_path = utils::NormalizePath(path);
+		if (normalized_path.IsErr()) {
+			return Error("Normalize path failed");
 		}
-	}
-
-	void CgiResponse::CgiStatFileTypeHandler(const Stat &stat) const
-	{
-		switch (stat.GetFileType()) {
-		case Stat::kRegularFile:
-			break;
-		case Stat::kDirectory:
-			throw http::ForbiddenException();
-		default:
-			throw http::NotFoundException();
+		if (access(normalized_path.Val().c_str(), R_OK) < 0) {
+			return Error("Access failed");
 		}
+		return normalized_path;
 	}
 
 	CgiResponse::~CgiResponse() {}
@@ -140,8 +128,8 @@ namespace cgi
 		request_       = other.request_;
 		location_conf_ = other.location_conf_;
 		resource_path_ = other.resource_path_;
-		cgi_fd_in_     = other.cgi_fd_in_;
-		cgi_fd_out_    = other.cgi_fd_out_;
+		parent_fd_     = other.parent_fd_;
+		child_fd_      = other.child_fd_;
 		state_         = other.state_;
 		q_buffer::QueuingWriter::operator=(other);
 		q_buffer::QueuingReader::operator=(other);
@@ -171,7 +159,7 @@ namespace cgi
 
 	void CgiResponse::OnWriteCgiInput()
 	{
-		Result<void> res = Write(cgi_fd_in_.GetFd());
+		Result<void> res = Write(parent_fd_.GetFd());
 		if (res.IsErr()) {
 			throw http::InternalServerErrorException();
 		}
@@ -201,10 +189,10 @@ namespace cgi
 		CreateArgs(args);
 		CreateEnvs(envs);
 
-		ErrCheck(dup2(cgi_fd_in_.GetFd(), STDIN_FILENO));
-		ErrCheck(dup2(cgi_fd_out_.GetFd(), STDOUT_FILENO));
-		ErrCheck(close(cgi_fd_in_.GetFd()));
-		ErrCheck(close(cgi_fd_out_.GetFd()));
+		ErrCheck(dup2(parent_fd_.GetFd(), STDIN_FILENO));
+		ErrCheck(dup2(child_fd_.GetFd(), STDOUT_FILENO));
+		ErrCheck(close(parent_fd_.GetFd()));
+		ErrCheck(close(child_fd_.GetFd()));
 		ErrCheck(execve(resource_path_.c_str(), args.data(), envs.data()));
 	}
 
@@ -231,49 +219,34 @@ namespace cgi
 	void CgiResponse::ExecCgiParent(pid_t pid)
 	{
 		(void)pid;
-		ErrCheck(close(cgi_fd_in_.GetFd()));
+		ErrCheck(close(parent_fd_.GetFd()));
 	}
 
 	void CgiResponse::OnReadCgiOutput() {}
 
 	Result<void> CgiResponse::Send(int fd)
 	{
-		(void)fd;
-		return Result<void>();
+		return Write(fd);
 	}
 
 	bool CgiResponse::HasReadyData() const
 	{
-		return false;
+		return !QueuingBuffer::empty();
 	}
 
 	bool CgiResponse::HasFd() const
 	{
-		switch (state_) {
-		case CgiResponse::kBeforeExec:
-			return cgi_fd_in_.GetFd() != ManagedFd::kNofd;
-		case CgiResponse::kAfterExec:
-			return cgi_fd_out_.GetFd() != ManagedFd::kNofd;
-		default:
-			return false;
-		}
+		return parent_fd_.GetFd() != ManagedFd::kNofd;
 	}
 
 	Emptiable<int> CgiResponse::GetFd() const
 	{
-		switch (state_) {
-		case CgiResponse::kBeforeExec:
-			return cgi_fd_in_.GetFd();
-		case CgiResponse::kAfterExec:
-			return cgi_fd_out_.GetFd();
-		default:
-			return Emptiable<int>();
-		}
+		return parent_fd_.GetFd();
 	}
 
 	std::size_t CgiResponse::size() const
 	{
-		return 0;
+		return q_buffer::QueuingBuffer::size();
 	}
 
 	bool CgiResponse::IsFinished() const
