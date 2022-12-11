@@ -199,7 +199,7 @@ namespace cgi
 	void CgiResponse::ParentProcess(pid_t pid)
 	{
 		(void)pid;
-		ErrCheck(close(parent_fd_.GetFd()));
+		close(child_fd_.GetFd());
 	}
 
 	void CgiResponse::OnReadReady() {}
