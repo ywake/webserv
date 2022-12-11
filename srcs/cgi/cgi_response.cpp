@@ -143,42 +143,27 @@ namespace cgi
 
 	Result<void> CgiResponse::Send(int fd)
 	{
-		(void)fd;
-		return Result<void>();
+		return Write(fd);
 	}
 
 	bool CgiResponse::HasReadyData() const
 	{
-		return false;
+		return !QueuingBuffer::empty();
 	}
 
 	bool CgiResponse::HasFd() const
 	{
-		switch (state_) {
-		case CgiResponse::kBeforeExec:
-			return cgi_fd_in_.GetFd() != ManagedFd::kNofd;
-		case CgiResponse::kAfterExec:
-			return cgi_fd_out_.GetFd() != ManagedFd::kNofd;
-		default:
-			return false;
-		}
+		parent_fd_ != ManagedFd::kNofd;
 	}
 
 	Emptiable<int> CgiResponse::GetFd() const
 	{
-		switch (state_) {
-		case CgiResponse::kBeforeExec:
-			return cgi_fd_in_.GetFd();
-		case CgiResponse::kAfterExec:
-			return cgi_fd_out_.GetFd();
-		default:
-			return Emptiable<int>();
-		}
+		return parent_fd_.GetFd();
 	}
 
 	std::size_t CgiResponse::size() const
 	{
-		return 0;
+		return q_buffer::QueuingBuffer::size();
 	}
 
 	bool CgiResponse::IsFinished() const
