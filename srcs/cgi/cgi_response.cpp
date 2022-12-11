@@ -10,14 +10,7 @@ extern char **environ;
 
 namespace cgi
 {
-	bool IsEndWithSlash(const std::string &str);
-	int  ErrCheck(int ret)
-	{
-		if (ret == -1) {
-			throw http::InternalServerErrorException();
-		}
-		return ret;
-	}
+	static bool IsEndWithSlash(const std::string &str);
 
 	// copy constructor
 	CgiResponse::CgiResponse(const CgiResponse &other)
@@ -75,11 +68,6 @@ namespace cgi
 		} else {
 			return GetAccessiblePath(base_path);
 		}
-	}
-
-	bool IsEndWithSlash(const std::string &str)
-	{
-		return !str.empty() && utils::GetLastChar(str) == '/';
 	}
 
 	std::vector<CgiResponse::Path> CgiResponse::CombineIndexFiles(const CgiResponse::Path &base_path
@@ -244,6 +232,11 @@ namespace cgi
 	bool CgiResponse::IsFinished() const
 	{
 		return is_finished_;
+	}
+
+	static bool IsEndWithSlash(const std::string &str)
+	{
+		return !str.empty() && utils::GetLastChar(str) == '/';
 	}
 
 } // namespace cgi
