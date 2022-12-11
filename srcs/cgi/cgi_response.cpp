@@ -30,9 +30,11 @@ namespace cgi
 	{
 		resource_path_ = GetResourcePath();
 		int fds[2];
-		ErrCheck(socketpair(AF_UNIX, SOCK_STREAM, 0, fds));
-		cgi_fd_in_  = ManagedFd(fds[0]);
-		cgi_fd_out_ = ManagedFd(fds[1]);
+		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds)) {
+			throw http::InternalServerErrorException();
+		}
+		parent_fd_ = ManagedFd(fds[0]);
+		child_fd_  = ManagedFd(fds[1]);
 	}
 
 	CgiResponse::Path CgiResponse::GetResourcePath() const

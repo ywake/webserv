@@ -21,8 +21,8 @@ namespace cgi
 		server::IRequest   &request_;
 		conf::LocationConf &location_conf_;
 		Path                resource_path_;
-		ManagedFd           cgi_fd_in_;
-		ManagedFd           cgi_fd_out_;
+		ManagedFd           parent_fd_;
+		ManagedFd           child_fd_;
 		CgiState            state_;
 
 	  public:
