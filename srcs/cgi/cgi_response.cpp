@@ -26,7 +26,7 @@ namespace cgi
 		}
 		result::Result<Stat> stat = Stat::FromPath(accessible_path.Val());
 		if (stat.IsErr()) {
-			CgiStatErrorHandler(stat.Err());
+			throw http::InternalServerErrorException();
 		}
 		CgiStatFileTypeHandler(stat.Val());
 		resource_path_ = accessible_path.Val();
@@ -72,17 +72,6 @@ namespace cgi
 			}
 		}
 		return Error("No accessible resource found");
-	}
-
-	void CgiResponse::CgiStatErrorHandler(const result::ErrCode &error_code) const
-	{
-		if (error_code == Stat::kEAcces) {
-			throw http::ForbiddenException();
-		} else if (error_code == Stat::kNoEnt) {
-			throw http::NotFoundException();
-		} else {
-			throw http::InternalServerErrorException();
-		}
 	}
 
 	void CgiResponse::CgiStatFileTypeHandler(const Stat &stat) const
