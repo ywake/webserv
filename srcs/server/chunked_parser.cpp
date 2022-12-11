@@ -51,6 +51,29 @@ namespace server
 	}
 
 
+	StatefulParser::ParseResult ChunkedParser::ParseChunkSize(q_buffer::QueuingBuffer &recieved)
+	{
+		switch (LoadBytesWithDelim(recieved, http::kCrLf, max_size_)) {
+		case kOverMaxSize:
+			throw http::ContentTooLargeException();
+		case kParsable: {
+			loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
+			Result<std::size_t> size = http::ParseChunkSize(loaded_bytes_);
+			if (size.IsErr()) {
+				throw http::BadRequestException();
+			}
+			ctx_.chunk_size = size.Val();
+			return kDone;
+		}
+		case kNonParsable:
+			return kInProgress;
+		default:
+			DBG_INFO;
+			throw std::logic_error("chunk size parser logic error");
+		}
+	}
+
+
 	StatefulParser::ParseResult ChunkedParser::DiscardTrailer(q_buffer::QueuingBuffer &recieved)
 	{
 		// TODO
