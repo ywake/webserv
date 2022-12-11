@@ -10,11 +10,11 @@ namespace cgi
 
 	void CgiResponse::ChildProcess()
 	{
-		Result<std::vector<char *>> args = CreateArgs();
+		Result<std::vector<char *> > args = CreateArgs();
 		if (args.IsErr()) {
 			exit(1);
 		}
-		Result<std::vector<char *>> envs = CreateEnvs();
+		Result<std::vector<char *> > envs = CreateEnvs();
 		if (envs.IsErr()) {
 			exit(1);
 		}
@@ -31,7 +31,7 @@ namespace cgi
 		}
 	}
 
-	Result<std::vector<char *>> CgiResponse::CreateArgs()
+	Result<std::vector<char *> > CgiResponse::CreateArgs()
 	{
 		Emptiable<std::string> cgi_path = location_conf_.GetCgiPath();
 		if (cgi_path.empty()) {
@@ -45,13 +45,14 @@ namespace cgi
 		return args;
 	}
 
-	Result<std::vector<char *>> CgiResponse::CreateEnvs()
+	Result<std::vector<char *> > CgiResponse::CreateEnvs()
 	{
 		std::vector<char *> envs;
 		for (size_t i = 0; environ[i] != NULL; ++i) {
 			envs.push_back(environ[i]);
 		}
 		envs.push_back(NULL);
+		return envs;
 	}
 
 	static Result<void> Dup2(int old_fd, int new_fd)
@@ -62,5 +63,6 @@ namespace cgi
 		if (dup2(old_fd, new_fd) != new_fd) {
 			return Error("dup2 error");
 		}
+		return Result<void>();
 	}
 } // namespace cgi
