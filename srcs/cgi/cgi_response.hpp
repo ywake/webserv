@@ -16,18 +16,12 @@ namespace cgi
 		typedef std::string Path;
 
 	  private:
-		enum CgiState {
-			kBeforeExec,
-			kAfterExec,
-			kFinished
-		};
-
 		server::IRequest   &request_;
 		conf::LocationConf &location_conf_;
 		Path                resource_path_;
 		ManagedFd           parent_fd_;
 		ManagedFd           child_fd_;
-		CgiState            state_;
+		bool                is_finished_;
 
 	  public:
 		CgiResponse(const CgiResponse &other);
