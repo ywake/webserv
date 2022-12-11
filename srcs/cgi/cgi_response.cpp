@@ -139,14 +139,8 @@ namespace cgi
 
 	void CgiResponse::OnWriteReady()
 	{
-		Result<void> res = Write(parent_fd_.GetFd());
-		if (res.IsErr()) {
-			throw http::InternalServerErrorException();
-		}
-		if (q_buffer::QueuingWriter::empty()) {
-			ExecCgi();
-			state_ = kAfterExec;
-		}
+		// BodyWrite();
+		ExecCgi();
 	}
 
 	void CgiResponse::ExecCgi()
