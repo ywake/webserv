@@ -19,14 +19,25 @@ namespace cgi
 
 	// copy constructor
 	CgiResponse::CgiResponse(const CgiResponse &other)
-		: request_(other.request_),
+		: q_buffer::QueuingBuffer(other),
+		  q_buffer::QueuingWriter(other),
+		  q_buffer::QueuingReader(other),
+		  request_(other.request_),
 		  location_conf_(other.location_conf_),
-		  resource_path_(other.resource_path_)
+		  resource_path_(other.resource_path_),
+		  parent_fd_(other.parent_fd_),
+		  child_fd_(other.child_fd_),
+		  state_(other.state_)
 	{}
 
 	// main constructor
 	CgiResponse::CgiResponse(server::IRequest &request, conf::LocationConf &location_conf)
-		: request_(request), location_conf_(location_conf), resource_path_(), state_(kBeforeExec)
+		: q_buffer::QueuingWriter(),
+		  q_buffer::QueuingReader(),
+		  request_(request),
+		  location_conf_(location_conf),
+		  resource_path_(),
+		  state_(kBeforeExec)
 	{
 		resource_path_ = GetResourcePath();
 		int fds[2];
@@ -35,6 +46,7 @@ namespace cgi
 		}
 		parent_fd_ = ManagedFd(fds[0]);
 		child_fd_  = ManagedFd(fds[1]);
+		q_buffer::QueuingWriter::push_back(*request.GetBody());
 	}
 
 	CgiResponse::Path CgiResponse::GetResourcePath() const
@@ -114,6 +126,11 @@ namespace cgi
 		request_       = other.request_;
 		location_conf_ = other.location_conf_;
 		resource_path_ = other.resource_path_;
+		parent_fd_     = other.parent_fd_;
+		child_fd_      = other.child_fd_;
+		state_         = other.state_;
+		q_buffer::QueuingWriter::operator=(other);
+		q_buffer::QueuingReader::operator=(other);
 		return *this;
 	}
 
