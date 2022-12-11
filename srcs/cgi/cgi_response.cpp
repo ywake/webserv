@@ -68,7 +68,7 @@ namespace cgi
 				continue;
 			}
 			if (access(path.Val().c_str(), R_OK) == 0) {
-				return candidates[i];
+				return path;
 			}
 		}
 		return Error("No accessible resource found");
