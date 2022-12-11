@@ -190,11 +190,11 @@ HeaderSection::ParseEachHeaderValue(const std::string &name, const ThinString &v
 {
 	if (name == "host") {
 		return ParseHost(value);
-	} else if (name == "content-length") {
+	} else if (name == http::kContentLength) {
 		return ParseContentLength(value);
-	} else if (name == "transfer-encoding") {
+	} else if (name == http::kTransferEncoding) {
 		return ParseTransferEncoding(value);
-	} else if (name == "connection") {
+	} else if (name == http::kConnection) {
 		return ParseConnection(value);
 	} else {
 		Values values;

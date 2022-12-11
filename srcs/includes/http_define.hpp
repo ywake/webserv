@@ -10,6 +10,10 @@ namespace http
 	extern const std::string kWhiteSpaces;
 	extern const std::string kSp;
 	extern const std::string kHttpVersion;
+	extern const std::string kConnection;
+	extern const std::string kContentLength;
+	extern const std::string kTransferEncoding;
+	extern const std::string kChunked;
 
 	namespace methods
 	{
