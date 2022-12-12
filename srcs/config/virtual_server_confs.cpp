@@ -2,6 +2,8 @@
 #include <cassert>
 namespace conf
 {
+	const conf::VirtualServerConfs kEmptyVserverConfs = conf::VirtualServerConfs();
+
 	VirtualServerConfs::VirtualServerConfs(/* args */) : default_host_(), server_confs_() {}
 
 	VirtualServerConfs::VirtualServerConfs(const VirtualServerConfs &other)
