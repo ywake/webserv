@@ -23,10 +23,10 @@ namespace server
 		class Request : public IRequest
 		{
 		  private:
-			http::RequestMessage request_msg_;
-			std::vector<char>   *body;
-			http::StatusCode     error_code_;
-			ErrorType            error_type_;
+			http::RequestMessage     request_msg_;
+			const std::vector<char> *body_;
+			http::StatusCode         error_code_;
+			ErrorType                error_type_;
 
 		  public:
 			Request(
@@ -45,7 +45,7 @@ namespace server
 			void SetError(const http::StatusCode &error_code, ErrorType error_type);
 			void SetRequestLine(const RequestLine &request_line);
 			void SetHeaderSection(const HeaderSection &field_lines);
-			void SetBody(const std::string &body);
+			void SetBody(const std::vector<char> *body);
 
 			const std::string          &Method() const;
 			const std::string          &Path() const;

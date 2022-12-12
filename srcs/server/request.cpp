@@ -54,10 +54,11 @@ namespace server
 		request_msg_.SetHeaderSection(field_lines);
 	}
 
-	void RequestParser::Request::SetBody(const std::string &body)
+	void RequestParser::Request::SetBody(const std::vector<char> *body)
 	{
-		request_msg_.SetBody(body);
+		body_ = body;
 	}
+
 	const std::string &RequestParser::Request::Method() const
 	{
 		return request_msg_.GetRequestLine().GetMethod();
@@ -90,7 +91,7 @@ namespace server
 
 	const std::vector<char> *RequestParser::Request::GetBody() const
 	{
-		return body;
+		return body_;
 	}
 
 } // namespace server
