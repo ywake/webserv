@@ -14,6 +14,7 @@
 #include "result.hpp"
 #include "stateful_parser.hpp"
 #include "status_code.hpp"
+#include "virtual_server_confs.hpp"
 namespace server
 {
 	class RequestParser : public StatefulParser
@@ -64,7 +65,8 @@ namespace server
 		};
 
 	  private:
-		static const std::size_t kMaxHeaderSectonSize;
+		static const std::size_t        kMaxHeaderSectonSize;
+		const conf::VirtualServerConfs *config_;
 		struct Context {
 			State             state;
 			RequestLineParser request_line_parser;
@@ -72,7 +74,7 @@ namespace server
 		} ctx_;
 
 	  public:
-		RequestParser();
+		RequestParser(const conf::VirtualServerConfs *config = &conf::kEmptyVserverConfs);
 		RequestParser(const RequestParser &other);
 		~RequestParser();
 		RequestParser        &operator=(const RequestParser &rhs);
