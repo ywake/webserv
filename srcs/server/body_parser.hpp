@@ -37,9 +37,9 @@ namespace server
 		BodyParser(const BodyParser &other);
 		BodyParser &operator=(const BodyParser &rhs);
 		Emptiable<std::vector<char> *>
-			 Parse(q_buffer::QueuingBuffer &recieved, const HeaderSection &headers);
-		bool HasInCompleteData();
-		void DestroyBody(const std::vector<char> *body);
+					Parse(q_buffer::QueuingBuffer &recieved, const HeaderSection &headers);
+		bool        HasInCompleteData();
+		static void DestroyBody(const std::vector<char> *body);
 
 	  private:
 		void InitMode(const HeaderSection &headers);
