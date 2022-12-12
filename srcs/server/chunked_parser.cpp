@@ -147,7 +147,7 @@ namespace server
 		case kParsable: {
 			loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
 			Result<std::size_t> size = http::ParseChunkSize(loaded_bytes_);
-			if (size.IsErr()) {
+			if (size.IsErr() || size.Val() > max_size_) {
 				throw http::BadRequestException();
 			}
 			ctx_.chunk_size = size.Val();
@@ -179,6 +179,9 @@ namespace server
 		}
 		loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
 		ctx_.body->insert(ctx_.body->end(), loaded_bytes_.begin(), loaded_bytes_.end());
+		if (ctx_.body->size() > max_size_) {
+			throw http::BadRequestException();
+		}
 		return kDone;
 	}
 
