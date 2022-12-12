@@ -40,9 +40,6 @@ namespace server
 		static const std::size_t kMaxRequestQueueSize;
 
 	  private:
-		static const conf::VirtualServerConfs kEmptyConfs;
-
-	  private:
 		const conf::VirtualServerConfs &configs_;
 		const SockAddrStorage           client_;
 		Reciever                        reciever_;
