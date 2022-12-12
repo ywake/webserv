@@ -17,20 +17,19 @@ namespace server
 		};
 
 	  private:
+		std::size_t max_bytes_;
 		struct Context {
-			std::size_t        max_bytes_;
 			std::vector<char> *bytes;
 			State              state;
 		} ctx_;
 
 	  public:
-		BytesLoader();
+		BytesLoader(std::size_t max_bytes = 0);
 		BytesLoader(const BytesLoader &other);
 		~BytesLoader();
 		BytesLoader                   &operator=(const BytesLoader &rhs);
 		Emptiable<std::vector<char> *> Parse(q_buffer::QueuingBuffer &recieved);
 		bool                           HasInCompleteData();
-		void                           SetMaxBytes(std::size_t max_bytes);
 
 	  private:
 		void InitParseContext();
