@@ -18,7 +18,7 @@ namespace server
 	{}
 
 	RequestParser::Request::Request(const http::StatusCode &error_code, ErrorType error_type)
-		: request_msg_(), error_code_(error_code), error_type_(error_type)
+		: request_msg_(), body_(), error_code_(error_code), error_type_(error_type)
 	{}
 
 	RequestParser::Request::~Request() {}
