@@ -188,8 +188,20 @@ namespace server
 	StatefulParser::ParseResult ChunkedParser::DiscardTrailer(q_buffer::QueuingBuffer &recieved)
 	{
 		// TODO
-		(void)recieved;
-		return kDone;
+		switch (LoadBytesWithDelim(recieved, http::kCrLf, http::kCrLf.size())) {
+		case kOverMaxSize:
+			throw http::BadRequestException();
+		case kNonParsable:
+			return kInProgress;
+		case kParsable:
+			if (loaded_bytes_ != http::kCrLf) {
+				throw http::BadRequestException();
+			}
+			return kDone;
+		default:
+			DBG_INFO;
+			throw std::logic_error("chunk size parser logic error");
+		}
 	}
 
 	ChunkedParser::State ChunkedParser::GetNextState(State old_state)
