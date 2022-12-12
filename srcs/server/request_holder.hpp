@@ -8,6 +8,7 @@
 #include "request_parser.hpp"
 #include "result.hpp"
 #include "status_code.hpp"
+#include "virtual_server_confs.hpp"
 
 namespace server
 {
@@ -17,11 +18,12 @@ namespace server
 		typedef std::deque<IRequest *> RequestQueue;
 
 	  private:
-		RequestQueue  request_queue_;
-		RequestParser parser_;
+		const conf::VirtualServerConfs *config_;
+		RequestQueue                    request_queue_;
+		RequestParser                   parser_;
 
 	  public:
-		RequestHolder();
+		RequestHolder(const conf::VirtualServerConfs *config = &conf::kEmptyVserverConfs);
 		RequestHolder(const RequestHolder &other);
 		~RequestHolder();
 

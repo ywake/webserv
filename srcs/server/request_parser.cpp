@@ -11,7 +11,7 @@ namespace server
 {
 	const std::size_t RequestParser::kMaxHeaderSectonSize = 8196 * 4;
 
-	RequestParser::RequestParser()
+	RequestParser::RequestParser(const conf::VirtualServerConfs *config) : config_(config)
 	{
 		InitParseContext();
 	}
@@ -27,6 +27,7 @@ namespace server
 			return *this;
 		}
 		StatefulParser::operator=(rhs);
+		config_                  = rhs.config_;
 		ctx_.request_line_parser = rhs.ctx_.request_line_parser;
 		ctx_.state               = rhs.ctx_.state;
 		*ctx_.request            = *rhs.ctx_.request;
