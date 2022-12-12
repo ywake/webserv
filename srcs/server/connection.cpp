@@ -18,6 +18,7 @@ namespace server
 		: Socket(),
 		  configs_(conf::kEmptyVserverConfs),
 		  client_(),
+		  reciever_(),
 		  request_holder_(),
 		  is_finished_(false),
 		  time_()
