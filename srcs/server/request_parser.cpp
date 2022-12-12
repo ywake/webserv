@@ -131,9 +131,14 @@ namespace server
 		case kStartLine:
 			log("start line");
 			return ParseStartLine(recieved);
-		case kHeader:
+		case kHeader: {
 			log("header");
-			return ParseHeaderSection(recieved);
+			ParseResult res = ParseHeaderSection(recieved);
+			if (!(res == kDone && ctx_.request->HasMessageBody())) {
+				return res;
+			}
+		}
+		/* Falls through. */
 		case kBody:
 			log("body");
 			return ParseBody(recieved);
