@@ -114,4 +114,9 @@ namespace server
 		InitParseContext();
 	}
 
+	void BodyParser::DestroyBody(const std::vector<char> *body)
+	{
+		delete body;
+	}
+
 } // namespace server
