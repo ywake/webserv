@@ -57,6 +57,7 @@ namespace server
 	{
 		ClearLoadedBytes();
 		ctx_.request_line_parser = RequestLineParser();
+		ctx_.body_parser         = BodyParser(config_);
 		ctx_.state               = kStandBy;
 		ctx_.request             = new Request();
 	}
@@ -168,7 +169,12 @@ namespace server
 	// TODO body
 	RequestParser::ParseResult RequestParser::ParseBody(q_buffer::QueuingBuffer &recieved)
 	{
-		(void)recieved;
+		Emptiable<std::vector<char> *> body =
+			ctx_.body_parser.Parse(recieved, ctx_.request->Headers());
+		if (body.empty()) {
+			return kInProgress;
+		}
+		ctx_.request->SetBody(body.Value());
 		return kDone;
 	}
 
@@ -195,6 +201,7 @@ namespace server
 
 	void RequestParser::DestroyRequest(IRequest *&request)
 	{
+		BodyParser::DestroyBody(request->GetBody());
 		utils::DeleteSafe(request);
 	}
 

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "body_parser.hpp"
 #include "emptiable.hpp"
 #include "header_section.hpp"
 #include "i_request.hpp"
@@ -15,6 +16,7 @@
 #include "stateful_parser.hpp"
 #include "status_code.hpp"
 #include "virtual_server_confs.hpp"
+
 namespace server
 {
 	class RequestParser : public StatefulParser
@@ -70,6 +72,7 @@ namespace server
 		struct Context {
 			State             state;
 			RequestLineParser request_line_parser;
+			BodyParser        body_parser;
 			Request          *request;
 		} ctx_;
 
