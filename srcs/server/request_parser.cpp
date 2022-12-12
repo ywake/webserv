@@ -29,8 +29,11 @@ namespace server
 		StatefulParser::operator=(rhs);
 		config_                  = rhs.config_;
 		ctx_.request_line_parser = rhs.ctx_.request_line_parser;
+		ctx_.body_parser         = rhs.ctx_.body_parser;
 		ctx_.state               = rhs.ctx_.state;
-		*ctx_.request            = *rhs.ctx_.request;
+		IRequest *req            = ctx_.request;
+		DestroyRequest(req);
+		ctx_.request = CopyRequest(rhs.ctx_.request);
 		return *this;
 	}
 
@@ -205,9 +208,25 @@ namespace server
 		utils::DeleteSafe(request);
 	}
 
-	IRequest *RequestParser::CopyRequest(const IRequest *src)
+	IRequest *RequestParser::CopyIRequest(const IRequest *src)
 	{
-		return new Request(src->GetMessage(), src->GetErrStatusCode(), src->GetErrorType());
+		return CopyRequest(src);
+	}
+
+	RequestParser::Request *RequestParser::CopyRequest(const IRequest *src)
+	{
+		Request *req = new Request();
+		req->SetRequestLine(src->GetMessage().GetRequestLine());
+		req->SetHeaderSection(src->Headers());
+		req->SetError(src->GetErrStatusCode(), src->GetErrorType());
+		if (src->GetBody() == NULL) {
+			req->SetBody(NULL);
+		} else {
+			std::vector<char> *body =
+				new std::vector<char>(src->GetBody()->begin(), src->GetBody()->end());
+			req->SetBody(body);
+		}
+		return req;
 	}
 
 } // namespace server

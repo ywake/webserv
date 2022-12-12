@@ -83,18 +83,19 @@ namespace server
 		bool                  HasInCompleteData();
 		Emptiable<IRequest *> OnEof();
 		static void           DestroyRequest(IRequest *&request);
-		static IRequest      *CopyRequest(const IRequest *request);
+		static IRequest      *CopyIRequest(const IRequest *request);
 
 	  private:
-		void        InitParseContext();
-		void        DestroyParseContext();
-		ParseResult CreateRequestMessage(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseEachPhase(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseStartLine(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseHeaderSection(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseBody(q_buffer::QueuingBuffer &recieved);
-		State       GetNextState(State old_state);
-		ParseResult SkipPriorCrLf(q_buffer::QueuingBuffer &recieved);
+		void            InitParseContext();
+		void            DestroyParseContext();
+		ParseResult     CreateRequestMessage(q_buffer::QueuingBuffer &recieved);
+		ParseResult     ParseEachPhase(q_buffer::QueuingBuffer &recieved);
+		ParseResult     ParseStartLine(q_buffer::QueuingBuffer &recieved);
+		ParseResult     ParseHeaderSection(q_buffer::QueuingBuffer &recieved);
+		ParseResult     ParseBody(q_buffer::QueuingBuffer &recieved);
+		State           GetNextState(State old_state);
+		ParseResult     SkipPriorCrLf(q_buffer::QueuingBuffer &recieved);
+		static Request *CopyRequest(const IRequest *src);
 	};
 } // namespace server
 #endif
