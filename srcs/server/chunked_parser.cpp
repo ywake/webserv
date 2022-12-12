@@ -27,7 +27,7 @@ namespace server
 		if (&rhs == this) {
 			return *this;
 		}
-		DestroyParseContext();
+		StatefulParser::operator=(rhs);
 		max_size_        = rhs.max_size_;
 		*ctx_.body       = *rhs.ctx_.body;
 		ctx_.state       = rhs.ctx_.state;
