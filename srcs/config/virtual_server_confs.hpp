@@ -47,6 +47,7 @@ namespace conf
 	};
 
 	std::ostream &operator<<(std::ostream &os, const VirtualServerConfs &virtual_server_confs);
+	extern const conf::VirtualServerConfs kEmptyVserverConfs;
 } // namespace conf
 
 #endif
