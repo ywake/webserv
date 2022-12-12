@@ -8,7 +8,7 @@
 namespace server
 {
 	RequestHolder::RequestHolder(const conf::VirtualServerConfs *config)
-		: request_queue_(), parser_(config)
+		: config_(config), request_queue_(), parser_(config)
 	{}
 
 	RequestHolder::RequestHolder(const RequestHolder &other)
