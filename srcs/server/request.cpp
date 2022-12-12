@@ -3,16 +3,11 @@
 #include "request_parser.hpp"
 namespace server
 {
-	RequestParser::Request::Request(
-		const http::RequestMessage &request_msg,
-		const http::StatusCode     &error_code,
-		const ErrorType            &error_type
-	)
-		: request_msg_(request_msg), body_(), error_code_(error_code), error_type_(error_type)
-	{}
+	RequestParser::Request::Request() : request_msg_(), body_(), error_code_(), error_type_() {}
 
 	RequestParser::Request::Request(const Request &other)
 		: request_msg_(other.request_msg_),
+		  body_(),
 		  error_code_(other.error_code_),
 		  error_type_(other.error_type_)
 	{}

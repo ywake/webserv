@@ -30,13 +30,11 @@ namespace server
 			http::StatusCode         error_code_;
 			ErrorType                error_type_;
 
-		  public:
-			Request(
-				const http::RequestMessage &request_msg = http::RequestMessage(),
-				const http::StatusCode     &error_code  = http::StatusCode(),
-				const ErrorType            &error_type  = kNotError
-			);
+		  private:
 			Request(const Request &other);
+
+		  public:
+			Request();
 			Request(const http::StatusCode &error_code, ErrorType error_type);
 			~Request();
 
