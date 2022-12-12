@@ -35,9 +35,6 @@ namespace server
 
 	Emptiable<std::vector<char> *> BytesLoader::Parse(q_buffer::QueuingBuffer &recieved)
 	{
-		if (recieved.empty()) {
-			return Emptiable<std::vector<char> *>();
-		}
 		ctx_.state = kParsing;
 		for (; ctx_.bytes->size() < ctx_.max_bytes_ && !recieved.empty();) {
 			Emptiable<char> c = recieved.PopChar();
