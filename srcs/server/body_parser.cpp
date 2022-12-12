@@ -20,8 +20,6 @@ namespace server
 		}
 	}
 
-	const conf::VirtualServerConfs BodyParser::kEmptyConfs = conf::VirtualServerConfs();
-
 	BodyParser::BodyParser(const conf::VirtualServerConfs *v_server_confs)
 		: v_server_confs_(v_server_confs)
 	{

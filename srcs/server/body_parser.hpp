@@ -22,9 +22,8 @@ namespace server
 		};
 
 	  private:
-		static const conf::VirtualServerConfs kEmptyConfs;
-		std::size_t                           max_size_;
-		const conf::VirtualServerConfs       *v_server_confs_;
+		std::size_t                     max_size_;
+		const conf::VirtualServerConfs *v_server_confs_;
 
 		struct Context {
 			BytesLoader   bytes_loader;
@@ -34,7 +33,7 @@ namespace server
 		} ctx_;
 
 	  public:
-		BodyParser(const conf::VirtualServerConfs *v_server_confs = &kEmptyConfs);
+		BodyParser(const conf::VirtualServerConfs *v_server_confs = &conf::kEmptyVserverConfs);
 		BodyParser(const BodyParser &other);
 		BodyParser &operator=(const BodyParser &rhs);
 		Emptiable<std::vector<char> *>
