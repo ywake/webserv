@@ -7,7 +7,7 @@
 
 namespace server
 {
-	BytesLoader::BytesLoader()
+	BytesLoader::BytesLoader(std::size_t max_bytes) : max_bytes_(max_bytes)
 	{
 		InitParseContext();
 	}
@@ -27,30 +27,25 @@ namespace server
 		if (&rhs == this) {
 			return *this;
 		}
-		ctx_.max_bytes_ = rhs.ctx_.max_bytes_;
-		*ctx_.bytes     = *rhs.ctx_.bytes;
-		ctx_.state      = rhs.ctx_.state;
+		max_bytes_  = rhs.max_bytes_;
+		*ctx_.bytes = *rhs.ctx_.bytes;
+		ctx_.state  = rhs.ctx_.state;
 		return *this;
 	}
 
 	Emptiable<std::vector<char> *> BytesLoader::Parse(q_buffer::QueuingBuffer &recieved)
 	{
 		ctx_.state = kParsing;
-		for (; ctx_.bytes->size() < ctx_.max_bytes_ && !recieved.empty();) {
+		for (; ctx_.bytes->size() < max_bytes_ && !recieved.empty();) {
 			Emptiable<char> c = recieved.PopChar();
 			ctx_.bytes->push_back(c.Value());
 		}
-		if (ctx_.bytes->size() < ctx_.max_bytes_) {
+		if (ctx_.bytes->size() < max_bytes_) {
 			return Emptiable<std::vector<char> *>();
 		}
 		std::vector<char> *bytes = ctx_.bytes;
 		InitParseContext();
 		return bytes;
-	}
-
-	void BytesLoader::SetMaxBytes(std::size_t max_bytes)
-	{
-		ctx_.max_bytes_ = max_bytes;
 	}
 
 	bool BytesLoader::HasInCompleteData()
