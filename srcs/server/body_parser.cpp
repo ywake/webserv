@@ -21,7 +21,7 @@ namespace server
 	}
 
 	BodyParser::BodyParser(const conf::VirtualServerConfs *v_server_confs)
-		: v_server_confs_(v_server_confs)
+		: max_size_(), v_server_confs_(v_server_confs)
 	{
 		if (v_server_confs_ == NULL) {
 			DBG_INFO;
