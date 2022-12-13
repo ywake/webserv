@@ -92,4 +92,22 @@ namespace cgi
 		std::string path_info_str = "PATH_INFO=" + path_info;
 		args.push_back((path_info_str.c_str()));
 	}
+
+	/**
+	 * PATH_INFO が NULL であれば、 PATH_TRANSLATED も NULL に設定 (または未設定と)
+	 * しなければなりません。
+	 */
+	void SetPathTranslated(
+		std::vector<const char *> &envs,
+		const std::string         &script_path,
+		const std::string         &path_info
+	)
+	{
+		if (path_info.empty()) {
+			return;
+		}
+		std::string path_translated     = utils::JoinPath(script_path, path_info);
+		std::string path_translated_str = "PATH_TRANSLATED=" + path_translated;
+		envs.push_back(path_translated_str.c_str());
+	}
 } // namespace cgi
