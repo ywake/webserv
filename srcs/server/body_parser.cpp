@@ -10,7 +10,7 @@ namespace server
 {
 	// TODO あとでconfとかに動かしたい
 	const conf::ServerConf &
-	GetServerConf(const conf::VirtualServerConfs &config, const HeaderSection::Values &hosts)
+	GetServerConf(const conf::VirtualServerConfs &config, const http::FieldSection::Values &hosts)
 	{
 		if (hosts.empty()) {
 			return config.GetDefaultServerConf();
@@ -47,7 +47,7 @@ namespace server
 	}
 
 	Emptiable<std::vector<char> *>
-	BodyParser::Parse(q_buffer::QueuingBuffer &recieved, const HeaderSection &headers)
+	BodyParser::Parse(q_buffer::QueuingBuffer &recieved, const http::FieldSection &headers)
 	{
 		try { // TODO con-len、tra-enヘッダのvalidationはここでやるべきかも
 			if (ctx_.state == kStandby) {
@@ -76,7 +76,7 @@ namespace server
 		}
 	}
 
-	void BodyParser::InitMode(const HeaderSection &headers)
+	void BodyParser::InitMode(const http::FieldSection &headers)
 	{
 		// この時点では正しいvalueが来ることは保証されている
 		if (headers.Contains(http::kTransferEncoding)) {

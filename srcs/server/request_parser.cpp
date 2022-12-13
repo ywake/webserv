@@ -29,6 +29,7 @@ namespace server
 		StatefulParser::operator=(rhs);
 		config_                  = rhs.config_;
 		ctx_.request_line_parser = rhs.ctx_.request_line_parser;
+		ctx_.field_parser        = rhs.ctx_.field_parser;
 		ctx_.body_parser         = rhs.ctx_.body_parser;
 		ctx_.state               = rhs.ctx_.state;
 		IRequest *req            = ctx_.request;
@@ -60,6 +61,7 @@ namespace server
 	{
 		ClearLoadedBytes();
 		ctx_.request_line_parser = RequestLineParser();
+		ctx_.field_parser        = FieldParser();
 		ctx_.body_parser         = BodyParser(config_);
 		ctx_.state               = kStandBy;
 		ctx_.request             = new Request();
@@ -158,20 +160,14 @@ namespace server
 
 	RequestParser::ParseResult RequestParser::ParseHeaderSection(q_buffer::QueuingBuffer &recieved)
 	{
-		switch (LoadBytesWithDelim(recieved, http::kEmptyLine, kMaxHeaderSectonSize)) {
-		case kOverMaxSize:
-			throw http::BadRequestException();
-		case kParsable: {
-			loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
-			const HeaderSection headers = HeaderSection(loaded_bytes_);
-			http::headers::ValidateHeaderSection(headers);
-			ctx_.request->SetHeaderSection(headers);
-			return kDone;
-		}
-		case kNonParsable:
+		Emptiable<http::FieldSection *> headers = ctx_.field_parser.Parse(recieved);
+		if (headers.empty()) {
 			return kInProgress;
 		}
-		return kInProgress;
+		// const http::FieldSection headers = http::FieldSection(loaded_bytes_);
+		// http::headers::ValidateHeaderSection(headers);
+		ctx_.request->SetFieldSection(headers.Value());
+		return kDone;
 	}
 
 	// TODO body
@@ -222,8 +218,13 @@ namespace server
 	{
 		Request *req = new Request();
 		req->SetRequestLine(src->GetMessage().GetRequestLine());
-		req->SetHeaderSection(src->Headers());
 		req->SetError(src->GetErrStatusCode(), src->GetErrorType());
+		if (&src->Headers() == NULL) {
+			req->SetFieldSection(NULL);
+		} else {
+			http::FieldSection *field_section = new http::FieldSection(src->Headers());
+			req->SetFieldSection(field_section);
+		}
 		if (src->GetBody() == NULL) {
 			req->SetBody(NULL);
 		} else {
