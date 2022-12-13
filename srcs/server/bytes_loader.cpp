@@ -14,7 +14,8 @@ namespace server
 
 	BytesLoader::BytesLoader(const BytesLoader &other)
 	{
-		*this = other;
+		ctx_.bytes = new std::vector<char>();
+		*this      = other;
 	}
 
 	BytesLoader::~BytesLoader()

@@ -14,7 +14,8 @@ namespace server
 
 	ChunkedParser::ChunkedParser(const ChunkedParser &other) : StatefulParser()
 	{
-		*this = other;
+		ctx_.body = new std::vector<char>();
+		*this     = other;
 	}
 
 	ChunkedParser::~ChunkedParser()
@@ -61,6 +62,7 @@ namespace server
 
 	void ChunkedParser::InitParseContext()
 	{
+		ClearLoadedBytes();
 		ctx_.body        = new std::vector<char>();
 		ctx_.state       = kStandby;
 		ctx_.chunk_state = kChunkSize;
