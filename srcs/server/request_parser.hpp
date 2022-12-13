@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "body_parser.hpp"
 #include "emptiable.hpp"
 #include "header_section.hpp"
 #include "i_request.hpp"
@@ -15,6 +16,7 @@
 #include "stateful_parser.hpp"
 #include "status_code.hpp"
 #include "virtual_server_confs.hpp"
+
 namespace server
 {
 	class RequestParser : public StatefulParser
@@ -23,18 +25,16 @@ namespace server
 		class Request : public IRequest
 		{
 		  private:
-			http::RequestMessage request_msg_;
-			std::vector<char>   *body;
-			http::StatusCode     error_code_;
-			ErrorType            error_type_;
+			http::RequestMessage     request_msg_;
+			const std::vector<char> *body_;
+			http::StatusCode         error_code_;
+			ErrorType                error_type_;
+
+		  private:
+			Request(const Request &other);
 
 		  public:
-			Request(
-				const http::RequestMessage &request_msg = http::RequestMessage(),
-				const http::StatusCode     &error_code  = http::StatusCode(),
-				const ErrorType            &error_type  = kNotError
-			);
-			Request(const Request &other);
+			Request();
 			Request(const http::StatusCode &error_code, ErrorType error_type);
 			~Request();
 
@@ -45,7 +45,7 @@ namespace server
 			void SetError(const http::StatusCode &error_code, ErrorType error_type);
 			void SetRequestLine(const RequestLine &request_line);
 			void SetHeaderSection(const HeaderSection &field_lines);
-			void SetBody(const std::string &body);
+			void SetBody(const std::vector<char> *body);
 
 			const std::string          &Method() const;
 			const std::string          &Path() const;
@@ -70,6 +70,7 @@ namespace server
 		struct Context {
 			State             state;
 			RequestLineParser request_line_parser;
+			BodyParser        body_parser;
 			Request          *request;
 		} ctx_;
 
@@ -82,18 +83,19 @@ namespace server
 		bool                  HasInCompleteData();
 		Emptiable<IRequest *> OnEof();
 		static void           DestroyRequest(IRequest *&request);
-		static IRequest      *CopyRequest(const IRequest *request);
+		static IRequest      *CopyIRequest(const IRequest *request);
 
 	  private:
-		void        InitParseContext();
-		void        DestroyParseContext();
-		ParseResult CreateRequestMessage(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseEachPhase(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseStartLine(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseHeaderSection(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseBody(q_buffer::QueuingBuffer &recieved);
-		State       GetNextState(State old_state);
-		ParseResult SkipPriorCrLf(q_buffer::QueuingBuffer &recieved);
+		void            InitParseContext();
+		void            DestroyParseContext();
+		ParseResult     CreateRequestMessage(q_buffer::QueuingBuffer &recieved);
+		ParseResult     ParseEachPhase(q_buffer::QueuingBuffer &recieved);
+		ParseResult     ParseStartLine(q_buffer::QueuingBuffer &recieved);
+		ParseResult     ParseHeaderSection(q_buffer::QueuingBuffer &recieved);
+		ParseResult     ParseBody(q_buffer::QueuingBuffer &recieved);
+		State           GetNextState(State old_state);
+		ParseResult     SkipPriorCrLf(q_buffer::QueuingBuffer &recieved);
+		static Request *CopyRequest(const IRequest *src);
 	};
 } // namespace server
 #endif

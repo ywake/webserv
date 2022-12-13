@@ -56,7 +56,7 @@ namespace server
 		Connection(
 			int managed_fd, const conf::VirtualServerConfs &conf, const SockAddrStorage &client
 		);
-		// Connection(const Connection &other);
+		Connection(const Connection &other);
 		~Connection();
 		bool                operator<(const Connection &other) const;
 		event::Instructions CommunicateWithClient(uint32_t event_type);

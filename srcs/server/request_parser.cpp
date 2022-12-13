@@ -29,8 +29,11 @@ namespace server
 		StatefulParser::operator=(rhs);
 		config_                  = rhs.config_;
 		ctx_.request_line_parser = rhs.ctx_.request_line_parser;
+		ctx_.body_parser         = rhs.ctx_.body_parser;
 		ctx_.state               = rhs.ctx_.state;
-		*ctx_.request            = *rhs.ctx_.request;
+		IRequest *req            = ctx_.request;
+		DestroyRequest(req);
+		ctx_.request = CopyRequest(rhs.ctx_.request);
 		return *this;
 	}
 
@@ -57,6 +60,7 @@ namespace server
 	{
 		ClearLoadedBytes();
 		ctx_.request_line_parser = RequestLineParser();
+		ctx_.body_parser         = BodyParser(config_);
 		ctx_.state               = kStandBy;
 		ctx_.request             = new Request();
 	}
@@ -127,9 +131,14 @@ namespace server
 		case kStartLine:
 			log("start line");
 			return ParseStartLine(recieved);
-		case kHeader:
+		case kHeader: {
 			log("header");
-			return ParseHeaderSection(recieved);
+			ParseResult res = ParseHeaderSection(recieved);
+			if (!(res == kDone && ctx_.request->HasMessageBody())) {
+				return res;
+			}
+		}
+		/* Falls through. */
 		case kBody:
 			log("body");
 			return ParseBody(recieved);
@@ -168,7 +177,12 @@ namespace server
 	// TODO body
 	RequestParser::ParseResult RequestParser::ParseBody(q_buffer::QueuingBuffer &recieved)
 	{
-		(void)recieved;
+		Emptiable<std::vector<char> *> body =
+			ctx_.body_parser.Parse(recieved, ctx_.request->Headers());
+		if (body.empty()) {
+			return kInProgress;
+		}
+		ctx_.request->SetBody(body.Value());
 		return kDone;
 	}
 
@@ -195,12 +209,29 @@ namespace server
 
 	void RequestParser::DestroyRequest(IRequest *&request)
 	{
+		BodyParser::DestroyBody(request->GetBody());
 		utils::DeleteSafe(request);
 	}
 
-	IRequest *RequestParser::CopyRequest(const IRequest *src)
+	IRequest *RequestParser::CopyIRequest(const IRequest *src)
 	{
-		return new Request(src->GetMessage(), src->GetErrStatusCode(), src->GetErrorType());
+		return CopyRequest(src);
+	}
+
+	RequestParser::Request *RequestParser::CopyRequest(const IRequest *src)
+	{
+		Request *req = new Request();
+		req->SetRequestLine(src->GetMessage().GetRequestLine());
+		req->SetHeaderSection(src->Headers());
+		req->SetError(src->GetErrStatusCode(), src->GetErrorType());
+		if (src->GetBody() == NULL) {
+			req->SetBody(NULL);
+		} else {
+			std::vector<char> *body =
+				new std::vector<char>(src->GetBody()->begin(), src->GetBody()->end());
+			req->SetBody(body);
+		}
+		return req;
 	}
 
 } // namespace server
