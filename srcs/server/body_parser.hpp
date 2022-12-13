@@ -3,7 +3,7 @@
 
 #include "bytes_loader.hpp"
 #include "chunked_parser.hpp"
-#include "header_section.hpp"
+#include "field_section.hpp"
 #include "virtual_server_confs.hpp"
 
 namespace server
@@ -37,12 +37,12 @@ namespace server
 		BodyParser(const BodyParser &other);
 		BodyParser &operator=(const BodyParser &rhs);
 		Emptiable<std::vector<char> *>
-					Parse(q_buffer::QueuingBuffer &recieved, const HeaderSection &headers);
+					Parse(q_buffer::QueuingBuffer &recieved, const http::FieldSection &headers);
 		bool        HasInCompleteData();
 		static void DestroyBody(const std::vector<char> *body);
 
 	  private:
-		void InitMode(const HeaderSection &headers);
+		void InitMode(const http::FieldSection &headers);
 		void InitParseContext();
 		void DestroyParseContext();
 	};

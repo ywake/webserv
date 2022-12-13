@@ -7,7 +7,8 @@
 
 #include "body_parser.hpp"
 #include "emptiable.hpp"
-#include "header_section.hpp"
+#include "field_parser.hpp"
+#include "field_section.hpp"
 #include "i_request.hpp"
 #include "queuing_buffer.hpp"
 #include "request_line_parser.hpp"
@@ -25,10 +26,11 @@ namespace server
 		class Request : public IRequest
 		{
 		  private:
-			http::RequestMessage     request_msg_;
-			const std::vector<char> *body_;
-			http::StatusCode         error_code_;
-			ErrorType                error_type_;
+			http::RequestMessage      request_msg_;
+			const http::FieldSection *field_section_;
+			const std::vector<char>  *body_;
+			http::StatusCode          error_code_;
+			ErrorType                 error_type_;
 
 		  private:
 			Request(const Request &other);
@@ -44,12 +46,12 @@ namespace server
 
 			void SetError(const http::StatusCode &error_code, ErrorType error_type);
 			void SetRequestLine(const RequestLine &request_line);
-			void SetHeaderSection(const HeaderSection &field_lines);
+			void SetFieldSection(const http::FieldSection *field_lines);
 			void SetBody(const std::vector<char> *body);
 
 			const std::string          &Method() const;
 			const std::string          &Path() const;
-			const HeaderSection        &Headers() const;
+			const http::FieldSection   &Headers() const;
 			const http::RequestMessage &GetMessage() const;
 			const http::StatusCode     &GetErrStatusCode() const;
 			const std::vector<char>    *GetBody() const;
@@ -71,6 +73,7 @@ namespace server
 			State             state;
 			RequestLineParser request_line_parser;
 			BodyParser        body_parser;
+			FieldParser       field_parser;
 			Request          *request;
 		} ctx_;
 
