@@ -36,6 +36,7 @@ namespace utils
 	char                               &GetLastChar(std::string str);
 	std::pair<std::string, std::string> DivideBy(std::string str, char c);
 	std::vector<std::string>            Split(const std::string &str, const std::string delim);
+	std::string Join(const std::vector<std::string> &str_array, const std::string &separator);
 } // namespace utils
 
 #endif

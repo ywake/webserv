@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 
 namespace utils
 {
@@ -25,5 +26,17 @@ namespace utils
 			right = str.substr(pos + 1);
 		}
 		return std::pair<std::string, std::string>(left, right);
+	}
+
+	std::string Join(const std::vector<std::string> &str_array, const std::string &separator)
+	{
+		std::string joined_str;
+		for (size_t i = 0; i < str_array.size(); ++i) {
+			if (i != 0) {
+				joined_str += separator;
+			}
+			joined_str += str_array[i];
+		}
+		return joined_str;
 	}
 } // namespace utils
