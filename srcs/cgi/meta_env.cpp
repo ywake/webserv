@@ -15,7 +15,7 @@ namespace cgi
 	 * auth-schemeから設定
 	 * case insensitive
 	 */
-	void SetAuthType(std::vector<char *> &args, const server::IRequest &request)
+	void SetAuthType(std::vector<const char *> &envs, const server::IRequest &request)
 	{
 		HeaderSection::Values vals = request.Headers()["Authorization"];
 		if (vals.empty()) {
@@ -30,22 +30,22 @@ namespace cgi
 			return;
 		}
 		std::string auth_type_str = "AUTH_TYPE=" + auth_type;
-		args.push_back(const_cast<char *>(auth_type_str.c_str()));
+		envs.push_back(auth_type_str.c_str());
 	}
 
 	/**
 	 * message-bodyの大きさをオクテット単位で10進数で設定。なければ未設定
 	 * 転送符号化や内容符号化を除去した後の長さ
 	 */
-	void SetContentLength(std::vector<char *> &args, const server::IRequest &request)
+	void SetContentLength(std::vector<const char *> &envs, const server::IRequest &request)
 	{
 		const std::vector<char> *body = request.GetBody();
-		if (body == NULL || body->empty()) {
+		if (!request.GetMessage().HasMessageBody()) {
 			return;
 		}
 		std::stringstream ss;
 		ss << "CONTENT_LENGTH=" << body->size();
-		args.push_back(const_cast<char *>(ss.str().c_str()));
+		envs.push_back(ss.str().c_str());
 	}
 
 	/**
@@ -59,7 +59,7 @@ namespace cgi
 	 * media-type = type "/" subtype *( ";" parameter )
 	 * parameter = attribute "=" value
 	 */
-	void SetContentType(std::vector<char *> &args, const server::IRequest &request)
+	void SetContentType(std::vector<const char *> &envs, const server::IRequest &request)
 	{
 		HeaderSection::Values vals = request.Headers()["Content-Type"];
 		if (vals.empty()) {
@@ -71,17 +71,17 @@ namespace cgi
 			return;
 		}
 		std::string content_type_str = "CONTENT_TYPE=" + val;
-		args.push_back(const_cast<char *>(content_type_str.c_str()));
+		envs.push_back(content_type_str.c_str());
 	}
 
 	/**
 	 * 変数 GATEWAY_INTERFACE は、 鯖がスクリプトと通信するのに使用する CGI
 	 * の種類を設定しなければ**なりません**。
 	 */
-	void SetGatewayInterface(std::vector<char *> &args)
+	void SetGatewayInterface(std::vector<const char *> &envs)
 	{
 		std::string str = "GATEWAY_INTERFACE=CGI/" + CgiResponse::kCgiVersion;
-		args.push_back(const_cast<char *>(str.c_str()));
+		envs.push_back((str.c_str()));
 	}
 
 	void SetPathInfo(std::vector<const char *> &args, const std::string &path_info)
