@@ -62,6 +62,7 @@ namespace server
 
 	void ChunkedParser::InitParseContext()
 	{
+		ClearLoadedBytes();
 		ctx_.body        = new std::vector<char>();
 		ctx_.state       = kStandby;
 		ctx_.chunk_state = kChunkSize;
