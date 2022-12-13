@@ -88,6 +88,8 @@ namespace q_buffer
 			}
 			buf_.push_front(ByteArray(data.begin(), data.begin() + size));
 		}
+
+		void push_front(char c);
 	};
 } // namespace q_buffer
 

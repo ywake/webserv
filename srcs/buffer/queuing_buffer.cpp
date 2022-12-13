@@ -64,4 +64,16 @@ namespace q_buffer
 		return size_;
 	}
 
+	void QueuingBuffer::push_front(char c)
+	{
+		size_++;
+		if (front_idx_ > 0) {
+			front_idx_--;
+			buf_.front()[front_idx_] = c;
+			return;
+		}
+		buf_.push_front(ByteArray());
+		buf_.front().push_back(c);
+	}
+
 } // namespace q_buffer
