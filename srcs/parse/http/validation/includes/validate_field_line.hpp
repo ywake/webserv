@@ -8,6 +8,7 @@ namespace http
 	{
 		bool IsOws(const ThinString &str);
 		bool IsRws(const ThinString &str);
+		bool IsRws(char c);
 		bool StartWithObsFold(const ThinString &str);
 		bool EndWithObsFold(const ThinString &str);
 		bool IsFieldName(const ThinString &str);

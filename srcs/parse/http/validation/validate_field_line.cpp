@@ -24,6 +24,11 @@ namespace http
 			return !str.empty() && IsWhiteSpaceOnly(str);
 		}
 
+		bool IsRws(char c)
+		{
+			return kWhiteSpaces.find(c) != ThinString::npos;
+		}
+
 		// obs-fold = OWS CRLF RWS
 		bool StartWithObsFold(const ThinString &str)
 		{
