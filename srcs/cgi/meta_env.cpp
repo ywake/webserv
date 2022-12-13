@@ -15,7 +15,7 @@ namespace cgi
 	 * auth-schemeから設定
 	 * case insensitive
 	 */
-	void SetAuthType(std::vector<char *> &args, const server::IRequest &request)
+	void SetAuthType(std::vector<const char *> &envs, const server::IRequest &request)
 	{
 		HeaderSection::Values vals = request.Headers()["Authorization"];
 		if (vals.empty()) {
@@ -30,22 +30,22 @@ namespace cgi
 			return;
 		}
 		std::string auth_type_str = "AUTH_TYPE=" + auth_type;
-		args.push_back(const_cast<char *>(auth_type_str.c_str()));
+		envs.push_back(auth_type_str.c_str());
 	}
 
 	/**
 	 * message-bodyの大きさをオクテット単位で10進数で設定。なければ未設定
 	 * 転送符号化や内容符号化を除去した後の長さ
 	 */
-	void SetContentLength(std::vector<char *> &args, const server::IRequest &request)
+	void SetContentLength(std::vector<const char *> &envs, const server::IRequest &request)
 	{
 		const std::vector<char> *body = request.GetBody();
-		if (body == NULL || body->empty()) {
+		if (!request.GetMessage().HasMessageBody()) {
 			return;
 		}
 		std::stringstream ss;
 		ss << "CONTENT_LENGTH=" << body->size();
-		args.push_back(const_cast<char *>(ss.str().c_str()));
+		envs.push_back(const_cast<char *>(ss.str().c_str()));
 	}
 
 	/**
@@ -59,7 +59,7 @@ namespace cgi
 	 * media-type = type "/" subtype *( ";" parameter )
 	 * parameter = attribute "=" value
 	 */
-	void SetContentType(std::vector<char *> &args, const server::IRequest &request)
+	void SetContentType(std::vector<const char *> &envs, const server::IRequest &request)
 	{
 		HeaderSection::Values vals = request.Headers()["Content-Type"];
 		if (vals.empty()) {
@@ -71,7 +71,7 @@ namespace cgi
 			return;
 		}
 		std::string content_type_str = "CONTENT_TYPE=" + val;
-		args.push_back(const_cast<char *>(content_type_str.c_str()));
+		envs.push_back(content_type_str.c_str());
 	}
 
 	/**
