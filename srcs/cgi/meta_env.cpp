@@ -13,7 +13,7 @@ namespace cgi
 	 * auth-schemeから設定
 	 * case insensitive
 	 */
-	void SetAuthType(std::vector<char *> &args, const server::IRequest &request)
+	void SetAuthType(std::vector<char *> &envs, const server::IRequest &request)
 	{
 		HeaderSection::Values vals = request.Headers()["Authorization"];
 		if (vals.empty()) {
@@ -28,6 +28,6 @@ namespace cgi
 			return;
 		}
 		std::string auth_type_str = "AUTH_TYPE=" + auth_type;
-		args.push_back(const_cast<char *>(auth_type_str.c_str()));
+		args.push_back(auth_type_str.c_str());
 	}
 } // namespace cgi
