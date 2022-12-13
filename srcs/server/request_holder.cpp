@@ -7,7 +7,9 @@
 
 namespace server
 {
-	RequestHolder::RequestHolder() : request_queue_() {}
+	RequestHolder::RequestHolder(const conf::VirtualServerConfs *config)
+		: request_queue_(), parser_(config)
+	{}
 
 	RequestHolder::RequestHolder(const RequestHolder &other)
 	{
@@ -71,6 +73,7 @@ namespace server
 			 it++) {
 			request_queue_.push_back(RequestParser::CopyRequest(*it));
 		}
+		config_ = rhs.config_;
 		parser_ = rhs.parser_;
 		return *this;
 	}

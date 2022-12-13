@@ -30,7 +30,7 @@ namespace server
 		  configs_(configs),
 		  client_(client),
 		  reciever_(fd),
-		  request_holder_(),
+		  request_holder_(&configs),
 		  response_holder_(fd, configs, RequestHolder::DestroyRequest),
 		  is_finished_(false),
 		  time_()
