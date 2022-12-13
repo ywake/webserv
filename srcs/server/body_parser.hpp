@@ -1,43 +1,50 @@
 #ifndef BODY_PARSER_HPP
 #define BODY_PARSER_HPP
 
-#include "stateful_parser.hpp"
+#include "bytes_loader.hpp"
+#include "chunked_parser.hpp"
+#include "header_section.hpp"
+#include "virtual_server_confs.hpp"
 
 namespace server
 {
-	class BodyParser : public StatefulParser
+	class BodyParser
 	{
 	  private:
-		enum Mode {
+		enum State {
 			kStandby,
+			kParsing
+		};
+		enum Mode {
+			kUninitialized,
 			kContentLength,
 			kChunked
 		};
-		enum State {
-			kChunkSize,
-			kChunkData
-		};
 
 	  private:
+		std::size_t                     max_size_;
+		const conf::VirtualServerConfs *v_server_confs_;
+
 		struct Context {
-			std::vector<char> *body;
-			Mode               mode;
-			State              state;
+			BytesLoader   bytes_loader;
+			ChunkedParser chunked_parser;
+			Mode          mode;
+			State         state;
 		} ctx_;
 
 	  public:
-		BodyParser();
+		BodyParser(const conf::VirtualServerConfs *v_server_confs = &conf::kEmptyVserverConfs);
 		BodyParser(const BodyParser &other);
-		~BodyParser();
-		BodyParser                    &operator=(const BodyParser &rhs);
-		Emptiable<std::vector<char> *> Parse(q_buffer::QueuingBuffer &recieved);
-		bool                           HasInCompleteData();
+		BodyParser &operator=(const BodyParser &rhs);
+		Emptiable<std::vector<char> *>
+					Parse(q_buffer::QueuingBuffer &recieved, const HeaderSection &headers);
+		bool        HasInCompleteData();
+		static void DestroyBody(const std::vector<char> *body);
 
 	  private:
-		void        InitParseContext();
-		void        DestroyParseContext();
-		ParseResult CreateBody(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseChunked(q_buffer::QueuingBuffer &recieved);
+		void InitMode(const HeaderSection &headers);
+		void InitParseContext();
+		void DestroyParseContext();
 	};
 } // namespace server
 
