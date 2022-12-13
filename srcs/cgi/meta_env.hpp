@@ -3,5 +3,5 @@
 
 namespace cgi
 {
-	void SetAuthType(std::vector<const char *> &args, const server::IRequest &request);
+	void SetAuthType(std::vector<const char *> &envs, const server::IRequest &request);
 } // namespace cgi
