@@ -1,4 +1,5 @@
 #include "cgi_response.hpp"
+#include "meta_env.hpp"
 
 extern char **environ;
 
@@ -12,7 +13,7 @@ namespace cgi
 		if (args.IsErr()) {
 			exit(1);
 		}
-		Result<std::vector<char *> > envs = CreateEnvs();
+		Result<std::vector<const char *> > envs = CreateEnvs();
 		if (envs.IsErr()) {
 			exit(1);
 		}
@@ -27,7 +28,7 @@ namespace cgi
 		if (execve(
 				resource_path_.c_str(),
 				const_cast<char *const *>(args.Val().data()),
-				envs.Val().data()
+				const_cast<char *const *>(envs.Val().data())
 			) < 0) {
 			exit(1);
 		}
@@ -47,14 +48,21 @@ namespace cgi
 		return args;
 	}
 
-	Result<std::vector<char *> > CgiResponse::CreateEnvs()
+	Result<std::vector<const char *> > CgiResponse::CreateEnvs()
 	{
-		std::vector<char *> envs;
+		std::vector<const char *> envs;
 		for (size_t i = 0; environ[i] != NULL; ++i) {
 			envs.push_back(environ[i]);
 		}
+		SetMetaEnv(envs);
 		envs.push_back(NULL);
 		return envs;
+	}
+
+	void CgiResponse::SetMetaEnv(std::vector<const char *> &envs)
+	{
+		SetAuthType(envs, request_);
+		SetContentLength(envs, request_);
 	}
 
 	static Result<void> Dup2(int old_fd, int new_fd)

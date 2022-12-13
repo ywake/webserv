@@ -33,7 +33,8 @@ namespace utils
 	std::string             JoinPath(const std::string &parent, const std::string &child);
 
 	// string utils
-	char &GetLastChar(std::string str);
+	char                               &GetLastChar(std::string str);
+	std::pair<std::string, std::string> DivideBy(std::string str, char c);
 
 } // namespace utils
 
