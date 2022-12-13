@@ -64,6 +64,8 @@ namespace cgi
 		SetAuthType(envs, request_);
 		SetContentLength(envs, request_);
 		SetContentType(envs, request_);
+		SetGatewayInterface(envs);
+		SetPathInfo(envs, path_info_);
 	}
 
 	static Result<void> Dup2(int old_fd, int new_fd)
