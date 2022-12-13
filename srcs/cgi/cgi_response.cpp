@@ -1,4 +1,5 @@
 #include "cgi_response.hpp"
+#include "get_resource_pair.hpp"
 #include "http_exceptions.hpp"
 #include "stat.hpp"
 #include "webserv_utils.hpp"
@@ -10,7 +11,7 @@ namespace cgi
 {
 	const std::string CgiResponse::kCgiVersion = "1.1";
 
-	static bool                IsEndWithSlash(const std::string &str);
+	static void                ValidateResourcePair(const Result<CgiResponse::PathPair> &path_pair);
 	static CgiResponse::FdPair GetSocketFdPair();
 
 	// copy constructor
@@ -35,74 +36,15 @@ namespace cgi
 		  location_conf_(location_conf),
 		  is_finished_(false)
 	{
-		script_path_                 = GetResourcePath();
-		std::pair<int, int> sockpair = GetSocketFdPair();
+		Result<CgiResponse::PathPair> path_pair = GetResourcePair(location_conf_, request_);
+		ValidateResourcePair(path_pair);
+		script_path_                 = path_pair.Val().first;
+		path_info_                   = path_pair.Val().second;
+		CgiResponse::FdPair sockpair = GetSocketFdPair();
 		parent_fd_                   = ManagedFd(sockpair.first);
 		child_fd_                    = ManagedFd(sockpair.second);
 		q_buffer::QueuingWriter::push_back(*request.GetBody());
 		ExecCgi();
-	}
-
-	CgiResponse::Path CgiResponse::GetResourcePath() const
-	{
-		Result<CgiResponse::Path> resource_path = FindResourcePath();
-		if (resource_path.IsErr()) {
-			throw http::NotFoundException();
-		}
-		result::Result<Stat> stat = Stat::FromPath(resource_path.Val());
-		if (stat.IsErr()) {
-			throw http::InternalServerErrorException();
-		} else if (!stat.Val().IsRegularFile()) {
-			throw http::ForbiddenException();
-		}
-		return resource_path.Val();
-	}
-
-	Result<CgiResponse::Path> CgiResponse::FindResourcePath() const
-	{
-		CgiResponse::Path base_path = utils::JoinPath(location_conf_.GetRoot(), request_.Path());
-		if (IsEndWithSlash(base_path)) {
-			std::vector<CgiResponse::Path> candidates = CombineIndexFiles(base_path);
-			return FindAccessiblePathFromArray(candidates);
-		} else {
-			return GetAccessiblePath(base_path);
-		}
-	}
-
-	std::vector<CgiResponse::Path> CgiResponse::CombineIndexFiles(const CgiResponse::Path &base_path
-	) const
-	{
-		std::vector<CgiResponse::Path> path_array;
-		std::vector<CgiResponse::Path> index_files = location_conf_.GetIndexFiles();
-		for (size_t i = 0; i < index_files.size(); ++i) {
-			CgiResponse::Path combined_path = utils::JoinPath(base_path, index_files[i]);
-			path_array.push_back(combined_path);
-		}
-		return path_array;
-	}
-
-	Result<CgiResponse::Path>
-	CgiResponse::FindAccessiblePathFromArray(const std::vector<Path> &candidates) const
-	{
-		for (size_t i = 0; i < candidates.size(); ++i) {
-			Result<CgiResponse::Path> accessible_path = GetAccessiblePath(candidates[i]);
-			if (accessible_path.IsOk()) {
-				return accessible_path;
-			}
-		}
-		return Error("No accessible path");
-	}
-
-	Result<CgiResponse::Path> CgiResponse::GetAccessiblePath(const CgiResponse::Path &path) const
-	{
-		Result<CgiResponse::Path> normalized_path = utils::NormalizePath(path);
-		if (normalized_path.IsErr()) {
-			return Error("Normalize path failed");
-		}
-		if (access(normalized_path.Val().c_str(), R_OK) < 0) {
-			return Error("Access failed");
-		}
-		return normalized_path;
 	}
 
 	CgiResponse::~CgiResponse() {}
@@ -124,9 +66,18 @@ namespace cgi
 		return *this;
 	}
 
-	static bool IsEndWithSlash(const std::string &str)
+	void ValidateResourcePair(const Result<CgiResponse::PathPair> &path_pair)
 	{
-		return !str.empty() && utils::GetLastChar(str) == '/';
+		if (path_pair.IsErr()) {
+			throw http::NotFoundException();
+		}
+		CgiResponse::Path    script_path = path_pair.Val().first;
+		result::Result<Stat> stat        = Stat::FromPath(script_path);
+		if (stat.IsErr()) {
+			throw http::InternalServerErrorException();
+		} else if (!stat.Val().IsRegularFile()) {
+			throw http::ForbiddenException();
+		}
 	}
 
 	static CgiResponse::FdPair GetSocketFdPair()

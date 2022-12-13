@@ -41,13 +41,6 @@ namespace cgi
 
 		// Methods
 	  private:
-		CgiResponse::Path         GetResourcePath() const;
-		Result<CgiResponse::Path> FindResourcePath() const;
-		Result<CgiResponse::Path> GetAccessiblePath(const CgiResponse::Path &path) const;
-		std::vector<Path>         CombineIndexFiles(const Path &base_path) const;
-		Result<CgiResponse::Path> FindAccessiblePathFromArray(const std::vector<Path> &candidates
-		) const;
-
 		void                               OnWriteReady();
 		void                               ExecCgi();
 		void                               ChildProcess();
