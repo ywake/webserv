@@ -31,6 +31,9 @@ namespace cgi
 		CgiResponse(server::IRequest &request, conf::LocationConf &location_conf);
 		~CgiResponse();
 
+	  public:
+		typedef std::pair<int, int>   FdPair;
+
 		// Methods
 	  private:
 		CgiResponse::Path         GetResourcePath() const;

@@ -10,7 +10,8 @@ namespace cgi
 {
 	const std::string CgiResponse::kCgiVersion = "1.1";
 
-	static bool IsEndWithSlash(const std::string &str);
+	static bool                IsEndWithSlash(const std::string &str);
+	static CgiResponse::FdPair GetSocketFdPair();
 
 	// copy constructor
 	CgiResponse::CgiResponse(const CgiResponse &other)
@@ -34,13 +35,10 @@ namespace cgi
 		  resource_path_(),
 		  is_finished_(false)
 	{
-		resource_path_ = GetResourcePath();
-		int fds[2];
-		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds)) {
-			throw http::InternalServerErrorException();
-		}
-		parent_fd_ = ManagedFd(fds[0]);
-		child_fd_  = ManagedFd(fds[1]);
+		resource_path_               = GetResourcePath();
+		std::pair<int, int> sockpair = GetSocketFdPair();
+		parent_fd_                   = ManagedFd(sockpair.first);
+		child_fd_                    = ManagedFd(sockpair.second);
 		q_buffer::QueuingWriter::push_back(*request.GetBody());
 		ExecCgi();
 	}
@@ -128,5 +126,14 @@ namespace cgi
 	static bool IsEndWithSlash(const std::string &str)
 	{
 		return !str.empty() && utils::GetLastChar(str) == '/';
+	}
+
+	static CgiResponse::FdPair GetSocketFdPair()
+	{
+		int fds[2];
+		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds)) {
+			throw http::InternalServerErrorException();
+		}
+		return CgiResponse::FdPair(fds[0], fds[1]);
 	}
 } // namespace cgi
