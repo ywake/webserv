@@ -40,6 +40,7 @@ namespace server
 					Parse(q_buffer::QueuingBuffer &recieved, const http::FieldSection &headers);
 		bool        HasInCompleteData();
 		static void DestroyBody(const std::vector<char> *body);
+		static std::vector<char> *CopyBody(const std::vector<char> *src);
 
 	  private:
 		void InitMode(const http::FieldSection &headers);
