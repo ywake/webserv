@@ -46,4 +46,30 @@ namespace cgi
 		ss << "CONTENT_LENGTH=" << body->size();
 		envs.push_back(const_cast<char *>(ss.str().c_str()));
 	}
+
+	/**
+	 * 鯖は HTTP Content-Type欄がクライアント要求頭に存在していれば
+	 * 好めた変数を設定しなければ**なりません**。
+	 * 鯖が実体は付されているにもかかわらず Content-Type
+	 * 頭欄のない要求を受信したら、正しい内容型を決定しようと試みて構いませんが、
+	 * そうでなければこのメタ変数は省略するべきです。
+	 *
+	 * Content-Type = media-type
+	 * media-type = type "/" subtype *( ";" parameter )
+	 * parameter = attribute "=" value
+	 */
+	void SetContentType(std::vector<const char *> &envs, const server::IRequest &request)
+	{
+		HeaderSection::Values vals = request.Headers()["Content-Type"];
+		if (vals.empty()) {
+			return;
+		}
+		// list(#表記)が許可されてないので先頭のみ処理
+		std::string val = vals.front().GetValue();
+		if (val.empty()) {
+			return;
+		}
+		std::string content_type_str = "CONTENT_TYPE=" + val;
+		envs.push_back(content_type_str.c_str());
+	}
 } // namespace cgi
