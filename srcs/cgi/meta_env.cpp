@@ -83,4 +83,10 @@ namespace cgi
 		std::string str = "GATEWAY_INTERFACE=CGI/" + CgiResponse::kCgiVersion;
 		args.push_back(const_cast<char *>(str.c_str()));
 	}
+
+	void SetPathInfo(std::vector<const char *> &args, const std::string &path_info)
+	{
+		std::string path_info_str = "PATH_INFO=" + path_info;
+		args.push_back((path_info_str.c_str()));
+	}
 } // namespace cgi
