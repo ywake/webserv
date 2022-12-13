@@ -14,7 +14,8 @@ namespace server
 
 	ChunkedParser::ChunkedParser(const ChunkedParser &other) : StatefulParser()
 	{
-		*this = other;
+		ctx_.body = new std::vector<char>();
+		*this     = other;
 	}
 
 	ChunkedParser::~ChunkedParser()
