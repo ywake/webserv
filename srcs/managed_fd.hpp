@@ -26,7 +26,8 @@ class ManagedFd
 	virtual ~ManagedFd();
 
 	// tmp
-	int GetFd() const;
+	int  GetFd() const;
+	void Close();
 
   private:
 	void CountUp(int fd);
