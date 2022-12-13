@@ -18,12 +18,8 @@ namespace utils
 			return std::pair<std::string, std::string>(left, right);
 		}
 		/* pos != std::string::npos */
-		left = str.substr(0, pos);
-		if (pos == str.size() - 1) {
-			right = "";
-		} else {
-			right = str.substr(pos + 1);
-		}
+		left  = str.substr(0, pos);
+		right = str.substr(pos + 1);
 		return std::pair<std::string, std::string>(left, right);
 	}
 } // namespace utils
