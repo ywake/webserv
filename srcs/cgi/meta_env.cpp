@@ -84,12 +84,12 @@ namespace cgi
 		envs.push_back((str.c_str()));
 	}
 
-	void SetPathInfo(std::vector<const char *> &args, const std::string &path_info)
+	void SetPathInfo(std::vector<const char *> &envs, const std::string &path_info)
 	{
 		if (path_info.empty()) {
 			return;
 		}
 		std::string path_info_str = "PATH_INFO=" + path_info;
-		args.push_back((path_info_str.c_str()));
+		envs.push_back((path_info_str.c_str()));
 	}
 } // namespace cgi
