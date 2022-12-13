@@ -35,7 +35,7 @@ namespace utils
 	// string utils
 	char                               &GetLastChar(std::string str);
 	std::pair<std::string, std::string> DivideBy(std::string str, char c);
-
+	std::vector<std::string>            Split(const std::string &str, const std::string delim);
 } // namespace utils
 
 #endif
