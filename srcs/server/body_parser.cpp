@@ -119,4 +119,11 @@ namespace server
 		delete body;
 	}
 
+	std::vector<char> *BodyParser::CopyBody(const std::vector<char> *src)
+	{
+		if (src == NULL) {
+			return NULL;
+		}
+		return new std::vector<char>(*src);
+	}
 } // namespace server
