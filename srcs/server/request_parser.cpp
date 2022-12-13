@@ -219,19 +219,8 @@ namespace server
 		Request *req = new Request();
 		req->SetRequestLine(src->GetMessage().GetRequestLine());
 		req->SetError(src->GetErrStatusCode(), src->GetErrorType());
-		if (&src->Headers() == NULL) {
-			req->SetFieldSection(NULL);
-		} else {
-			http::FieldSection *field_section = new http::FieldSection(src->Headers());
-			req->SetFieldSection(field_section);
-		}
-		if (src->GetBody() == NULL) {
-			req->SetBody(NULL);
-		} else {
-			std::vector<char> *body =
-				new std::vector<char>(src->GetBody()->begin(), src->GetBody()->end());
-			req->SetBody(body);
-		}
+		req->SetFieldSection(FieldParser::CopyFieldSection(&src->Headers()));
+		req->SetBody(BodyParser::CopyBody(src->GetBody()));
 		return req;
 	}
 
