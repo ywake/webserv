@@ -78,9 +78,9 @@ namespace cgi
 	 * 変数 GATEWAY_INTERFACE は、 鯖がスクリプトと通信するのに使用する CGI
 	 * の種類を設定しなければ**なりません**。
 	 */
-	void SetGatewayInterface(std::vector<char *> &args)
+	void SetGatewayInterface(std::vector<const char *> &envs)
 	{
 		std::string str = "GATEWAY_INTERFACE=CGI/" + CgiResponse::kCgiVersion;
-		args.push_back(const_cast<char *>(str.c_str()));
+		envs.push_back((str.c_str()));
 	}
 } // namespace cgi
