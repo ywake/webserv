@@ -45,7 +45,7 @@ namespace cgi
 		}
 		std::stringstream ss;
 		ss << "CONTENT_LENGTH=" << body->size();
-		envs.push_back(const_cast<char *>(ss.str().c_str()));
+		envs.push_back(ss.str().c_str());
 	}
 
 	/**
