@@ -1,3 +1,4 @@
+#include "cgi_response.hpp"
 #include "i_request.hpp"
 #include "webserv_utils.hpp"
 #include <sstream>
@@ -71,5 +72,15 @@ namespace cgi
 		}
 		std::string content_type_str = "CONTENT_TYPE=" + val;
 		envs.push_back(content_type_str.c_str());
+	}
+
+	/**
+	 * 変数 GATEWAY_INTERFACE は、 鯖がスクリプトと通信するのに使用する CGI
+	 * の種類を設定しなければ**なりません**。
+	 */
+	void SetGatewayInterface(std::vector<const char *> &envs)
+	{
+		std::string str = "GATEWAY_INTERFACE=CGI/" + CgiResponse::kCgiVersion;
+		envs.push_back((str.c_str()));
 	}
 } // namespace cgi
