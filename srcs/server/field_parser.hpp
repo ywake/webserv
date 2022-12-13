@@ -30,6 +30,7 @@ namespace server
 		FieldParser                    &operator=(const FieldParser &rhs);
 		Emptiable<http::FieldSection *> Parse(q_buffer::QueuingBuffer &recieved);
 		static void                     DestroyFieldSection(const http::FieldSection *fields);
+		static http::FieldSection      *CopyFieldSection(const http::FieldSection *src);
 
 	  private:
 		void        InitParseContext();

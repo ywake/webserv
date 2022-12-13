@@ -128,4 +128,12 @@ namespace server
 		delete fields;
 	}
 
+	http::FieldSection *FieldParser::CopyFieldSection(const http::FieldSection *src)
+	{
+		if (src == NULL) {
+			return NULL;
+		}
+		return new http::FieldSection(*src);
+	}
+
 } // namespace server
