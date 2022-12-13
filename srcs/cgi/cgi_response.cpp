@@ -169,7 +169,7 @@ namespace cgi
 			exit(1);
 		}
 
-		close(parent_fd_.GetFd());
+		parent_fd_.Close();
 		if (Dup2(child_fd_.GetFd(), STDIN_FILENO).IsErr()) {
 			exit(1);
 		}
@@ -212,7 +212,7 @@ namespace cgi
 	void CgiResponse::ParentProcess(pid_t pid)
 	{
 		(void)pid;
-		close(child_fd_.GetFd());
+		child_fd_.Close();
 	}
 
 	void CgiResponse::OnReadReady() {}
