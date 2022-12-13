@@ -26,7 +26,7 @@ namespace cgi
 			exit(1);
 		}
 		if (execve(
-				resource_path_.c_str(),
+				script_path_.c_str(),
 				const_cast<char *const *>(args.Val().data()),
 				envs.Val().data()
 			) < 0) {
@@ -43,7 +43,7 @@ namespace cgi
 		}
 		std::vector<const char *> args;
 		args.push_back(cgi_path.Value().c_str());
-		args.push_back(resource_path_.c_str());
+		args.push_back(script_path_.c_str());
 		args.push_back(NULL);
 		return args;
 	}

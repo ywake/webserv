@@ -20,7 +20,8 @@ namespace cgi
 		  q_buffer::QueuingReader(other),
 		  request_(other.request_),
 		  location_conf_(other.location_conf_),
-		  resource_path_(other.resource_path_),
+		  script_path_(other.script_path_),
+		  path_info_(other.path_info_),
 		  parent_fd_(other.parent_fd_),
 		  child_fd_(other.child_fd_),
 		  is_finished_(false)
@@ -32,10 +33,9 @@ namespace cgi
 		  q_buffer::QueuingReader(),
 		  request_(request),
 		  location_conf_(location_conf),
-		  resource_path_(),
 		  is_finished_(false)
 	{
-		resource_path_               = GetResourcePath();
+		script_path_                 = GetResourcePath();
 		std::pair<int, int> sockpair = GetSocketFdPair();
 		parent_fd_                   = ManagedFd(sockpair.first);
 		child_fd_                    = ManagedFd(sockpair.second);
@@ -114,7 +114,8 @@ namespace cgi
 		}
 		request_       = other.request_;
 		location_conf_ = other.location_conf_;
-		resource_path_ = other.resource_path_;
+		script_path_   = other.script_path_;
+		path_info_     = other.path_info_;
 		parent_fd_     = other.parent_fd_;
 		child_fd_      = other.child_fd_;
 		is_finished_   = other.is_finished_;

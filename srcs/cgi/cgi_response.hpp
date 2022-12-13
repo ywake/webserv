@@ -21,7 +21,8 @@ namespace cgi
 	  private:
 		server::IRequest   &request_;
 		conf::LocationConf &location_conf_;
-		Path                resource_path_;
+		Path                script_path_;
+		Path                path_info_;
 		ManagedFd           parent_fd_;
 		ManagedFd           child_fd_;
 		bool                is_finished_;
@@ -32,6 +33,7 @@ namespace cgi
 		~CgiResponse();
 
 	  public:
+		typedef std::pair<Path, Path> PathPair;
 		typedef std::pair<int, int>   FdPair;
 
 		// Methods
