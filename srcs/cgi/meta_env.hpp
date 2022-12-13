@@ -13,4 +13,5 @@ namespace cgi
 		const std::string         &script_path,
 		const std::string         &path_info
 	);
+	void SetQueryString(std::vector<const char *> &envs, const server::IRequest &request);
 } // namespace cgi

@@ -110,4 +110,17 @@ namespace cgi
 		std::string path_translated_str = "PATH_TRANSLATED=" + path_translated;
 		envs.push_back(path_translated_str.c_str());
 	}
+
+	/**
+	 * 鯖はこの値を必ず設定しなければなりません。 URL に query
+	 * が含まれていなければ空文字列としなければなりません。
+	 * queryは最初の ? より後で、 # より前の部分
+	 */
+	void SetQueryString(std::vector<const char *> &envs, const server::IRequest &request)
+	{
+		std::string query_string =
+			request.GetMessage().GetRequestLine().GetRequestTarget().GetRequestFormData().query_;
+		std::string query_string_str = "QUERY_STRING=" + query_string;
+		envs.push_back(query_string_str.c_str());
+	}
 } // namespace cgi

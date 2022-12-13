@@ -67,6 +67,7 @@ namespace cgi
 		SetGatewayInterface(envs);
 		SetPathInfo(envs, path_info_);
 		SetPathTranslated(envs, script_path_, path_info_);
+		SetQueryString(envs, request_);
 	}
 
 	static Result<void> Dup2(int old_fd, int new_fd)
