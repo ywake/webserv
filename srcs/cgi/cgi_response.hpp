@@ -1,3 +1,6 @@
+#ifndef CGI_RESPONSE_HPP
+#define CGI_RESPONSE_HPP
+
 #include "i_request.hpp"
 #include "i_response.hpp"
 #include "location_conf.hpp"
@@ -69,3 +72,5 @@ namespace cgi
 	};
 
 } // namespace cgi
+
+#endif
