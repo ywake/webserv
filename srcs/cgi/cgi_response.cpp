@@ -8,6 +8,8 @@
 
 namespace cgi
 {
+	const std::string CgiResponse::kCgiVersion = "1.1";
+
 	static bool IsEndWithSlash(const std::string &str);
 
 	// copy constructor

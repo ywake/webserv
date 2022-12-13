@@ -15,6 +15,9 @@ namespace cgi
 	  public:
 		typedef std::string Path;
 
+	  public:
+		static const std::string kCgiVersion;
+
 	  private:
 		server::IRequest   &request_;
 		conf::LocationConf &location_conf_;
