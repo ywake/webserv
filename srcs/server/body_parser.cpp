@@ -49,9 +49,8 @@ namespace server
 	{
 		try {
 			if (ctx_.state == kStandby) {
-				ctx_.state                   = kParsing;
-				const conf::ServerConf &conf = GetServerConf(*v_server_confs_, headers["host"]);
-				max_size_                    = conf.GetClientMaxBodySize();
+				ctx_.state = kParsing;
+				InitMaxSize(headers);
 				InitMode(headers);
 			}
 			Emptiable<std::vector<char> *> body;

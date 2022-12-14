@@ -43,6 +43,7 @@ namespace server
 		static std::vector<char> *CopyBody(const std::vector<char> *src);
 
 	  private:
+		void InitMaxSize(const http::FieldSection &headers);
 		void InitMode(const http::FieldSection &headers);
 		void InitParseContext();
 		void DestroyParseContext();
