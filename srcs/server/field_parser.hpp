@@ -34,9 +34,11 @@ namespace server
 
 	  private:
 		void        InitParseContext();
-		void        DestroyParseContext();
 		ParseResult CreateFieldSection(q_buffer::QueuingBuffer &recieved);
 		LoadResult  LoadFieldLine(q_buffer::QueuingBuffer &recieved, std::size_t max_bytes);
+
+	  protected:
+		void DestroyParseContext();
 	};
 } // namespace server
 

@@ -1,4 +1,5 @@
 #include "header_parser.hpp"
+#include "debug.hpp"
 #include "host_port.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
@@ -31,7 +32,14 @@ namespace server
 		if (headers.empty()) {
 			return Emptiable<http::FieldSection *>();
 		}
-		ParseEachHeaders(*headers.Value());
+		try {
+			ParseEachHeaders(*headers.Value());
+		} catch (http::HttpException &e) {
+			log("header section parser", e.what());
+			DestroyParseContext();
+			delete headers.Value();
+			throw e;
+		}
 		return headers.Value();
 	}
 
