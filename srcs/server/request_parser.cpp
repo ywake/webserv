@@ -32,8 +32,7 @@ namespace server
 		ctx_.header_parser       = rhs.ctx_.header_parser;
 		ctx_.body_parser         = rhs.ctx_.body_parser;
 		ctx_.state               = rhs.ctx_.state;
-		IRequest *req            = ctx_.request;
-		DestroyIRequest(req);
+		DestroyRequest(ctx_.request);
 		ctx_.request = CopyRequest(rhs.ctx_.request);
 		return *this;
 	}
