@@ -80,7 +80,7 @@ namespace server
 		if (values.empty()) {
 			return;
 		}
-		if (values.size() != 1 || http::headers::IsValidContentLength(values.front().GetValue())) {
+		if (values.size() != 1 || !http::headers::IsValidContentLength(values.front().GetValue())) {
 			throw http::BadRequestException();
 		}
 	}
