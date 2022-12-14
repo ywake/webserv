@@ -50,6 +50,9 @@ namespace cgi
 
 	Result<Path> GetCorrectPath(const Path &path)
 	{
+		if (path.empty()) {
+			return Error("Empty path");
+		}
 		Result<Path> normalized_path = utils::NormalizePath(path);
 		if (normalized_path.IsErr()) {
 			return Error("Normalize path failed");
@@ -83,7 +86,7 @@ namespace cgi
 	{
 		std::vector<PathPair> path_pair_array;
 		std::vector<Path>     split = utils::Split(path, "/");
-		for (std::vector<std::string>::iterator sep = split.begin(); sep < split.end(); ++sep) {
+		for (std::vector<std::string>::iterator sep = split.begin(); sep != split.end(); ++sep) {
 			if (sep->empty()) {
 				continue;
 			}
