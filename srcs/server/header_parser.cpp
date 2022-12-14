@@ -1,5 +1,7 @@
 #include "header_parser.hpp"
-#include "webserv_utils.hpp"
+#include "host_port.hpp"
+#include "http_exceptions.hpp"
+#include "validate_headers.hpp"
 
 namespace server
 {
@@ -26,7 +28,16 @@ namespace server
 			return Emptiable<http::FieldSection *>();
 		}
 		http::FieldSection &headers = *headers_or_empty.Value();
+		ValidateHost(headers["host"]);
 		return &headers;
+	}
+
+	void HeaderParser::ValidateHost(const http::FieldSection::Values &values)
+	{
+		if (!http::headers::HasSingleHost(values)) {
+			throw http::BadRequestException();
+		}
+		(void)http::abnf::HostPort(values.front().GetValue());
 	}
 
 } // namespace server
