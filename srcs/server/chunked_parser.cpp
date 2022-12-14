@@ -51,6 +51,7 @@ namespace server
 			}
 			return Emptiable<std::vector<char> *>();
 		} catch (http::HttpException &e) {
+			log("chunked parser", e.what());
 			DestroyParseContext();
 			throw e;
 		}
@@ -196,6 +197,7 @@ namespace server
 		if (fields.empty()) {
 			return kInProgress;
 		}
+		log("trailer done", *fields.Value(), "\n");
 		delete fields.Value();
 		return kDone;
 	}
