@@ -204,6 +204,7 @@ namespace server
 
 	void RequestParser::DestroyRequest(IRequest *&request)
 	{
+		FieldParser::DestroyFieldSection(&request->Headers());
 		BodyParser::DestroyBody(request->GetBody());
 		utils::DeleteSafe(request);
 	}
