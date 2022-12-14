@@ -8,8 +8,6 @@ namespace server
 {
 	using namespace event;
 
-	static const conf::VirtualServerConfs kEmptyConf = conf::VirtualServerConfs();
-
 	const std::size_t ResponseHolder::kMaxBufSize = 8196;
 
 	inline const conf::ServerConf &ResponseHolder::GetServerConf(const IRequest &request)
