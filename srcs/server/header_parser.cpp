@@ -1,8 +1,8 @@
 #include "header_parser.hpp"
 #include "host_port.hpp"
+#include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "validate_headers.hpp"
-
 namespace server
 {
 	HeaderParser::HeaderParser() : FieldParser() {}
@@ -29,6 +29,9 @@ namespace server
 		}
 		http::FieldSection &headers = *headers_or_empty.Value();
 		ValidateHost(headers["host"]);
+		if (headers.Contains(http::kContentLength)) {
+			ValidateContentLength(headers[http::kContentLength]);
+		}
 		return &headers;
 	}
 
@@ -38,6 +41,17 @@ namespace server
 			throw http::BadRequestException();
 		}
 		(void)http::abnf::HostPort(values.front().GetValue());
+	}
+
+	// [RFC 9110 8.6 末尾] 複数ある場合は却下してもよい
+	void HeaderParser::ValidateContentLength(const http::FieldSection::Values &values)
+	{
+		if (values.empty()) {
+			return;
+		}
+		if (values.size() != 1 || http::headers::IsValidContentLength(values.front().GetValue())) {
+			throw http::BadRequestException();
+		}
 	}
 
 } // namespace server

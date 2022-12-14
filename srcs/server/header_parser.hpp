@@ -15,6 +15,7 @@ namespace server
 
 	  private:
 		void ValidateHost(const http::FieldSection::Values &values);
+		void ValidateContentLength(const http::FieldSection::Values &values);
 	};
 } // namespace server
 
