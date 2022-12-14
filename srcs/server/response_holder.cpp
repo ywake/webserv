@@ -12,7 +12,7 @@ namespace server
 
 	inline const conf::ServerConf &ResponseHolder::GetServerConf(const IRequest &request)
 	{
-		if (request.Headers()["host"].empty()) {
+		if (request.Headers().Contains("host")) {
 			return config_->GetDefaultServerConf();
 		} else {
 			const std::string &host = request.Headers()["host"].front().GetValue();
