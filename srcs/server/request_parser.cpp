@@ -139,6 +139,7 @@ namespace server
 			if (!(res == kDone && ctx_.request->HasMessageBody())) {
 				return res;
 			}
+			ctx_.state = kBody;
 		}
 		/* Falls through. */
 		case kBody:
