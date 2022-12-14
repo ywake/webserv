@@ -61,6 +61,7 @@ namespace server
 		ctx_.state = kParsing;
 		try {
 			if (CreateFieldSection(recieved) == kDone) {
+				log("field parse success", ctx_.fields);
 				http::FieldSection *fields = ctx_.fields;
 				InitParseContext();
 				return fields;

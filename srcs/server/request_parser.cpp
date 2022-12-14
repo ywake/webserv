@@ -80,6 +80,7 @@ namespace server
 			}
 			return Emptiable<IRequest *>();
 		} catch (http::HttpException &e) {
+			log("request parser", e.what());
 			DestroyParseContext();
 			return new Request(e.GetStatusCode(), Request::kFatal);
 		}
