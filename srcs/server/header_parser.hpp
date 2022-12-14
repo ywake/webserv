@@ -17,6 +17,7 @@ namespace server
 		void                       ValidateHost(const http::FieldSection::Values &values);
 		void                       ValidateContentLength(const http::FieldSection::Values &values);
 		http::FieldSection::Values ParseConnection(const http::FieldSection::Values &values);
+		http::FieldSection::Values ParseTransferEncoding(const http::FieldSection::Values &values);
 	};
 } // namespace server
 
