@@ -12,6 +12,9 @@ namespace server
 		HeaderParser(const FieldParser &other);
 		FieldParser                    &operator=(const FieldParser &rhs);
 		Emptiable<http::FieldSection *> Parse(q_buffer::QueuingBuffer &recieved);
+
+	  private:
+		void ValidateHost(const http::FieldSection::Values &values);
 	};
 } // namespace server
 
