@@ -1,5 +1,3 @@
-#include <cassert>
-
 #include "body_parser.hpp"
 #include "debug.hpp"
 #include "http_define.hpp"
