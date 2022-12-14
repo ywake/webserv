@@ -36,7 +36,7 @@ namespace server
 		in_progress_.push_back(Task(request, NULL));
 		if (request->IsErr()) {
 			in_progress_.back().second =
-				new ErrorResponse(request->GetErrStatusCode(), GetServerConf(*request));
+				new ErrorResponse(request->GetErrStatusCode(), config_.GetDefaultServerConf());
 			return CreateInstructionsForNewResopnse(*in_progress_.back().second);
 		}
 		IResponse *new_response    = CreateNewResponse(*request);
