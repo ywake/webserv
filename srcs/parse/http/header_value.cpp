@@ -33,6 +33,11 @@ const std::string &HeaderValue::GetValue() const
 	return value_;
 }
 
+bool HeaderValue::empty() const
+{
+	return value_.empty();
+}
+
 std::ostream &operator<<(std::ostream &os, const HeaderValue &field_value)
 {
 	os << field_value.GetValue();
