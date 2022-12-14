@@ -26,11 +26,11 @@ namespace server
 		class Request : public IRequest
 		{
 		  private:
-			http::RequestMessage      request_msg_;
-			const http::FieldSection *field_section_;
-			const std::vector<char>  *body_;
-			http::StatusCode          error_code_;
-			ErrorType                 error_type_;
+			http::RequestMessage     request_msg_;
+			http::FieldSection      *field_section_;
+			const std::vector<char> *body_;
+			http::StatusCode         error_code_;
+			ErrorType                error_type_;
 
 		  private:
 			Request(const Request &other);
@@ -46,11 +46,12 @@ namespace server
 
 			void SetError(const http::StatusCode &error_code, ErrorType error_type);
 			void SetRequestLine(const RequestLine &request_line);
-			void SetFieldSection(const http::FieldSection *field_lines);
+			void SetFieldSection(http::FieldSection *field_lines);
 			void SetBody(const std::vector<char> *body);
 
 			const std::string          &Method() const;
 			const std::string          &Path() const;
+			http::FieldSection         &Headers();
 			const http::FieldSection   &Headers() const;
 			const http::RequestMessage &GetMessage() const;
 			const http::StatusCode     &GetErrStatusCode() const;

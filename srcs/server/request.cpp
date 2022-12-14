@@ -51,7 +51,7 @@ namespace server
 		request_msg_.SetRequestLine(request_line);
 	}
 
-	void RequestParser::Request::SetFieldSection(const http::FieldSection *field_section)
+	void RequestParser::Request::SetFieldSection(http::FieldSection *field_section)
 	{
 		field_section_ = field_section;
 	}
@@ -72,6 +72,11 @@ namespace server
 	}
 
 	const http::FieldSection &RequestParser::Request::Headers() const
+	{
+		return *field_section_;
+	}
+
+	http::FieldSection &RequestParser::Request::Headers()
 	{
 		return *field_section_;
 	}
