@@ -33,10 +33,14 @@ namespace server
 		}
 		http::FieldSection &headers = *headers_or_empty.Value();
 		ValidateHost(headers["host"]);
-		if (headers.Contains(http::kContentLength)) {
+
+		bool has_content_length    = headers.Contains(http::kContentLength);
+		bool has_transfer_encoding = headers.Contains(http::kTransferEncoding);
+		if (has_content_length && has_transfer_encoding) {
+			throw http::BadRequestException();
+		} else if (has_content_length) {
 			ValidateContentLength(headers[http::kContentLength]);
-		}
-		if (headers.Contains(http::kTransferEncoding)) {
+		} else if (has_transfer_encoding) {
 			http::FieldSection::Values &te_header = headers[http::kTransferEncoding];
 			te_header                             = ParseTransferEncoding(te_header);
 			if (!http::headers::IsValidTransferEncoding(te_header) ||
