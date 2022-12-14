@@ -27,13 +27,17 @@ namespace server
 
 	Emptiable<http::FieldSection *> HeaderParser::Parse(q_buffer::QueuingBuffer &recieved)
 	{
-		Emptiable<http::FieldSection *> headers_or_empty = FieldParser::Parse(recieved);
-		if (headers_or_empty.empty()) {
+		Emptiable<http::FieldSection *> headers = FieldParser::Parse(recieved);
+		if (headers.empty()) {
 			return Emptiable<http::FieldSection *>();
 		}
-		http::FieldSection &headers = *headers_or_empty.Value();
-		ValidateHost(headers["host"]);
+		ParseEachHeaders(*headers.Value());
+		return headers.Value();
+	}
 
+	void HeaderParser::ParseEachHeaders(http::FieldSection &headers)
+	{
+		ValidateHost(headers["host"]);
 		bool has_content_length    = headers.Contains(http::kContentLength);
 		bool has_transfer_encoding = headers.Contains(http::kTransferEncoding);
 		if (has_content_length && has_transfer_encoding) {
@@ -52,7 +56,6 @@ namespace server
 			http::FieldSection::Values &con_header = headers[http::kConnection];
 			con_header                             = ParseConnection(con_header);
 		}
-		return &headers;
 	}
 
 	void HeaderParser::ValidateHost(const http::FieldSection::Values &values)

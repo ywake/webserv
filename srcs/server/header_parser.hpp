@@ -14,6 +14,7 @@ namespace server
 		Emptiable<http::FieldSection *> Parse(q_buffer::QueuingBuffer &recieved);
 
 	  private:
+		void                       ParseEachHeaders(http::FieldSection &headers);
 		void                       ValidateHost(const http::FieldSection::Values &values);
 		void                       ValidateContentLength(const http::FieldSection::Values &values);
 		http::FieldSection::Values ParseConnection(const http::FieldSection::Values &values);
