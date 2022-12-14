@@ -45,7 +45,7 @@ namespace server
 	}
 
 	Emptiable<std::vector<char> *>
-	BodyParser::Parse(q_buffer::QueuingBuffer &recieved, const http::FieldSection &headers)
+	BodyParser::Parse(q_buffer::QueuingBuffer &recieved, http::FieldSection &headers)
 	{
 		try {
 			if (ctx_.state == kStandby) {
