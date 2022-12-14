@@ -1,4 +1,5 @@
 #include "response_holder.hpp"
+#include "debug.hpp"
 #include "error_response.hpp"
 #include "http_exceptions.hpp"
 #include "static_response.hpp"
@@ -14,29 +15,34 @@ namespace server
 	inline const conf::ServerConf &ResponseHolder::GetServerConf(const IRequest &request)
 	{
 		if (request.Headers()["host"].empty()) {
-			return config_.GetDefaultServerConf();
+			return config_->GetDefaultServerConf();
 		} else {
 			const std::string &host = request.Headers()["host"].front().GetValue();
-			return config_[host];
+			return (*config_)[host];
 		}
 	}
 
 	ResponseHolder::ResponseHolder()
-		: conn_fd_(-1), config_(kEmptyConf), in_progress_(), request_del_(NULL), is_fatal_(false)
+		: conn_fd_(-1), config_(NULL), in_progress_(), request_del_(NULL), is_fatal_(false)
 	{}
 
 	ResponseHolder::ResponseHolder(
-		int conn_fd, const conf::VirtualServerConfs &conf, RequestDelFunc del
+		int conn_fd, const conf::VirtualServerConfs *conf, RequestDelFunc del
 	)
 		: conn_fd_(conn_fd), config_(conf), in_progress_(), request_del_(del), is_fatal_(false)
-	{}
+	{
+		if (config_ == NULL || del == NULL) {
+			DBG_INFO;
+			throw std::logic_error("ResponseHolder logic error");
+		}
+	}
 
 	Instructions ResponseHolder::StartNewResponse(IRequest *request)
 	{
 		in_progress_.push_back(Task(request, NULL));
 		if (request->IsErr()) {
 			in_progress_.back().second =
-				new ErrorResponse(request->GetErrStatusCode(), config_.GetDefaultServerConf());
+				new ErrorResponse(request->GetErrStatusCode(), config_->GetDefaultServerConf());
 			return CreateInstructionsForNewResopnse(*in_progress_.back().second);
 		}
 		IResponse *new_response    = CreateNewResponse(*request);
@@ -48,7 +54,7 @@ namespace server
 	{
 		IResponse                *new_response = NULL;
 		const std::string        &host         = request.Headers()["host"].front().GetValue();
-		const conf::ServerConf   &vs_conf      = config_[host];
+		const conf::ServerConf   &vs_conf      = (*config_)[host];
 		const conf::LocationConf &location     = vs_conf.FindMatchingLocationConf(request.Path());
 		bool                      is_cgi       = !location.GetCgiPath().empty();
 		try {

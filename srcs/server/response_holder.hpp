@@ -23,14 +23,14 @@ namespace server
 		static const std::size_t kMaxBufSize;
 
 		int                             conn_fd_;
-		const conf::VirtualServerConfs &config_;
+		const conf::VirtualServerConfs *config_;
 		std::deque<Task>                in_progress_;
 		RequestDelFunc                  request_del_;
 		bool                            is_fatal_;
 
 	  public:
 		ResponseHolder();
-		ResponseHolder(int conn_fd, const conf::VirtualServerConfs &conf, RequestDelFunc del);
+		ResponseHolder(int conn_fd, const conf::VirtualServerConfs *conf, RequestDelFunc del);
 		~ResponseHolder();
 		event::Instructions         StartNewResponse(IRequest *request);
 		event::Instructions         Perform(const event::Event &event);

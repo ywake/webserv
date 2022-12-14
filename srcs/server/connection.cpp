@@ -32,7 +32,7 @@ namespace server
 		  client_(client),
 		  reciever_(fd),
 		  request_holder_(&configs),
-		  response_holder_(fd, configs, RequestHolder::DestroyRequest),
+		  response_holder_(fd, &configs, RequestHolder::DestroyRequest),
 		  is_finished_(false),
 		  time_()
 	{
@@ -56,7 +56,7 @@ namespace server
 		  client_(other.client_),
 		  reciever_(other.reciever_),
 		  request_holder_(other.request_holder_),
-		  response_holder_(GetFd(), configs_, RequestHolder::DestroyRequest), // TODO tmp
+		  response_holder_(GetFd(), &configs_, RequestHolder::DestroyRequest), // TODO tmp
 		  is_finished_(other.is_finished_),
 		  time_(other.time_)
 	{}
