@@ -1,19 +1,27 @@
 #include <cassert>
 
+#include "http_define.hpp"
 #include "request_parser.hpp"
 namespace server
 {
-	RequestParser::Request::Request() : request_msg_(), body_(), error_code_(), error_type_() {}
+	RequestParser::Request::Request()
+		: request_msg_(), field_section_(), body_(), error_code_(), error_type_()
+	{}
 
 	RequestParser::Request::Request(const Request &other)
 		: request_msg_(other.request_msg_),
+		  field_section_(),
 		  body_(),
 		  error_code_(other.error_code_),
 		  error_type_(other.error_type_)
 	{}
 
 	RequestParser::Request::Request(const http::StatusCode &error_code, ErrorType error_type)
-		: request_msg_(), body_(), error_code_(error_code), error_type_(error_type)
+		: request_msg_(),
+		  field_section_(),
+		  body_(),
+		  error_code_(error_code),
+		  error_type_(error_type)
 	{}
 
 	RequestParser::Request::~Request() {}
@@ -30,7 +38,8 @@ namespace server
 
 	bool RequestParser::Request::HasMessageBody() const
 	{
-		return request_msg_.HasMessageBody();
+		return field_section_->Contains(http::kContentLength) ||
+			   field_section_->Contains(http::kTransferEncoding);
 	}
 
 	void RequestParser::Request::SetError(const http::StatusCode &error_code, ErrorType error_type)
@@ -44,9 +53,9 @@ namespace server
 		request_msg_.SetRequestLine(request_line);
 	}
 
-	void RequestParser::Request::SetHeaderSection(const HeaderSection &field_lines)
+	void RequestParser::Request::SetFieldSection(http::FieldSection *field_section)
 	{
-		request_msg_.SetHeaderSection(field_lines);
+		field_section_ = field_section;
 	}
 
 	void RequestParser::Request::SetBody(const std::vector<char> *body)
@@ -64,9 +73,14 @@ namespace server
 		return request_msg_.GetRequestLine().GetRequestTarget().GetRequestFormData().path_;
 	}
 
-	const HeaderSection &RequestParser::Request::Headers() const
+	const http::FieldSection &RequestParser::Request::Headers() const
 	{
-		return request_msg_.GetHeaderSection();
+		return *field_section_;
+	}
+
+	http::FieldSection &RequestParser::Request::Headers()
+	{
+		return *field_section_;
 	}
 
 	const http::RequestMessage &RequestParser::Request::GetMessage() const

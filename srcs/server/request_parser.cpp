@@ -29,10 +29,10 @@ namespace server
 		StatefulParser::operator=(rhs);
 		config_                  = rhs.config_;
 		ctx_.request_line_parser = rhs.ctx_.request_line_parser;
+		ctx_.header_parser       = rhs.ctx_.header_parser;
 		ctx_.body_parser         = rhs.ctx_.body_parser;
 		ctx_.state               = rhs.ctx_.state;
-		IRequest *req            = ctx_.request;
-		DestroyRequest(req);
+		DestroyRequest(ctx_.request);
 		ctx_.request = CopyRequest(rhs.ctx_.request);
 		return *this;
 	}
@@ -60,6 +60,7 @@ namespace server
 	{
 		ClearLoadedBytes();
 		ctx_.request_line_parser = RequestLineParser();
+		ctx_.header_parser       = HeaderParser();
 		ctx_.body_parser         = BodyParser(config_);
 		ctx_.state               = kStandBy;
 		ctx_.request             = new Request();
@@ -78,6 +79,7 @@ namespace server
 			}
 			return Emptiable<IRequest *>();
 		} catch (http::HttpException &e) {
+			log("request parser", e.what());
 			DestroyParseContext();
 			return new Request(e.GetStatusCode(), Request::kFatal);
 		}
@@ -122,7 +124,6 @@ namespace server
 		}
 	}
 
-	// TODO トレイラ無視してる
 	RequestParser::ParseResult RequestParser::ParseEachPhase(q_buffer::QueuingBuffer &recieved)
 	{
 		switch (ctx_.state) {
@@ -137,6 +138,7 @@ namespace server
 			if (!(res == kDone && ctx_.request->HasMessageBody())) {
 				return res;
 			}
+			ctx_.state = kBody;
 		}
 		/* Falls through. */
 		case kBody:
@@ -158,20 +160,12 @@ namespace server
 
 	RequestParser::ParseResult RequestParser::ParseHeaderSection(q_buffer::QueuingBuffer &recieved)
 	{
-		switch (LoadBytesWithDelim(recieved, http::kEmptyLine, kMaxHeaderSectonSize)) {
-		case kOverMaxSize:
-			throw http::BadRequestException();
-		case kParsable: {
-			loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
-			const HeaderSection headers = HeaderSection(loaded_bytes_);
-			http::headers::ValidateHeaderSection(headers);
-			ctx_.request->SetHeaderSection(headers);
-			return kDone;
-		}
-		case kNonParsable:
+		Emptiable<http::FieldSection *> headers = ctx_.header_parser.Parse(recieved);
+		if (headers.empty()) {
 			return kInProgress;
 		}
-		return kInProgress;
+		ctx_.request->SetFieldSection(headers.Value());
+		return kDone;
 	}
 
 	// TODO body
@@ -203,14 +197,21 @@ namespace server
 
 	void RequestParser::DestroyParseContext()
 	{
-		utils::DeleteSafe(ctx_.request);
+		DestroyRequest(ctx_.request);
 		InitParseContext();
 	}
 
-	void RequestParser::DestroyRequest(IRequest *&request)
+	void RequestParser::DestroyIRequest(IRequest *&request)
 	{
+		DestroyRequest(request);
+		request = NULL;
+	}
+
+	void RequestParser::DestroyRequest(IRequest *request)
+	{
+		FieldParser::DestroyFieldSection(&request->Headers());
 		BodyParser::DestroyBody(request->GetBody());
-		utils::DeleteSafe(request);
+		delete request;
 	}
 
 	IRequest *RequestParser::CopyIRequest(const IRequest *src)
@@ -222,15 +223,9 @@ namespace server
 	{
 		Request *req = new Request();
 		req->SetRequestLine(src->GetMessage().GetRequestLine());
-		req->SetHeaderSection(src->Headers());
 		req->SetError(src->GetErrStatusCode(), src->GetErrorType());
-		if (src->GetBody() == NULL) {
-			req->SetBody(NULL);
-		} else {
-			std::vector<char> *body =
-				new std::vector<char>(src->GetBody()->begin(), src->GetBody()->end());
-			req->SetBody(body);
-		}
+		req->SetFieldSection(FieldParser::CopyFieldSection(&src->Headers()));
+		req->SetBody(BodyParser::CopyBody(src->GetBody()));
 		return req;
 	}
 

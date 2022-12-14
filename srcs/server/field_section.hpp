@@ -14,6 +14,7 @@ namespace http
 {
 	class FieldSection
 	{
+		// [RFC 9110 5.3] 同一名ヘッダは結合可能
 	  public:
 		typedef std::list<HeaderValue>              Values;
 		typedef std::map<const std::string, Values> FieldLines;

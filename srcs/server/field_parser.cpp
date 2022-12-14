@@ -61,6 +61,7 @@ namespace server
 		ctx_.state = kParsing;
 		try {
 			if (CreateFieldSection(recieved) == kDone) {
+				log("field parse success", ctx_.fields);
 				http::FieldSection *fields = ctx_.fields;
 				InitParseContext();
 				return fields;
@@ -126,6 +127,14 @@ namespace server
 	void FieldParser::DestroyFieldSection(const http::FieldSection *fields)
 	{
 		delete fields;
+	}
+
+	http::FieldSection *FieldParser::CopyFieldSection(const http::FieldSection *src)
+	{
+		if (src == NULL) {
+			return NULL;
+		}
+		return new http::FieldSection(*src);
 	}
 
 } // namespace server

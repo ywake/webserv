@@ -7,7 +7,8 @@
 
 #include "body_parser.hpp"
 #include "emptiable.hpp"
-#include "header_section.hpp"
+#include "field_section.hpp"
+#include "header_parser.hpp"
 #include "i_request.hpp"
 #include "queuing_buffer.hpp"
 #include "request_line_parser.hpp"
@@ -26,6 +27,7 @@ namespace server
 		{
 		  private:
 			http::RequestMessage     request_msg_;
+			http::FieldSection      *field_section_;
 			const std::vector<char> *body_;
 			http::StatusCode         error_code_;
 			ErrorType                error_type_;
@@ -44,12 +46,13 @@ namespace server
 
 			void SetError(const http::StatusCode &error_code, ErrorType error_type);
 			void SetRequestLine(const RequestLine &request_line);
-			void SetHeaderSection(const HeaderSection &field_lines);
+			void SetFieldSection(http::FieldSection *field_lines);
 			void SetBody(const std::vector<char> *body);
 
 			const std::string          &Method() const;
 			const std::string          &Path() const;
-			const HeaderSection        &Headers() const;
+			http::FieldSection         &Headers();
+			const http::FieldSection   &Headers() const;
 			const http::RequestMessage &GetMessage() const;
 			const http::StatusCode     &GetErrStatusCode() const;
 			const std::vector<char>    *GetBody() const;
@@ -71,6 +74,7 @@ namespace server
 			State             state;
 			RequestLineParser request_line_parser;
 			BodyParser        body_parser;
+			HeaderParser      header_parser;
 			Request          *request;
 		} ctx_;
 
@@ -82,7 +86,7 @@ namespace server
 		Emptiable<IRequest *> Parse(q_buffer::QueuingBuffer &recieved);
 		bool                  HasInCompleteData();
 		Emptiable<IRequest *> OnEof();
-		static void           DestroyRequest(IRequest *&request);
+		static void           DestroyIRequest(IRequest *&request);
 		static IRequest      *CopyIRequest(const IRequest *request);
 
 	  private:
@@ -95,6 +99,7 @@ namespace server
 		ParseResult     ParseBody(q_buffer::QueuingBuffer &recieved);
 		State           GetNextState(State old_state);
 		ParseResult     SkipPriorCrLf(q_buffer::QueuingBuffer &recieved);
+		static void     DestroyRequest(IRequest *request);
 		static Request *CopyRequest(const IRequest *src);
 	};
 } // namespace server
