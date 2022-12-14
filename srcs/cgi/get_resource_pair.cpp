@@ -40,9 +40,9 @@ namespace cgi
 	Result<Path> FindCorrectPath(const std::vector<Path> &candidates)
 	{
 		for (size_t i = 0; i < candidates.size(); ++i) {
-			Result<Path> cerrect_path = GetCorrectPath(candidates[i]);
-			if (cerrect_path.IsOk()) {
-				return cerrect_path;
+			Result<Path> correct_path = GetCorrectPath(candidates[i]);
+			if (correct_path.IsOk()) {
+				return correct_path;
 			}
 		}
 		return Error("No correct path");
