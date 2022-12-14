@@ -22,7 +22,7 @@ namespace server
 		};
 
 	  private:
-		std::size_t                     max_size_;
+		std::size_t                     max_body_size_;
 		const conf::VirtualServerConfs *v_server_confs_;
 
 		struct Context {
