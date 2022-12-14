@@ -47,7 +47,7 @@ namespace server
 	Emptiable<std::vector<char> *>
 	BodyParser::Parse(q_buffer::QueuingBuffer &recieved, const http::FieldSection &headers)
 	{
-		try { // TODO con-len、tra-enヘッダのvalidationはここでやるべきかも
+		try {
 			if (ctx_.state == kStandby) {
 				ctx_.state                   = kParsing;
 				const conf::ServerConf &conf = GetServerConf(*v_server_confs_, headers["host"]);
