@@ -1,5 +1,6 @@
 #include <cassert>
 
+#include "http_define.hpp"
 #include "request_parser.hpp"
 namespace server
 {
@@ -37,7 +38,8 @@ namespace server
 
 	bool RequestParser::Request::HasMessageBody() const
 	{
-		return request_msg_.HasMessageBody();
+		return field_section_->Contains(http::kContentLength) ||
+			   field_section_->Contains(http::kTransferEncoding);
 	}
 
 	void RequestParser::Request::SetError(const http::StatusCode &error_code, ErrorType error_type)
