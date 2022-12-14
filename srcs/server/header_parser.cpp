@@ -36,6 +36,14 @@ namespace server
 		if (headers.Contains(http::kContentLength)) {
 			ValidateContentLength(headers[http::kContentLength]);
 		}
+		if (headers.Contains(http::kTransferEncoding)) {
+			http::FieldSection::Values &te_header = headers[http::kTransferEncoding];
+			te_header                             = ParseTransferEncoding(te_header);
+			if (!http::headers::IsValidTransferEncoding(te_header) ||
+				!http::headers::IsImplementedTransferCoding(te_header)) {
+				throw http::NotImplementedException();
+			}
+		}
 		if (headers.Contains(http::kConnection)) {
 			http::FieldSection::Values &con_header = headers[http::kConnection];
 			con_header                             = ParseConnection(con_header);
@@ -62,6 +70,27 @@ namespace server
 		}
 	}
 
+	http::FieldSection::Values
+	HeaderParser::ParseTransferEncoding(const http::FieldSection::Values &values)
+	{
+		HeaderSection::Values new_values;
+
+		for (HeaderSection::Values::const_iterator itr = values.begin(); itr != values.end();
+			 ++itr) {
+			const std::string      &value = itr->GetValue();
+			std::vector<ThinString> list  = http::ParseList(value);
+			for (std::vector<ThinString>::const_iterator it = list.begin(); it != list.end();
+				 ++it) {
+				if (!it->empty() && !http::abnf::IsToken(*it)) {
+					throw http::NotImplementedException();
+				}
+				// valueも大文字小文字を無視
+				new_values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
+			}
+		}
+		return new_values;
+	}
+
 	// Connection        = #connection-option
 	// connection-option = token
 	// TODO "close"が含まれていたら応答後に接続を閉じる [MUST]
@@ -76,7 +105,7 @@ namespace server
 			std::vector<ThinString> list  = http::ParseList(value);
 			for (std::vector<ThinString>::const_iterator it = list.begin(); it != list.end();
 				 ++it) {
-				if (!http::abnf::IsToken(*it)) {
+				if (!it->empty() && !http::abnf::IsToken(*it)) {
 					throw http::BadRequestException();
 				}
 				// valueも大文字小文字を無視
