@@ -53,15 +53,7 @@ namespace server
 				InitMaxSize(headers);
 				InitMode(headers);
 			}
-			Emptiable<std::vector<char> *> body;
-			if (ctx_.mode == kContentLength) {
-				body = ctx_.bytes_loader.Parse(recieved);
-			} else if (ctx_.mode == kChunked) {
-				body = ctx_.chunked_parser.Parse(recieved);
-			} else {
-				DBG_INFO;
-				throw std::logic_error("body parser mode error");
-			}
+			Emptiable<std::vector<char> *> body = CreateBody(recieved, headers);
 			if (body.empty()) {
 				return Emptiable<std::vector<char> *>();
 			}
@@ -70,6 +62,26 @@ namespace server
 		} catch (http::HttpException &e) {
 			DestroyParseContext();
 			throw e;
+		}
+	}
+
+	Emptiable<std::vector<char> *>
+	BodyParser::CreateBody(q_buffer::QueuingBuffer &recieved, http::FieldSection &headers)
+	{
+		switch (ctx_.mode) {
+		case kContentLength:
+			return ctx_.bytes_loader.Parse(recieved);
+		case kChunked: {
+			Emptiable<std::vector<char> *> body = ctx_.chunked_parser.Parse(recieved);
+			if (!body.empty()) {
+				headers[http::kTransferEncoding].pop_back();
+				headers[http::kContentLength].push_back(utils::ToString(body.Value()->size()));
+			}
+			return body;
+		}
+		default:
+			DBG_INFO;
+			throw std::logic_error("body parser mode error");
 		}
 	}
 

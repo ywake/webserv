@@ -45,6 +45,8 @@ namespace server
 	  private:
 		void InitMaxSize(const http::FieldSection &headers);
 		void InitMode(const http::FieldSection &headers);
+		Emptiable<std::vector<char> *>
+			 CreateBody(q_buffer::QueuingBuffer &recieved, http::FieldSection &headers);
 		void InitParseContext();
 		void DestroyParseContext();
 	};
