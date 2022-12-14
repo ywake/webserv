@@ -86,7 +86,7 @@ namespace server
 		Emptiable<IRequest *> Parse(q_buffer::QueuingBuffer &recieved);
 		bool                  HasInCompleteData();
 		Emptiable<IRequest *> OnEof();
-		static void           DestroyRequest(IRequest *&request);
+		static void           DestroyIRequest(IRequest *&request);
 		static IRequest      *CopyIRequest(const IRequest *request);
 
 	  private:
@@ -99,6 +99,7 @@ namespace server
 		ParseResult     ParseBody(q_buffer::QueuingBuffer &recieved);
 		State           GetNextState(State old_state);
 		ParseResult     SkipPriorCrLf(q_buffer::QueuingBuffer &recieved);
+		static void     DestroyRequest(IRequest *request);
 		static Request *CopyRequest(const IRequest *src);
 	};
 } // namespace server
