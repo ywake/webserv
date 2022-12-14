@@ -1,6 +1,7 @@
 #include "status_code.hpp"
-#include <sstream>
 #include <stdexcept>
+
+#include "webserv_utils.hpp"
 
 namespace http
 {
@@ -34,9 +35,7 @@ namespace http
 
 	std::string StatusCode::GetCodeStr() const
 	{
-		std::stringstream ss;
-		ss << code_;
-		return ss.str();
+		return utils::ToString(code_);
 	}
 
 	StatusCode::ReasonPhrase StatusCode::InitReasonPhrase()
