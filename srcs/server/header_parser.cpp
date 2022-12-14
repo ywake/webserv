@@ -2,7 +2,11 @@
 #include "host_port.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
+#include "parse_http_utils.hpp"
 #include "validate_headers.hpp"
+#include "validate_http_char.hpp"
+#include "webserv_utils.hpp"
+
 namespace server
 {
 	HeaderParser::HeaderParser() : FieldParser() {}
@@ -32,6 +36,10 @@ namespace server
 		if (headers.Contains(http::kContentLength)) {
 			ValidateContentLength(headers[http::kContentLength]);
 		}
+		if (headers.Contains(http::kConnection)) {
+			http::FieldSection::Values &con_header = headers[http::kConnection];
+			con_header                             = ParseConnection(con_header);
+		}
 		return &headers;
 	}
 
@@ -52,6 +60,30 @@ namespace server
 		if (values.size() != 1 || http::headers::IsValidContentLength(values.front().GetValue())) {
 			throw http::BadRequestException();
 		}
+	}
+
+	// Connection        = #connection-option
+	// connection-option = token
+	// TODO "close"が含まれていたら応答後に接続を閉じる [MUST]
+	http::FieldSection::Values
+	HeaderParser::ParseConnection(const http::FieldSection::Values &values)
+	{
+		HeaderSection::Values new_values;
+
+		for (HeaderSection::Values::const_iterator itr = values.begin(); itr != values.end();
+			 ++itr) {
+			const std::string      &value = itr->GetValue();
+			std::vector<ThinString> list  = http::ParseList(value);
+			for (std::vector<ThinString>::const_iterator it = list.begin(); it != list.end();
+				 ++it) {
+				if (!http::abnf::IsToken(*it)) {
+					throw http::BadRequestException();
+				}
+				// valueも大文字小文字を無視
+				new_values.push_back(HeaderValue(utils::ToLowerString(it->ToString())));
+			}
+		}
+		return new_values;
 	}
 
 } // namespace server
