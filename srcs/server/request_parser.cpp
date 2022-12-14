@@ -124,7 +124,6 @@ namespace server
 		}
 	}
 
-	// TODO トレイラ無視してる
 	RequestParser::ParseResult RequestParser::ParseEachPhase(q_buffer::QueuingBuffer &recieved)
 	{
 		switch (ctx_.state) {
