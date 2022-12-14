@@ -29,7 +29,7 @@ namespace server
 		StatefulParser::operator=(rhs);
 		config_                  = rhs.config_;
 		ctx_.request_line_parser = rhs.ctx_.request_line_parser;
-		ctx_.field_parser        = rhs.ctx_.field_parser;
+		ctx_.header_parser       = rhs.ctx_.header_parser;
 		ctx_.body_parser         = rhs.ctx_.body_parser;
 		ctx_.state               = rhs.ctx_.state;
 		IRequest *req            = ctx_.request;
@@ -61,7 +61,7 @@ namespace server
 	{
 		ClearLoadedBytes();
 		ctx_.request_line_parser = RequestLineParser();
-		ctx_.field_parser        = FieldParser();
+		ctx_.header_parser       = HeaderParser();
 		ctx_.body_parser         = BodyParser(config_);
 		ctx_.state               = kStandBy;
 		ctx_.request             = new Request();
@@ -161,12 +161,10 @@ namespace server
 
 	RequestParser::ParseResult RequestParser::ParseHeaderSection(q_buffer::QueuingBuffer &recieved)
 	{
-		Emptiable<http::FieldSection *> headers = ctx_.field_parser.Parse(recieved);
+		Emptiable<http::FieldSection *> headers = ctx_.header_parser.Parse(recieved);
 		if (headers.empty()) {
 			return kInProgress;
 		}
-		// const http::FieldSection headers = http::FieldSection(loaded_bytes_);
-		// http::headers::ValidateHeaderSection(headers);
 		ctx_.request->SetFieldSection(headers.Value());
 		return kDone;
 	}

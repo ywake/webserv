@@ -7,8 +7,8 @@
 
 #include "body_parser.hpp"
 #include "emptiable.hpp"
-#include "field_parser.hpp"
 #include "field_section.hpp"
+#include "header_parser.hpp"
 #include "i_request.hpp"
 #include "queuing_buffer.hpp"
 #include "request_line_parser.hpp"
@@ -73,7 +73,7 @@ namespace server
 			State             state;
 			RequestLineParser request_line_parser;
 			BodyParser        body_parser;
-			FieldParser       field_parser;
+			HeaderParser      header_parser;
 			Request          *request;
 		} ctx_;
 
