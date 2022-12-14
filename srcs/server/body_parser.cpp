@@ -19,7 +19,7 @@ namespace server
 	}
 
 	BodyParser::BodyParser(const conf::VirtualServerConfs *v_server_confs)
-		: max_size_(), v_server_confs_(v_server_confs)
+		: max_body_size_(), v_server_confs_(v_server_confs)
 	{
 		if (v_server_confs_ == NULL) {
 			DBG_INFO;
@@ -38,7 +38,7 @@ namespace server
 		if (&rhs == this) {
 			return *this;
 		}
-		max_size_       = rhs.max_size_;
+		max_body_size_  = rhs.max_body_size_;
 		v_server_confs_ = rhs.v_server_confs_;
 		ctx_            = rhs.ctx_;
 		return *this;
@@ -73,17 +73,23 @@ namespace server
 		}
 	}
 
+	void BodyParser::InitMaxSize(const http::FieldSection &headers)
+	{
+		const conf::ServerConf &conf = GetServerConf(*v_server_confs_, headers["host"]);
+		max_body_size_               = conf.GetClientMaxBodySize();
+	}
+
 	void BodyParser::InitMode(const http::FieldSection &headers)
 	{
 		// この時点では正しいvalueが来ることは保証されている
 		if (headers.Contains(http::kTransferEncoding)) {
 			ctx_.mode           = kChunked;
-			ctx_.chunked_parser = ChunkedParser(max_size_);
+			ctx_.chunked_parser = ChunkedParser(max_body_size_);
 		} else if (headers.Contains(http::kContentLength)) {
 			ctx_.mode                      = kContentLength;
 			const std::string &len_str     = headers[http::kContentLength].front().GetValue();
 			std::size_t        content_len = utils::StrToUnsignedLong(len_str).Val();
-			if (content_len > max_size_) {
+			if (content_len > max_body_size_) {
 				throw http::ContentTooLargeException();
 			}
 			ctx_.bytes_loader = BytesLoader(content_len);
