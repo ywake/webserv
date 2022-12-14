@@ -1,6 +1,7 @@
 #ifndef CHUNKED_PARSER_HPP
 #define CHUNKED_PARSER_HPP
 
+#include "field_parser.hpp"
 #include "stateful_parser.hpp"
 
 namespace server
@@ -25,6 +26,7 @@ namespace server
 			State              state;
 			ChunkState         chunk_state;
 			std::size_t        chunk_size;
+			FieldParser        field_parser;
 		} ctx_;
 
 	  public:

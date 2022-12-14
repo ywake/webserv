@@ -29,11 +29,12 @@ namespace server
 			return *this;
 		}
 		StatefulParser::operator=(rhs);
-		max_size_        = rhs.max_size_;
-		*ctx_.body       = *rhs.ctx_.body;
-		ctx_.state       = rhs.ctx_.state;
-		ctx_.chunk_state = rhs.ctx_.chunk_state;
-		ctx_.chunk_size  = rhs.ctx_.chunk_size;
+		max_size_         = rhs.max_size_;
+		*ctx_.body        = *rhs.ctx_.body;
+		ctx_.state        = rhs.ctx_.state;
+		ctx_.chunk_state  = rhs.ctx_.chunk_state;
+		ctx_.chunk_size   = rhs.ctx_.chunk_size;
+		ctx_.field_parser = rhs.ctx_.field_parser;
 		return *this;
 	}
 
@@ -63,10 +64,11 @@ namespace server
 	void ChunkedParser::InitParseContext()
 	{
 		ClearLoadedBytes();
-		ctx_.body        = new std::vector<char>();
-		ctx_.state       = kStandby;
-		ctx_.chunk_state = kChunkSize;
-		ctx_.chunk_size  = 0;
+		ctx_.body         = new std::vector<char>();
+		ctx_.state        = kStandby;
+		ctx_.chunk_state  = kChunkSize;
+		ctx_.chunk_size   = 0;
+		ctx_.field_parser = FieldParser();
 	}
 
 	void ChunkedParser::DestroyParseContext()
@@ -190,21 +192,12 @@ namespace server
 
 	StatefulParser::ParseResult ChunkedParser::DiscardTrailer(q_buffer::QueuingBuffer &recieved)
 	{
-		// TODO
-		switch (LoadBytesWithDelim(recieved, http::kCrLf, http::kCrLf.size())) {
-		case kOverMaxSize:
-			throw http::BadRequestException();
-		case kNonParsable:
+		Emptiable<http::FieldSection *> fields = ctx_.field_parser.Parse(recieved);
+		if (fields.empty()) {
 			return kInProgress;
-		case kParsable:
-			if (loaded_bytes_ != http::kCrLf) {
-				throw http::BadRequestException();
-			}
-			return kDone;
-		default:
-			DBG_INFO;
-			throw std::logic_error("chunk size parser logic error");
 		}
+		delete fields.Value();
+		return kDone;
 	}
 
 	ChunkedParser::State ChunkedParser::GetNextState(State old_state)
