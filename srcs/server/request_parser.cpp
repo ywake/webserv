@@ -33,7 +33,7 @@ namespace server
 		ctx_.body_parser         = rhs.ctx_.body_parser;
 		ctx_.state               = rhs.ctx_.state;
 		IRequest *req            = ctx_.request;
-		DestroyRequest(req);
+		DestroyIRequest(req);
 		ctx_.request = CopyRequest(rhs.ctx_.request);
 		return *this;
 	}
@@ -198,15 +198,21 @@ namespace server
 
 	void RequestParser::DestroyParseContext()
 	{
-		utils::DeleteSafe(ctx_.request);
+		DestroyRequest(ctx_.request);
 		InitParseContext();
 	}
 
-	void RequestParser::DestroyRequest(IRequest *&request)
+	void RequestParser::DestroyIRequest(IRequest *&request)
+	{
+		DestroyRequest(request);
+		request = NULL;
+	}
+
+	void RequestParser::DestroyRequest(IRequest *request)
 	{
 		FieldParser::DestroyFieldSection(&request->Headers());
 		BodyParser::DestroyBody(request->GetBody());
-		utils::DeleteSafe(request);
+		delete request;
 	}
 
 	IRequest *RequestParser::CopyIRequest(const IRequest *src)

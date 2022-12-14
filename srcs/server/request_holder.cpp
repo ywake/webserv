@@ -43,7 +43,7 @@ namespace server
 	void RequestHolder::DestroyQueue()
 	{
 		while (!request_queue_.empty()) {
-			RequestParser::DestroyRequest(request_queue_.front());
+			RequestParser::DestroyIRequest(request_queue_.front());
 			request_queue_.pop_front();
 		}
 	}
@@ -80,6 +80,6 @@ namespace server
 
 	void RequestHolder::DestroyRequest(IRequest *&request)
 	{
-		RequestParser::DestroyRequest(request);
+		RequestParser::DestroyIRequest(request);
 	}
 } // namespace server
