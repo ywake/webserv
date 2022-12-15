@@ -41,11 +41,11 @@ namespace server
 		ResponseHolder                  response_holder_;
 		bool                            is_finished_;
 		struct ::timespec               time_;
+		Connection();
 		Connection(const Connection &other);
 		Connection &operator=(const Connection &rhs);
 
 	  public:
-		Connection();
 		Connection(
 			int managed_fd, const conf::VirtualServerConfs &conf, const SockAddrStorage &client
 		);

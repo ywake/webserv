@@ -14,16 +14,6 @@ namespace server
 	const std::size_t Connection::kMaxSenderBufSize    = 8196;
 	const std::size_t Connection::kMaxRequestQueueSize = 3;
 
-	Connection::Connection()
-		: Socket(),
-		  configs_(conf::kEmptyVserverConfs),
-		  client_(),
-		  reciever_(),
-		  request_holder_(),
-		  is_finished_(false),
-		  time_()
-	{}
-
 	Connection::Connection(
 		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
 	)
