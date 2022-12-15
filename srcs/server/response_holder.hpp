@@ -32,8 +32,12 @@ namespace server
 		RequestDelFunc                  request_del_;
 		bool                            is_fatal_;
 
-	  public:
+	  private:
 		ResponseHolder();
+		ResponseHolder(const ResponseHolder &other);
+		ResponseHolder &operator=(const ResponseHolder &rhs);
+
+	  public:
 		ResponseHolder(int conn_fd, const conf::VirtualServerConfs *conf, RequestDelFunc del);
 		~ResponseHolder();
 		event::Instructions         StartNewResponse(IRequest *request);
