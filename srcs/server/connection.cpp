@@ -39,28 +39,6 @@ namespace server
 		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
 	}
 
-	// setからeraseするためだけの存在
-	Connection::Connection(int fd)
-		: Socket(fd),
-		  configs_(conf::kEmptyVserverConfs),
-		  client_(),
-		  reciever_(-1),
-		  request_holder_(),
-		  is_finished_(false),
-		  time_()
-	{}
-
-	Connection::Connection(const Connection &other)
-		: Socket(other),
-		  configs_(other.configs_),
-		  client_(other.client_),
-		  reciever_(other.reciever_),
-		  request_holder_(other.request_holder_),
-		  response_holder_(GetFd(), &configs_, RequestHolder::DestroyRequest), // TODO tmp
-		  is_finished_(other.is_finished_),
-		  time_(other.time_)
-	{}
-
 	bool Connection::operator<(const Connection &other) const
 	{
 		return this->GetFd() < other.GetFd();

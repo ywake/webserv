@@ -27,12 +27,6 @@ namespace server
 
 	class Connection : public Socket
 	{
-		//   public:
-		// 	enum State {
-		// 		kReceiving,
-		// 		kSending,
-		// 		kFinished,
-		// 	};
 	  public:
 		static const time_t      kTimeoutDuration;
 		static const std::size_t kMaxRecverBufSize;
@@ -47,14 +41,11 @@ namespace server
 		ResponseHolder                  response_holder_;
 		bool                            is_finished_;
 		struct ::timespec               time_;
-		// State                           state_;
-		// Sender						 *sender_;
 		Connection(const Connection &other);
 		Connection &operator=(const Connection &rhs);
 
 	  public:
 		Connection();
-		Connection(int fd);
 		Connection(
 			int managed_fd, const conf::VirtualServerConfs &conf, const SockAddrStorage &client
 		);
