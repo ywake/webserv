@@ -16,21 +16,29 @@ namespace server
 {
 	class ResponseHolder
 	{
+	  private:
 		typedef void (*RequestDelFunc)(IRequest *&);
-		typedef std::pair<IRequest *, IResponse *> Task;
+		typedef struct Task {
+			IRequest  *request;
+			IResponse *response;
+		} Task;
 
 	  private:
 		static const std::size_t kMaxBufSize;
 
 		int                             conn_fd_;
-		const conf::VirtualServerConfs &config_;
+		const conf::VirtualServerConfs *config_;
 		std::deque<Task>                in_progress_;
 		RequestDelFunc                  request_del_;
 		bool                            is_fatal_;
 
-	  public:
+	  private:
 		ResponseHolder();
-		ResponseHolder(int conn_fd, const conf::VirtualServerConfs &conf, RequestDelFunc del);
+		ResponseHolder(const ResponseHolder &other);
+		ResponseHolder &operator=(const ResponseHolder &rhs);
+
+	  public:
+		ResponseHolder(int conn_fd, const conf::VirtualServerConfs *conf, RequestDelFunc del);
 		~ResponseHolder();
 		event::Instructions         StartNewResponse(IRequest *request);
 		event::Instructions         Perform(const event::Event &event);
@@ -41,11 +49,13 @@ namespace server
 
 	  private:
 		event::Instructions FinishFrontResponse();
-		IResponse          *CreateNewResponse(const IRequest &request);
-		// IResponse *CreateCgiResponse(const IRequest &request);
-		IResponse *
-		CreateErrorResponse(const http::StatusCode &status_code, IRequest::ErrorType e_type);
-		event::Instructions            CreateInstructionsForNewResopnse(const IResponse &response);
+		event::Instructions AddNewResponse(Task *task);
+		event::Instructions AddNewCgiResponse(Task *task, const conf::LocationConf &location);
+		event::Instructions AddNewStaticResponse(Task *task, const conf::LocationConf &location);
+		event::Instructions AddNewErrorResponse(
+			Task *task, const http::StatusCode &status_code, const conf::ServerConf &sv_conf
+		);
+		event::Instructions            CreateInstructionsForError(const IResponse &response);
 		inline const conf::ServerConf &GetServerConf(const IRequest &request);
 	};
 } // namespace server

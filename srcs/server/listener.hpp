@@ -24,8 +24,8 @@ namespace server
 
 	  public:
 		Listener(const std::string &port, const conf::VirtualServerConfs &configs);
-		Result<void>       Listen() const;
-		Result<Connection> Accept() const;
+		Result<void>         Listen() const;
+		Result<Connection *> Accept() const;
 
 	  private:
 		Result<int> TryBindSocket(AddrInfo *lst);

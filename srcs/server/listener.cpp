@@ -69,7 +69,7 @@ namespace server
 		return Result<void>();
 	}
 
-	Result<Connection> Listener::Accept() const
+	Result<Connection *> Listener::Accept() const
 	{
 		SockAddrStorage client;
 		socklen_t       client_len = sizeof(client);
@@ -83,7 +83,7 @@ namespace server
 			return Error("fcntl: " + std::string(strerror(errno)));
 		}
 		log("accept", conn_fd);
-		return Connection(conn_fd, configs_, client);
+		return new Connection(conn_fd, configs_, client);
 	}
 
 } // namespace server
