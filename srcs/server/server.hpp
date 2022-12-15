@@ -14,8 +14,8 @@ namespace server
 	class Server
 	{
 	  private:
-		typedef std::vector<Listener> Listeners;
-		typedef std::set<Connection>  Connections;
+		typedef std::vector<Listener>  Listeners;
+		typedef std::set<Connection *> Connections;
 
 	  private:
 		static const int      kEpollTimeout;
@@ -27,6 +27,7 @@ namespace server
 
 	  public:
 		Server(const conf::ServerConfs &configs);
+		~Server();
 		Result<void> Listen();
 		void         Run();
 
