@@ -19,7 +19,9 @@ namespace cgi
 
 	void CgiResponse::OnWriteReady()
 	{
-		// BodyWrite();
+		if (parent_fd_.GetFd() != ManagedFd::kNofd && !body_writer_.IsFinished()) {
+			body_writer_.Write(parent_fd_.GetFd());
+		}
 	}
 
 	void CgiResponse::ExecCgi()

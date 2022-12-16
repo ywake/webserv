@@ -22,7 +22,8 @@ namespace cgi
 		  resource_path_(other.resource_path_),
 		  parent_fd_(other.parent_fd_),
 		  child_fd_(other.child_fd_),
-		  is_finished_(false)
+		  is_finished_(false),
+		  body_writer_(other.body_writer_)
 	{}
 
 	// main constructor
@@ -39,9 +40,9 @@ namespace cgi
 		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds)) {
 			throw http::InternalServerErrorException();
 		}
-		parent_fd_ = ManagedFd(fds[0]);
-		child_fd_  = ManagedFd(fds[1]);
-		q_buffer::QueuingWriter::push_back(*request.GetBody());
+		parent_fd_   = ManagedFd(fds[0]);
+		child_fd_    = ManagedFd(fds[1]);
+		body_writer_ = server::BodyWriter(request.GetBody());
 		ExecCgi();
 	}
 
@@ -120,6 +121,7 @@ namespace cgi
 		parent_fd_     = other.parent_fd_;
 		child_fd_      = other.child_fd_;
 		is_finished_   = other.is_finished_;
+		body_writer_   = other.body_writer_;
 		q_buffer::QueuingWriter::operator=(other);
 		q_buffer::QueuingReader::operator=(other);
 		return *this;
