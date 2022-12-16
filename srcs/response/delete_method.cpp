@@ -25,6 +25,9 @@ namespace response
 				throw http::InternalServerErrorException();
 			}
 		}
+		// TODO headers
+		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
+		MetaDataStorage::PushWithCrLf();
 	}
 
 	void DeleteMethod::Perform(const event::Event &event)
