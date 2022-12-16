@@ -1,5 +1,5 @@
-#ifndef POST_RESPONSE_HPP
-#define POST_RESPONSE_HPP
+#ifndef POST_METHOD_HPP
+#define POST_METHOD_HPP
 
 #include "a_response.hpp"
 #include "body_writer.hpp"
@@ -8,7 +8,7 @@
 
 namespace response
 {
-	class PostResponse : public AResponse
+	class PostMethod : public AResponse
 	{
 	  private:
 		const conf::LocationConf &location_;
@@ -17,12 +17,12 @@ namespace response
 		server::BodyWriter        body_writer_;
 
 	  private:
-		PostResponse();
-		PostResponse(const PostResponse &other);
-		PostResponse &operator=(const PostResponse &rhs);
+		PostMethod();
+		PostMethod(const PostMethod &other);
+		PostMethod &operator=(const PostMethod &rhs);
 
 	  public:
-		PostResponse(const server::IRequest &request, const conf::LocationConf &location);
+		PostMethod(const server::IRequest &request, const conf::LocationConf &location);
 		void           Perform(const event::Event &event);
 		bool           HasFd() const;
 		Emptiable<int> GetFd() const;

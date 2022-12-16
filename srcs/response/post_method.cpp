@@ -4,11 +4,11 @@
 #include <fcntl.h>
 
 #include "http_exceptions.hpp"
-#include "post_response.hpp"
+#include "post_method.hpp"
 
 namespace response
 {
-	PostResponse::PostResponse(const server::IRequest &request, const conf::LocationConf &location)
+	PostMethod::PostMethod(const server::IRequest &request, const conf::LocationConf &location)
 		: AResponse(request),
 		  location_(location),
 		  managed_fd_(),
@@ -31,7 +31,7 @@ namespace response
 		// TODO other headers 何必要か分からん
 	}
 
-	int PostResponse::TryOpen(const std::string &filename) const
+	int PostMethod::TryOpen(const std::string &filename) const
 	{
 		int open_flags = O_CREAT | O_WRONLY | O_EXCL | O_NONBLOCK | O_CLOEXEC;
 		int fd         = open(filename.c_str(), open_flags, S_IRUSR | S_IWUSR);
@@ -52,7 +52,7 @@ namespace response
 		return fd;
 	}
 
-	void PostResponse::Perform(const event::Event &event)
+	void PostMethod::Perform(const event::Event &event)
 	{
 		(void)event;
 		if (body_writer_.IsFinished()) {
@@ -68,12 +68,12 @@ namespace response
 		}
 	}
 
-	bool PostResponse::HasFd() const
+	bool PostMethod::HasFd() const
 	{
 		return true;
 	}
 
-	Emptiable<int> PostResponse::GetFd() const
+	Emptiable<int> PostMethod::GetFd() const
 	{
 		return managed_fd_.GetFd();
 	}
