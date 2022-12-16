@@ -47,6 +47,6 @@ namespace server
 
 	bool BodyWriter::IsFinished() const
 	{
-		return body_->size() == used_size_;
+		return body_ == NULL || body_->size() == used_size_;
 	}
 } // namespace server
