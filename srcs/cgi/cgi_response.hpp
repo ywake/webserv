@@ -1,3 +1,4 @@
+#include "body_writer.hpp"
 #include "i_request.hpp"
 #include "i_response.hpp"
 #include "location_conf.hpp"
@@ -25,6 +26,7 @@ namespace cgi
 		ManagedFd           parent_fd_;
 		ManagedFd           child_fd_;
 		bool                is_finished_;
+		server::BodyWriter  body_writer_;
 
 	  public:
 		CgiResponse(const CgiResponse &other);
