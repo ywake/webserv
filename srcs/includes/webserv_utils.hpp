@@ -29,6 +29,7 @@ namespace utils
 		return ss.str();
 	}
 
+	Result<std::string>     CreateTimeStamp();
 	std::string             ToLowerString(std::string s);
 	Result<long>            StrToLong(const std::string &str);
 	Result<bool>            IsRegularFile(int fd);

@@ -31,8 +31,9 @@ namespace server
 			case EACCES:
 				throw http::ForbiddenException();
 			case ENOENT:
+			case ENAMETOOLONG:
 				throw http::NotFoundException();
-			default: // TODO TOOLONG BAD REQuest;
+			default:
 				throw http::InternalServerErrorException();
 			}
 		}
