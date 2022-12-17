@@ -161,6 +161,7 @@ namespace server
 			}
 			return insts;
 		} catch (http::HttpException &e) {
+			// TODO unregister
 			delete response;
 			task.response =
 				new response::ErrorResponse(*request, e.GetStatusCode(), GetServerConf(*request));
