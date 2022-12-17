@@ -13,7 +13,7 @@ namespace response
 		const http::StatusCode &status_code,
 		const conf::ServerConf &conf
 	)
-		: request_(request), config_(conf), is_finished_(false)
+		: AResponse(request), config_(conf)
 	{
 		log("error res construct", status_code.GetCode());
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, status_code);
@@ -47,16 +47,6 @@ namespace response
 		(void)event;
 	}
 
-	Result<void> ErrorResponse::Send(int fd)
-	{
-		return Write(fd);
-	}
-
-	bool ErrorResponse::HasReadyData() const
-	{
-		return !QueuingBuffer::empty();
-	}
-
 	bool ErrorResponse::HasFd() const
 	{
 		return managed_fd_.GetFd() != ManagedFd::kNofd;
@@ -65,16 +55,6 @@ namespace response
 	Emptiable<int> ErrorResponse::GetFd() const
 	{
 		return managed_fd_.GetFd();
-	}
-
-	bool ErrorResponse::IsFinished() const
-	{
-		return is_finished_;
-	}
-
-	std::size_t ErrorResponse::size() const
-	{
-		return q_buffer::QueuingBuffer::size();
 	}
 
 } // namespace response
