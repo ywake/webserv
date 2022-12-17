@@ -6,7 +6,7 @@
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 
-namespace server
+namespace response
 {
 	ErrorResponse::ErrorResponse(
 		const server::IRequest &request,
@@ -77,4 +77,4 @@ namespace server
 		return q_buffer::QueuingBuffer::size();
 	}
 
-} // namespace server
+} // namespace response

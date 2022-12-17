@@ -42,7 +42,7 @@ namespace server
 		Task         task = {request, NULL};
 
 		if (request->IsErr()) {
-			task.response = new ErrorResponse(
+			task.response = new response::ErrorResponse(
 				*request, task.request->GetErrStatusCode(), config_->GetDefaultServerConf()
 			);
 			insts = CreateInstructionsForError(*task.response);
@@ -115,7 +115,7 @@ namespace server
 		Task *task, const http::StatusCode &status_code, const conf::ServerConf &sv_conf
 	)
 	{
-		task->response = new ErrorResponse(*task->request, status_code, sv_conf);
+		task->response = new response::ErrorResponse(*task->request, status_code, sv_conf);
 		return CreateInstructionsForError(*task->response);
 	}
 
@@ -162,7 +162,8 @@ namespace server
 			return insts;
 		} catch (http::HttpException &e) {
 			delete response;
-			task.response = new ErrorResponse(*request, e.GetStatusCode(), GetServerConf(*request));
+			task.response =
+				new response::ErrorResponse(*request, e.GetStatusCode(), GetServerConf(*request));
 			return CreateInstructionsForError(*in_progress_.front().response);
 		} // TODO local redir
 	}

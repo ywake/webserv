@@ -10,15 +10,15 @@
 #include "server_conf.hpp"
 #include "status_code.hpp"
 
-namespace server
+namespace response
 {
-	class ErrorResponse : public IResponse,
+	class ErrorResponse : public server::IResponse,
 						  public q_buffer::QueuingReader,
 						  public q_buffer::QueuingWriter,
-						  public MetaDataStorage
+						  public server::MetaDataStorage
 	{
 	  private:
-		const IRequest         &request_;
+		const server::IRequest &request_;
 		const conf::ServerConf &config_;
 		ManagedFd               managed_fd_;
 		bool                    is_finished_;
@@ -40,6 +40,6 @@ namespace server
 	  private:
 		void PushDefaultErrorPage(const http::StatusCode &code);
 	};
-} // namespace server
+} // namespace response
 
 #endif
