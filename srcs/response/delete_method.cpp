@@ -1,6 +1,7 @@
 #include <cerrno>
 #include <unistd.h>
 
+#include "debug.hpp"
 #include "delete_method.hpp"
 #include "http_exceptions.hpp"
 
@@ -9,6 +10,7 @@ namespace response
 	DeleteMethod::DeleteMethod(const server::IRequest &request, const conf::LocationConf &location)
 		: AResponse(request), location_(location)
 	{
+		log("DELETE", request.Path());
 		const std::string &root = location_.GetRoot();
 		const std::string  path = utils::JoinPath(root, request_.Path());
 		if (unlink(path.c_str()) == -1) {

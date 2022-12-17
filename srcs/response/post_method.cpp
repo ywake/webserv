@@ -3,6 +3,7 @@
 #include <cstring>
 #include <fcntl.h>
 
+#include "debug.hpp"
 #include "http_exceptions.hpp"
 #include "post_method.hpp"
 
@@ -15,6 +16,7 @@ namespace response
 		  filename_(),
 		  body_writer_(request.GetBody())
 	{
+		log("POST", request.Path());
 		if (utils::EndWith(request_.Path(), "/")) {
 			throw http::ForbiddenException();
 		}
