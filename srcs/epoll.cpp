@@ -227,6 +227,12 @@ namespace io_multiplexer
 			if (epoll_event.events & EPOLLIN) {
 				ev.event_type |= event::Event::kRead;
 			}
+			if (epoll_event.events & EPOLLHUP) {
+				ev.event_type |= event::Event::kHangUp;
+			}
+			if (epoll_event.events & EPOLLERR) {
+				ev.event_type |= event::Event::kError;
+			}
 			events.push_back(ev);
 			log("fired blocking", ev, "\n");
 		}

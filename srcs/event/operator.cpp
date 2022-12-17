@@ -6,14 +6,20 @@ std::ostream &operator<<(std::ostream &os, const event::Event &event)
 {
 	os << "fd  : " << event.fd << std::endl;
 	os << "type: " << event.event_type << " ";
+	if (event.event_type == event::Event::kEmpty) {
+		os << "Empty ";
+	}
 	if (event.event_type & event::Event::kWrite) {
 		os << "Write ";
 	}
 	if (event.event_type & event::Event::kRead) {
 		os << "Read ";
 	}
-	if (event.event_type == event::Event::kEmpty) {
-		os << "Empty ";
+	if (event.event_type & event::Event::kHangUp) {
+		os << "HangUp ";
+	}
+	if (event.event_type & event::Event::kError) {
+		os << "Error ";
 	}
 	os << std::endl;
 	os << "ptr : " << event.data << std::endl;
