@@ -43,12 +43,11 @@ namespace response
 			switch (errno) {
 			case EACCES:
 			case EEXIST:
-			case ENOTDIR:
 			case ENXIO:
-				throw http::ForbiddenException();
+			case ENOTDIR:
 			case ENOENT:
 			case ENAMETOOLONG:
-				throw http::NotFoundException();
+				throw http::ForbiddenException();
 			default:
 				throw http::InternalServerErrorException();
 			}
