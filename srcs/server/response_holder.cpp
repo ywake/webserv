@@ -162,7 +162,7 @@ namespace server
 			return insts;
 		} catch (http::HttpException &e) {
 			delete response;
-			task.response = new ErrorResponse(request->GetErrStatusCode(), GetServerConf(*request));
+			task.response = new ErrorResponse(e.GetStatusCode(), GetServerConf(*request));
 			return CreateInstructionsForError(*in_progress_.front().response);
 		} // TODO local redir
 	}
