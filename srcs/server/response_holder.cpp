@@ -1,9 +1,11 @@
 #include "response_holder.hpp"
 #include "debug.hpp"
+#include "delete_method.hpp"
 #include "error_response.hpp"
+#include "get_method.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
-#include "static_response.hpp"
+#include "post_method.hpp"
 
 namespace server
 {
@@ -95,15 +97,22 @@ namespace server
 	{
 		Instructions insts;
 
-		task->response = new StaticResponse(*task->request, location);
-		if (task->response->HasFd()) {
-			Instruction i = Instruction(Instruction::kRegister, task->response->GetFd().Value());
-			if (task->request->Method() == http::methods::kPost) {
-				i.event.event_type = Event::kWrite;
-			} else {
-				i.event.event_type = Event::kRead;
-			}
+		// TODO 405 not allowed
+		if (task->request->Method() == http::methods::kGet) {
+			task->response = new response::GetMethod(*task->request, location);
+			Instruction i =
+				Instruction(Instruction::kRegister, task->response->GetFd().Value(), Event::kWrite);
 			insts.push_back(i);
+		} else if (task->request->Method() == http::methods::kPost) {
+			task->response = new response::PostMethod(*task->request, location);
+			Instruction i =
+				Instruction(Instruction::kRegister, task->response->GetFd().Value(), Event::kRead);
+			insts.push_back(i);
+		} else if (task->request->Method() == http::methods::kDelete) {
+			task->response = new response::DeleteMethod(*task->request, location);
+		} else {
+			DBG_INFO;
+			throw std::logic_error("invalid method");
 		}
 		if (task->response->HasReadyData()) { // ほんとはfrontのときだけ
 			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
