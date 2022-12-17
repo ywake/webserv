@@ -27,6 +27,8 @@ namespace response
 		}
 		// TODO headers
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
+		MetaDataStorage::StoreHeader("Server", http::kServerName);
+		MetaDataStorage::StoreHeader("Connection", "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 	}
 

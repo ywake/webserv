@@ -12,6 +12,11 @@ namespace server
 		: config_(conf), is_finished_(false)
 	{
 		log("error res construct", status_code.GetCode());
+		MetaDataStorage::StoreStatusLine(http::kHttpVersion, status_code);
+		MetaDataStorage::StoreHeader("Server", http::kServerName);
+		// MetaDataStorage::StoreHeader("Connection", "keep-alive"); request情報必要
+		// content-length;
+		MetaDataStorage::PushWithCrLf();
 		PushDefaultErrorPage(status_code);
 		is_finished_ = true;
 	}

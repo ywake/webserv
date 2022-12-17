@@ -15,6 +15,9 @@ namespace response
 		const std::string  path = utils::JoinPath(root, request_.Path());
 		managed_fd_             = TryOpen(path);
 		// TODO autoindx, index-files, redirect, headeres
+		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
+		MetaDataStorage::StoreHeader("Server", http::kServerName);
+		MetaDataStorage::StoreHeader("Connection", "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 	}
 
