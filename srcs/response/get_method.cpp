@@ -1,6 +1,7 @@
 #include <cerrno>
 #include <fcntl.h>
 
+#include "debug.hpp"
 #include "get_method.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
@@ -11,11 +12,15 @@ namespace response
 	GetMethod::GetMethod(const server::IRequest &request, const conf::LocationConf &location)
 		: AResponse(request), location_(location), managed_fd_()
 	{
+		log("GET", request.Path());
 		const std::string &root = location_.GetRoot();
 		const std::string  path = utils::JoinPath(root, request_.Path());
 		managed_fd_             = TryOpen(path);
 		// TODO autoindx, index-files, redirect, headeres
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
+		MetaDataStorage::StoreHeader("Server", http::kServerName);
+		MetaDataStorage::StoreHeader("Connection", "keep-alive");
+		MetaDataStorage::PushWithCrLf();
 	}
 
 	int GetMethod::TryOpen(const std::string &filename) const
@@ -44,7 +49,6 @@ namespace response
 		}
 		if (read_size == 0) {
 			is_finished_ = true;
-			MetaDataStorage::PushWithCrLf();
 		}
 	}
 

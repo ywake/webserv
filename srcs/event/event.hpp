@@ -10,9 +10,11 @@ namespace event
 	typedef std::list<Event> Events;
 	typedef struct Event {
 		enum EventType {
-			kEmpty = 0,
-			kWrite = 1U << 0,
-			kRead  = 1U << 1
+			kEmpty  = 0,
+			kWrite  = 1U << 0,
+			kRead   = 1U << 1,
+			kHangUp = 1U << 2,
+			kError  = 1U << 3
 		};
 
 		int      fd;

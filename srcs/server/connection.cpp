@@ -62,6 +62,10 @@ namespace server
 		event::Instructions insts;
 
 		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
+		if (event_type & event::Event::kHangUp || event_type & event::Event::kError) {
+			is_finished_ = true;
+			return insts;
+		}
 		if (event_type & event::Event::kRead) {
 			log("con recv");
 			Instructions recv_insts = Recieve();
@@ -81,7 +85,7 @@ namespace server
 
 		insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
 		if (shutdown(GetFd(), SHUT_RD) < 0) {
-			std::cerr << "shutdown" << strerror(errno) << std::endl;
+			std::cerr << "shutdown: " << strerror(errno) << std::endl;
 			// TDDO 500
 		}
 		request_holder_.OnEof();

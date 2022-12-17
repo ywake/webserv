@@ -14,6 +14,8 @@ namespace http
 	extern const std::string kContentLength;
 	extern const std::string kTransferEncoding;
 	extern const std::string kChunked;
+	extern const std::string kHost;
+	extern const std::string kServerName;
 
 	namespace methods
 	{

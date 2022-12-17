@@ -6,6 +6,7 @@
 #include "server.hpp"
 #include "server_confs.hpp"
 #include "webserv_utils.hpp"
+#include <csignal>
 
 Result<conf::ServerConfs> OpenConfig(std::string filepath);
 Result<void>              Run(const conf::ServerConfs &config);
@@ -16,6 +17,7 @@ int main(int argc, char **argv)
 		std::cerr << "Usage: ./webserv <config_file>" << std::endl;
 		return EXIT_FAILURE;
 	}
+	signal(SIGPIPE, SIG_IGN); // TODO あとでsigactionに変更、エラーハンドリング
 	try {
 		std::cerr << "XXXXXXXXXXXXXXXXXXX" << std::endl;
 		Result<std::string> res = utils::ReadFile(argv[1]);

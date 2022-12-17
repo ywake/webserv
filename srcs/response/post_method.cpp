@@ -3,6 +3,7 @@
 #include <cstring>
 #include <fcntl.h>
 
+#include "debug.hpp"
 #include "http_exceptions.hpp"
 #include "post_method.hpp"
 
@@ -15,6 +16,7 @@ namespace response
 		  filename_(),
 		  body_writer_(request.GetBody())
 	{
+		log("POST", request.Path());
 		if (utils::EndWith(request_.Path(), "/")) {
 			throw http::ForbiddenException();
 		}
@@ -28,6 +30,8 @@ namespace response
 		managed_fd_                  = TryOpen(filename_);
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kCreated);
 		MetaDataStorage::StoreHeader("Location", uniq_path); // TODO create uri
+		MetaDataStorage::StoreHeader("Server", http::kServerName);
+		MetaDataStorage::StoreHeader("Connection", "keep-alive");
 		// TODO other headers 何必要か分からん
 	}
 
