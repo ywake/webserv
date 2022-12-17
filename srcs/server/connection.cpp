@@ -81,7 +81,7 @@ namespace server
 
 		insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
 		if (shutdown(GetFd(), SHUT_RD) < 0) {
-			std::cerr << "shutdown" << strerror(errno) << std::endl;
+			std::cerr << "shutdown: " << strerror(errno) << std::endl;
 			// TDDO 500
 		}
 		request_holder_.OnEof();
