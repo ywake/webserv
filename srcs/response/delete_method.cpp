@@ -32,10 +32,12 @@ namespace response
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Connection", "keep-alive");
 		MetaDataStorage::PushWithCrLf();
+		is_finished_ = true;
 	}
 
 	void DeleteMethod::Perform(const event::Event &event)
 	{
+		throw std::logic_error("delete perform");
 		(void)event;
 	}
 
