@@ -1,8 +1,6 @@
 #ifndef META_DATA_STORAGE_HPP
 #define META_DATA_STORAGE_HPP
 
-#include <sstream>
-
 #include "http_define.hpp"
 #include "queuing_buffer.hpp"
 #include "status_code.hpp"

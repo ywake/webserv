@@ -6,12 +6,21 @@
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 
-namespace server
+namespace response
 {
-	ErrorResponse::ErrorResponse(const http::StatusCode &status_code, const conf::ServerConf &conf)
-		: config_(conf), is_finished_(false)
+	ErrorResponse::ErrorResponse(
+		const server::IRequest &request,
+		const http::StatusCode &status_code,
+		const conf::ServerConf &conf
+	)
+		: AResponse(request), config_(conf)
 	{
-    log("error res construct", status_code.GetCode());
+		log("error res construct", status_code.GetCode());
+		MetaDataStorage::StoreStatusLine(http::kHttpVersion, status_code);
+		MetaDataStorage::StoreHeader("Server", http::kServerName);
+		// MetaDataStorage::StoreHeader("Connection", "keep-alive"); request情報必要
+		// content-length;
+		MetaDataStorage::PushWithCrLf();
 		PushDefaultErrorPage(status_code);
 		is_finished_ = true;
 	}
@@ -38,16 +47,6 @@ namespace server
 		(void)event;
 	}
 
-	Result<void> ErrorResponse::Send(int fd)
-	{
-		return Write(fd);
-	}
-
-	bool ErrorResponse::HasReadyData() const
-	{
-		return !QueuingBuffer::empty();
-	}
-
 	bool ErrorResponse::HasFd() const
 	{
 		return managed_fd_.GetFd() != ManagedFd::kNofd;
@@ -58,14 +57,4 @@ namespace server
 		return managed_fd_.GetFd();
 	}
 
-	bool ErrorResponse::IsFinished() const
-	{
-		return is_finished_;
-	}
-
-	std::size_t ErrorResponse::size() const
-	{
-		return q_buffer::QueuingBuffer::size();
-	}
-
-} // namespace server
+} // namespace response

@@ -7,7 +7,9 @@
 
 namespace server
 {
-	RequestHolder::RequestHolder() : request_queue_() {}
+	RequestHolder::RequestHolder(const conf::VirtualServerConfs *config)
+		: config_(config), request_queue_(), parser_(config)
+	{}
 
 	RequestHolder::RequestHolder(const RequestHolder &other)
 	{
@@ -41,7 +43,7 @@ namespace server
 	void RequestHolder::DestroyQueue()
 	{
 		while (!request_queue_.empty()) {
-			RequestParser::DestroyRequest(request_queue_.front());
+			RequestParser::DestroyIRequest(request_queue_.front());
 			request_queue_.pop_front();
 		}
 	}
@@ -69,15 +71,15 @@ namespace server
 		for (RequestQueue::const_iterator it = rhs.request_queue_.begin();
 			 it != rhs.request_queue_.end();
 			 it++) {
-			request_queue_.push_back(RequestParser::CopyRequest(*it));
+			request_queue_.push_back(RequestParser::CopyIRequest(*it));
 		}
+		config_ = rhs.config_;
 		parser_ = rhs.parser_;
 		return *this;
 	}
 
 	void RequestHolder::DestroyRequest(IRequest *&request)
 	{
-		RequestParser::DestroyRequest(request);
+		RequestParser::DestroyIRequest(request);
 	}
-
 } // namespace server

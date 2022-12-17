@@ -54,6 +54,12 @@ namespace http
 		MethodNotAllowedException();
 	};
 
+	class ContentTooLargeException : public HttpException
+	{
+	  public:
+		ContentTooLargeException();
+	};
+
 	class InternalServerErrorException : public HttpException
 	{
 	  public:

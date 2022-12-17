@@ -9,20 +9,10 @@ namespace server
 {
 	using namespace event;
 
-	const time_t                   Connection::kTimeoutDuration     = 60;
-	const std::size_t              Connection::kMaxRecverBufSize    = 8196;
-	const std::size_t              Connection::kMaxSenderBufSize    = 8196;
-	const std::size_t              Connection::kMaxRequestQueueSize = 3;
-	const conf::VirtualServerConfs Connection::kEmptyConfs          = conf::VirtualServerConfs();
-
-	Connection::Connection()
-		: Socket(),
-		  configs_(kEmptyConfs),
-		  client_(),
-		  request_holder_(),
-		  is_finished_(false),
-		  time_()
-	{}
+	const time_t      Connection::kTimeoutDuration     = 60;
+	const std::size_t Connection::kMaxRecverBufSize    = 8196;
+	const std::size_t Connection::kMaxSenderBufSize    = 8196;
+	const std::size_t Connection::kMaxRequestQueueSize = 3;
 
 	Connection::Connection(
 		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
@@ -31,32 +21,13 @@ namespace server
 		  configs_(configs),
 		  client_(client),
 		  reciever_(fd),
-		  request_holder_(),
-		  response_holder_(fd, configs, RequestHolder::DestroyRequest),
+		  request_holder_(&configs),
+		  response_holder_(fd, &configs, RequestHolder::DestroyRequest),
 		  is_finished_(false),
 		  time_()
 	{
 		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
 	}
-
-	// setからeraseするためだけの存在
-	Connection::Connection(int fd)
-		: Socket(fd),
-		  configs_(kEmptyConfs),
-		  client_(),
-		  reciever_(-1),
-		  request_holder_(),
-		  is_finished_(false),
-		  time_()
-	{}
-
-	// // Connection::Connection(const Connection &other)
-	// 	: Socket(other),
-	// 	  configs_(other.configs_),
-	// 	  client_(other.client_),
-	// 	  request_holder_(other.request_holder_),
-	// 	  response_holder_(-1, kEmptyConfs, RequestHolder::DestroyRequest) // tmp
-	// {}
 
 	bool Connection::operator<(const Connection &other) const
 	{
@@ -91,6 +62,10 @@ namespace server
 		event::Instructions insts;
 
 		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
+		if (event_type & event::Event::kHangUp || event_type & event::Event::kError) {
+			is_finished_ = true;
+			return insts;
+		}
 		if (event_type & event::Event::kRead) {
 			log("con recv");
 			Instructions recv_insts = Recieve();
@@ -110,7 +85,7 @@ namespace server
 
 		insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
 		if (shutdown(GetFd(), SHUT_RD) < 0) {
-			std::cerr << "shutdown" << strerror(errno) << std::endl;
+			std::cerr << "shutdown: " << strerror(errno) << std::endl;
 			// TDDO 500
 		}
 		request_holder_.OnEof();

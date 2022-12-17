@@ -81,36 +81,46 @@ namespace server
 
 		Instructions insts;
 
-		Result<Connection> res = listener->Accept();
+		Result<Connection *> res = listener->Accept();
 		if (res.IsErr()) {
 			std::cerr << res.Err() << std::endl;
 			return insts;
 		}
-		Position    pos      = connections_.insert(res.Val());
-		Connection *conn_ptr = const_cast<Connection *>(&*pos.first);
+		Position    pos        = connections_.insert(res.Val());
+		Connection *connection = *pos.first;
 		Instruction instruction =
-			Instruction(Instruction::kRegister, conn_ptr->GetFd(), Event::kRead, conn_ptr);
+			Instruction(Instruction::kRegister, connection->GetFd(), Event::kRead, connection);
 		insts.push_back(instruction);
 		return insts;
 	}
 
 	Instructions Server::CloseFinishedConnections()
 	{
-		std::vector<Connection> finished;
-		Instructions            insts;
+		Instructions              insts;
+		std::vector<Connection *> delete_set;
+
 		for (Connections::iterator it = connections_.begin(); it != connections_.end(); ++it) {
-			Connection &con = const_cast<Connection &>(*it);
-			if (con.IsFinished() || con.IsTimeOut()) {
-				log("finish fd", con.GetFd());
-				Instructions i = con.Disconnect();
+			Connection *con = *it;
+			if (con->IsFinished() || con->IsTimeOut()) {
+				log("finish fd", con->GetFd());
+				Instructions i = con->Disconnect();
 				insts.splice(insts.end(), i);
-				finished.push_back(con.GetFd());
+				delete_set.push_back(con);
 			}
 		}
-		for (std::vector<Connection>::iterator it = finished.begin(); it != finished.end(); it++) {
+		for (std::vector<Connection *>::iterator it = delete_set.begin(); it != delete_set.end();
+			 it++) {
 			connections_.erase(*it);
+			delete *it;
 		}
 		return insts;
+	}
+
+	Server::~Server()
+	{
+		for (Connections::iterator it = connections_.begin(); it != connections_.end(); ++it) {
+			delete *it;
+		}
 	}
 
 } // namespace server

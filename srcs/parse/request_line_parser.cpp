@@ -128,7 +128,9 @@ namespace server
 
 	RequestLineParser::ParseResult RequestLineParser::ParseMethod(q_buffer::QueuingBuffer &recieved)
 	{
-		switch (TryLoadBytesUntilSpace(recieved, http::ImplementedMethods::kMaxLength)) {
+		const std::size_t max_length = http::ImplementedMethods::kMaxLength + http::kSp.size();
+
+		switch (TryLoadBytesUntilSpace(recieved, max_length)) {
 		case kOverMaxSize:
 			throw http::NotImplementedException();
 		case kParsable:

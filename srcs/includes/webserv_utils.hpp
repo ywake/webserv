@@ -3,6 +3,7 @@
 
 #include "result.hpp"
 #include "thin_string.hpp"
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,15 @@ namespace utils
 		delete p;
 		p = NULL;
 	}
+	template <typename T>
+	std::string ToString(const T &data)
+	{
+		std::stringstream ss;
+		ss << data;
+		return ss.str();
+	}
+
+	Result<std::string>     CreateTimeStamp();
 	std::string             ToLowerString(std::string s);
 	Result<long>            StrToLong(const std::string &str);
 	Result<bool>            IsRegularFile(int fd);

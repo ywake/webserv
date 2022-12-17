@@ -5,6 +5,7 @@
 #include "i_response.hpp"
 #include "location_conf.hpp"
 #include "managed_fd.hpp"
+#include "meta_data_storage.hpp"
 #include "queuing_reader.hpp"
 #include "queuing_writer.hpp"
 
@@ -12,7 +13,8 @@ namespace server
 {
 	class StaticResponse : public IResponse,
 						   public q_buffer::QueuingReader,
-						   public q_buffer::QueuingWriter
+						   public q_buffer::QueuingWriter,
+						   public MetaDataStorage
 	{
 	  private:
 		const IRequest           &request_;
