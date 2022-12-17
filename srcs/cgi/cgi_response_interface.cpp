@@ -46,7 +46,14 @@ namespace cgi
 		child_fd_.Close();
 	}
 
-	void CgiResponse::OnReadReady() {}
+	void CgiResponse::OnReadReady()
+	{
+		if (parent_fd_.GetFd() == ManagedFd::kNofd)
+			return;
+		if (IsEoF())
+			return;
+		Recv(parent_fd_.GetFd());
+	}
 
 	Result<void> CgiResponse::Send(int fd)
 	{
