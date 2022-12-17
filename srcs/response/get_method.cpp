@@ -15,7 +15,7 @@ namespace response
 		const std::string  path = utils::JoinPath(root, request_.Path());
 		managed_fd_             = TryOpen(path);
 		// TODO autoindx, index-files, redirect, headeres
-		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
+		MetaDataStorage::PushWithCrLf();
 	}
 
 	int GetMethod::TryOpen(const std::string &filename) const
@@ -44,7 +44,6 @@ namespace response
 		}
 		if (read_size == 0) {
 			is_finished_ = true;
-			MetaDataStorage::PushWithCrLf();
 		}
 	}
 
