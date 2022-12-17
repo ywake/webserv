@@ -11,4 +11,6 @@ namespace http
 	const std::string kContentLength    = "content-length";
 	const std::string kTransferEncoding = "transfer-encoding";
 	const std::string kChunked          = "chunked";
+	const std::string kHost             = "host";
+	const std::string kServerName       = "webserv/1.0";
 } // namespace http
