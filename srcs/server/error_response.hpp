@@ -1,6 +1,7 @@
 #ifndef ERROR_RESPONSE_HPP
 #define ERROR_RESPONSE_HPP
 
+#include "i_request.hpp"
 #include "i_response.hpp"
 #include "managed_fd.hpp"
 #include "meta_data_storage.hpp"
@@ -17,12 +18,17 @@ namespace server
 						  public MetaDataStorage
 	{
 	  private:
+		const IRequest         &request_;
 		const conf::ServerConf &config_;
 		ManagedFd               managed_fd_;
 		bool                    is_finished_;
 
 	  public:
-		ErrorResponse(const http::StatusCode &status_code, const conf::ServerConf &conf);
+		ErrorResponse(
+			const server::IRequest &request,
+			const http::StatusCode &status_code,
+			const conf::ServerConf &conf
+		);
 		void           Perform(const event::Event &event);
 		Result<void>   Send(int fd);
 		bool           HasReadyData() const;

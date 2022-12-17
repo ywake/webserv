@@ -8,8 +8,12 @@
 
 namespace server
 {
-	ErrorResponse::ErrorResponse(const http::StatusCode &status_code, const conf::ServerConf &conf)
-		: config_(conf), is_finished_(false)
+	ErrorResponse::ErrorResponse(
+		const server::IRequest &request,
+		const http::StatusCode &status_code,
+		const conf::ServerConf &conf
+	)
+		: request_(request), config_(conf), is_finished_(false)
 	{
 		log("error res construct", status_code.GetCode());
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, status_code);
