@@ -29,7 +29,9 @@ namespace response
 		if (fd == -1) {
 			switch (errno) {
 			case EACCES:
+			case ENXIO:
 				throw http::ForbiddenException();
+			case ENOTDIR:
 			case ENOENT:
 			case ENAMETOOLONG:
 				throw http::NotFoundException();
