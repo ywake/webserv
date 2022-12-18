@@ -15,11 +15,10 @@ namespace server
 
 	inline const conf::ServerConf &ResponseHolder::GetServerConf(const IRequest &request)
 	{
-		if (request.Headers().Contains("host")) {
+		if (request.Host().empty()) {
 			return config_->GetDefaultServerConf();
 		} else {
-			const std::string &host = request.Headers()["host"].front().GetValue();
-			return (*config_)[host];
+			return (*config_)[request.Host()];
 		}
 	}
 
