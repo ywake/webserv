@@ -2,10 +2,11 @@
 #define PARSER_HPP
 
 #include "queuing_reader.hpp"
+#include "stateful_parser.hpp"
 
 namespace cgi
 {
-	class Parser : public q_buffer::QueuingReader
+	class Parser : public q_buffer::QueuingReader, public server::StatefulParser
 	{
 	  private:
 		bool parse_end_;
