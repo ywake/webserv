@@ -28,6 +28,7 @@ namespace server
 
 		virtual const std::string          &Method() const           = 0;
 		virtual const std::string          &Path() const             = 0;
+		virtual const std::string          &Host() const             = 0;
 		virtual const http::FieldSection   &Headers() const          = 0;
 		virtual const http::RequestMessage &GetMessage() const       = 0;
 		virtual const std::vector<char>    *GetBody() const          = 0;

@@ -51,6 +51,7 @@ namespace server
 
 			const std::string          &Method() const;
 			const std::string          &Path() const;
+			const std::string          &Host() const;
 			http::FieldSection         &Headers();
 			const http::FieldSection   &Headers() const;
 			const http::RequestMessage &GetMessage() const;

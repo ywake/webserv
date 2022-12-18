@@ -73,6 +73,21 @@ namespace server
 		return request_msg_.GetRequestLine().GetRequestTarget().GetRequestFormData().path_;
 	}
 
+	const std::string &RequestParser::Request::Host() const
+	{
+		static const std::string kEmptyHost;
+
+		const std::string &uri_host =
+			request_msg_.GetRequestLine().GetRequestTarget().GetRequestFormData().host_;
+		if (!uri_host.empty()) {
+			return uri_host;
+		} else if (field_section_ == NULL || !field_section_->Contains("host")) {
+			return kEmptyHost;
+		} else {
+			return Headers()["host"].front().GetValue();
+		}
+	}
+
 	const http::FieldSection &RequestParser::Request::Headers() const
 	{
 		return *field_section_;
