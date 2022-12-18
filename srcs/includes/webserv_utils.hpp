@@ -3,6 +3,7 @@
 
 #include "result.hpp"
 #include "thin_string.hpp"
+#include <csignal>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -29,6 +30,7 @@ namespace utils
 		return ss.str();
 	}
 
+	Result<void>            SetSignalHandler(int signum, sig_t handler, int sa_flags);
 	Result<std::string>     CreateTimeStamp();
 	std::string             ToLowerString(std::string s);
 	Result<long>            StrToLong(const std::string &str);
