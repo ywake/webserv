@@ -11,10 +11,10 @@ namespace cgi
 	 */
 	void CgiResponse::Perform(const event::Event &event)
 	{
-		if (event.event_type & event::Event::kHangUp) {
-			log("cgi hangup");
-			parent_fd_.Close();
-		}
+		// if (event.event_type & event::Event::kHangUp) {
+		// 	log("cgi hangup");
+		// 	parent_fd_.Close();
+		// }
 		if (event.event_type & event::Event::kWrite) {
 			log("cgi write ready");
 			OnWriteReady();
@@ -51,11 +51,13 @@ namespace cgi
 			return;
 		}
 		log("read from cgi");
-		int read_size = Read(parent_fd_.GetFd());
+		int read_size = parser_.Read(parent_fd_.GetFd());
 		if (read_size < 0) {
 			throw http::InternalServerErrorException();
 		}
-		is_finished_ = read_size == 0;
+		if (parser_.IsFinished()) {
+			push_back(parser_.ToString());
+		}
 	}
 
 	Result<void> CgiResponse::Send(int fd)
@@ -85,6 +87,6 @@ namespace cgi
 
 	bool CgiResponse::IsFinished() const
 	{
-		return is_finished_;
+		return parser_.IsFinished();
 	}
 } // namespace cgi

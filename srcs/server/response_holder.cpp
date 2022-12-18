@@ -95,8 +95,8 @@ namespace server
 			insts.push_back(Instruction(
 				Instruction::kRegister,
 				task->response->GetFd().Value(),
-				Event::kRead | Event::kWrite
-				// Event::kRead
+				// Event::kRead | Event::kWrite
+				Event::kRead
 			));
 		}
 		if (task->response->HasReadyData()) { // ほんとはfrontのときだけ
