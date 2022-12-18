@@ -44,7 +44,7 @@ namespace server
 
 		if (request->IsErr()) {
 			task.response = new response::ErrorResponse(
-				*request, task.request->GetErrStatusCode(), GetServerConf(*task.request))
+				*request, task.request->GetErrStatusCode(), GetServerConf(*task.request)
 			);
 			insts = CreateInstructionsForError(*task.response);
 		} else {
