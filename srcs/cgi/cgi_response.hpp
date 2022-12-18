@@ -20,17 +20,17 @@ namespace cgi
 		static const std::string kCgiVersion;
 
 	  private:
-		server::IRequest   &request_;
-		conf::LocationConf &location_conf_;
-		Path                resource_path_;
-		ManagedFd           parent_fd_;
-		ManagedFd           child_fd_;
-		bool                is_finished_;
-		server::BodyWriter  body_writer_;
+		server::IRequest         &request_;
+		const conf::LocationConf &location_conf_;
+		Path                      resource_path_;
+		ManagedFd                 parent_fd_;
+		ManagedFd                 child_fd_;
+		bool                      is_finished_;
+		server::BodyWriter        body_writer_;
 
 	  public:
 		CgiResponse(const CgiResponse &other);
-		CgiResponse(server::IRequest &request, conf::LocationConf &location_conf);
+		CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf);
 		~CgiResponse();
 
 		// Methods
@@ -62,7 +62,7 @@ namespace cgi
 		virtual std::size_t size() const;
 		bool                IsFinished() const;
 
-		CgiResponse &operator=(const CgiResponse &other);
+		// CgiResponse &operator=(const CgiResponse &other);
 	};
 
 } // namespace cgi

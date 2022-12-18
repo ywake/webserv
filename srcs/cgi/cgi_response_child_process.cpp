@@ -1,4 +1,5 @@
 #include "cgi_response.hpp"
+#include "debug.hpp"
 #include "meta_env.hpp"
 
 extern char **environ;
@@ -17,7 +18,6 @@ namespace cgi
 		if (envs.IsErr()) {
 			exit(1);
 		}
-
 		parent_fd_.Close();
 		if (Dup2(child_fd_.GetFd(), STDIN_FILENO).IsErr()) {
 			exit(1);
@@ -25,13 +25,12 @@ namespace cgi
 		if (Dup2(child_fd_.GetFd(), STDOUT_FILENO).IsErr()) {
 			exit(1);
 		}
-		if (execve(
-				resource_path_.c_str(),
-				const_cast<char *const *>(args.Val().data()),
-				const_cast<char *const *>(envs.Val().data())
-			) < 0) {
-			exit(1);
-		}
+		execve(
+			location_conf_.GetCgiPath().Value().c_str(),
+			const_cast<char *const *>(args.Val().data()),
+			const_cast<char *const *>(envs.Val().data())
+		);
+		exit(1);
 	}
 
 	Result<std::vector<const char *> > CgiResponse::CreateArgs()

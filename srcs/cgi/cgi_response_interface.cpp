@@ -1,6 +1,8 @@
 #include "cgi_response.hpp"
 
+#include "debug.hpp"
 #include "http_exceptions.hpp"
+#include <sys/socket.h>
 
 namespace cgi
 {
@@ -9,50 +11,51 @@ namespace cgi
 	 */
 	void CgiResponse::Perform(const event::Event &event)
 	{
+		if (event.event_type & event::Event::kHangUp) {
+			log("cgi hangup");
+			parent_fd_.Close();
+		}
 		if (event.event_type & event::Event::kWrite) {
+			log("cgi write ready");
 			OnWriteReady();
 		}
 		if (event.event_type & event::Event::kRead) {
+			log("cgi read ready");
 			OnReadReady();
 		}
 	}
 
 	void CgiResponse::OnWriteReady()
 	{
-		if (parent_fd_.GetFd() != ManagedFd::kNofd && !body_writer_.IsFinished()) {
-			body_writer_.Write(parent_fd_.GetFd());
+		if (parent_fd_.GetFd() == ManagedFd::kNofd) {
+			log("nofd");
+			return;
 		}
-	}
-
-	void CgiResponse::ExecCgi()
-	{
-		pid_t pid = fork();
-		switch (pid) {
-		case -1:
-			throw http::InternalServerErrorException();
-			break;
-		case 0:
-			ChildProcess();
-			break;
-		default:
-			ParentProcess(pid);
-			break;
+		if (body_writer_.IsFinished()) {
+			log("write to cgi is finished");
+			if (shutdown(parent_fd_.GetFd(), SHUT_WR) < 0) {
+				log("shutdown failed");
+				throw http::InternalServerErrorException();
+			}
+			return;
 		}
-	}
-
-	void CgiResponse::ParentProcess(pid_t pid)
-	{
-		(void)pid;
-		child_fd_.Close();
+		log("write body to cgi");
+		if (body_writer_.Write(parent_fd_.GetFd()).IsErr()) {
+			shutdown(parent_fd_.GetFd(), SHUT_WR);
+		}
 	}
 
 	void CgiResponse::OnReadReady()
 	{
-		if (parent_fd_.GetFd() == ManagedFd::kNofd)
+		if (parent_fd_.GetFd() == ManagedFd::kNofd || is_finished_) {
 			return;
-		if (IsEoF())
-			return;
-		Recv(parent_fd_.GetFd());
+		}
+		log("read from cgi");
+		int read_size = Read(parent_fd_.GetFd());
+		if (read_size < 0) {
+			throw http::InternalServerErrorException();
+		}
+		is_finished_ = read_size == 0;
 	}
 
 	Result<void> CgiResponse::Send(int fd)

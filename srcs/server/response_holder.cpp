@@ -1,4 +1,5 @@
 #include "response_holder.hpp"
+#include "cgi_response.hpp"
 #include "debug.hpp"
 #include "delete_method.hpp"
 #include "error_response.hpp"
@@ -87,15 +88,15 @@ namespace server
 
 	Instructions ResponseHolder::AddNewCgiResponse(Task *task, const conf::LocationConf &location)
 	{
-		(void)location;
+		log("AddNewCgiResponse");
 		Instructions insts;
-		task->response = NULL;
-
+		task->response = new cgi::CgiResponse(*task->request, location);
 		if (task->response->HasFd()) {
 			insts.push_back(Instruction(
 				Instruction::kRegister,
 				task->response->GetFd().Value(),
 				Event::kRead | Event::kWrite
+				// Event::kRead
 			));
 		}
 		if (task->response->HasReadyData()) { // ほんとはfrontのときだけ

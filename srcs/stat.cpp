@@ -1,5 +1,7 @@
 #include "stat.hpp"
+#include "debug.hpp"
 #include <cerrno>
+#include <cstdio>
 #include <unistd.h>
 
 const result::ErrCode Stat::kEAcces = new Error("stat: " + std::string(strerror(EACCES)));
@@ -53,8 +55,10 @@ result::Result<Stat> Stat::FromPath(const std::string &path)
 
 	res = stat(path.c_str(), &stat_buf);
 	if (res == -1) {
+		perror(COL_RED "stat" COL_END);
 		return GetErrCode(errno);
 	}
+	log("stat: " + path + " success");
 	return Stat(path, stat_buf);
 }
 
