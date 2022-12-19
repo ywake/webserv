@@ -25,7 +25,8 @@ namespace response
 		Emptiable<int> GetFd() const;
 
 	  private:
-		int TryOpen(const std::string &filename) const;
+		void CreateAutoIndex(const std::string &path);
+		int  TryOpen(const std::string &filename) const;
 	};
 } // namespace response
 

@@ -1,4 +1,5 @@
 #include <cerrno>
+#include <dirent.h>
 #include <fcntl.h>
 
 #include "debug.hpp"
@@ -15,12 +16,33 @@ namespace response
 		log("GET", request.Path());
 		const std::string &root = location_.GetRoot();
 		const std::string  path = utils::JoinPath(root, request_.Path());
-		managed_fd_             = TryOpen(path);
+		if (utils::EndWith(path, "/")) {
+			CreateAutoIndex(path);
+		} else {
+			managed_fd_ = TryOpen(path);
+		}
 		// TODO autoindx, index-files, redirect, headeres
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Connection", "keep-alive");
 		MetaDataStorage::PushWithCrLf();
+	}
+
+	void GetMethod::CreateAutoIndex(const std::string &path)
+	{
+		DIR *dirp = opendir(path.c_str());
+		if (dirp == NULL) {
+			switch (errno) {
+			case EACCES:
+			case ELOOP:
+				throw http::ForbiddenException();
+			case ENOTDIR:
+			case ENOENT:
+				throw http::NotFoundException();
+			default:
+				throw http::InternalServerErrorException();
+			}
+		}
 	}
 
 	int GetMethod::TryOpen(const std::string &filename) const
@@ -56,7 +78,7 @@ namespace response
 
 	bool GetMethod::HasFd() const
 	{
-		return true;
+		return managed_fd_.GetFd() != ManagedFd::kNofd;
 	}
 
 	Emptiable<int> GetMethod::GetFd() const
