@@ -32,6 +32,9 @@ namespace response
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Connection", "keep-alive");
+		struct stat st;
+		fstat(managed_fd_.GetFd(), &st);
+		MetaDataStorage::StoreHeader("Content-Lengh", utils::ToString(st.st_size));
 		MetaDataStorage::PushWithCrLf();
 	}
 
