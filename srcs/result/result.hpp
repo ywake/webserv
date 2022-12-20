@@ -5,7 +5,7 @@
 
 namespace result
 {
-	typedef Error *ErrCode;
+	typedef const Error *ErrCode;
 
 	template <typename T>
 	class Result
@@ -22,11 +22,11 @@ namespace result
 		Result(const Result &r) : val_(r.val_), err_(r.err_){};
 		bool IsOk() const
 		{
-			return !IsErr();
+			return err_ == NULL;
 		}
 		bool IsErr() const
 		{
-			return err_ == NULL;
+			return !IsOk();
 		}
 		const T &Val() const
 		{

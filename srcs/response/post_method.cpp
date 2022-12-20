@@ -20,7 +20,7 @@ namespace response
 		if (utils::EndWith(request_.Path(), "/")) {
 			throw http::ForbiddenException();
 		}
-		Result<std::string> time_stamp = utils::CreateTimeStamp();
+		Result<std::string> time_stamp = utils::CreateCurrentTimeStamp();
 		if (time_stamp.IsErr()) {
 			throw http::InternalServerErrorException();
 		}

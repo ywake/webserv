@@ -31,7 +31,7 @@ namespace utils
 	}
 
 	Result<void>            SetSignalHandler(int signum, sig_t handler, int sa_flags);
-	Result<std::string>     CreateTimeStamp();
+	Result<std::string>     CreateCurrentTimeStamp();
 	std::string             ToLowerString(std::string s);
 	Result<long>            StrToLong(const std::string &str);
 	Result<bool>            IsRegularFile(int fd);
@@ -43,6 +43,8 @@ namespace utils
 	Result<std::string>     NormalizePath(const ThinString &path);
 	Result<std::string>     HttpNormalizePath(const ThinString &path);
 	std::string             JoinPath(const std::string &parent, const std::string &child);
+	std::string
+	OmitExcessBytes(const std::string &s, std::size_t max_width, const std::string &ellipsis);
 } // namespace utils
 
 #endif
