@@ -5,7 +5,7 @@
 
 namespace result
 {
-	typedef Error *ErrCode;
+	typedef const Error *ErrCode;
 
 	template <typename T>
 	class Result
