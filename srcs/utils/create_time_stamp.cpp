@@ -8,7 +8,7 @@
 
 namespace utils
 {
-	Result<std::string> CreateTimeStamp()
+	Result<std::string> CreateCurrentTimeStamp()
 	{
 		struct timespec ts;
 		struct tm       tm;
