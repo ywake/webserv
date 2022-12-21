@@ -47,6 +47,7 @@ namespace response
 		MetaDataStorage::StoreHeader("Content-Lengh", utils::ToString(autoindex.size()));
 		MetaDataStorage::PushWithCrLf();
 		push_back(autoindex);
+		is_finished_ = true;
 	}
 
 	std::string
