@@ -58,6 +58,7 @@ namespace server
 			const http::StatusCode     &GetErrStatusCode() const;
 			const std::vector<char>    *GetBody() const;
 			const ErrorType            &GetErrorType() const;
+			bool                        NeedToClose() const;
 		};
 
 	  private:

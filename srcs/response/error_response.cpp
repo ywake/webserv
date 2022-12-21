@@ -18,7 +18,7 @@ namespace response
 		log("error res construct", status_code.GetCode());
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, status_code);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
-		// MetaDataStorage::StoreHeader("Connection", "keep-alive"); request情報必要
+		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
 		// content-length;
 		MetaDataStorage::PushWithCrLf();
 		PushDefaultErrorPage(status_code);

@@ -30,7 +30,7 @@ namespace server
 		const conf::VirtualServerConfs *config_;
 		std::deque<Task>                in_progress_;
 		RequestDelFunc                  request_del_;
-		bool                            is_fatal_;
+		bool                            need_to_close_;
 
 	  private:
 		ResponseHolder();
@@ -45,7 +45,7 @@ namespace server
 		Result<event::Instructions> Send();
 		std::size_t                 size();
 		event::Instructions         UnregisterAll();
-		bool                        IsFatal();
+		bool                        NeedToClose();
 
 	  private:
 		event::Instructions FinishFrontResponse();

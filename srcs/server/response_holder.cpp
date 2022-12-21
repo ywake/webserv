@@ -23,13 +23,13 @@ namespace server
 	}
 
 	ResponseHolder::ResponseHolder()
-		: conn_fd_(-1), config_(NULL), in_progress_(), request_del_(NULL), is_fatal_(false)
+		: conn_fd_(-1), config_(NULL), in_progress_(), request_del_(NULL), need_to_close_(false)
 	{}
 
 	ResponseHolder::ResponseHolder(
 		int conn_fd, const conf::VirtualServerConfs *conf, RequestDelFunc del
 	)
-		: conn_fd_(conn_fd), config_(conf), in_progress_(), request_del_(del), is_fatal_(false)
+		: conn_fd_(conn_fd), config_(conf), in_progress_(), request_del_(del), need_to_close_(false)
 	{
 		if (config_ == NULL || del == NULL) {
 			DBG_INFO;
@@ -186,7 +186,7 @@ namespace server
 		IResponse   *response    = in_progress_.front().response;
 		Result<void> send_result = response->Send(conn_fd_);
 		if (send_result.IsErr()) {
-			is_fatal_ = true;
+			need_to_close_ = true;
 			return send_result.Err();
 		}
 		if (response->HasFd()) {
@@ -199,7 +199,7 @@ namespace server
 		}
 		if (!response->HasReadyData() && response->IsFinished()) {
 			IRequest *request = in_progress_.front().request;
-			is_fatal_         = request->IsFatal();
+			need_to_close_    = request->NeedToClose();
 			Instructions i    = FinishFrontResponse();
 			insts.splice(insts.end(), i);
 			// ここでqueueに残ってれば開始したいけど今max queue size() 1だからやってない
@@ -241,9 +241,9 @@ namespace server
 		return insts;
 	}
 
-	bool ResponseHolder::IsFatal()
+	bool ResponseHolder::NeedToClose()
 	{
-		return is_fatal_;
+		return need_to_close_;
 	}
 
 	ResponseHolder::~ResponseHolder()

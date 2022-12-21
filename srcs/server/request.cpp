@@ -118,4 +118,21 @@ namespace server
 		return body_;
 	}
 
+	bool RequestParser::Request::NeedToClose() const
+	{
+		if (error_type_ == IRequest::kFatal) {
+			return true;
+		}
+		if (field_section_ == NULL) {
+			return false;
+		}
+		http::FieldSection::Values con = (*field_section_)[http::kConnection];
+		for (http::FieldSection::Values::const_iterator it = con.begin(); it != con.end(); it++) {
+			if (it->GetValue() == "close") {
+				return true;
+			}
+		}
+		return false;
+	}
+
 } // namespace server
