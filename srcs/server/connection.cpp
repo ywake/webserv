@@ -130,7 +130,7 @@ namespace server
 	Instructions Connection::Send()
 	{
 		Result<Instructions> res = response_holder_.Send();
-		if (res.IsErr() || response_holder_.IsFatal()) {
+		if (res.IsErr() || response_holder_.NeedToClose()) {
 			is_finished_     = true;
 			Instructions tmp = response_holder_.UnregisterAll();
 			res.Val().splice(res.Val().end(), tmp);

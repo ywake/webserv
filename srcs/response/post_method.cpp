@@ -31,7 +31,7 @@ namespace response
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kCreated);
 		MetaDataStorage::StoreHeader("Location", uniq_path); // TODO create uri
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
-		MetaDataStorage::StoreHeader("Connection", "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
 		// TODO other headers 何必要か分からん
 	}
 

@@ -36,7 +36,7 @@ namespace response
 		fstat(managed_fd_.GetFd(), &st);
 		MetaDataStorage::StoreHeader("Content-Type", http::MimeType::GetMimeType(path));
 		MetaDataStorage::StoreHeader("Content-Lengh", utils::ToString(st.st_size));
-		MetaDataStorage::StoreHeader("Connection", "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 	}
 
@@ -48,7 +48,7 @@ namespace response
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Content-Type", "text/html");
 		MetaDataStorage::StoreHeader("Content-Lengh", utils::ToString(autoindex.size()));
-		MetaDataStorage::StoreHeader("Connection", "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 		push_back(autoindex);
 		is_finished_ = true;
