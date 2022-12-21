@@ -30,6 +30,7 @@ destructor.c
 !test/volume
 !test/volume/*.html
 !test/request/**
+!test/cgi-bin/**
 !*.conf
 !*.php
 
