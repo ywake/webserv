@@ -95,23 +95,25 @@ namespace server
 	ResponseHolder::AddNewStaticResponse(Task *task, const conf::LocationConf &location)
 	{
 		Instructions insts;
+		uint32_t     event_type = 0;
 
 		// TODO 405 not allowed
 		if (task->request->Method() == http::methods::kGet) {
 			task->response = new response::GetMethod(*task->request, location);
-			Instruction i =
-				Instruction(Instruction::kRegister, task->response->GetFd().Value(), Event::kWrite);
-			insts.push_back(i);
+			event_type     = Event::kRead;
 		} else if (task->request->Method() == http::methods::kPost) {
 			task->response = new response::PostMethod(*task->request, location);
-			Instruction i =
-				Instruction(Instruction::kRegister, task->response->GetFd().Value(), Event::kRead);
-			insts.push_back(i);
+			event_type     = Event::kWrite;
 		} else if (task->request->Method() == http::methods::kDelete) {
 			task->response = new response::DeleteMethod(*task->request, location);
 		} else {
 			DBG_INFO;
 			throw std::logic_error("invalid method");
+		}
+		if (task->response->HasFd()) {
+			insts.push_back(
+				Instruction(Instruction::kRegister, task->response->GetFd().Value(), event_type)
+			);
 		}
 		if (task->response->HasReadyData()) { // ほんとはfrontのときだけ
 			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
