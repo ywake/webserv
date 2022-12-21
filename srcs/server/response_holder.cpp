@@ -171,11 +171,14 @@ namespace server
 			}
 			return insts;
 		} catch (http::HttpException &e) {
-			// TODO unregister
+			insts = Instructions();
+			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
 			delete response;
 			task.response =
 				new response::ErrorResponse(*request, e.GetStatusCode(), GetServerConf(*request));
-			return CreateInstructionsForError(*in_progress_.front().response);
+			Instructions i = CreateInstructionsForError(*in_progress_.front().response);
+			insts.splice(insts.end(), i);
+			return insts;
 		} // TODO local redir
 	}
 

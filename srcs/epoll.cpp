@@ -4,6 +4,7 @@
 
 #include <cerrno>
 #include <cstring>
+#include <sys/stat.h>
 
 #include "debug.hpp"
 #include "webserv_utils.hpp"
@@ -136,16 +137,17 @@ namespace io_multiplexer
 
 	Result<void> Epoll::Register(const event::Event &event)
 	{
-		Result<bool> res = utils::IsRegularFile(event.fd);
-		if (res.IsErr()) {
-			return res.Err();
+		struct stat st;
+
+		if (fstat(event.fd, &st) < 0) {
+			return Error(std::string("fstat: ") + strerror(errno));
 		}
-		const bool is_regular = res.Val();
-		if (is_regular) {
+		const bool is_blocking = S_ISSOCK(st.st_mode) || S_ISFIFO(st.st_mode);
+		if (is_blocking) {
+			return RegisterBlockingEvent(event);
+		} else {
 			non_blocking_pool_[event.fd] = event;
 			return Result<void>();
-		} else {
-			return RegisterBlockingEvent(event);
 		}
 	}
 
