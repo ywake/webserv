@@ -8,6 +8,7 @@
 #include "get_method.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
+#include "mime_type.hpp"
 #include "webserv_utils.hpp"
 
 namespace response
@@ -31,20 +32,23 @@ namespace response
 		managed_fd_ = TryOpen(path);
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
-		MetaDataStorage::StoreHeader("Connection", "keep-alive");
 		struct stat st;
 		fstat(managed_fd_.GetFd(), &st);
+		MetaDataStorage::StoreHeader("Content-Type", http::MimeType::GetMimeType(path));
 		MetaDataStorage::StoreHeader("Content-Lengh", utils::ToString(st.st_size));
+		MetaDataStorage::StoreHeader("Connection", "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 	}
 
 	void GetMethod::ExecuteAutoIndex(const std::string &root, const std::string &request_path)
 	{
+		log("autoindex", request_path);
 		std::string autoindex = TryCreateAutoIndex(root, request_path);
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
-		MetaDataStorage::StoreHeader("Connection", "keep-alive");
+		MetaDataStorage::StoreHeader("Content-Type", "text/html");
 		MetaDataStorage::StoreHeader("Content-Lengh", utils::ToString(autoindex.size()));
+		MetaDataStorage::StoreHeader("Connection", "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 		push_back(autoindex);
 		is_finished_ = true;
