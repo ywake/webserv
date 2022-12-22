@@ -1,5 +1,5 @@
 #include "html_utils.hpp"
-#include "parcent_encode.hpp"
+#include "percent_encode.hpp"
 #include "webserv_utils.hpp"
 
 namespace html
