@@ -6,6 +6,7 @@
 #include "authority_form.hpp"
 #include "origin_form.hpp"
 #include "request_form_data.hpp"
+#include "thin_string.hpp"
 
 class RequestTarget
 {
@@ -36,6 +37,9 @@ class RequestTarget
 
 	const RequestFormData &GetRequestFormData() const;
 	FormType               GetFormType() const;
+
+  private:
+	std::string TryPercentDecode(const ThinString &s);
 };
 
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target);
