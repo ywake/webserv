@@ -79,4 +79,19 @@ namespace http
 		return parsed;
 	}
 
+	Result<std::string> NormalizePath(const ThinString &path)
+	{
+		Result<std::string> res = utils::NormalizePath(ThinString(path));
+		if (res.IsErr()) {
+			return res.Err();
+		}
+		std::string &normalized = res.Val();
+		if (normalized.empty()) {
+			return std::string("/");
+		}
+		if (*normalized.begin() != '/') {
+			return "/" + normalized;
+		}
+		return normalized;
+	}
 } // namespace http

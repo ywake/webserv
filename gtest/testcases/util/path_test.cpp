@@ -1,4 +1,5 @@
 #include "gtest.h"
+#include "parse_http_utils.hpp"
 #include "result.hpp"
 #include "webserv_utils.hpp"
 
@@ -8,35 +9,35 @@ using namespace utils;
 
 TEST(normalize_path, http_normalize_path)
 {
-	EXPECT_EQ(HttpNormalizePath(""), RESULT("/"));
-	EXPECT_EQ(HttpNormalizePath("/"), RESULT("/"));
-	EXPECT_EQ(HttpNormalizePath("/a/"), RESULT("/a/"));
-	EXPECT_EQ(HttpNormalizePath("a"), RESULT("/a"));
-	EXPECT_EQ(HttpNormalizePath("/a"), RESULT("/a"));
-	EXPECT_EQ(HttpNormalizePath("a/.."), RESULT("/"));
-	EXPECT_EQ(HttpNormalizePath("a/../"), RESULT("/"));
-	EXPECT_EQ(HttpNormalizePath("/a/.."), RESULT("/"));
-	EXPECT_EQ(HttpNormalizePath("/a/../"), RESULT("/"));
-	EXPECT_EQ(HttpNormalizePath("a/."), RESULT("/a/"));
-	EXPECT_EQ(HttpNormalizePath("a/./"), RESULT("/a/"));
-	EXPECT_EQ(HttpNormalizePath("/a/."), RESULT("/a/"));
-	EXPECT_EQ(HttpNormalizePath("/a/./"), RESULT("/a/"));
-	EXPECT_EQ(HttpNormalizePath("./"), RESULT("/"));
-	EXPECT_EQ(HttpNormalizePath("a//"), RESULT("/a/"));
-	EXPECT_EQ(HttpNormalizePath("..a"), RESULT("/..a"));
-	EXPECT_EQ(HttpNormalizePath("..a/"), RESULT("/..a/"));
-	EXPECT_EQ(HttpNormalizePath("a.."), RESULT("/a.."));
-	EXPECT_EQ(HttpNormalizePath("/a.."), RESULT("/a.."));
-	EXPECT_EQ(HttpNormalizePath("a../"), RESULT("/a../"));
-	EXPECT_EQ(HttpNormalizePath(".a"), RESULT("/.a"));
-	EXPECT_EQ(HttpNormalizePath(".a/"), RESULT("/.a/"));
-	EXPECT_EQ(HttpNormalizePath("a."), RESULT("/a."));
-	EXPECT_EQ(HttpNormalizePath("/a."), RESULT("/a."));
-	EXPECT_EQ(HttpNormalizePath("a./"), RESULT("/a./"));
-	EXPECT_EQ(HttpNormalizePath("/a/b/c/./../../g"), RESULT("/a/g"));
+	EXPECT_EQ(http::NormalizePath(""), RESULT("/"));
+	EXPECT_EQ(http::NormalizePath("/"), RESULT("/"));
+	EXPECT_EQ(http::NormalizePath("/a/"), RESULT("/a/"));
+	EXPECT_EQ(http::NormalizePath("a"), RESULT("/a"));
+	EXPECT_EQ(http::NormalizePath("/a"), RESULT("/a"));
+	EXPECT_EQ(http::NormalizePath("a/.."), RESULT("/"));
+	EXPECT_EQ(http::NormalizePath("a/../"), RESULT("/"));
+	EXPECT_EQ(http::NormalizePath("/a/.."), RESULT("/"));
+	EXPECT_EQ(http::NormalizePath("/a/../"), RESULT("/"));
+	EXPECT_EQ(http::NormalizePath("a/."), RESULT("/a/"));
+	EXPECT_EQ(http::NormalizePath("a/./"), RESULT("/a/"));
+	EXPECT_EQ(http::NormalizePath("/a/."), RESULT("/a/"));
+	EXPECT_EQ(http::NormalizePath("/a/./"), RESULT("/a/"));
+	EXPECT_EQ(http::NormalizePath("./"), RESULT("/"));
+	EXPECT_EQ(http::NormalizePath("a//"), RESULT("/a/"));
+	EXPECT_EQ(http::NormalizePath("..a"), RESULT("/..a"));
+	EXPECT_EQ(http::NormalizePath("..a/"), RESULT("/..a/"));
+	EXPECT_EQ(http::NormalizePath("a.."), RESULT("/a.."));
+	EXPECT_EQ(http::NormalizePath("/a.."), RESULT("/a.."));
+	EXPECT_EQ(http::NormalizePath("a../"), RESULT("/a../"));
+	EXPECT_EQ(http::NormalizePath(".a"), RESULT("/.a"));
+	EXPECT_EQ(http::NormalizePath(".a/"), RESULT("/.a/"));
+	EXPECT_EQ(http::NormalizePath("a."), RESULT("/a."));
+	EXPECT_EQ(http::NormalizePath("/a."), RESULT("/a."));
+	EXPECT_EQ(http::NormalizePath("a./"), RESULT("/a./"));
+	EXPECT_EQ(http::NormalizePath("/a/b/c/./../../g"), RESULT("/a/g"));
 
-	EXPECT_EQ(HttpNormalizePath("../a/./../.././b/./../"), Error("Invalid path"));
-	EXPECT_EQ(HttpNormalizePath("../../a/../b/c/.././d/../"), Error("Invalid path"));
+	EXPECT_EQ(http::NormalizePath("../a/./../.././b/./../"), Error("Invalid path"));
+	EXPECT_EQ(http::NormalizePath("../../a/../b/c/.././d/../"), Error("Invalid path"));
 }
 
 TEST(normalize_path, normalize_path)

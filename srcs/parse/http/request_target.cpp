@@ -5,6 +5,7 @@
 #include "error.hpp"
 #include "http_exceptions.hpp"
 #include "origin_form.hpp"
+#include "parse_http_utils.hpp"
 #include "parse_path.hpp"
 #include "parse_uri.hpp"
 #include "percent_encode.hpp"
@@ -23,7 +24,7 @@ RequestTarget::RequestTarget(const RequestTarget &other) : form_type_(), form_da
 
 RequestTarget::RequestTarget(const OriginForm &form) : form_data_()
 {
-	Result<std::string> path = utils::HttpNormalizePath(TryPercentDecode(form.GetPath()));
+	Result<std::string> path = http::NormalizePath(TryPercentDecode(form.GetPath()));
 	if (path.IsErr()) {
 		throw http::BadRequestException();
 	}
@@ -34,7 +35,7 @@ RequestTarget::RequestTarget(const OriginForm &form) : form_data_()
 
 RequestTarget::RequestTarget(const AbsoluteForm &form) : form_data_()
 {
-	Result<std::string> path = utils::HttpNormalizePath(TryPercentDecode(form.GetPath()));
+	Result<std::string> path = http::NormalizePath(TryPercentDecode(form.GetPath()));
 	if (path.IsErr()) {
 		throw http::BadRequestException();
 	}
