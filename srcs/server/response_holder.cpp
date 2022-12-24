@@ -6,6 +6,7 @@
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "post_method.hpp"
+#include "redirect.hpp"
 
 namespace server
 {
@@ -61,7 +62,9 @@ namespace server
 			vs_conf.FindMatchingLocationConf(task->request->Path());
 		bool is_cgi = !location.GetCgiPath().empty();
 		try {
-			if (is_cgi) {
+			if (!location.GetRedirect().empty()) {
+				return AddNewRedirectResponse(task, location);
+			} else if (is_cgi) {
 				return AddNewCgiResponse(task, location);
 			} else {
 				return AddNewStaticResponse(task, location);
@@ -70,6 +73,16 @@ namespace server
 			delete task->response;
 			return AddNewErrorResponse(task, e.GetStatusCode(), vs_conf);
 		}
+	}
+
+	Instructions
+	ResponseHolder::AddNewRedirectResponse(Task *task, const conf::LocationConf &location)
+	{
+		Instructions insts;
+
+		task->response = new response::Redirect(*task->request, location);
+		insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
+		return insts;
 	}
 
 	Instructions ResponseHolder::AddNewCgiResponse(Task *task, const conf::LocationConf &location)

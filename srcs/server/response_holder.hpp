@@ -50,6 +50,7 @@ namespace server
 	  private:
 		event::Instructions FinishFrontResponse();
 		event::Instructions AddNewResponse(Task *task);
+		event::Instructions AddNewRedirectResponse(Task *task, const conf::LocationConf &location);
 		event::Instructions AddNewCgiResponse(Task *task, const conf::LocationConf &location);
 		event::Instructions AddNewStaticResponse(Task *task, const conf::LocationConf &location);
 		event::Instructions AddNewErrorResponse(
