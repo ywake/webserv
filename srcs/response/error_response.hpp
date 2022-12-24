@@ -26,7 +26,7 @@ namespace response
 		Emptiable<int> GetFd() const;
 
 	  private:
-		void PushDefaultErrorPage(const http::StatusCode &code);
+		Result<void> OpenErrorPage(const http::StatusCode &code);
 	};
 } // namespace response
 
