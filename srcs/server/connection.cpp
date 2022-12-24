@@ -61,7 +61,6 @@ namespace server
 		DBG_INFO;
 		event::Instructions insts;
 
-		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
 		if (event_type & event::Event::kHangUp || event_type & event::Event::kError) {
 			is_finished_ = true;
 			return insts;
@@ -73,6 +72,7 @@ namespace server
 		}
 		if (event_type & event::Event::kWrite) {
 			log("con write");
+			clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
 			Instructions send_insts = Send();
 			insts.splice(insts.end(), send_insts);
 		}
