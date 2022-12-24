@@ -18,7 +18,7 @@ namespace response
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, code);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Content-Type", "text/html");
-		MetaDataStorage::StoreHeader("Content-Lengh", utils::ToString(page.size()));
+		MetaDataStorage::StoreHeader("Content-Length", utils::ToString(page.size()));
 		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::StoreHeader("Location", url);
 		MetaDataStorage::PushWithCrLf();
