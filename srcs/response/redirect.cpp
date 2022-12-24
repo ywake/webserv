@@ -23,6 +23,7 @@ namespace response
 		MetaDataStorage::StoreHeader("Location", url);
 		MetaDataStorage::PushWithCrLf();
 		push_back(page);
+		is_finished_ = true;
 	}
 
 	void Redirect::Perform(const event::Event &event)
