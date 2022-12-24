@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "status_code.hpp"
+
 std::vector<ThinString> Split(const ThinString &str, const std::string delim);
 Result<long>            StrToLongDenyPadZero(const std::string &str);
 
@@ -44,6 +46,7 @@ namespace utils
 	std::string             JoinPath(const std::string &parent, const std::string &child);
 	std::string
 	OmitExcessBytes(const std::string &s, std::size_t max_width, const std::string &ellipsis);
+	std::string CreateDefaultPage(const http::StatusCode &code);
 } // namespace utils
 
 #endif
