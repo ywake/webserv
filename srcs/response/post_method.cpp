@@ -57,7 +57,7 @@ namespace response
 
 	std::string PostMethod::CreateLocationUrl(const std::string &path)
 	{
-		return "http://" + utils::JoinPath(request_.Host(), path); // TODO port
+		return "http://" + utils::JoinPath(request_.Authority(), path);
 	}
 
 	void PostMethod::Perform(const event::Event &event)
