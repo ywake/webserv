@@ -118,3 +118,23 @@ const std::string &RequestLine::GetHttpVersion() const
 {
 	return http_version_;
 }
+
+void RequestLine::SetHost(const std::string &host)
+{
+	request_target_.SetHost(host);
+}
+
+void RequestLine::SetPort(const std::string &port)
+{
+	request_target_.SetPort(port);
+}
+
+void RequestLine::SetPath(const std::string &path)
+{
+	request_target_.SetPath(path);
+}
+
+void RequestLine::SetQuery(const std::string &query)
+{
+	request_target_.SetQuery(query);
+}

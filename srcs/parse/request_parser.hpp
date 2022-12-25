@@ -26,7 +26,7 @@ namespace server
 		class Request : public IRequest
 		{
 		  private:
-			http::RequestMessage     request_msg_;
+			RequestLine              request_line_;
 			http::FieldSection      *field_section_;
 			const std::vector<char> *body_;
 			http::StatusCode         error_code_;
@@ -48,17 +48,20 @@ namespace server
 			void SetRequestLine(const RequestLine &request_line);
 			void SetFieldSection(http::FieldSection *field_lines);
 			void SetBody(const std::vector<char> *body);
+			void ReconstructUri();
 
-			const std::string          &Method() const;
-			const std::string          &Path() const;
-			const std::string          &Host() const;
-			http::FieldSection         &Headers();
-			const http::FieldSection   &Headers() const;
-			const http::RequestMessage &GetMessage() const;
-			const http::StatusCode     &GetErrStatusCode() const;
-			const std::vector<char>    *GetBody() const;
-			const ErrorType            &GetErrorType() const;
-			bool                        NeedToClose() const;
+			const std::string        &Method() const;
+			const std::string        &Path() const;
+			const std::string        &Host() const;
+			const std::string        &Port() const;
+			std::string               Authority() const;
+			http::FieldSection       &Headers();
+			const http::FieldSection &Headers() const;
+			const RequestLine        &GetRequestLine() const;
+			const http::StatusCode   &GetErrStatusCode() const;
+			const std::vector<char>  *GetBody() const;
+			const ErrorType          &GetErrorType() const;
+			bool                      NeedToClose() const;
 		};
 
 	  private:
