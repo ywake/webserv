@@ -222,7 +222,7 @@ namespace server
 	RequestParser::Request *RequestParser::CopyRequest(const IRequest *src)
 	{
 		Request *req = new Request();
-		req->SetRequestLine(src->GetMessage().GetRequestLine());
+		req->SetRequestLine(src->GetRequestLine());
 		req->SetError(src->GetErrStatusCode(), src->GetErrorType());
 		req->SetFieldSection(FieldParser::CopyFieldSection(&src->Headers()));
 		req->SetBody(BodyParser::CopyBody(src->GetBody()));
