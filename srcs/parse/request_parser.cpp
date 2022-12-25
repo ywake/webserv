@@ -165,6 +165,7 @@ namespace server
 			return kInProgress;
 		}
 		ctx_.request->SetFieldSection(headers.Value());
+		ctx_.request->ReconstructUri();
 		return kDone;
 	}
 
