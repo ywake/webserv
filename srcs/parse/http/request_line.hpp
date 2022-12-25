@@ -33,6 +33,10 @@ class RequestLine
 	void SetMethod(const std::string &method);
 	void SetRequestTarget(const RequestTarget &request_target);
 	void SetHttpVersion(const std::string &http_version);
+	void SetHost(const std::string &host);
+	void SetPort(const std::string &port);
+	void SetPath(const std::string &path);
+	void SetQuery(const std::string &query);
 
 	const std::string   &GetMethod() const;
 	const RequestTarget &GetRequestTarget() const;

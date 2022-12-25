@@ -45,7 +45,9 @@ namespace server
 
 	void HeaderParser::ParseEachHeaders(http::FieldSection &headers)
 	{
-		ValidateHost(headers["host"]);
+		if (!http::headers::HasSingleHost(headers["host"]) || headers["host"].front().empty()) {
+			throw http::BadRequestException();
+		}
 		bool has_content_length    = headers.Contains(http::kContentLength);
 		bool has_transfer_encoding = headers.Contains(http::kTransferEncoding);
 		if (has_content_length && has_transfer_encoding) {
@@ -64,14 +66,6 @@ namespace server
 			http::FieldSection::Values &con_header = headers[http::kConnection];
 			con_header                             = ParseConnection(con_header);
 		}
-	}
-
-	void HeaderParser::ValidateHost(const http::FieldSection::Values &values)
-	{
-		if (!http::headers::HasSingleHost(values)) {
-			throw http::BadRequestException();
-		}
-		(void)http::abnf::HostPort(values.front().GetValue());
 	}
 
 	// [RFC 9110 8.6 末尾] 複数ある場合は却下してもよい

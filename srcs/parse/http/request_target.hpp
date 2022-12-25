@@ -37,6 +37,10 @@ class RequestTarget
 
 	const RequestFormData &GetRequestFormData() const;
 	FormType               GetFormType() const;
+	void                   SetHost(const std::string &host);
+	void                   SetPort(const std::string &port);
+	void                   SetPath(const std::string &path);
+	void                   SetQuery(const std::string &query);
 
   private:
 	std::string TryPercentDecode(const ThinString &s);
