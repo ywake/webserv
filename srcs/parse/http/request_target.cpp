@@ -107,6 +107,26 @@ RequestTarget::FormType RequestTarget::GetFormType() const
 	return form_type_;
 }
 
+void RequestTarget::SetHost(const std::string &host)
+{
+	form_data_.host_ = host;
+}
+
+void RequestTarget::SetPort(const std::string &port)
+{
+	form_data_.port_ = port;
+}
+
+void RequestTarget::SetPath(const std::string &path)
+{
+	form_data_.path_ = path;
+}
+
+void RequestTarget::SetQuery(const std::string &query)
+{
+	form_data_.query_ = query;
+}
+
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target)
 {
 	os << "\n" << request_target.GetRequestFormData();
