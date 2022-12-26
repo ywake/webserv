@@ -28,7 +28,8 @@ namespace response
 		Emptiable<int> GetFd() const;
 
 	  private:
-		int TryOpen(const std::string &filename) const;
+		int         TryOpen(const std::string &filename) const;
+		std::string CreateLocationUrl(const std::string &path);
 	};
 } // namespace response
 
