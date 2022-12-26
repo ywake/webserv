@@ -1,4 +1,5 @@
 #include <deque>
+#include <unistd.h>
 #include <vector>
 
 #include "thin_string.hpp"
@@ -78,5 +79,10 @@ namespace utils
 			return "/" + normalized;
 		}
 		return normalized;
+	}
+
+	bool IsReadablePath(const std::string &path)
+	{
+		return access(path.c_str(), R_OK) == 0;
 	}
 } // namespace utils
