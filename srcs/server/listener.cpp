@@ -74,13 +74,11 @@ namespace server
 		SockAddrStorage client;
 		socklen_t       client_len = sizeof(client);
 
-		int conn_fd = accept(managed_fd_.GetFd(), (SockAddr *)&client, &client_len);
+		int conn_fd = accept4(
+			managed_fd_.GetFd(), (SockAddr *)&client, &client_len, SOCK_NONBLOCK | SOCK_CLOEXEC
+		);
 		if (conn_fd < 0) {
 			return Error("accept: " + std::string(strerror(errno)));
-		}
-		if (fcntl(conn_fd, F_SETFL, O_NONBLOCK) == -1) {
-			utils::Close(conn_fd);
-			return Error("fcntl: " + std::string(strerror(errno)));
 		}
 		log("accept", conn_fd);
 		return new Connection(conn_fd, configs_, client);
