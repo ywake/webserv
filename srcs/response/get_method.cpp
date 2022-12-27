@@ -22,7 +22,7 @@ namespace response
 		TryValidateRequestPath(root, request_.Path());
 		const std::string resolved = ResolveIndexFilePath(request_.Path());
 		if (utils::EndWith(resolved, "/")) {
-			if (location_.GetAutoindex().empty()) {
+			if (location_.GetAutoindex().empty() || !location_.GetAutoindex().Value()) {
 				throw http::ForbiddenException();
 			}
 			ExecuteAutoIndex(root, resolved);
