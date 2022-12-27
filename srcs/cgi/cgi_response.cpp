@@ -15,27 +15,20 @@ namespace cgi
 	static bool IsEndWithSlash(const std::string &str);
 
 	// copy constructor
-	CgiResponse::CgiResponse(const CgiResponse &other)
-		: q_buffer::QueuingBuffer(other),
-		  q_buffer::QueuingWriter(other),
-		  q_buffer::QueuingReader(other),
-		  request_(other.request_),
-		  location_conf_(other.location_conf_),
-		  resource_path_(other.resource_path_),
-		  parent_fd_(other.parent_fd_),
-		  child_fd_(other.child_fd_),
-		  is_finished_(false),
-		  body_writer_(other.body_writer_)
-	{}
+	// CgiResponse::CgiResponse(const CgiResponse &other)
+	// 	: AResponse(other),
+	// 	  location_conf_(other.location_conf_),
+	// 	  resource_path_(other.resource_path_),
+	// 	  parent_fd_(other.parent_fd_),
+	// 	  child_fd_(other.child_fd_),
+	// 	  body_writer_(other.body_writer_),
+	// 	  cgi_receiver_(),
+	// 	  field_parser_()
+	// {}
 
 	// main constructor
 	CgiResponse::CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf)
-		: q_buffer::QueuingWriter(),
-		  q_buffer::QueuingReader(),
-		  request_(request),
-		  location_conf_(location_conf),
-		  resource_path_(),
-		  is_finished_(false)
+		: AResponse(request), location_conf_(location_conf), resource_path_(), is_hup_(false)
 	{
 		log(COL_BOLD "=== Cgi Response Constructor ===" COL_END);
 		resource_path_ = GetResourcePath();
@@ -142,7 +135,10 @@ namespace cgi
 		child_fd_.Close();
 	}
 
-	CgiResponse::~CgiResponse() {}
+	CgiResponse::~CgiResponse()
+	{
+		log(COL_BOLD COL_RED "CgiResponse destructor" COL_END);
+	}
 
 	// CgiResponse &CgiResponse::operator=(const CgiResponse &other)
 	// {

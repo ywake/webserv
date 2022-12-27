@@ -11,10 +11,12 @@ namespace cgi
 	 */
 	void CgiResponse::Perform(const event::Event &event)
 	{
-		// if (event.event_type & event::Event::kHangUp) {
-		// 	log("cgi hangup");
-		// 	parent_fd_.Close();
-		// }
+		if (event.event_type & event::Event::kHangUp) {
+			log("cgi hangup");
+			push_back(std::string("a"));
+			is_hup_ = true;
+			return;
+		}
 		if (event.event_type & event::Event::kWrite) {
 			log("cgi write ready");
 			OnWriteReady();
@@ -51,23 +53,108 @@ namespace cgi
 			return;
 		}
 		log("read from cgi");
-		int read_size = parser_.Read(parent_fd_.GetFd());
+		switch (state_) {
+		case kHeader:
+			OnHeader();
+			break;
+		case kBody:
+			log("cgi body read");
+			OnBody();
+			break;
+		default:
+			throw std::logic_error("cgi read logic error");
+			break;
+		}
+
+		// Parse();
+		// parser_.Parse();
+		// if (parser_.IsFinished()) {
+		// 	q_buffer::QueuingBuffer::push_back(parser_.ToString());
+		// }
+	}
+
+	void CgiResponse::OnHeader()
+	{
+		if (cgi_receiver_.size() > kMaxLoadSize) { // TODO 定数
+			return;
+		}
+		ssize_t read_size = cgi_receiver_.Read(parent_fd_.GetFd());
+		log("cgi read size", read_size);
+		if (read_size <= 0) {
+			log(read_size == 0 ? "End of script output before headers" : "cgi read failed");
+			throw http::InternalServerErrorException();
+		}
+		Emptiable<http::FieldSection *> fs = field_parser_.Parse(cgi_receiver_
+		); // TODO FieldParserをCGI仕様に変更（obsfoldなし、NL＝LF）
+		if (fs.empty()) {
+			return;
+		}
+		state_ = kBody;
+		// TODO レスポンスタイプごとに分岐
+		http::FieldSection::FieldLines fl = fs.Value()->GetMap();
+		for (http::FieldSection::FieldLines::iterator it = fl.begin(); it != fl.end(); ++it) {
+			std::string                key   = it->first;
+			http::FieldSection::Values value = it->second;
+			// Serverは無視して上書き
+			// ContentLengthは無視
+			if (key == http::kServer || key == http::kContentLength) {
+				continue;
+			}
+			// TransferEncodingは最終符号化法が"chunked"であればそのまま、ほかはchunkedを末尾に追加
+			if (key == http::kTransferEncoding) {
+				if (!value.empty() && value.back() == http::kChunked) {
+					value.pop_back();
+				}
+				value.push_back(http::kChunked);
+			}
+			std::list<std::string> lst;
+			for (http::FieldSection::Values::const_iterator it = value.begin(); it != value.end();
+				 ++it) {
+				lst.push_back(it->GetValue());
+			}
+			server::MetaDataStorage::StoreHeader(key, lst.begin(), lst.end());
+		}
+		q_buffer::QueuingBuffer::size();
+		server::MetaDataStorage::PushWithCrLf();
+		q_buffer::QueuingBuffer::push_back(cgi_receiver_.o);
+	}
+
+	void CgiResponse::OnBody()
+	{
+		if (q_buffer::QueuingBuffer::size() > kMaxLoadSize) {
+			return;
+		}
+		ssize_t read_size = this->Read(parent_fd_.GetFd());
+		log("cgi body read size", read_size);
 		if (read_size < 0) {
 			throw http::InternalServerErrorException();
 		}
-		if (parser_.IsFinished()) {
-			push_back(parser_.ToString());
+		if (read_size == 0) {
+			is_finished_ = true;
 		}
 	}
 
 	Result<void> CgiResponse::Send(int fd)
 	{
-		return Write(fd);
-	}
-
-	bool CgiResponse::HasReadyData() const
-	{
-		return !QueuingBuffer::empty();
+		// switch (state_) {
+		// case kHeader:
+		// 	break;
+		// case kBody:
+		// 	SendHeader();
+		// default:
+		// 	break;
+		// }
+		if (is_hup_) {
+			log("write hup size", size());
+			q_buffer::QueuingBuffer::operator=(q_buffer::QueuingBuffer());
+			is_finished_ = true;
+			return Result<void>();
+		}
+		log("cgi buf data before", size());
+		Result<void> res = Write(fd);
+		log("cgi buf data rest", size());
+		return res;
+		// return Write(fd);
 	}
 
 	bool CgiResponse::HasFd() const
@@ -78,15 +165,5 @@ namespace cgi
 	Emptiable<int> CgiResponse::GetFd() const
 	{
 		return parent_fd_.GetFd();
-	}
-
-	std::size_t CgiResponse::size() const
-	{
-		return q_buffer::QueuingBuffer::size();
-	}
-
-	bool CgiResponse::IsFinished() const
-	{
-		return parser_.IsFinished();
 	}
 } // namespace cgi

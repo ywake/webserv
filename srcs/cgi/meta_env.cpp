@@ -40,7 +40,7 @@ namespace cgi
 	void SetContentLength(std::vector<const char *> &envs, const server::IRequest &request)
 	{
 		const std::vector<char> *body = request.GetBody();
-		if (!request.GetMessage().HasMessageBody()) {
+		if (!request.HasMessageBody()) {
 			return;
 		}
 		std::stringstream ss;

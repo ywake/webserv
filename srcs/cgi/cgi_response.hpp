@@ -1,18 +1,15 @@
+#include "a_response.hpp"
 #include "body_writer.hpp"
 #include "cgi_parser.hpp"
 #include "i_request.hpp"
 #include "i_response.hpp"
 #include "location_conf.hpp"
 #include "managed_fd.hpp"
-#include "queuing_reader.hpp"
-#include "queuing_writer.hpp"
 #include "stat.hpp"
 
 namespace cgi
 {
-	class CgiResponse : public server::IResponse,
-						public q_buffer::QueuingWriter,
-						public q_buffer::QueuingReader
+	class CgiResponse : public response::AResponse
 	{
 	  public:
 		typedef std::string Path;
@@ -21,14 +18,23 @@ namespace cgi
 		static const std::string kCgiVersion;
 
 	  private:
-		server::IRequest         &request_;
+		enum State {
+			kHeader,
+			kBody,
+			kEnd
+		};
+		static const int kMaxLoadSize = 8192;
+
+	  private:
 		const conf::LocationConf &location_conf_;
 		Path                      resource_path_;
 		ManagedFd                 parent_fd_;
 		ManagedFd                 child_fd_;
-		bool                      is_finished_;
 		server::BodyWriter        body_writer_;
-		Parser                    parser_;
+		q_buffer::QueuingReader   cgi_receiver_;
+		cgi::CgiParser            field_parser_;
+		State                     state_;
+		bool                      is_hup_;
 
 	  public:
 		CgiResponse(const CgiResponse &other);
@@ -52,17 +58,17 @@ namespace cgi
 		Result<std::vector<const char *> > CreateEnvs();
 		void                               SetMetaEnv(std::vector<const char *> &envs);
 
+		void OnHeader();
+		void OnBody();
+
 		void OnReadReady();
 
 		// IResponse
 	  public:
-		void                Perform(const event::Event &event);
-		Result<void>        Send(int fd);
-		bool                HasReadyData() const;
-		bool                HasFd() const;
-		Emptiable<int>      GetFd() const;
-		virtual std::size_t size() const;
-		bool                IsFinished() const;
+		void           Perform(const event::Event &event);
+		Result<void>   Send(int fd);
+		bool           HasFd() const;
+		Emptiable<int> GetFd() const;
 
 		// CgiResponse &operator=(const CgiResponse &other);
 	};

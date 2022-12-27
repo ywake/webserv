@@ -37,6 +37,7 @@ namespace server
 		virtual const http::StatusCode   &GetErrStatusCode() const = 0;
 		virtual const ErrorType          &GetErrorType() const     = 0;
 		virtual bool                      NeedToClose() const      = 0;
+		virtual bool                      HasMessageBody() const   = 0;
 	};
 } // namespace server
 

@@ -215,6 +215,7 @@ namespace server
 			insts.push_back(Instruction(Instruction::kTrimEventType, conn_fd_, Event::kWrite));
 		}
 		if (!response->HasReadyData() && response->IsFinished()) {
+			log("finish", response->GetFd().Value());
 			IRequest *request = in_progress_.front().request;
 			need_to_close_    = request->NeedToClose();
 			Instructions i    = FinishFrontResponse();
