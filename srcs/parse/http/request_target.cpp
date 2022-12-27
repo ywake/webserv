@@ -5,8 +5,10 @@
 #include "error.hpp"
 #include "http_exceptions.hpp"
 #include "origin_form.hpp"
+#include "parse_http_utils.hpp"
 #include "parse_path.hpp"
 #include "parse_uri.hpp"
+#include "percent_encode.hpp"
 #include "thin_string.hpp"
 #include "webserv_utils.hpp"
 
@@ -22,34 +24,34 @@ RequestTarget::RequestTarget(const RequestTarget &other) : form_type_(), form_da
 
 RequestTarget::RequestTarget(const OriginForm &form) : form_data_()
 {
-	Result<std::string> path = utils::HttpNormalizePath(form.GetPath());
+	Result<std::string> path = http::NormalizePath(TryPercentDecode(form.GetPath()));
 	if (path.IsErr()) {
 		throw http::BadRequestException();
 	}
 	form_type_        = kOriginForm;
 	form_data_.path_  = path.Val();
-	form_data_.query_ = form.GetQuery().ToString();
+	form_data_.query_ = TryPercentDecode(form.GetQuery());
 }
 
 RequestTarget::RequestTarget(const AbsoluteForm &form) : form_data_()
 {
-	Result<std::string> path = utils::HttpNormalizePath(form.GetPath());
+	Result<std::string> path = http::NormalizePath(TryPercentDecode(form.GetPath()));
 	if (path.IsErr()) {
 		throw http::BadRequestException();
 	}
 	form_type_           = kAbsoluteForm;
 	form_data_.scheme_   = utils::ToLowerString(form.GetScheme().ToString());
-	form_data_.userinfo_ = form.GetUserinfo().ToString();
-	form_data_.host_     = utils::ToLowerString(form.GetHost().ToString());
+	form_data_.userinfo_ = TryPercentDecode(form.GetUserinfo());
+	form_data_.host_     = utils::ToLowerString(TryPercentDecode(form.GetHost()));
 	form_data_.port_     = form.GetPort().ToString();
 	form_data_.path_     = path.Val();
-	form_data_.query_    = form.GetQuery().ToString();
+	form_data_.query_    = TryPercentDecode(form.GetQuery());
 }
 
 RequestTarget::RequestTarget(const AuthorityForm &form) : form_data_()
 {
 	form_type_       = kAuthorityForm;
-	form_data_.host_ = utils::ToLowerString(form.GetHost().ToString());
+	form_data_.host_ = utils::ToLowerString(TryPercentDecode(form.GetHost()));
 	form_data_.port_ = form.GetPort().ToString();
 }
 
@@ -62,6 +64,15 @@ RequestTarget::RequestTarget(const AsteriskForm &form) : form_data_()
 RequestTarget::RequestTarget(const RequestFormData &request_target, FormType form_type)
 	: form_type_(form_type), form_data_(request_target)
 {}
+
+std::string RequestTarget::TryPercentDecode(const ThinString &s)
+{
+	Result<std::string> decoded = uri::PercentDecode(s);
+	if (decoded.IsErr()) {
+		throw http::BadRequestException();
+	}
+	return decoded.Val();
+}
 
 RequestTarget &RequestTarget::operator=(const RequestTarget &other)
 {
@@ -94,6 +105,26 @@ const RequestFormData &RequestTarget::GetRequestFormData() const
 RequestTarget::FormType RequestTarget::GetFormType() const
 {
 	return form_type_;
+}
+
+void RequestTarget::SetHost(const std::string &host)
+{
+	form_data_.host_ = host;
+}
+
+void RequestTarget::SetPort(const std::string &port)
+{
+	form_data_.port_ = port;
+}
+
+void RequestTarget::SetPath(const std::string &path)
+{
+	form_data_.path_ = path;
+}
+
+void RequestTarget::SetQuery(const std::string &query)
+{
+	form_data_.query_ = query;
 }
 
 std::ostream &operator<<(std::ostream &os, const RequestTarget &request_target)

@@ -8,7 +8,7 @@
 
 namespace utils
 {
-	Result<std::string> CreateTimeStamp()
+	Result<std::string> CreateCurrentTimeStamp()
 	{
 		struct timespec ts;
 		struct tm       tm;
@@ -17,7 +17,7 @@ namespace utils
 		if (clock_gettime(CLOCK_REALTIME, &ts) == -1) {
 			return Error("clock get: " + std::string(strerror(errno)));
 		}
-		if (localtime_r(&ts.tv_sec, &tm) == NULL) {
+		if (gmtime_r(&ts.tv_sec, &tm) == NULL) {
 			return Error("localtime_r: " + std::string(strerror(errno)));
 		}
 		sprintf(

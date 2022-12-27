@@ -16,9 +16,9 @@ const result::ErrCode Stat::kENoMem     = new Error("stat: " + std::string(strer
 const result::ErrCode Stat::kEInval     = new Error("stat: " + std::string(strerror(EINVAL)));
 const result::ErrCode Stat::kUnknownErr = new Error("stat: unknown error");
 
-result::ErrCode Stat::GetErrCode(int error_number_)
+result::ErrCode Stat::GetErrCode(int error_number)
 {
-	switch (error_number_) {
+	switch (error_number) {
 	case EACCES:
 		return kEAcces;
 	case EBADF:

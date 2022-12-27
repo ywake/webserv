@@ -4,11 +4,17 @@
 #include "a_response.hpp"
 #include "location_conf.hpp"
 #include "managed_fd.hpp"
+#include "result.hpp"
+#include "stat.hpp"
 
 namespace response
 {
 	class GetMethod : public AResponse
 	{
+	  private:
+		typedef std::string PartialPath;
+		typedef std::string FullPath;
+
 	  private:
 		const conf::LocationConf &location_;
 		ManagedFd                 managed_fd_;
@@ -25,7 +31,16 @@ namespace response
 		Emptiable<int> GetFd() const;
 
 	  private:
-		int TryOpen(const std::string &filename) const;
+		void        ExecuteAutoIndex(const FullPath &root, const PartialPath &request_path);
+		void        ExecuteDirectoryRedirect(const PartialPath &request_path);
+		std::string CreateLocationUrl(const PartialPath &path) const;
+		void        PrepareSendFile(const FullPath &path, std::size_t file_size);
+		std::string TryCreateAutoIndex(const FullPath &root, const PartialPath &request_path) const;
+		int         TryOpen(const FullPath &filename) const;
+		Stat        TryStat(const FullPath &path) const;
+		PartialPath ResolveIndexFilePath(const PartialPath &request_path) const;
+		Result<PartialPath> FindReadableIndexFile(const PartialPath &base_path) const;
+		void TryValidateRequestPath(const FullPath &root, const PartialPath &request_path);
 	};
 } // namespace response
 

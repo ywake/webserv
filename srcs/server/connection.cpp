@@ -61,7 +61,6 @@ namespace server
 		DBG_INFO;
 		event::Instructions insts;
 
-		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
 		if (event_type & event::Event::kHangUp || event_type & event::Event::kError) {
 			is_finished_ = true;
 			return insts;
@@ -73,6 +72,7 @@ namespace server
 		}
 		if (event_type & event::Event::kWrite) {
 			log("con write");
+			clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
 			Instructions send_insts = Send();
 			insts.splice(insts.end(), send_insts);
 		}
@@ -130,7 +130,7 @@ namespace server
 	Instructions Connection::Send()
 	{
 		Result<Instructions> res = response_holder_.Send();
-		if (res.IsErr() || response_holder_.IsFatal()) {
+		if (res.IsErr() || response_holder_.NeedToClose()) {
 			is_finished_     = true;
 			Instructions tmp = response_holder_.UnregisterAll();
 			res.Val().splice(res.Val().end(), tmp);

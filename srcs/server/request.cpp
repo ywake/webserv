@@ -1,15 +1,17 @@
 #include <cassert>
 
+#include "host_port.hpp"
 #include "http_define.hpp"
 #include "request_parser.hpp"
+
 namespace server
 {
 	RequestParser::Request::Request()
-		: request_msg_(), field_section_(), body_(), error_code_(), error_type_()
+		: request_line_(), field_section_(), body_(), error_code_(), error_type_()
 	{}
 
 	RequestParser::Request::Request(const Request &other)
-		: request_msg_(other.request_msg_),
+		: request_line_(other.request_line_),
 		  field_section_(),
 		  body_(),
 		  error_code_(other.error_code_),
@@ -17,7 +19,7 @@ namespace server
 	{}
 
 	RequestParser::Request::Request(const http::StatusCode &error_code, ErrorType error_type)
-		: request_msg_(),
+		: request_line_(),
 		  field_section_(),
 		  body_(),
 		  error_code_(error_code),
@@ -50,7 +52,7 @@ namespace server
 
 	void RequestParser::Request::SetRequestLine(const RequestLine &request_line)
 	{
-		request_msg_.SetRequestLine(request_line);
+		request_line_ = request_line;
 	}
 
 	void RequestParser::Request::SetFieldSection(http::FieldSection *field_section)
@@ -63,14 +65,53 @@ namespace server
 		body_ = body;
 	}
 
+	// host port以外はサボり
+	void RequestParser::Request::ReconstructUri()
+	{
+		RequestTarget::FormType from_type = request_line_.GetRequestTarget().GetFormType();
+		if (from_type == RequestTarget::kAbsoluteForm || field_section_ == NULL) {
+			return;
+		}
+		http::abnf::HostPort hostport =
+			http::abnf::HostPort((*field_section_)["host"].front().GetValue());
+		request_line_.SetHost(hostport.GetHost().ToString());
+		request_line_.SetPort(hostport.GetPort().ToString());
+	}
+
 	const std::string &RequestParser::Request::Method() const
 	{
-		return request_msg_.GetRequestLine().GetMethod();
+		return request_line_.GetMethod();
 	}
 
 	const std::string &RequestParser::Request::Path() const
 	{
-		return request_msg_.GetRequestLine().GetRequestTarget().GetRequestFormData().path_;
+		return request_line_.GetRequestTarget().GetRequestFormData().path_;
+	}
+
+	const std::string &RequestParser::Request::Host() const
+	{
+		return request_line_.GetRequestTarget().GetRequestFormData().host_;
+	}
+
+	const std::string &RequestParser::Request::Port() const
+	{
+		return request_line_.GetRequestTarget().GetRequestFormData().port_;
+	}
+
+	std::string RequestParser::Request::Authority() const
+	{
+		std::string authority;
+
+		const std::string &user_info =
+			request_line_.GetRequestTarget().GetRequestFormData().userinfo_;
+		if (!user_info.empty()) {
+			authority += user_info + "@";
+		}
+		authority += Host();
+		if (!Port().empty()) {
+			authority += ":" + Port();
+		}
+		return authority;
 	}
 
 	const http::FieldSection &RequestParser::Request::Headers() const
@@ -83,9 +124,9 @@ namespace server
 		return *field_section_;
 	}
 
-	const http::RequestMessage &RequestParser::Request::GetMessage() const
+	const RequestLine &RequestParser::Request::GetRequestLine() const
 	{
-		return request_msg_;
+		return request_line_;
 	}
 
 	const http::StatusCode &RequestParser::Request::GetErrStatusCode() const
@@ -101,6 +142,23 @@ namespace server
 	const std::vector<char> *RequestParser::Request::GetBody() const
 	{
 		return body_;
+	}
+
+	bool RequestParser::Request::NeedToClose() const
+	{
+		if (error_type_ == IRequest::kFatal) {
+			return true;
+		}
+		if (field_section_ == NULL) {
+			return false;
+		}
+		http::FieldSection::Values con = (*field_section_)[http::kConnection];
+		for (http::FieldSection::Values::const_iterator it = con.begin(); it != con.end(); it++) {
+			if (it->GetValue() == "close") {
+				return true;
+			}
+		}
+		return false;
 	}
 
 } // namespace server

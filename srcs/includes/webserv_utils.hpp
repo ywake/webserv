@@ -3,9 +3,12 @@
 
 #include "result.hpp"
 #include "thin_string.hpp"
+#include <csignal>
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "status_code.hpp"
 
 std::vector<ThinString> Split(const ThinString &str, const std::string delim);
 Result<long>            StrToLongDenyPadZero(const std::string &str);
@@ -29,7 +32,8 @@ namespace utils
 		return ss.str();
 	}
 
-	Result<std::string>     CreateTimeStamp();
+	Result<void>            SetSignalHandler(int signum, sig_t handler, int sa_flags);
+	Result<std::string>     CreateCurrentTimeStamp();
 	std::string             ToLowerString(std::string s);
 	Result<long>            StrToLong(const std::string &str);
 	Result<bool>            IsRegularFile(int fd);
@@ -39,8 +43,11 @@ namespace utils
 	bool                    EndWith(const std::string &src, const std::string &target);
 	void                    Close(int fd);
 	Result<std::string>     NormalizePath(const ThinString &path);
-	Result<std::string>     HttpNormalizePath(const ThinString &path);
 	std::string             JoinPath(const std::string &parent, const std::string &child);
+	bool                    IsReadablePath(const std::string &path);
+	std::string             CreateDefaultPage(const http::StatusCode &code);
+	std::string
+	OmitExcessBytes(const std::string &s, std::size_t max_width, const std::string &ellipsis);
 
 	// string utils
 	char                               &GetLastChar(std::string str);

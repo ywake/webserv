@@ -20,7 +20,7 @@ namespace response
 		if (utils::EndWith(request_.Path(), "/")) {
 			throw http::ForbiddenException();
 		}
-		Result<std::string> time_stamp = utils::CreateTimeStamp();
+		Result<std::string> time_stamp = utils::CreateCurrentTimeStamp();
 		if (time_stamp.IsErr()) {
 			throw http::InternalServerErrorException();
 		}
@@ -29,9 +29,9 @@ namespace response
 		filename_                    = utils::JoinPath(root, uniq_path);
 		managed_fd_                  = TryOpen(filename_);
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kCreated);
-		MetaDataStorage::StoreHeader("Location", uniq_path); // TODO create uri
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
-		MetaDataStorage::StoreHeader("Connection", "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Location", CreateLocationUrl(uniq_path));
 		// TODO other headers 何必要か分からん
 	}
 
@@ -53,6 +53,11 @@ namespace response
 			}
 		}
 		return fd;
+	}
+
+	std::string PostMethod::CreateLocationUrl(const std::string &path)
+	{
+		return "http://" + utils::JoinPath(request_.Authority(), path);
 	}
 
 	void PostMethod::Perform(const event::Event &event)

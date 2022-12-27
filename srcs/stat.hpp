@@ -25,7 +25,7 @@ class Stat
   private:
 	const std::string      path_;
 	struct stat            stat_;
-	static result::ErrCode GetErrCode(int error_number_);
+	static result::ErrCode GetErrCode(int error_number);
 
   public:
 	// factory
