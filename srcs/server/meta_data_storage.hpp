@@ -32,6 +32,7 @@ namespace server
 			if (utils::EndWith(meta_data_, ", ")) {
 				meta_data_.erase(meta_data_.size() - 2);
 			}
+			meta_data_ += http::kCrLf;
 		}
 
 		void Push();
