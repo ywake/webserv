@@ -91,6 +91,7 @@ namespace cgi
 		}
 		state_ = kBody;
 		// TODO レスポンスタイプごとに分岐
+		MetaDataStorage::StoreHeader(http::kServer, http::kServerName);
 		http::FieldSection::FieldLines fl = fs.Value()->GetMap();
 		for (http::FieldSection::FieldLines::iterator it = fl.begin(); it != fl.end(); ++it) {
 			std::string                key   = it->first;
