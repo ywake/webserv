@@ -84,8 +84,8 @@ namespace cgi
 			log(read_size == 0 ? "End of script output before headers" : "cgi read failed");
 			throw http::InternalServerErrorException();
 		}
-		Emptiable<http::FieldSection *> fs = field_parser_.Parse(cgi_receiver_
-		); // TODO FieldParserをCGI仕様に変更（obsfoldなし、NL＝LF）
+		Emptiable<http::FieldSection *> fs = field_parser_.Parse(cgi_receiver_);
+		// TODO FieldParserをCGI仕様に変更（obsfoldなし、NL＝LF）
 		if (fs.empty()) {
 			return;
 		}
@@ -116,7 +116,7 @@ namespace cgi
 		}
 		q_buffer::QueuingBuffer::size();
 		server::MetaDataStorage::PushWithCrLf();
-		q_buffer::QueuingBuffer::push_back(cgi_receiver_.o);
+		q_buffer::QueuingBuffer::push_back(cgi_receiver_.PopAll());
 	}
 
 	void CgiResponse::OnBody()

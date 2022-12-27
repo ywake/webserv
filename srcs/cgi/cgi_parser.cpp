@@ -109,9 +109,9 @@ namespace cgi
 		if (!utils::EndWith(field_line, kLf)) {
 			return;
 		}
-		field_line.erase(field_line.rbegin());
+		field_line.erase(field_line.end() - 1);
 		if (utils::EndWith(field_line, kCr)) {
-			field_line.erase(field_line.rbegin());
+			field_line.erase(field_line.end() - 1);
 		}
 	}
 
