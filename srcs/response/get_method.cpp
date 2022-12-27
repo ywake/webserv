@@ -37,7 +37,6 @@ namespace response
 				throw http::NotFoundException();
 			}
 		}
-		// TODO index-files, headeres
 	}
 
 	void GetMethod::TryValidateRequestPath(const FullPath &root, const PartialPath &request_path)
