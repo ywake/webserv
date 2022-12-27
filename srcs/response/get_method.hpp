@@ -12,6 +12,10 @@ namespace response
 	class GetMethod : public AResponse
 	{
 	  private:
+		typedef std::string PartialPath;
+		typedef std::string FullPath;
+
+	  private:
 		const conf::LocationConf &location_;
 		ManagedFd                 managed_fd_;
 
@@ -27,16 +31,16 @@ namespace response
 		Emptiable<int> GetFd() const;
 
 	  private:
-		void        ExecuteAutoIndex(const std::string &root, const std::string &request_path);
-		void        ExecuteDirectoryRedirect(const std::string &request_path);
-		std::string CreateLocationUrl(const std::string &path);
-		void        PrepareSendFile(const std::string &path, std::size_t file_size);
-		std::string TryCreateAutoIndex(const std::string &root, const std::string &request_path);
-		int         TryOpen(const std::string &filename) const;
-		Stat        TryStat(const std::string &path);
-		std::string ResolveIndexFilePath(const std::string &request_path);
-		Result<std::string> FindReadableIndexFile(const std::string &base_path);
-		void TryValidateRequestPath(const std::string &root, const std::string &request_path);
+		void        ExecuteAutoIndex(const FullPath &root, const PartialPath &request_path);
+		void        ExecuteDirectoryRedirect(const PartialPath &request_path);
+		std::string CreateLocationUrl(const PartialPath &path) const;
+		void        PrepareSendFile(const FullPath &path, std::size_t file_size);
+		std::string TryCreateAutoIndex(const FullPath &root, const PartialPath &request_path) const;
+		int         TryOpen(const FullPath &filename) const;
+		Stat        TryStat(const FullPath &path) const;
+		PartialPath ResolveIndexFilePath(const PartialPath &request_path) const;
+		Result<PartialPath> FindReadableIndexFile(const PartialPath &base_path) const;
+		void TryValidateRequestPath(const FullPath &root, const PartialPath &request_path);
 	};
 } // namespace response
 

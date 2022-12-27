@@ -18,17 +18,17 @@ namespace response
 		: AResponse(request), location_(location), managed_fd_()
 	{
 		log("GET", request.Path());
-		const std::string &root = location_.GetRoot();
+		const FullPath &root = location_.GetRoot();
 		TryValidateRequestPath(root, request_.Path());
-		const std::string resolved = ResolveIndexFilePath(request_.Path());
+		const PartialPath resolved = ResolveIndexFilePath(request_.Path());
 		if (utils::EndWith(resolved, "/")) {
-			if (location_.GetAutoindex().empty()) {
+			if (location_.GetAutoindex().empty() || !location_.GetAutoindex().Value()) {
 				throw http::ForbiddenException();
 			}
 			ExecuteAutoIndex(root, resolved);
 		} else {
-			std::string abs_path = utils::JoinPath(root, resolved);
-			Stat        st       = TryStat(abs_path);
+			FullPath abs_path = utils::JoinPath(root, resolved);
+			Stat     st       = TryStat(abs_path);
 			if (st.IsDirectory()) {
 				ExecuteDirectoryRedirect(resolved + "/");
 			} else if (st.IsRegularFile()) {
@@ -40,18 +40,18 @@ namespace response
 		// TODO index-files, headeres
 	}
 
-	void GetMethod::TryValidateRequestPath(const std::string &root, const std::string &request_path)
+	void GetMethod::TryValidateRequestPath(const FullPath &root, const PartialPath &request_path)
 	{
 		TryStat(utils::JoinPath(root, request_path));
 	}
 
-	std::string GetMethod::ResolveIndexFilePath(const std::string &request_path)
+	GetMethod::PartialPath GetMethod::ResolveIndexFilePath(const PartialPath &request_path) const
 	{
-		std::string path = request_path;
+		PartialPath path = request_path;
 
 		log("found index file", path);
 		while (utils::EndWith(path, "/")) {
-			Result<std::string> index_file_path = FindReadableIndexFile(path);
+			Result<PartialPath> index_file_path = FindReadableIndexFile(path);
 			if (index_file_path.IsErr()) {
 				break;
 			}
@@ -61,18 +61,19 @@ namespace response
 		return path;
 	}
 
-	Result<std::string> GetMethod::FindReadableIndexFile(const std::string &base_path)
+	Result<GetMethod::PartialPath> GetMethod::FindReadableIndexFile(const PartialPath &base_path
+	) const
 	{
 		typedef conf::LocationConf::IndexFiles IndexFiles;
 
 		const IndexFiles &index_files = location_.GetIndexFiles();
 		for (IndexFiles::const_iterator it = index_files.begin(); it != index_files.end(); ++it) {
-			const std::string index_path = utils::JoinPath(base_path, *it);
-			const std::string abs_path   = utils::JoinPath(location_.GetRoot(), index_path);
+			const PartialPath index_path = utils::JoinPath(base_path, *it);
+			const FullPath    abs_path   = utils::JoinPath(location_.GetRoot(), index_path);
 			if (Stat::FromPath(abs_path).IsErr() || !utils::IsReadablePath(abs_path)) {
 				continue;
 			}
-			Result<std::string> normalized = utils::NormalizePath(index_path);
+			Result<PartialPath> normalized = utils::NormalizePath(index_path);
 			if (normalized.IsErr()) {
 				continue;
 			}
@@ -81,7 +82,7 @@ namespace response
 		return Error();
 	}
 
-	void GetMethod::ExecuteDirectoryRedirect(const std::string &request_path)
+	void GetMethod::ExecuteDirectoryRedirect(const PartialPath &request_path)
 	{
 		log("no slash dir redirect", request_path);
 		std::string page = utils::CreateDefaultPage(http::StatusCode::kMovedPermanently);
@@ -96,12 +97,12 @@ namespace response
 		is_finished_ = true;
 	}
 
-	std::string GetMethod::CreateLocationUrl(const std::string &path)
+	std::string GetMethod::CreateLocationUrl(const PartialPath &path) const
 	{
 		return "http://" + utils::JoinPath(request_.Authority(), path);
 	}
 
-	void GetMethod::PrepareSendFile(const std::string &path, std::size_t file_size)
+	void GetMethod::PrepareSendFile(const FullPath &path, std::size_t file_size)
 	{
 		managed_fd_ = TryOpen(path);
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
@@ -112,7 +113,7 @@ namespace response
 		MetaDataStorage::PushWithCrLf();
 	}
 
-	void GetMethod::ExecuteAutoIndex(const std::string &root, const std::string &request_path)
+	void GetMethod::ExecuteAutoIndex(const FullPath &root, const PartialPath &request_path)
 	{
 		log("autoindex", request_path);
 		std::string autoindex = TryCreateAutoIndex(root, request_path);
@@ -127,7 +128,7 @@ namespace response
 	}
 
 	std::string
-	GetMethod::TryCreateAutoIndex(const std::string &root, const std::string &request_path)
+	GetMethod::TryCreateAutoIndex(const FullPath &root, const PartialPath &request_path) const
 	{
 		result::Result<std::string> autoindex = autoindex::CreateAutoIndex(root, request_path);
 		if (autoindex.IsErr()) {
@@ -143,7 +144,7 @@ namespace response
 		return autoindex.Val();
 	}
 
-	Stat GetMethod::TryStat(const std::string &path)
+	Stat GetMethod::TryStat(const std::string &path) const
 	{
 		result::Result<Stat> st = Stat::FromPath(path);
 		if (st.IsErr()) {
