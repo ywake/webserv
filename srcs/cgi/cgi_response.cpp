@@ -1,12 +1,13 @@
 #include "cgi_response.hpp"
+#include "debug.hpp"
 #include "http_exceptions.hpp"
 #include "stat.hpp"
 #include "webserv_utils.hpp"
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <unistd.h>
-#include <vector>
 
-#include "debug.hpp"
+#include <vector>
 
 namespace cgi
 {
@@ -28,7 +29,11 @@ namespace cgi
 
 	// main constructor
 	CgiResponse::CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf)
-		: AResponse(request), location_conf_(location_conf), resource_path_(), is_hup_(false)
+		: AResponse(request),
+		  location_conf_(location_conf),
+		  resource_path_(),
+		  is_hup_(false),
+		  pid_(-1)
 	{
 		log(COL_BOLD "=== Cgi Response Constructor ===" COL_END);
 		resource_path_ = GetResourcePath();
@@ -114,8 +119,8 @@ namespace cgi
 	void CgiResponse::ExecCgi()
 	{
 		log("cgi execute", location_conf_.GetCgiPath().Value() + " " + resource_path_);
-		pid_t pid = fork();
-		switch (pid) {
+		pid_ = fork();
+		switch (pid_) {
 		case -1:
 			throw http::InternalServerErrorException();
 			break;
@@ -124,7 +129,7 @@ namespace cgi
 			ChildProcess();
 			break;
 		default:
-			ParentProcess(pid);
+			ParentProcess(pid_);
 			break;
 		}
 	}
@@ -138,6 +143,11 @@ namespace cgi
 	CgiResponse::~CgiResponse()
 	{
 		log(COL_BOLD COL_RED "CgiResponse destructor" COL_END);
+		if (waitpid(pid_, NULL, WNOHANG) == 0) {
+			kill(pid_, SIGKILL);
+			waitpid(pid_, NULL, 0);
+		}
+		// TODO Kill
 	}
 
 	// CgiResponse &CgiResponse::operator=(const CgiResponse &other)

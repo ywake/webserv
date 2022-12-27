@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include "a_response.hpp"
 #include "body_writer.hpp"
 #include "cgi_parser.hpp"
@@ -35,6 +37,7 @@ namespace cgi
 		cgi::CgiParser            field_parser_;
 		State                     state_;
 		bool                      is_hup_;
+		pid_t                     pid_;
 
 	  public:
 		CgiResponse(const CgiResponse &other);
