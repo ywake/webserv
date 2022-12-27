@@ -33,13 +33,13 @@ namespace response
 	  private:
 		void        ExecuteAutoIndex(const FullPath &root, const PartialPath &request_path);
 		void        ExecuteDirectoryRedirect(const PartialPath &request_path);
-		std::string CreateLocationUrl(const PartialPath &path);
+		std::string CreateLocationUrl(const PartialPath &path) const;
 		void        PrepareSendFile(const FullPath &path, std::size_t file_size);
-		std::string TryCreateAutoIndex(const FullPath &root, const PartialPath &request_path);
+		std::string TryCreateAutoIndex(const FullPath &root, const PartialPath &request_path) const;
 		int         TryOpen(const FullPath &filename) const;
-		Stat        TryStat(const FullPath &path);
-		PartialPath ResolveIndexFilePath(const PartialPath &request_path);
-		Result<PartialPath> FindReadableIndexFile(const PartialPath &base_path);
+		Stat        TryStat(const FullPath &path) const;
+		PartialPath ResolveIndexFilePath(const PartialPath &request_path) const;
+		Result<PartialPath> FindReadableIndexFile(const PartialPath &base_path) const;
 		void TryValidateRequestPath(const FullPath &root, const PartialPath &request_path);
 	};
 } // namespace response
