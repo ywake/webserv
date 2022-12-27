@@ -46,6 +46,7 @@ namespace io_multiplexer
 			} else if (errno == EINTR)
 				continue;
 			else {
+				log("epoll wait err");
 				return Error(std::string("epoll_wait: ") + strerror(errno));
 			}
 		}
@@ -86,13 +87,19 @@ namespace io_multiplexer
 		log("epoll instruct", instruction, "\n");
 		switch (instruction.command) {
 		case event::Instruction::kAppendEventType:
+			log("AppendEventType");
 			return AppendEventType(instruction.event);
 		case event::Instruction::kTrimEventType:
+			log("TrimEventType");
 			return TrimEventType(instruction.event);
 		case event::Instruction::kRegister:
+			log("Register");
 			return Register(instruction.event);
 		case event::Instruction::kUnregister:
+			log("Unregister");
 			return Unregister(instruction.event);
+		default:
+			throw std::logic_error("epoll instruct logic error");
 		}
 		return Result<void>();
 	}
