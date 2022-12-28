@@ -177,11 +177,7 @@ namespace server
 				);
 			}
 			if (response->IsFinished()) {
-				insts.push_back(Instruction(
-					Instruction::kTrimEventType,
-					response->GetFd().Value(),
-					Event::kRead | Event::kWrite
-				));
+				insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
 			}
 			return insts;
 		} catch (http::HttpException &e) {
@@ -239,9 +235,6 @@ namespace server
 		}
 		IRequest  *request  = in_progress_.front().request;
 		IResponse *response = in_progress_.front().response;
-		if (response->HasFd()) {
-			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
-		}
 		request_del_(request);
 		delete (response);
 		in_progress_.pop_front();
