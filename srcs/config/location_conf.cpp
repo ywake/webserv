@@ -50,7 +50,7 @@ namespace conf
 	LocationConf::LocationConf(
 		const PathPattern             &path_pattern,
 		MatchPattern                   match_pattern,
-		const Path					&default_root,
+		const Path                    &default_root,
 		const std::vector<ThinString> &params
 	)
 		: path_pattern_(path_pattern),
@@ -75,7 +75,7 @@ namespace conf
 				AddRedirect(split);
 			} else if (split[0] == "root") {
 				AddRoot(split);
-			} else if (split[0] == "index_files") {
+			} else if (split[0] == "index") {
 				AddIndexFiles(split);
 			} else if (split[0] == "autoindex") {
 				AddAutoIndex(split);
