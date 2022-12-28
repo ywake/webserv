@@ -15,6 +15,8 @@ namespace server
 
 	  public:
 		Reciever(int fd = -1, std::size_t recv_buf_size = QueuingReader::kDefaultReadBufSize);
+		Reciever(const Reciever &other);
+		Reciever    &operator=(const Reciever &rhs);
 		Result<void> Recv();
 		bool         IsEof();
 	};

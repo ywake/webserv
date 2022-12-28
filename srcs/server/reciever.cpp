@@ -9,6 +9,22 @@ namespace server
 		: QueuingReader(recv_buf_size), fd_(fd), is_eof_(false)
 	{}
 
+	Reciever::Reciever(const Reciever &other) : QueuingBuffer(), QueuingReader()
+	{
+		*this = other;
+	}
+
+	Reciever &Reciever::operator=(const Reciever &rhs)
+	{
+		if (&rhs == this) {
+			return *this;
+		}
+		QueuingReader::operator=(rhs);
+		fd_     = rhs.fd_;
+		is_eof_ = rhs.is_eof_;
+		return *this;
+	}
+
 	Result<void> Reciever::Recv()
 	{
 		if (IsEof()) {
