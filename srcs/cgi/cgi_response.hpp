@@ -7,6 +7,7 @@
 #include "i_response.hpp"
 #include "location_conf.hpp"
 #include "managed_fd.hpp"
+#include "reciever.hpp"
 #include "stat.hpp"
 
 namespace cgi
@@ -33,7 +34,7 @@ namespace cgi
 		ManagedFd                 parent_fd_;
 		ManagedFd                 child_fd_;
 		server::BodyWriter        body_writer_;
-		q_buffer::QueuingReader   cgi_receiver_;
+		server::Reciever          cgi_receiver_;
 		cgi::CgiParser            field_parser_;
 		State                     state_;
 		bool                      is_hup_;

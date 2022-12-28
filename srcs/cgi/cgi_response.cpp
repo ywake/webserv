@@ -46,6 +46,7 @@ namespace cgi
 		child_fd_    = ManagedFd(fds[1]);
 		body_writer_ = server::BodyWriter(request.GetBody());
 		ExecCgi();
+		cgi_receiver_ = server::Reciever(parent_fd_.GetFd());
 	}
 
 	CgiResponse::Path CgiResponse::GetResourcePath() const
