@@ -70,7 +70,7 @@ namespace cgi
 			return Emptiable<http::FieldSection *>();
 		} catch (http::HttpException &e) {
 			DestroyParseContext();
-			throw e;
+			throw http::InternalServerErrorException();
 		}
 	}
 
