@@ -29,11 +29,7 @@ namespace cgi
 
 	// main constructor
 	CgiResponse::CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf)
-		: AResponse(request),
-		  location_conf_(location_conf),
-		  resource_path_(),
-		  is_hup_(false),
-		  pid_(-1)
+		: AResponse(request), location_conf_(location_conf), resource_path_(), pid_(-1)
 	{
 		log(COL_BOLD "=== Cgi Response Constructor ===" COL_END);
 		resource_path_ = GetResourcePath();

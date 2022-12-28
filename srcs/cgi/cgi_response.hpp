@@ -37,7 +37,6 @@ namespace cgi
 		server::Reciever          cgi_receiver_;
 		cgi::CgiParser            field_parser_;
 		State                     state_;
-		bool                      is_hup_;
 		pid_t                     pid_;
 
 	  public:
@@ -70,7 +69,6 @@ namespace cgi
 		// IResponse
 	  public:
 		void           Perform(const event::Event &event);
-		Result<void>   Send(int fd);
 		bool           HasFd() const;
 		Emptiable<int> GetFd() const;
 
