@@ -32,6 +32,7 @@ namespace cgi
 		: AResponse(request),
 		  location_conf_(location_conf),
 		  resource_path_(),
+		  state_(kHeader),
 		  is_hup_(false),
 		  pid_(-1)
 	{
