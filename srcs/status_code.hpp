@@ -4,11 +4,10 @@
 #include <map>
 #include <string>
 
+#include "emptiable.hpp"
+
 namespace http
 {
-	class EmptyStatusCode
-	{
-	};
 	class StatusCode
 	{
 	  public:
@@ -66,10 +65,12 @@ namespace http
 	  private:
 		static const ReasonPhrase reason_phrase_;
 		Code                      code_;
+		Emptiable<std::string>    phrase_;
 
 	  public:
 		StatusCode(Code code = kUndefinedCode);
-		StatusCode(const EmptyStatusCode &code);
+		StatusCode(Code code, const std::string &phrase);
+		~StatusCode() throw();
 
 		bool               empty() const;
 		Code               GetCode() const;

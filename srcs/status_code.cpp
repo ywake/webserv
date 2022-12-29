@@ -7,12 +7,11 @@ namespace http
 {
 	const StatusCode::ReasonPhrase StatusCode::reason_phrase_ = StatusCode::InitReasonPhrase();
 
-	StatusCode::StatusCode(Code code) : code_(code) {}
+	StatusCode::StatusCode(Code code) : code_(code), phrase_() {}
 
-	StatusCode::StatusCode(const EmptyStatusCode &code) : code_(kUndefinedCode)
-	{
-		(void)code;
-	}
+	StatusCode::StatusCode(Code code, const std::string &phrase) : code_(code), phrase_(phrase) {}
+
+	StatusCode::~StatusCode() throw() {}
 
 	bool StatusCode::empty() const
 	{
@@ -26,6 +25,9 @@ namespace http
 
 	const std::string &StatusCode::GetReasonPhrase() const
 	{
+		if (!phrase_.empty()) {
+			return phrase_.Value();
+		}
 		try {
 			return reason_phrase_.at(code_);
 		} catch (const std::out_of_range &e) {
