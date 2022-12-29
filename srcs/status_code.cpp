@@ -5,7 +5,9 @@
 
 namespace http
 {
+
 	const StatusCode::ReasonPhrase StatusCode::reason_phrase_ = StatusCode::InitReasonPhrase();
+	const StatusCode::Code         StatusCode::kUndefinedCode = 0;
 
 	StatusCode::StatusCode(Code code) : code_(code), phrase_() {}
 
