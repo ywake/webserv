@@ -39,8 +39,11 @@ namespace cgi
 		State                     state_;
 		pid_t                     pid_;
 
-	  public:
+	  private:
 		CgiResponse(const CgiResponse &other);
+		CgiResponse &operator=(const CgiResponse &other);
+
+	  public:
 		CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf);
 		~CgiResponse();
 
