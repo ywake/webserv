@@ -11,8 +11,8 @@ namespace http
 	class StatusCode
 	{
 	  public:
-		enum Code {
-			kUndefinedCode               = 0,
+		typedef unsigned int Code;
+		enum DefinedCode {
 			kContinue                    = 100,
 			kSwitchingProtocols          = 101,
 			kOK                          = 200,
@@ -64,6 +64,7 @@ namespace http
 
 	  private:
 		static const ReasonPhrase reason_phrase_;
+		static const Code         kUndefinedCode;
 		Code                      code_;
 		Emptiable<std::string>    phrase_;
 
