@@ -72,7 +72,6 @@ namespace http
 		StatusCode(Code code, const std::string &phrase);
 		~StatusCode() throw();
 
-		bool               empty() const;
 		Code               GetCode() const;
 		std::string        GetCodeStr() const;
 		const std::string &GetReasonPhrase() const;

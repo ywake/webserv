@@ -13,11 +13,6 @@ namespace http
 
 	StatusCode::~StatusCode() throw() {}
 
-	bool StatusCode::empty() const
-	{
-		return code_ == kUndefinedCode;
-	}
-
 	StatusCode::Code StatusCode::GetCode() const
 	{
 		return code_;
