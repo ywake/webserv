@@ -5,8 +5,10 @@
 
 namespace http
 {
-
 	const StatusCode::ReasonPhrase StatusCode::reason_phrase_ = StatusCode::InitReasonPhrase();
+	const StatusCode::Code         StatusCode::kMax           = 599;
+	const StatusCode::Code         StatusCode::kMin           = 100;
+	const std::size_t              StatusCode::kCodeDigits    = 3;
 	const StatusCode::Code         StatusCode::kUndefinedCode = 0;
 
 	StatusCode::StatusCode(Code code) : code_(code), phrase_() {}
@@ -88,5 +90,19 @@ namespace http
 		reason_phrase[kHTTPVersionNotSupported]     = "HTTP Version Not Supported";
 
 		return reason_phrase;
+	}
+
+	bool StatusCode::IsValidCode(Code code)
+	{
+		return kMin <= code && code <= kMax;
+	}
+
+	bool StatusCode::IsValidCode(const std::string &code)
+	{
+		if (code.size() != kCodeDigits) {
+			return false;
+		}
+		Result<unsigned long> num = utils::StrToUnsignedLong(code);
+		return num.IsOk() && kMin <= num.Val() && num.Val() <= kMax;
 	}
 } // namespace http

@@ -62,6 +62,11 @@ namespace http
 	  private:
 		typedef std::map<const Code, std::string> ReasonPhrase;
 
+	  public:
+		static const Code        kMax;
+		static const Code        kMin;
+		static const std::size_t kCodeDigits;
+
 	  private:
 		static const ReasonPhrase reason_phrase_;
 		static const Code         kUndefinedCode;
@@ -76,6 +81,8 @@ namespace http
 		Code               GetCode() const;
 		std::string        GetCodeStr() const;
 		const std::string &GetReasonPhrase() const;
+		static bool        IsValidCode(Code code);
+		static bool        IsValidCode(const std::string &code);
 
 	  private:
 		static ReasonPhrase InitReasonPhrase();
