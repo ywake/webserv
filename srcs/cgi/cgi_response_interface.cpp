@@ -92,16 +92,21 @@ namespace cgi
 		}
 		state_ = kBody;
 		// TODO レスポンスタイプごとに分岐
+		PushHeaders(*fs.Value());
+		CgiParser::DestroyFieldSection(fs.Value());
+	}
+
+	void CgiResponse::PushHeaders(const http::FieldSection &field_section)
+	{
 		MetaDataStorage::StoreHeader(http::kServer, http::kServerName);
-		if (!fs.Value()->Contains(http::kTransferEncoding)) { // TODO body必要なときのみ
+		if (!field_section.Contains(http::kTransferEncoding)) { // TODO body必要なときのみ
 			MetaDataStorage::StoreHeader(http::kTransferEncoding, http::kChunked);
 		}
-		http::FieldSection::FieldLines fl = fs.Value()->GetMap();
-		for (http::FieldSection::FieldLines::iterator it = fl.begin(); it != fl.end(); ++it) {
+		const http::FieldSection::FieldLines &fl = field_section.GetMap();
+		for (http::FieldSection::FieldLines::const_iterator it = fl.begin(); it != fl.end(); ++it) {
 			std::string                key   = it->first;
 			http::FieldSection::Values value = it->second;
-			// Serverは無視して上書き
-			// ContentLengthは無視
+			// Serverは無視して上書き, ContentLengthは無視
 			if (key == http::kServer || key == http::kContentLength) {
 				continue;
 			}
@@ -120,7 +125,6 @@ namespace cgi
 			server::MetaDataStorage::StoreHeader(key, lst.begin(), lst.end());
 		}
 		server::MetaDataStorage::PushWithCrLf();
-		CgiParser::DestroyFieldSection(fs.Value());
 	}
 
 	void CgiResponse::OnBody()
