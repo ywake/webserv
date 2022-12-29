@@ -96,6 +96,39 @@ namespace cgi
 		CgiParser::DestroyFieldSection(fs.Value());
 	}
 
+	// Status         = "Status:" status-code SP reason-phrase NUL
+	// status-code    = "200" | "302" | "400" | "501" | extension-code
+	// extension-code = 3digit
+	// reason-phrase  = *TEXT
+	Result<http::StatusCode> CgiResponse::ParseStatusCode(const http::FieldSection &field_section)
+	{
+		const http::FieldSection::Values values = field_section["status"];
+		if (values.empty()) {
+			return http::StatusCode(http::StatusCode::kOK);
+		}
+		if (values.size() != 1) {
+			return Error();
+		}
+		const std::string &val = values.front().GetValue();
+		if (val.size() < http::StatusCode::kCodeDigits) {
+			return Error();
+		}
+		std::string former = val.substr(0, http::StatusCode::kCodeDigits);
+		std::string latter = val.substr(http::StatusCode::kCodeDigits);
+		if (!http::StatusCode::IsValidCode(former)) {
+			return Error();
+		}
+		http::StatusCode::Code code = utils::StrToUnsignedLong(former).Val();
+		if (latter.empty()) {
+			return http::StatusCode(code);
+		}
+		if (latter[0] != ' ') {
+			return Error();
+		}
+		std::string phrase = latter.substr(1);
+		return http::StatusCode(code, phrase);
+	}
+
 	void CgiResponse::PushHeaders(const http::FieldSection &field_section)
 	{
 		MetaDataStorage::StoreHeader(http::kServer, http::kServerName);
