@@ -35,7 +35,7 @@ namespace cgi
 
 	Result<std::vector<const char *> > CgiResponse::CreateArgs()
 	{
-		Emptiable<std::string> cgi_path = location_conf_.GetCgiPath();
+		const Emptiable<std::string> &cgi_path = location_conf_.GetCgiPath();
 		if (cgi_path.empty()) {
 			// cgi_pathがemptyでない時コンストラクトされるので、ありえないはず
 			return Error("cgi_path is empty");
