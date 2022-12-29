@@ -12,9 +12,8 @@ namespace response
 		std::pair<conf::StatusCode, conf::Url> redir       = location.GetRedirect().Value();
 		std::string                            status_code = redir.first;
 		std::string                            url         = redir.second;
-		http::StatusCode::Code                 code =
-			static_cast<http::StatusCode::Code>(utils::StrToLong(status_code).Val());
-		std::string page = utils::CreateDefaultPage(code);
+		http::StatusCode::Code                 code        = utils::StrToLong(status_code).Val();
+		std::string                            page        = utils::CreateDefaultPage(code);
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, code);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Content-Type", "text/html");
