@@ -93,4 +93,28 @@ TEST(config, location_conf_cgi_path)
 							  "}"),
 		conf::ConfigException
 	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "root /var/www;"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "cgi_path cgi-bin;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "root /var/www;"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "cgi_path ;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
 }
