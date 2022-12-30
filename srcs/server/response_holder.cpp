@@ -192,10 +192,10 @@ namespace server
 			log("local redirect");
 			insts = Instructions();
 			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
+			utils::DeleteSafe(task.response);
 			request->SetPath(e.Path());
 			request->SetQuery(e.Query());
 			task.local_redir_count++;
-			utils::DeleteSafe(task.response);
 			Instructions add_insts = AddNewResponse(&task);
 			insts.splice(insts.end(), add_insts);
 			return insts;
