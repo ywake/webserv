@@ -188,7 +188,9 @@ namespace server
 			request->SetPath(e.Path());
 			request->SetQuery(e.Query());
 			utils::DeleteSafe(response);
-			return AddNewResponse(&task);
+			Instructions add_ints = AddNewResponse(&task);
+			insts.splice(insts.end(), add_ints);
+			return insts;
 		} catch (http::HttpException &e) {
 			insts = Instructions();
 			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
