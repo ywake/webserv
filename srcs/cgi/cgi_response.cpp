@@ -39,7 +39,7 @@ namespace cgi
 		resource_path_ = GetResourcePath();
 		log("resource_path: ", resource_path_);
 		int fds[2];
-		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds)) {
+		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
 			throw http::InternalServerErrorException();
 		}
 		parent_fd_   = ManagedFd(fds[0]);
