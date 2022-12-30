@@ -62,6 +62,8 @@ namespace server
 			const std::vector<char>  *GetBody() const;
 			const ErrorType          &GetErrorType() const;
 			bool                      NeedToClose() const;
+			void                      SetPath(const std::string &path);
+			void                      SetQuery(const std::string &query);
 		};
 
 	  private:
