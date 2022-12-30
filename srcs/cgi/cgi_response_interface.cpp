@@ -127,7 +127,7 @@ namespace cgi
 
 	void CgiResponse::PushMetaDataForClientRedirect(const std::string &uri)
 	{
-		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kMovedPermanently);
+		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kFound);
 		MetaDataStorage::StoreHeader(http::kServer, http::kServerName);
 		MetaDataStorage::StoreHeader("location", uri);
 		MetaDataStorage::PushWithCrLf();
