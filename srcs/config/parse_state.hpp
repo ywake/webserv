@@ -1,3 +1,6 @@
+#ifndef PARSE_STATE_HPP
+#define PARSE_STATE_HPP
+
 #include "thin_string.hpp"
 
 #include <set>
@@ -30,3 +33,5 @@ namespace conf
 	};
 
 } // namespace conf
+
+#endif

@@ -3,12 +3,13 @@
 #include <cassert>
 
 #include "config_exceptions.hpp"
+#include "implemented_methods.hpp"
 #include "webserv_utils.hpp"
 
 namespace conf
 {
 	// AllowMethods({"GET", "POST", "DELETE"})がC++98で使えないので
-	static const char               *kDefaultAllowMethodArray[] = {"GET", "POST", "DELETE"};
+	static const char               *kDefaultAllowMethodArray[] = {"GET"};
 	const LocationConf::AllowMethods LocationConf::kDefaultAllowMethods =
 		LocationConf::AllowMethods(
 			kDefaultAllowMethodArray,
@@ -50,7 +51,7 @@ namespace conf
 	LocationConf::LocationConf(
 		const PathPattern             &path_pattern,
 		MatchPattern                   match_pattern,
-		const Path					&default_root,
+		const Path                    &default_root,
 		const std::vector<ThinString> &params
 	)
 		: path_pattern_(path_pattern),
@@ -75,7 +76,7 @@ namespace conf
 				AddRedirect(split);
 			} else if (split[0] == "root") {
 				AddRoot(split);
-			} else if (split[0] == "index_files") {
+			} else if (split[0] == "index") {
 				AddIndexFiles(split);
 			} else if (split[0] == "autoindex") {
 				AddAutoIndex(split);
@@ -91,11 +92,10 @@ namespace conf
 	{
 		for (std::vector<ThinString>::const_iterator it = tokens.begin() + 1; it != tokens.end();
 			 ++it) {
-			// TODO: METHODSのプールを用意する
-			if (*it != "GET" && *it != "POST" && *it != "DELETE") {
+			if (!http::ImplementedMethods::Contains(it->ToString())) {
 				throw ConfigException("Invalid allow_methods");
 			}
-			allow_methods_.push_back(it->ToString());
+			allow_methods_.insert(it->ToString());
 		}
 	}
 
@@ -169,6 +169,14 @@ namespace conf
 		default:
 			return false;
 		}
+	}
+
+	bool LocationConf::IsAllowedMethod(const std::string &method) const
+	{
+		if (allow_methods_.empty()) {
+			return kDefaultAllowMethods.find(method) != kDefaultAllowMethods.end();
+		}
+		return allow_methods_.find(method) != allow_methods_.end();
 	}
 
 	/**
