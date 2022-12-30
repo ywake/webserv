@@ -117,6 +117,9 @@ namespace conf
 			throw ConfigException("Invalid root");
 		}
 		root_ = tokens[1].ToString();
+		if (!root_.Value().empty() && root_.Value()[0] != '/') {
+			throw ConfigException("Invalid root");
+		}
 	}
 
 	void LocationConf::AddIndexFiles(const std::vector<ThinString> &tokens)
@@ -148,6 +151,9 @@ namespace conf
 			throw ConfigException("Invalid cgi_path");
 		}
 		cgi_path_ = tokens[1].ToString();
+		if (!cgi_path_.Value().empty() && cgi_path_.Value()[0] != '/') {
+			throw ConfigException("Invalid cgi path");
+		}
 	}
 
 	LocationConf::~LocationConf() {}

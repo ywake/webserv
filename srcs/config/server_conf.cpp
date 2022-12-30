@@ -222,6 +222,9 @@ namespace conf
 			throw ConfigException("Invalid root");
 		}
 		default_root_ = tokens[1].ToString();
+		if (!default_root_.Value().empty() && default_root_.Value()[0] != '/') {
+			throw ConfigException("Invalid root");
+		}
 	}
 
 	/**

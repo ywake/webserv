@@ -77,4 +77,28 @@ TEST(config, location_conf_root)
 							  "}"),
 		conf::ConfigException
 	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "root /var/www;"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "root ;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "root /var/www;"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "location / {"
+							  "root var/www;"
+							  "}"
+							  "}"),
+		conf::ConfigException
+	);
 }
