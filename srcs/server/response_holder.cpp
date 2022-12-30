@@ -64,14 +64,15 @@ namespace server
 
 	Instructions ResponseHolder::AddNewResponse(Task *task)
 	{
-		const conf::ServerConf   &vs_conf = GetServerConf(*task->request);
-		const conf::LocationConf &location =
-			vs_conf.FindMatchingLocationConf(task->request->Path());
-		bool is_cgi = !location.GetCgiPath().empty();
+		IRequest                 &request     = *task->request;
+		const conf::ServerConf   &vs_conf     = GetServerConf(request);
+		const conf::LocationConf &location    = vs_conf.FindMatchingLocationConf(request.Path());
+		bool                      is_redirect = !location.GetRedirect().empty();
+		bool                      is_cgi      = !location.GetCgiPath().empty();
 		try {
 			if (task->local_redir_count > cgi::kMaxLocalRedirects) {
 				throw http::InternalServerErrorException();
-			} else if (!location.GetRedirect().empty()) {
+			} else if (is_redirect) {
 				return AddNewRedirectResponse(task, location);
 			} else if (is_cgi) {
 				return AddNewCgiResponse(task, location);
