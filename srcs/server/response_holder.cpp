@@ -72,6 +72,8 @@ namespace server
 		try {
 			if (task->local_redir_count > cgi::kMaxLocalRedirects) {
 				throw http::InternalServerErrorException();
+			} else if (location.IsAllowedMethod(request.Method())) {
+				throw http::MethodNotAllowedException();
 			} else if (is_redirect) {
 				return AddNewRedirectResponse(task, location);
 			} else if (is_cgi) {
@@ -120,7 +122,6 @@ namespace server
 		Instructions insts;
 		uint32_t     event_type = 0;
 
-		// TODO 405 not allowed
 		if (task->request->Method() == http::methods::kGet) {
 			task->response = new response::GetMethod(*task->request, location);
 			event_type     = Event::kRead;
