@@ -210,7 +210,7 @@ namespace server
 			Instructions i = CreateInstructionsForError(*in_progress_.front().response);
 			insts.splice(insts.end(), i);
 			return insts;
-		} // TODO local redir
+		}
 	}
 
 	Result<Instructions> ResponseHolder::Send()
