@@ -90,6 +90,24 @@ namespace cgi
 		CgiParser::DestroyFieldSection(fs.Value());
 	}
 
+	Result<void> CgiResponse::PushMetaDataToSendBody(const http::FieldSection &field_section)
+	{
+		http::StatusCode code;
+		if (field_section.Contains("status")) {
+			Result<http::StatusCode> status = ParseStatusCode(field_section["status"]);
+			if (status.IsErr()) {
+				return Error();
+			}
+			code = status.Val();
+		} else {
+			code = http::StatusCode(http::StatusCode::kOK);
+		}
+		MetaDataStorage::StoreStatusLine(http::kHttpVersion, code);
+		StoreHeadersToSendBody(field_section);
+		MetaDataStorage::PushWithCrLf();
+		return Result<void>();
+	}
+
 	// Status         = "Status:" status-code SP reason-phrase NUL
 	// status-code    = "200" | "302" | "400" | "501" | extension-code
 	// extension-code = 3digit
