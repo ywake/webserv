@@ -6,6 +6,7 @@
 #include "get_method.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
+#include "local_redirect_exception.hpp"
 #include "post_method.hpp"
 #include "redirect.hpp"
 
@@ -180,6 +181,14 @@ namespace server
 				insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
 			}
 			return insts;
+		} catch (cgi::LocalRedirectException &e) {
+			log("local redirect");
+			insts = Instructions();
+			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
+			request->SetPath(e.Path());
+			request->SetQuery(e.Query());
+			utils::DeleteSafe(response);
+			return AddNewResponse(&task);
 		} catch (http::HttpException &e) {
 			insts = Instructions();
 			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
