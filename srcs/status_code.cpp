@@ -6,18 +6,16 @@
 namespace http
 {
 	const StatusCode::ReasonPhrase StatusCode::reason_phrase_ = StatusCode::InitReasonPhrase();
+	const StatusCode::Code         StatusCode::kMax           = 599;
+	const StatusCode::Code         StatusCode::kMin           = 100;
+	const std::size_t              StatusCode::kCodeDigits    = 3;
+	const StatusCode::Code         StatusCode::kUndefinedCode = 0;
 
-	StatusCode::StatusCode(Code code) : code_(code) {}
+	StatusCode::StatusCode(Code code) : code_(code), phrase_() {}
 
-	StatusCode::StatusCode(const EmptyStatusCode &code) : code_(kUndefinedCode)
-	{
-		(void)code;
-	}
+	StatusCode::StatusCode(Code code, const std::string &phrase) : code_(code), phrase_(phrase) {}
 
-	bool StatusCode::empty() const
-	{
-		return code_ == kUndefinedCode;
-	}
+	StatusCode::~StatusCode() throw() {}
 
 	StatusCode::Code StatusCode::GetCode() const
 	{
@@ -26,6 +24,9 @@ namespace http
 
 	const std::string &StatusCode::GetReasonPhrase() const
 	{
+		if (!phrase_.empty()) {
+			return phrase_.Value();
+		}
 		try {
 			return reason_phrase_.at(code_);
 		} catch (const std::out_of_range &e) {
@@ -90,4 +91,24 @@ namespace http
 
 		return reason_phrase;
 	}
+
+	bool StatusCode::IsValidCode(Code code)
+	{
+		return kMin <= code && code <= kMax;
+	}
+
+	bool StatusCode::IsValidCode(const std::string &code)
+	{
+		if (code.size() != kCodeDigits) {
+			return false;
+		}
+		Result<unsigned long> num = utils::StrToUnsignedLong(code);
+		return num.IsOk() && kMin <= num.Val() && num.Val() <= kMax;
+	}
+
+	bool StatusCode::operator==(const Code &code) const
+	{
+		return code_ == code;
+	}
+
 } // namespace http
