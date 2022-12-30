@@ -70,6 +70,8 @@ namespace cgi
 			log("cgi body read");
 			OnBody();
 			break;
+		case kEnd:
+			break;
 		default:
 			throw std::logic_error("cgi read logic error");
 			break;
@@ -92,7 +94,7 @@ namespace cgi
 				CgiParser::DestroyFieldSection(fs.Value());
 				throw http::InternalServerErrorException();
 			}
-		state_ = kBody;
+			state_ = kBody;
 		} else if (IsClientRedirect(field_section)) {
 			PushMetaDataForClientRedirect(field_section["location"].front().GetValue());
 			is_finished_ = true;
