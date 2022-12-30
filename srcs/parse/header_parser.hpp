@@ -11,7 +11,7 @@ namespace server
 		HeaderParser();
 		HeaderParser(const FieldParser &other);
 		FieldParser                    &operator=(const FieldParser &rhs);
-		Emptiable<http::FieldSection *> Parse(q_buffer::QueuingBuffer &recieved);
+		Emptiable<http::FieldSection *> Parse(q_buffer::QueuingBuffer &received);
 
 	  private:
 		void                       ParseEachHeaders(http::FieldSection &headers);

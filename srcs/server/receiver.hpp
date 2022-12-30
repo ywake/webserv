@@ -1,5 +1,5 @@
-#ifndef RECIEVER_HPP
-#define RECIEVER_HPP
+#ifndef RECEIVER_HPP
+#define RECEIVER_HPP
 
 #include "instruction.hpp"
 #include "queuing_reader.hpp"

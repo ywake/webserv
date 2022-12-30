@@ -30,13 +30,13 @@ namespace cgi
 		CgiParser(const CgiParser &other);
 		~CgiParser();
 		CgiParser                      &operator=(const CgiParser &rhs);
-		Emptiable<http::FieldSection *> Parse(q_buffer::QueuingBuffer &recieved);
+		Emptiable<http::FieldSection *> Parse(q_buffer::QueuingBuffer &received);
 		static void                     DestroyFieldSection(const http::FieldSection *fields);
 		static http::FieldSection      *CopyFieldSection(const http::FieldSection *src);
 
 	  private:
 		void        InitParseContext();
-		ParseResult CreateFieldSection(q_buffer::QueuingBuffer &recieved);
+		ParseResult CreateFieldSection(q_buffer::QueuingBuffer &received);
 		void        EraseLfOrCrLf(std::string &field_line);
 
 	  protected:

@@ -1,7 +1,7 @@
 #include <cerrno>
 #include <cstdio>
 
-#include "reciever.hpp"
+#include "receiver.hpp"
 
 namespace server
 {

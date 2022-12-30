@@ -90,7 +90,7 @@ namespace server
 		RequestParser(const RequestParser &other);
 		~RequestParser();
 		RequestParser        &operator=(const RequestParser &rhs);
-		Emptiable<IRequest *> Parse(q_buffer::QueuingBuffer &recieved);
+		Emptiable<IRequest *> Parse(q_buffer::QueuingBuffer &received);
 		bool                  HasInCompleteData();
 		Emptiable<IRequest *> OnEof();
 		static void           DestroyIRequest(IRequest *&request);
@@ -99,13 +99,13 @@ namespace server
 	  private:
 		void            InitParseContext();
 		void            DestroyParseContext();
-		ParseResult     CreateRequestMessage(q_buffer::QueuingBuffer &recieved);
-		ParseResult     ParseEachPhase(q_buffer::QueuingBuffer &recieved);
-		ParseResult     ParseStartLine(q_buffer::QueuingBuffer &recieved);
-		ParseResult     ParseHeaderSection(q_buffer::QueuingBuffer &recieved);
-		ParseResult     ParseBody(q_buffer::QueuingBuffer &recieved);
+		ParseResult     CreateRequestMessage(q_buffer::QueuingBuffer &received);
+		ParseResult     ParseEachPhase(q_buffer::QueuingBuffer &received);
+		ParseResult     ParseStartLine(q_buffer::QueuingBuffer &received);
+		ParseResult     ParseHeaderSection(q_buffer::QueuingBuffer &received);
+		ParseResult     ParseBody(q_buffer::QueuingBuffer &received);
 		State           GetNextState(State old_state);
-		ParseResult     SkipPriorCrLf(q_buffer::QueuingBuffer &recieved);
+		ParseResult     SkipPriorCrLf(q_buffer::QueuingBuffer &received);
 		static void     DestroyRequest(IRequest *request);
 		static Request *CopyRequest(const IRequest *src);
 	};

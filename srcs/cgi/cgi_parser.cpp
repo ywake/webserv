@@ -54,14 +54,14 @@ namespace cgi
 		InitParseContext();
 	}
 
-	Emptiable<http::FieldSection *> CgiParser::Parse(q_buffer::QueuingBuffer &recieved)
+	Emptiable<http::FieldSection *> CgiParser::Parse(q_buffer::QueuingBuffer &received)
 	{
-		if (recieved.empty()) {
+		if (received.empty()) {
 			return Emptiable<http::FieldSection *>();
 		}
 		ctx_.state = kParsing;
 		try {
-			if (CreateFieldSection(recieved) == kDone) {
+			if (CreateFieldSection(received) == kDone) {
 				log("field parse success", ctx_.fields);
 				http::FieldSection *fields = ctx_.fields;
 				InitParseContext();
@@ -75,10 +75,10 @@ namespace cgi
 	}
 
 	server::StatefulParser::ParseResult
-	CgiParser::CreateFieldSection(q_buffer::QueuingBuffer &recieved)
+	CgiParser::CreateFieldSection(q_buffer::QueuingBuffer &received)
 	{
-		while (!recieved.empty()) {
-			switch (LoadBytesWithDelim(recieved, kLf, kMaxLineSize)) {
+		while (!received.empty()) {
+			switch (LoadBytesWithDelim(received, kLf, kMaxLineSize)) {
 			case kOverMaxSize:
 				throw http::BadRequestException();
 			case kNonParsable:

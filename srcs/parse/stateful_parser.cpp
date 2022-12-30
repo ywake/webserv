@@ -18,14 +18,14 @@ namespace server
 	}
 
 	StatefulParser::LoadResult StatefulParser::LoadBytesWithDelim(
-		q_buffer::QueuingBuffer &recieved, const std::string &delim, std::size_t max_bytes
+		q_buffer::QueuingBuffer &received, const std::string &delim, std::size_t max_bytes
 	)
 	{
 		for (;;) {
-			if (recieved.empty()) {
+			if (received.empty()) {
 				return kNonParsable;
 			}
-			Emptiable<char> c = recieved.PopChar();
+			Emptiable<char> c = received.PopChar();
 			loaded_bytes_ += c.Value();
 			if (loaded_bytes_.size() > max_bytes) {
 				return kOverMaxSize;

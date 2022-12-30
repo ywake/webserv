@@ -38,13 +38,13 @@ namespace server
 		return *this;
 	}
 
-	Emptiable<std::vector<char> *> ChunkedParser::Parse(q_buffer::QueuingBuffer &recieved)
+	Emptiable<std::vector<char> *> ChunkedParser::Parse(q_buffer::QueuingBuffer &received)
 	{
-		if (recieved.empty()) {
+		if (received.empty()) {
 			return Emptiable<std::vector<char> *>();
 		}
 		try {
-			if (CreateBody(recieved) == kDone) {
+			if (CreateBody(received) == kDone) {
 				std::vector<char> *body = ctx_.body;
 				InitParseContext();
 				return body;
@@ -78,10 +78,10 @@ namespace server
 		InitParseContext();
 	}
 
-	StatefulParser::ParseResult ChunkedParser::CreateBody(q_buffer::QueuingBuffer &recieved)
+	StatefulParser::ParseResult ChunkedParser::CreateBody(q_buffer::QueuingBuffer &received)
 	{
-		while (!recieved.empty()) {
-			switch (ParseEachPhase(recieved)) {
+		while (!received.empty()) {
+			switch (ParseEachPhase(received)) {
 			case kInProgress:
 				return kInProgress;
 			case kDone:
@@ -96,27 +96,27 @@ namespace server
 		return kInProgress;
 	}
 
-	StatefulParser::ParseResult ChunkedParser::ParseEachPhase(q_buffer::QueuingBuffer &recieved)
+	StatefulParser::ParseResult ChunkedParser::ParseEachPhase(q_buffer::QueuingBuffer &received)
 	{
 		switch (ctx_.state) {
 		case kStandby:
 			return kDone;
 		case kChunk:
 			log("chunk");
-			return ParseChunked(recieved);
+			return ParseChunked(received);
 		case kTrailer:
 			log("trailer");
-			return DiscardTrailer(recieved);
+			return DiscardTrailer(received);
 		default:
 			DBG_INFO;
 			throw std::logic_error("chunked parser logic error");
 		}
 	}
 
-	StatefulParser::ParseResult ChunkedParser::ParseChunked(q_buffer::QueuingBuffer &recieved)
+	StatefulParser::ParseResult ChunkedParser::ParseChunked(q_buffer::QueuingBuffer &received)
 	{
-		while (!recieved.empty()) {
-			switch (ParseEachChunkPhase(recieved)) {
+		while (!received.empty()) {
+			switch (ParseEachChunkPhase(received)) {
 			case kInProgress:
 				return kInProgress;
 			case kDone:
@@ -131,23 +131,23 @@ namespace server
 		return kInProgress;
 	}
 
-	StatefulParser::ParseResult ChunkedParser::ParseEachChunkPhase(q_buffer::QueuingBuffer &recieved
+	StatefulParser::ParseResult ChunkedParser::ParseEachChunkPhase(q_buffer::QueuingBuffer &received
 	)
 	{
 		switch (ctx_.chunk_state) {
 		case kChunkSize:
-			return ParseChunkSize(recieved);
+			return ParseChunkSize(received);
 		case kChunkData:
-			return ParseChunkData(recieved);
+			return ParseChunkData(received);
 		default:
 			DBG_INFO;
 			throw std::logic_error("chunked parser logic error");
 		}
 	}
 
-	StatefulParser::ParseResult ChunkedParser::ParseChunkSize(q_buffer::QueuingBuffer &recieved)
+	StatefulParser::ParseResult ChunkedParser::ParseChunkSize(q_buffer::QueuingBuffer &received)
 	{
-		switch (LoadBytesWithDelim(recieved, http::kCrLf, max_size_)) {
+		switch (LoadBytesWithDelim(received, http::kCrLf, max_size_)) {
 		case kOverMaxSize:
 			throw http::ContentTooLargeException();
 		case kParsable: {
@@ -167,14 +167,14 @@ namespace server
 		}
 	}
 
-	StatefulParser::ParseResult ChunkedParser::ParseChunkData(q_buffer::QueuingBuffer &recieved)
+	StatefulParser::ParseResult ChunkedParser::ParseChunkData(q_buffer::QueuingBuffer &received)
 	{
 		if (ctx_.chunk_size == 0) {
 			return kDone;
 		}
 		std::size_t line_size = ctx_.chunk_size + http::kCrLf.size();
-		for (; loaded_bytes_.size() < line_size && !recieved.empty();) {
-			Emptiable<char> c = recieved.PopChar();
+		for (; loaded_bytes_.size() < line_size && !received.empty();) {
+			Emptiable<char> c = received.PopChar();
 			loaded_bytes_ += c.Value();
 		}
 		if (loaded_bytes_.size() < line_size) {
@@ -191,9 +191,9 @@ namespace server
 		return kDone;
 	}
 
-	StatefulParser::ParseResult ChunkedParser::DiscardTrailer(q_buffer::QueuingBuffer &recieved)
+	StatefulParser::ParseResult ChunkedParser::DiscardTrailer(q_buffer::QueuingBuffer &received)
 	{
-		Emptiable<http::FieldSection *> fields = ctx_.field_parser.Parse(recieved);
+		Emptiable<http::FieldSection *> fields = ctx_.field_parser.Parse(received);
 		if (fields.empty()) {
 			return kInProgress;
 		}

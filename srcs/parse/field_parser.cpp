@@ -53,14 +53,14 @@ namespace server
 		InitParseContext();
 	}
 
-	Emptiable<http::FieldSection *> FieldParser::Parse(q_buffer::QueuingBuffer &recieved)
+	Emptiable<http::FieldSection *> FieldParser::Parse(q_buffer::QueuingBuffer &received)
 	{
-		if (recieved.empty()) {
+		if (received.empty()) {
 			return Emptiable<http::FieldSection *>();
 		}
 		ctx_.state = kParsing;
 		try {
-			if (CreateFieldSection(recieved) == kDone) {
+			if (CreateFieldSection(received) == kDone) {
 				log("field parse success", ctx_.fields);
 				http::FieldSection *fields = ctx_.fields;
 				InitParseContext();
@@ -73,10 +73,10 @@ namespace server
 		}
 	}
 
-	StatefulParser::ParseResult FieldParser::CreateFieldSection(q_buffer::QueuingBuffer &recieved)
+	StatefulParser::ParseResult FieldParser::CreateFieldSection(q_buffer::QueuingBuffer &received)
 	{
-		while (!recieved.empty()) {
-			switch (LoadFieldLine(recieved, kMaxLineSize)) {
+		while (!received.empty()) {
+			switch (LoadFieldLine(received, kMaxLineSize)) {
 			case kOverMaxSize:
 				throw http::BadRequestException();
 			case kNonParsable:
@@ -103,15 +103,15 @@ namespace server
 	}
 
 	StatefulParser::LoadResult
-	FieldParser::LoadFieldLine(q_buffer::QueuingBuffer &recieved, std::size_t max_bytes)
+	FieldParser::LoadFieldLine(q_buffer::QueuingBuffer &received, std::size_t max_bytes)
 	{
 		for (;;) {
-			if (recieved.empty()) {
+			if (received.empty()) {
 				return kNonParsable;
 			}
-			Emptiable<char> c = recieved.PopChar();
+			Emptiable<char> c = received.PopChar();
 			if (utils::EndWith(loaded_bytes_, http::kCrLf) && !http::abnf::IsRws(c.Value())) {
-				recieved.push_front(c.Value());
+				received.push_front(c.Value());
 				return kParsable;
 			}
 			loaded_bytes_ += c.Value();

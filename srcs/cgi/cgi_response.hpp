@@ -7,7 +7,7 @@
 #include "i_response.hpp"
 #include "location_conf.hpp"
 #include "managed_fd.hpp"
-#include "reciever.hpp"
+#include "receiver.hpp"
 #include "stat.hpp"
 
 namespace cgi

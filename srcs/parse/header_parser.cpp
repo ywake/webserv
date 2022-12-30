@@ -26,9 +26,9 @@ namespace server
 		return *this;
 	}
 
-	Emptiable<http::FieldSection *> HeaderParser::Parse(q_buffer::QueuingBuffer &recieved)
+	Emptiable<http::FieldSection *> HeaderParser::Parse(q_buffer::QueuingBuffer &received)
 	{
-		Emptiable<http::FieldSection *> headers = FieldParser::Parse(recieved);
+		Emptiable<http::FieldSection *> headers = FieldParser::Parse(received);
 		if (headers.empty()) {
 			return Emptiable<http::FieldSection *>();
 		}
