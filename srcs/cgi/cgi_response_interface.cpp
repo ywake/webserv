@@ -72,12 +72,6 @@ namespace cgi
 			throw std::logic_error("cgi read logic error");
 			break;
 		}
-
-		// Parse();
-		// parser_.Parse();
-		// if (parser_.IsFinished()) {
-		// 	q_buffer::QueuingBuffer::push_back(parser_.ToString());
-		// }
 	}
 
 	void CgiResponse::OnHeader()
