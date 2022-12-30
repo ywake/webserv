@@ -6,6 +6,7 @@
 #include "thin_string.hpp"
 #include <iostream>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,7 @@ namespace conf
 
 	  public:
 		typedef Emptiable<Path>                        PathPattern;
-		typedef std::vector<std::string>               AllowMethods;
+		typedef std::set<std::string>                  AllowMethods;
 		typedef Emptiable<std::pair<StatusCode, Url> > Redirect;
 		typedef Emptiable<Path>                        Root;
 		typedef std::vector<Path>                      IndexFiles;
@@ -72,6 +73,7 @@ namespace conf
 		 * @brief このLocation設定を適用するかどうかを判定する
 		 */
 		bool IsMatch(const Path &path) const;
+		bool IsAllowedMethod(const std::string &method) const;
 
 		// Getters
 		const Path         &GetPathPattern() const;

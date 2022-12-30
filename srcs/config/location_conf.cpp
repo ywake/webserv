@@ -8,7 +8,7 @@
 namespace conf
 {
 	// AllowMethods({"GET", "POST", "DELETE"})がC++98で使えないので
-	static const char               *kDefaultAllowMethodArray[] = {"GET", "POST", "DELETE"};
+	static const char               *kDefaultAllowMethodArray[] = {"GET"};
 	const LocationConf::AllowMethods LocationConf::kDefaultAllowMethods =
 		LocationConf::AllowMethods(
 			kDefaultAllowMethodArray,
@@ -95,7 +95,7 @@ namespace conf
 			if (*it != "GET" && *it != "POST" && *it != "DELETE") {
 				throw ConfigException("Invalid allow_methods");
 			}
-			allow_methods_.push_back(it->ToString());
+			allow_methods_.insert(it->ToString());
 		}
 	}
 
@@ -169,6 +169,14 @@ namespace conf
 		default:
 			return false;
 		}
+	}
+
+	bool LocationConf::IsAllowedMethod(const std::string &method) const
+	{
+		if (allow_methods_.empty()) {
+			return kDefaultAllowMethods.find(method) != kDefaultAllowMethods.end();
+		}
+		return allow_methods_.find(method) != allow_methods_.end();
 	}
 
 	/**
