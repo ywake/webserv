@@ -57,6 +57,7 @@ namespace cgi
 		) const;
 		Result<http::StatusCode>  ParseStatusCode(const http::FieldSection::Values &values);
 		Result<void>              PushMetaDataToSendBody(const http::FieldSection &field_section);
+		void                      PushMetaDataForClientRedirect(const std::string &uri);
 
 		void                               OnWriteReady();
 		void                               ExecCgi();

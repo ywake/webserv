@@ -108,6 +108,14 @@ namespace cgi
 		return Result<void>();
 	}
 
+	void CgiResponse::PushMetaDataForClientRedirect(const std::string &uri)
+	{
+		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kMovedPermanently);
+		MetaDataStorage::StoreHeader(http::kServer, http::kServerName);
+		MetaDataStorage::StoreHeader("location", uri);
+		MetaDataStorage::PushWithCrLf();
+	}
+
 	// Status         = "Status:" status-code SP reason-phrase NUL
 	// status-code    = "200" | "302" | "400" | "501" | extension-code
 	// extension-code = 3digit
