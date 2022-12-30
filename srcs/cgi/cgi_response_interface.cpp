@@ -63,14 +63,13 @@ namespace cgi
 		switch (state_) {
 		case kHeader:
 			OnHeader();
-			// eof処理をbodyの有無で分岐
-			// bodyあるならfallthrough;
-			break;
+			if (state_ != kBody) {
+				break;
+			}
+			/* fall through */
 		case kBody:
 			log("cgi body read");
 			OnBody();
-			break;
-		case kEnd:
 			break;
 		default:
 			throw std::logic_error("cgi read logic error");

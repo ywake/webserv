@@ -23,8 +23,7 @@ namespace cgi
 	  private:
 		enum State {
 			kHeader,
-			kBody,
-			kEnd
+			kBody
 		};
 		static const int kMaxLoadSize = 8192;
 
