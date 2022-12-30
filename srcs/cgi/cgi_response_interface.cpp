@@ -94,12 +94,8 @@ namespace cgi
 	// status-code    = "200" | "302" | "400" | "501" | extension-code
 	// extension-code = 3digit
 	// reason-phrase  = *TEXT
-	Result<http::StatusCode> CgiResponse::ParseStatusCode(const http::FieldSection &field_section)
+	Result<http::StatusCode> CgiResponse::ParseStatusCode(const http::FieldSection::Values &values)
 	{
-		const http::FieldSection::Values values = field_section["status"];
-		if (values.empty()) {
-			return http::StatusCode(http::StatusCode::kOK);
-		}
 		if (values.size() != 1) {
 			return Error();
 		}

@@ -55,7 +55,7 @@ namespace cgi
 		std::vector<Path>         CombineIndexFiles(const Path &base_path) const;
 		Result<CgiResponse::Path> FindAccessiblePathFromArray(const std::vector<Path> &candidates
 		) const;
-		Result<http::StatusCode>  ParseStatusCode(const http::FieldSection &field_section);
+		Result<http::StatusCode>  ParseStatusCode(const http::FieldSection::Values &values);
 
 		void                               OnWriteReady();
 		void                               ExecCgi();
