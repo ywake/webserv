@@ -119,6 +119,34 @@ namespace cgi
 		return http::StatusCode(code, phrase);
 	}
 
+	// [RFC 9112 10.2.2]
+	// A Location field value cannot allow a list of members
+	// because the comma list separator is a valid data character within a URI-reference.
+	bool CgiResponse::IsClientRedirect(const http::FieldSection &field_section) const
+	{
+		if (field_section.GetMap().size() != 1) {
+			return false;
+		}
+		const http::FieldSection::Values &values = field_section["location"];
+		if (values.size() != 1) {
+			return false;
+		}
+		const std::string &val = values.front().GetValue();
+		return !val.empty() && val[0] != '/';
+	}
+
+	bool CgiResponse::IsLocalRedirect(const http::FieldSection &field_section) const
+	{
+		if (field_section.GetMap().size() != 1) {
+			return false;
+		}
+		const http::FieldSection::Values &values = field_section["location"];
+		if (values.size() != 1) {
+			return false;
+		}
+		const std::string &val = values.front().GetValue();
+		return !val.empty() && val[0] == '/';
+	}
 	void CgiResponse::PushHeaders(const http::FieldSection &field_section)
 	{
 		MetaDataStorage::StoreHeader(http::kServer, http::kServerName);
