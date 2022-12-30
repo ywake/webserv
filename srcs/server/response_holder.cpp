@@ -187,7 +187,7 @@ namespace server
 			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
 			request->SetPath(e.Path());
 			request->SetQuery(e.Query());
-			utils::DeleteSafe(response);
+			utils::DeleteSafe(task.response);
 			Instructions add_ints = AddNewResponse(&task);
 			insts.splice(insts.end(), add_ints);
 			return insts;
