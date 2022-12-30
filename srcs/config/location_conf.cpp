@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "config_exceptions.hpp"
+#include "implemented_methods.hpp"
 #include "webserv_utils.hpp"
 
 namespace conf
@@ -91,8 +92,7 @@ namespace conf
 	{
 		for (std::vector<ThinString>::const_iterator it = tokens.begin() + 1; it != tokens.end();
 			 ++it) {
-			// TODO: METHODSのプールを用意する
-			if (*it != "GET" && *it != "POST" && *it != "DELETE") {
+			if (!http::ImplementedMethods::Contains(it->ToString())) {
 				throw ConfigException("Invalid allow_methods");
 			}
 			allow_methods_.insert(it->ToString());
