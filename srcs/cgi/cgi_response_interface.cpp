@@ -1,10 +1,12 @@
-#include "cgi_response.hpp"
-
-#include "debug.hpp"
-#include "http_exceptions.hpp"
-
 #include <sstream>
 #include <sys/socket.h>
+
+#include "cgi_response.hpp"
+#include "debug.hpp"
+#include "http_exceptions.hpp"
+#include "local_redirect_exception.hpp"
+#include "parse_abnf_core_rules.hpp"
+#include "request_target.hpp"
 
 namespace cgi
 {
@@ -114,6 +116,16 @@ namespace cgi
 		MetaDataStorage::StoreHeader(http::kServer, http::kServerName);
 		MetaDataStorage::StoreHeader("location", uri);
 		MetaDataStorage::PushWithCrLf();
+	}
+
+	void CgiResponse::ThrowLocalRedirect(const http::FieldSection &field_section)
+	{
+		const std::string loc = field_section["location"].front().GetValue();
+		CgiParser::DestroyFieldSection(&field_section);
+		RequestTarget      tgt   = RequestTarget(OriginForm(loc));
+		const std::string &path  = tgt.GetRequestFormData().path_;
+		const std::string &query = tgt.GetRequestFormData().query_;
+		throw LocalRedirectException(path, query);
 	}
 
 	// Status         = "Status:" status-code SP reason-phrase NUL
