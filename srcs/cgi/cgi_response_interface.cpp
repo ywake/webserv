@@ -86,9 +86,22 @@ namespace cgi
 			}
 			return;
 		}
+		const http::FieldSection &field_section = *fs.Value();
+		if (field_section.Contains("content-type")) {
+			if (PushMetaDataToSendBody(field_section).IsErr()) {
+				CgiParser::DestroyFieldSection(fs.Value());
+				throw http::InternalServerErrorException();
+			}
 		state_ = kBody;
-		// TODO レスポンスタイプごとに分岐
-		PushHeaders(*fs.Value());
+		} else if (IsClientRedirect(field_section)) {
+			PushMetaDataForClientRedirect(field_section["location"].front().GetValue());
+			is_finished_ = true;
+		} else if (IsLocalRedirect(field_section)) {
+			ThrowLocalRedirect(field_section);
+		} else {
+			CgiParser::DestroyFieldSection(fs.Value());
+			throw http::InternalServerErrorException();
+		}
 		CgiParser::DestroyFieldSection(fs.Value());
 	}
 
