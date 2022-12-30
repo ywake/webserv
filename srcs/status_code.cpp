@@ -105,4 +105,10 @@ namespace http
 		Result<unsigned long> num = utils::StrToUnsignedLong(code);
 		return num.IsOk() && kMin <= num.Val() && num.Val() <= kMax;
 	}
+
+	bool StatusCode::operator==(const Code &code) const
+	{
+		return code_ == code;
+	}
+
 } // namespace http

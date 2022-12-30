@@ -84,6 +84,8 @@ namespace http
 		static bool        IsValidCode(Code code);
 		static bool        IsValidCode(const std::string &code);
 
+		bool operator==(const Code &code) const;
+
 	  private:
 		static ReasonPhrase InitReasonPhrase();
 	};
