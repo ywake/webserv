@@ -147,35 +147,34 @@ namespace cgi
 		const std::string &val = values.front().GetValue();
 		return !val.empty() && val[0] == '/';
 	}
-	void CgiResponse::PushHeaders(const http::FieldSection &field_section)
+
+	void CgiResponse::StoreHeadersToSendBody(const http::FieldSection &field_section)
 	{
 		MetaDataStorage::StoreHeader(http::kServer, http::kServerName);
-		if (!field_section.Contains(http::kTransferEncoding)) { // TODO body必要なときのみ
+		if (!field_section.Contains(http::kTransferEncoding)) {
 			MetaDataStorage::StoreHeader(http::kTransferEncoding, http::kChunked);
 		}
 		const http::FieldSection::FieldLines &fl = field_section.GetMap();
 		for (http::FieldSection::FieldLines::const_iterator it = fl.begin(); it != fl.end(); ++it) {
-			std::string                key   = it->first;
-			http::FieldSection::Values value = it->second;
+			const std::string         &key    = it->first;
+			http::FieldSection::Values values = it->second;
 			// Serverは無視して上書き, ContentLengthは無視
-			if (key == http::kServer || key == http::kContentLength) {
+			if (key == http::kServer || key == http::kContentLength || key == "status") {
 				continue;
 			}
 			// TransferEncodingは最終符号化法が"chunked"であればそのまま、ほかはchunkedを末尾に追加
 			if (key == http::kTransferEncoding) {
-				if (!value.empty() && value.back() == http::kChunked) {
-					value.pop_back();
+				if (values.empty() || values.back() != http::kChunked) {
+					values.push_back(http::kChunked);
 				}
-				value.push_back(http::kChunked);
 			}
 			std::list<std::string> lst;
-			for (http::FieldSection::Values::const_iterator it = value.begin(); it != value.end();
+			for (http::FieldSection::Values::const_iterator it = values.begin(); it != values.end();
 				 ++it) {
 				lst.push_back(it->GetValue());
 			}
-			server::MetaDataStorage::StoreHeader(key, lst.begin(), lst.end());
+			MetaDataStorage::StoreHeader(key, lst.begin(), lst.end());
 		}
-		server::MetaDataStorage::PushWithCrLf();
 	}
 
 	void CgiResponse::OnBody()

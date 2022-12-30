@@ -64,6 +64,8 @@ namespace cgi
 		Result<std::vector<const char *> > CreateArgs();
 		Result<std::vector<const char *> > CreateEnvs();
 		void                               SetMetaEnv(std::vector<const char *> &envs);
+		void StoreHeadersToSendBody(const http::FieldSection &field_section);
+
 		bool IsLocalRedirect(const http::FieldSection &field_section) const;
 		bool IsClientRedirect(const http::FieldSection &field_section) const;
 
