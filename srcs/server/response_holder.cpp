@@ -10,6 +10,11 @@
 #include "post_method.hpp"
 #include "redirect.hpp"
 
+namespace cgi
+{
+	static const std::size_t kMaxLocalRedirects = 10;
+}
+
 namespace server
 {
 	using namespace event;
@@ -43,7 +48,7 @@ namespace server
 	Instructions ResponseHolder::StartNewResponse(IRequest *request)
 	{
 		Instructions insts;
-		Task         task = {request, NULL};
+		Task         task = {request, NULL, 0};
 
 		if (request->IsErr()) {
 			task.response = new response::ErrorResponse(
@@ -64,7 +69,9 @@ namespace server
 			vs_conf.FindMatchingLocationConf(task->request->Path());
 		bool is_cgi = !location.GetCgiPath().empty();
 		try {
-			if (!location.GetRedirect().empty()) {
+			if (task->local_redir_count > cgi::kMaxLocalRedirects) {
+				throw http::InternalServerErrorException();
+			} else if (!location.GetRedirect().empty()) {
 				return AddNewRedirectResponse(task, location);
 			} else if (is_cgi) {
 				return AddNewCgiResponse(task, location);
@@ -187,9 +194,10 @@ namespace server
 			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
 			request->SetPath(e.Path());
 			request->SetQuery(e.Query());
+			task.local_redir_count++;
 			utils::DeleteSafe(task.response);
-			Instructions add_ints = AddNewResponse(&task);
-			insts.splice(insts.end(), add_ints);
+			Instructions add_insts = AddNewResponse(&task);
+			insts.splice(insts.end(), add_insts);
 			return insts;
 		} catch (http::HttpException &e) {
 			insts = Instructions();

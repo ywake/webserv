@@ -19,8 +19,9 @@ namespace server
 	  private:
 		typedef void (*RequestDelFunc)(IRequest *&);
 		typedef struct Task {
-			IRequest  *request;
-			IResponse *response;
+			IRequest   *request;
+			IResponse  *response;
+			std::size_t local_redir_count;
 		} Task;
 
 	  private:
