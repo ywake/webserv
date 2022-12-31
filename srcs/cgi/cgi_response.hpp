@@ -11,6 +11,7 @@
 #include "location_conf.hpp"
 #include "managed_fd.hpp"
 #include "receiver.hpp"
+#include "resolve_index_file.hpp"
 #include "stat.hpp"
 
 namespace cgi
@@ -54,6 +55,11 @@ namespace cgi
 	  private:
 		Result<void>          CreateUds(ManagedFd &parent_fd, ManagedFd &child_fd);
 		std::string           TrimPathInfo(const std::string &request_path);
+		response::PartialPath TryResolveIndexFilePath(
+			const response::FullPath             &root,
+			const response::PartialPath          &request_path,
+			const conf::LocationConf::IndexFiles &index_files
+		);
 		CgiResponse::Path         GetResourcePath() const;
 		Result<CgiResponse::Path> FindResourcePath() const;
 		Result<CgiResponse::Path> GetAccessiblePath(const CgiResponse::Path &path) const;

@@ -42,8 +42,11 @@ namespace cgi
 		body_writer_                = server::BodyWriter(request.GetBody());
 		cgi_receiver_               = server::Reciever(parent_fd_.GetFd());
 		const std::string real_path = TrimPathInfo(request_.Path());
+		script_name_                = TryResolveIndexFilePath(
+            location_conf_.GetRoot(), real_path, location_conf_.GetIndexFiles()
+        );
+		log("script_name: ", script_name_);
 		resource_path_ = GetResourcePath();
-		log("resource_path: ", resource_path_);
 		ExecCgi();
 	}
 
@@ -76,6 +79,25 @@ namespace cgi
 		return request_path;
 	}
 
+	response::PartialPath CgiResponse::TryResolveIndexFilePath(
+		const response::FullPath             &root,
+		const response::PartialPath          &request_path,
+		const conf::LocationConf::IndexFiles &index_files
+	)
+	{
+		result::Result<response::PartialPath> resolved =
+			response::ResolveIndexFilePath(root, request_path, index_files);
+		if (resolved.IsErr()) {
+			result::ErrCode err = resolved.Err();
+			if (err == Stat::kEAcces || err == Stat::kELoop) {
+				throw http::ForbiddenException();
+			} else if (err == Stat::kENotDir || err == Stat::kNoEnt || err == Stat::kENameTooLong) {
+				throw http::NotFoundException();
+			} else {
+				throw http::InternalServerErrorException();
+			}
+		}
+		return resolved.Val();
 	}
 
 	CgiResponse::Path CgiResponse::GetResourcePath() const
