@@ -28,20 +28,20 @@ namespace server
 		RequestLineParser(const RequestLineParser &other);
 		RequestLineParser &operator=(const RequestLineParser &rhs);
 
-		Emptiable<RequestLine> Parse(q_buffer::QueuingBuffer &recieved);
+		Emptiable<RequestLine> Parse(q_buffer::QueuingBuffer &received);
 		bool                   HasInCompleteData();
 
 	  private:
 		void          InitParseContext();
 		void          DestroyParseContext();
-		ParseResult   CreateRequestLine(q_buffer::QueuingBuffer &recieved);
-		ParseResult   ParseEachPhase(q_buffer::QueuingBuffer &recieved);
-		ParseResult   ParseMethod(q_buffer::QueuingBuffer &recieved);
-		ParseResult   ParseRequestTarget(q_buffer::QueuingBuffer &recieved);
-		ParseResult   ParseHttpVersion(q_buffer::QueuingBuffer &recieved);
+		ParseResult   CreateRequestLine(q_buffer::QueuingBuffer &received);
+		ParseResult   ParseEachPhase(q_buffer::QueuingBuffer &received);
+		ParseResult   ParseMethod(q_buffer::QueuingBuffer &received);
+		ParseResult   ParseRequestTarget(q_buffer::QueuingBuffer &received);
+		ParseResult   ParseHttpVersion(q_buffer::QueuingBuffer &received);
 		RequestTarget TryConstructRequestTarget(const ThinString &str);
 		State         GetNextState(State old_state);
-		LoadResult TryLoadBytesUntilSpace(q_buffer::QueuingBuffer &recieved, std::size_t max_bytes);
+		LoadResult TryLoadBytesUntilSpace(q_buffer::QueuingBuffer &received, std::size_t max_bytes);
 	};
 } // namespace server
 

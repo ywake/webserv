@@ -66,13 +66,13 @@ namespace server
 		ctx_.request             = new Request();
 	}
 
-	Emptiable<IRequest *> RequestParser::Parse(q_buffer::QueuingBuffer &recieved)
+	Emptiable<IRequest *> RequestParser::Parse(q_buffer::QueuingBuffer &received)
 	{
-		if (recieved.empty()) {
+		if (received.empty()) {
 			return Emptiable<IRequest *>();
 		}
 		try {
-			if (CreateRequestMessage(recieved) == kDone) {
+			if (CreateRequestMessage(received) == kDone) {
 				Request *req = ctx_.request;
 				InitParseContext();
 				return req;
@@ -85,11 +85,11 @@ namespace server
 		}
 	}
 
-	RequestParser::ParseResult RequestParser::CreateRequestMessage(q_buffer::QueuingBuffer &recieved
+	RequestParser::ParseResult RequestParser::CreateRequestMessage(q_buffer::QueuingBuffer &received
 	)
 	{
-		while (!recieved.empty()) {
-			switch (ParseEachPhase(recieved)) {
+		while (!received.empty()) {
+			switch (ParseEachPhase(received)) {
 			case kInProgress:
 				return kInProgress;
 			case kDone:
@@ -105,36 +105,36 @@ namespace server
 		return kInProgress;
 	}
 
-	RequestParser::ParseResult RequestParser::SkipPriorCrLf(q_buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::SkipPriorCrLf(q_buffer::QueuingBuffer &received)
 	{
 		for (;;) {
-			if (recieved.empty()) {
+			if (received.empty()) {
 				return kInProgress;
 			}
-			Emptiable<char> c = recieved.PopChar();
+			Emptiable<char> c = received.PopChar();
 			loaded_bytes_ += c.Value();
 			if (utils::EndWith(loaded_bytes_, http::kCrLf)) {
 				ClearLoadedBytes();
 			}
 			if (loaded_bytes_.size() >= http::kCrLf.size()) {
-				recieved.push_front(loaded_bytes_);
+				received.push_front(loaded_bytes_);
 				ClearLoadedBytes();
 				return kDone;
 			}
 		}
 	}
 
-	RequestParser::ParseResult RequestParser::ParseEachPhase(q_buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseEachPhase(q_buffer::QueuingBuffer &received)
 	{
 		switch (ctx_.state) {
 		case kStandBy:
-			return SkipPriorCrLf(recieved);
+			return SkipPriorCrLf(received);
 		case kStartLine:
 			log("start line");
-			return ParseStartLine(recieved);
+			return ParseStartLine(received);
 		case kHeader: {
 			log("header");
-			ParseResult res = ParseHeaderSection(recieved);
+			ParseResult res = ParseHeaderSection(received);
 			if (!(res == kDone && ctx_.request->HasMessageBody())) {
 				return res;
 			}
@@ -143,14 +143,14 @@ namespace server
 		/* Falls through. */
 		case kBody:
 			log("body");
-			return ParseBody(recieved);
+			return ParseBody(received);
 		}
 		return kInProgress;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseStartLine(q_buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseStartLine(q_buffer::QueuingBuffer &received)
 	{
-		Emptiable<RequestLine> req_line = ctx_.request_line_parser.Parse(recieved);
+		Emptiable<RequestLine> req_line = ctx_.request_line_parser.Parse(received);
 		if (req_line.empty()) {
 			return kInProgress;
 		}
@@ -158,9 +158,9 @@ namespace server
 		return kDone;
 	}
 
-	RequestParser::ParseResult RequestParser::ParseHeaderSection(q_buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseHeaderSection(q_buffer::QueuingBuffer &received)
 	{
-		Emptiable<http::FieldSection *> headers = ctx_.header_parser.Parse(recieved);
+		Emptiable<http::FieldSection *> headers = ctx_.header_parser.Parse(received);
 		if (headers.empty()) {
 			return kInProgress;
 		}
@@ -170,10 +170,10 @@ namespace server
 	}
 
 	// TODO body
-	RequestParser::ParseResult RequestParser::ParseBody(q_buffer::QueuingBuffer &recieved)
+	RequestParser::ParseResult RequestParser::ParseBody(q_buffer::QueuingBuffer &received)
 	{
 		Emptiable<std::vector<char> *> body =
-			ctx_.body_parser.Parse(recieved, ctx_.request->Headers());
+			ctx_.body_parser.Parse(received, ctx_.request->Headers());
 		if (body.empty()) {
 			return kInProgress;
 		}

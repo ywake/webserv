@@ -28,7 +28,7 @@ namespace server
 		BytesLoader(const BytesLoader &other);
 		~BytesLoader();
 		BytesLoader                   &operator=(const BytesLoader &rhs);
-		Emptiable<std::vector<char> *> Parse(q_buffer::QueuingBuffer &recieved);
+		Emptiable<std::vector<char> *> Parse(q_buffer::QueuingBuffer &received);
 		bool                           HasInCompleteData();
 
 	  private:

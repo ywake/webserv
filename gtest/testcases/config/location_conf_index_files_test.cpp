@@ -12,7 +12,7 @@ TEST(config, location_conf_index_files)
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
-							  "index_files index.html;"
+							  "index index.html;"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -42,7 +42,7 @@ TEST(config, location_conf_index_files)
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
-							  "index_files index.html index.htm;"
+							  "index index.html index.htm;"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -72,8 +72,8 @@ TEST(config, location_conf_index_files)
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
-							  "index_files a b;"
-							  "index_files c d;"
+							  "index a b;"
+							  "index c d;"
 							  "}"
 							  "}"),
 		std::vector<conf::ServerConf>({
@@ -103,8 +103,8 @@ TEST(config, location_conf_index_files)
 							  "listen 80;"
 							  "server_name localhost;"
 							  "location / {"
-							  "index_files index.html;"
-							  "index_files ;"
+							  "index index.html;"
+							  "index ;"
 							  "}"
 							  "}"),
 		conf::ConfigException

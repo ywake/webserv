@@ -41,6 +41,9 @@ std::ostream &operator<<(std::ostream &os, const event::Instruction &instruction
 	case event::Instruction::kUnregister:
 		os << COL_BLUE "Unregister" COL_END << std::endl;
 		break;
+	default:
+		log("command", instruction.command);
+		throw std::logic_error("instruction operator<<");
 	}
 	os << instruction.event << std::endl;
 	return os;

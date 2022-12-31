@@ -37,7 +37,7 @@ namespace server
 		BodyParser(const BodyParser &other);
 		BodyParser &operator=(const BodyParser &rhs);
 		Emptiable<std::vector<char> *>
-					Parse(q_buffer::QueuingBuffer &recieved, http::FieldSection &headers);
+					Parse(q_buffer::QueuingBuffer &received, http::FieldSection &headers);
 		bool        HasInCompleteData();
 		static void DestroyBody(const std::vector<char> *body);
 		static std::vector<char> *CopyBody(const std::vector<char> *src);
@@ -46,7 +46,7 @@ namespace server
 		void InitMaxSize(const http::FieldSection &headers);
 		void InitMode(const http::FieldSection &headers);
 		Emptiable<std::vector<char> *>
-			 CreateBody(q_buffer::QueuingBuffer &recieved, http::FieldSection &headers);
+			 CreateBody(q_buffer::QueuingBuffer &received, http::FieldSection &headers);
 		void InitParseContext();
 		void DestroyParseContext();
 	};

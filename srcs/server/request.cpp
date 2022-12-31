@@ -144,6 +144,16 @@ namespace server
 		return body_;
 	}
 
+	void RequestParser::Request::SetPath(const std::string &path)
+	{
+		request_line_.SetPath(path);
+	}
+
+	void RequestParser::Request::SetQuery(const std::string &query)
+	{
+		request_line_.SetQuery(query);
+	}
+
 	bool RequestParser::Request::NeedToClose() const
 	{
 		if (error_type_ == IRequest::kFatal) {

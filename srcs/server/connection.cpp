@@ -20,7 +20,7 @@ namespace server
 		: Socket(fd),
 		  configs_(configs),
 		  client_(client),
-		  reciever_(fd),
+		  receiver_(fd),
 		  request_holder_(&configs),
 		  response_holder_(fd, &configs, RequestHolder::DestroyRequest),
 		  is_finished_(false),
@@ -100,25 +100,25 @@ namespace server
 	{
 		Instructions insts;
 
-		if (reciever_.IsEof() && reciever_.empty()) {
+		if (receiver_.IsEof() && receiver_.empty()) {
 			log("con eof");
 			return OnEof();
 		}
-		bool is_reciever_full = reciever_.size() >= kMaxRecverBufSize;
+		bool is_receiver_full = receiver_.size() >= kMaxRecverBufSize;
 		bool is_holder_full   = request_holder_.size() >= kMaxRequestQueueSize;
-		if (is_reciever_full && is_holder_full) {
+		if (is_receiver_full && is_holder_full) {
 			insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
 			return insts;
 		}
-		if (!is_reciever_full) {
-			Result<void> res = reciever_.Recv();
+		if (!is_receiver_full) {
+			Result<void> res = receiver_.Recv();
 			if (res.IsErr()) {
 				std::cerr << res.Err() << std::endl;
 				// TDDO 500 専用のappend taskみたいのをholderに作る
 			}
 		}
 		if (!is_holder_full) {
-			request_holder_.Parse(reciever_);
+			request_holder_.Parse(receiver_);
 		}
 		if (CanStartNewTask()) { // TODO fix tmp とか
 			Instructions tmp = StartResponse();

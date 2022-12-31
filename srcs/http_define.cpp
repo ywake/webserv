@@ -13,4 +13,5 @@ namespace http
 	const std::string kChunked          = "chunked";
 	const std::string kHost             = "host";
 	const std::string kServerName       = "webserv/1.0";
+	const std::string kServer           = "server";
 } // namespace http

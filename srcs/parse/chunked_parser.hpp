@@ -34,19 +34,19 @@ namespace server
 		ChunkedParser(const ChunkedParser &other);
 		~ChunkedParser();
 		ChunkedParser                 &operator=(const ChunkedParser &rhs);
-		Emptiable<std::vector<char> *> Parse(q_buffer::QueuingBuffer &recieved);
+		Emptiable<std::vector<char> *> Parse(q_buffer::QueuingBuffer &received);
 		bool                           HasInCompleteData();
 
 	  private:
 		void        InitParseContext();
 		void        DestroyParseContext();
-		ParseResult CreateBody(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseEachPhase(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseChunked(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseEachChunkPhase(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseChunkSize(q_buffer::QueuingBuffer &recieved);
-		ParseResult ParseChunkData(q_buffer::QueuingBuffer &recieved);
-		ParseResult DiscardTrailer(q_buffer::QueuingBuffer &recieved);
+		ParseResult CreateBody(q_buffer::QueuingBuffer &received);
+		ParseResult ParseEachPhase(q_buffer::QueuingBuffer &received);
+		ParseResult ParseChunked(q_buffer::QueuingBuffer &received);
+		ParseResult ParseEachChunkPhase(q_buffer::QueuingBuffer &received);
+		ParseResult ParseChunkSize(q_buffer::QueuingBuffer &received);
+		ParseResult ParseChunkData(q_buffer::QueuingBuffer &received);
+		ParseResult DiscardTrailer(q_buffer::QueuingBuffer &received);
 		State       GetNextState(State old_state);
 		ChunkState  GetNextChunkState(ChunkState old_state);
 	};

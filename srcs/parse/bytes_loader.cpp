@@ -34,11 +34,11 @@ namespace server
 		return *this;
 	}
 
-	Emptiable<std::vector<char> *> BytesLoader::Parse(q_buffer::QueuingBuffer &recieved)
+	Emptiable<std::vector<char> *> BytesLoader::Parse(q_buffer::QueuingBuffer &received)
 	{
 		ctx_.state = kParsing;
-		for (; ctx_.bytes->size() < max_bytes_ && !recieved.empty();) {
-			Emptiable<char> c = recieved.PopChar();
+		for (; ctx_.bytes->size() < max_bytes_ && !received.empty();) {
+			Emptiable<char> c = received.PopChar();
 			ctx_.bytes->push_back(c.Value());
 		}
 		if (ctx_.bytes->size() < max_bytes_) {

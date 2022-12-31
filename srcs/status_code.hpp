@@ -4,16 +4,15 @@
 #include <map>
 #include <string>
 
+#include "emptiable.hpp"
+
 namespace http
 {
-	class EmptyStatusCode
-	{
-	};
 	class StatusCode
 	{
 	  public:
-		enum Code {
-			kUndefinedCode               = 0,
+		typedef unsigned int Code;
+		enum DefinedCode {
 			kContinue                    = 100,
 			kSwitchingProtocols          = 101,
 			kOK                          = 200,
@@ -63,18 +62,27 @@ namespace http
 	  private:
 		typedef std::map<const Code, std::string> ReasonPhrase;
 
+	  public:
+		static const Code        kMax;
+		static const Code        kMin;
+		static const std::size_t kCodeDigits;
+
 	  private:
 		static const ReasonPhrase reason_phrase_;
+		static const Code         kUndefinedCode;
 		Code                      code_;
+		Emptiable<std::string>    phrase_;
 
 	  public:
 		StatusCode(Code code = kUndefinedCode);
-		StatusCode(const EmptyStatusCode &code);
+		StatusCode(Code code, const std::string &phrase);
+		~StatusCode() throw();
 
-		bool               empty() const;
 		Code               GetCode() const;
 		std::string        GetCodeStr() const;
 		const std::string &GetReasonPhrase() const;
+		static bool        IsValidCode(Code code);
+		static bool        IsValidCode(const std::string &code);
 
 	  private:
 		static ReasonPhrase InitReasonPhrase();

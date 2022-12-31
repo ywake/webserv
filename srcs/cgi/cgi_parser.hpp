@@ -1,12 +1,12 @@
-#ifndef FIELD_PARSER_HPP
-#define FIELD_PARSER_HPP
+#ifndef CGI_PARSER_HPP
+#define CGI_PARSER_HPP
 
 #include "field_section.hpp"
 #include "stateful_parser.hpp"
 
-namespace server
+namespace cgi
 {
-	class FieldParser : public StatefulParser
+	class CgiParser : public server::StatefulParser
 	{
 	  private:
 		enum State {
@@ -15,6 +15,8 @@ namespace server
 		};
 
 	  private:
+		static const std::string kCr;
+		static const std::string kLf;
 		static const std::size_t kMaxLineSize;
 		static const std::size_t kMaxTotalSize;
 		struct Context {
@@ -24,10 +26,10 @@ namespace server
 		} ctx_;
 
 	  public:
-		FieldParser();
-		FieldParser(const FieldParser &other);
-		~FieldParser();
-		FieldParser                    &operator=(const FieldParser &rhs);
+		CgiParser();
+		CgiParser(const CgiParser &other);
+		~CgiParser();
+		CgiParser                      &operator=(const CgiParser &rhs);
 		Emptiable<http::FieldSection *> Parse(q_buffer::QueuingBuffer &received);
 		static void                     DestroyFieldSection(const http::FieldSection *fields);
 		static http::FieldSection      *CopyFieldSection(const http::FieldSection *src);
@@ -35,11 +37,11 @@ namespace server
 	  private:
 		void        InitParseContext();
 		ParseResult CreateFieldSection(q_buffer::QueuingBuffer &received);
-		LoadResult  LoadFieldLine(q_buffer::QueuingBuffer &received, std::size_t max_bytes);
+		void        EraseLfOrCrLf(std::string &field_line);
 
 	  protected:
 		void DestroyParseContext();
 	};
-} // namespace server
+} // namespace cgi
 
 #endif

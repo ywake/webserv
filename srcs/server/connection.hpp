@@ -13,7 +13,7 @@
 #include "config/virtual_server_confs.hpp"
 #include "instruction.hpp"
 #include "managed_fd.hpp"
-#include "reciever.hpp"
+#include "receiver.hpp"
 #include "request_holder.hpp"
 #include "request_message.hpp"
 #include "response_holder.hpp"
@@ -36,7 +36,7 @@ namespace server
 	  private:
 		const conf::VirtualServerConfs &configs_;
 		const SockAddrStorage           client_;
-		Reciever                        reciever_;
+		Reciever                        receiver_;
 		RequestHolder                   request_holder_;
 		ResponseHolder                  response_holder_;
 		bool                            is_finished_;

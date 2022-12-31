@@ -1,33 +1,34 @@
-#include "field_parser.hpp"
+#include "cgi_parser.hpp"
 #include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "validate_field_line.hpp"
 #include "webserv_utils.hpp"
 
-namespace server
+namespace cgi
 {
+	const std::string CgiParser::kCr           = "\r";
+	const std::string CgiParser::kLf           = "\n";
+	const std::size_t CgiParser::kMaxLineSize  = 8192;
+	const std::size_t CgiParser::kMaxTotalSize = 40000;
 
-	const std::size_t FieldParser::kMaxLineSize  = 8192;
-	const std::size_t FieldParser::kMaxTotalSize = 40000;
-
-	FieldParser::FieldParser() : StatefulParser()
+	CgiParser::CgiParser() : StatefulParser()
 	{
 		InitParseContext();
 	}
 
-	FieldParser::FieldParser(const FieldParser &other) : StatefulParser()
+	CgiParser::CgiParser(const CgiParser &other) : StatefulParser()
 	{
 		ctx_.fields = new http::FieldSection();
 		*this       = other;
 	}
 
-	FieldParser::~FieldParser()
+	CgiParser::~CgiParser()
 	{
 		delete ctx_.fields;
 	}
 
-	FieldParser &FieldParser::operator=(const FieldParser &rhs)
+	CgiParser &CgiParser::operator=(const CgiParser &rhs)
 	{
 		if (&rhs == this) {
 			return *this;
@@ -39,7 +40,7 @@ namespace server
 		return *this;
 	}
 
-	void FieldParser::InitParseContext()
+	void CgiParser::InitParseContext()
 	{
 		ClearLoadedBytes();
 		ctx_.fields       = new http::FieldSection();
@@ -47,13 +48,13 @@ namespace server
 		ctx_.total_length = 0;
 	}
 
-	void FieldParser::DestroyParseContext()
+	void CgiParser::DestroyParseContext()
 	{
 		utils::DeleteSafe(ctx_.fields);
 		InitParseContext();
 	}
 
-	Emptiable<http::FieldSection *> FieldParser::Parse(q_buffer::QueuingBuffer &received)
+	Emptiable<http::FieldSection *> CgiParser::Parse(q_buffer::QueuingBuffer &received)
 	{
 		if (received.empty()) {
 			return Emptiable<http::FieldSection *>();
@@ -69,20 +70,21 @@ namespace server
 			return Emptiable<http::FieldSection *>();
 		} catch (http::HttpException &e) {
 			DestroyParseContext();
-			throw e;
+			throw http::InternalServerErrorException();
 		}
 	}
 
-	StatefulParser::ParseResult FieldParser::CreateFieldSection(q_buffer::QueuingBuffer &received)
+	server::StatefulParser::ParseResult
+	CgiParser::CreateFieldSection(q_buffer::QueuingBuffer &received)
 	{
 		while (!received.empty()) {
-			switch (LoadFieldLine(received, kMaxLineSize)) {
+			switch (LoadBytesWithDelim(received, kLf, kMaxLineSize)) {
 			case kOverMaxSize:
 				throw http::BadRequestException();
 			case kNonParsable:
 				continue;
 			case kParsable:
-				loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
+				EraseLfOrCrLf(loaded_bytes_);
 				if (loaded_bytes_.empty()) {
 					log("field secton done. total len: ", ctx_.total_length);
 					return kDone;
@@ -102,34 +104,23 @@ namespace server
 		return kInProgress;
 	}
 
-	StatefulParser::LoadResult
-	FieldParser::LoadFieldLine(q_buffer::QueuingBuffer &received, std::size_t max_bytes)
+	void CgiParser::EraseLfOrCrLf(std::string &field_line)
 	{
-		for (;;) {
-			if (received.empty()) {
-				return kNonParsable;
-			}
-			Emptiable<char> c = received.PopChar();
-			if (utils::EndWith(loaded_bytes_, http::kCrLf) && !http::abnf::IsRws(c.Value())) {
-				received.push_front(c.Value());
-				return kParsable;
-			}
-			loaded_bytes_ += c.Value();
-			if (loaded_bytes_.size() > max_bytes) {
-				return kOverMaxSize;
-			}
-			if (loaded_bytes_ == http::kCrLf) {
-				return kParsable;
-			}
+		if (!utils::EndWith(field_line, kLf)) {
+			return;
+		}
+		field_line.erase(field_line.end() - 1);
+		if (utils::EndWith(field_line, kCr)) {
+			field_line.erase(field_line.end() - 1);
 		}
 	}
 
-	void FieldParser::DestroyFieldSection(const http::FieldSection *fields)
+	void CgiParser::DestroyFieldSection(const http::FieldSection *fields)
 	{
 		delete fields;
 	}
 
-	http::FieldSection *FieldParser::CopyFieldSection(const http::FieldSection *src)
+	http::FieldSection *CgiParser::CopyFieldSection(const http::FieldSection *src)
 	{
 		if (src == NULL) {
 			return NULL;
@@ -137,4 +128,4 @@ namespace server
 		return new http::FieldSection(*src);
 	}
 
-} // namespace server
+} // namespace cgi
