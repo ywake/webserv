@@ -4,23 +4,10 @@
 #include "cgi_response.hpp"
 #include "debug.hpp"
 #include "meta_env.hpp"
+#include "string_array.hpp"
 #include "webserv_utils.hpp"
 
 extern char **environ;
-
-namespace
-{
-	inline std::vector<const char *> ConvertToCstrVector(const std::vector<std::string> &strings)
-	{
-		std::vector<const char *> ptrs;
-		for (std::vector<std::string>::const_iterator it = strings.begin(); it != strings.end();
-			 ++it) {
-			ptrs.push_back(it->c_str());
-		}
-		ptrs.push_back(NULL);
-		return ptrs;
-	}
-} // namespace
 
 namespace cgi
 {
@@ -29,7 +16,9 @@ namespace cgi
 	{
 		try {
 			parent_fd_.Close();
-			Result<void>              res  = utils::SetSignalHandler(SIGPIPE, SIG_IGN, 0);
+			StringArray  args = CreateArgs();
+			StringArray  envs = CreateEnvs();
+			Result<void> res  = utils::SetSignalHandler(SIGPIPE, SIG_IGN, 0);
 			if (res.IsErr()) {
 				std::cerr << res.Err() << std::endl;
 				exit(1);
@@ -39,14 +28,10 @@ namespace cgi
 				perror("dup2");
 				exit(1);
 			}
-			std::vector<std::string>  args = CreateArgs();
-			std::vector<std::string>  envs = CreateEnvs();
-			std::vector<const char *> argv = ConvertToCstrVector(args);
-			std::vector<const char *> envp = ConvertToCstrVector(envs);
 			execve(
 				location_conf_.GetCgiPath().Value().c_str(),
-				const_cast<char *const *>(argv.data()),
-				const_cast<char *const *>(envp.data())
+				const_cast<char *const *>(args.CArray()),
+				const_cast<char *const *>(envs.CArray())
 			);
 		} catch (std::exception &e) {
 			e.what();
