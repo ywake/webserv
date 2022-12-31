@@ -36,6 +36,9 @@ namespace cgi
 		  pid_(-1)
 	{
 		log(COL_BOLD "=== Cgi Response Constructor ===" COL_END);
+		if (location_conf_.GetCgiPath().empty()) {
+			throw std::logic_error("cgi path empty");
+		}
 		if (CreateUds(parent_fd_, child_fd_).IsErr()) {
 			throw http::InternalServerErrorException();
 		}

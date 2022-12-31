@@ -10,10 +10,7 @@ namespace cgi
 
 	void CgiResponse::ChildProcess()
 	{
-		Result<std::vector<const char *> > args = CreateArgs();
-		if (args.IsErr()) {
-			exit(1);
-		}
+		std::vector<const char *>          args = CreateArgs();
 		Result<std::vector<const char *> > envs = CreateEnvs();
 		if (envs.IsErr()) {
 			exit(1);
@@ -33,14 +30,10 @@ namespace cgi
 		exit(1);
 	}
 
-	Result<std::vector<const char *> > CgiResponse::CreateArgs()
+	std::vector<const char *> CgiResponse::CreateArgs()
 	{
 		const Emptiable<std::string> &cgi_path = location_conf_.GetCgiPath();
-		if (cgi_path.empty()) {
-			// cgi_pathがemptyでない時コンストラクトされるので、ありえないはず
-			return Error("cgi_path is empty");
-		}
-		std::vector<const char *> args;
+		std::vector<const char *>     args;
 		args.push_back(cgi_path.Value().c_str());
 		args.push_back(resource_path_.c_str());
 		args.push_back(NULL);
