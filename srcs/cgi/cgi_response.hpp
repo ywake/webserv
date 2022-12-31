@@ -33,6 +33,7 @@ namespace cgi
 	  private:
 		const conf::LocationConf &location_conf_;
 		Path                      resource_path_;
+		std::string               script_name_;
 		ManagedFd                 parent_fd_;
 		ManagedFd                 child_fd_;
 		server::BodyWriter        body_writer_;
@@ -52,6 +53,7 @@ namespace cgi
 		// Methods
 	  private:
 		Result<void>          CreateUds(ManagedFd &parent_fd, ManagedFd &child_fd);
+		std::string           TrimPathInfo(const std::string &request_path);
 		CgiResponse::Path         GetResourcePath() const;
 		Result<CgiResponse::Path> FindResourcePath() const;
 		Result<CgiResponse::Path> GetAccessiblePath(const CgiResponse::Path &path) const;

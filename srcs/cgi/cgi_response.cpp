@@ -39,8 +39,9 @@ namespace cgi
 		if (CreateUds(parent_fd_, child_fd_).IsErr()) {
 			throw http::InternalServerErrorException();
 		}
-		body_writer_   = server::BodyWriter(request.GetBody());
-		cgi_receiver_  = server::Reciever(parent_fd_.GetFd());
+		body_writer_                = server::BodyWriter(request.GetBody());
+		cgi_receiver_               = server::Reciever(parent_fd_.GetFd());
+		const std::string real_path = TrimPathInfo(request_.Path());
 		resource_path_ = GetResourcePath();
 		log("resource_path: ", resource_path_);
 		ExecCgi();
@@ -55,6 +56,24 @@ namespace cgi
 		parent_fd = ManagedFd(fds[0]);
 		child_fd  = ManagedFd(fds[1]);
 		return Result<void>();
+	}
+
+	std::string CgiResponse::TrimPathInfo(const std::string &request_path)
+	{
+		typedef std::vector<ThinString> Strings;
+
+		const std::string &root     = location_conf_.GetRoot();
+		const Strings      segments = utils::TrimEmpty(Split(request_path, "/"));
+		std::string        trimed   = "/";
+		for (Strings::const_iterator it = segments.begin(); it != segments.end(); ++it) {
+			trimed                        = utils::JoinPath(trimed, it->ToString());
+			std::string          abs_path = utils::JoinPath(root, trimed);
+			result::Result<Stat> st       = Stat::FromPath(abs_path);
+			if (st.IsOk() && st.Val().IsRegularFile() && utils::IsReadablePath(abs_path)) {
+				return trimed;
+			}
+		}
+		return request_path;
 	}
 
 	}
