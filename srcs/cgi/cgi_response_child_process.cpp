@@ -4,6 +4,7 @@
 #include "cgi_response.hpp"
 #include "debug.hpp"
 #include "meta_env.hpp"
+#include "webserv_utils.hpp"
 
 extern char **environ;
 
@@ -28,6 +29,11 @@ namespace cgi
 	{
 		try {
 			parent_fd_.Close();
+			Result<void>              res  = utils::SetSignalHandler(SIGPIPE, SIG_IGN, 0);
+			if (res.IsErr()) {
+				std::cerr << res.Err() << std::endl;
+				exit(1);
+			}
 			if (dup2(child_fd_.GetFd(), STDIN_FILENO) == -1 ||
 				dup2(child_fd_.GetFd(), STDOUT_FILENO) == -1) {
 				perror("dup2");
