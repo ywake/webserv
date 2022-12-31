@@ -72,7 +72,7 @@ namespace server
 		try {
 			if (task->local_redir_count > cgi::kMaxLocalRedirects) {
 				throw http::InternalServerErrorException();
-			} else if (location.IsAllowedMethod(request.Method())) {
+			} else if (!location.IsAllowedMethod(request.Method())) {
 				throw http::MethodNotAllowedException();
 			} else if (is_redirect) {
 				return AddNewRedirectResponse(task, location);
