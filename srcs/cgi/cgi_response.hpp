@@ -51,6 +51,7 @@ namespace cgi
 
 		// Methods
 	  private:
+		Result<void>          CreateUds(ManagedFd &parent_fd, ManagedFd &child_fd);
 		CgiResponse::Path         GetResourcePath() const;
 		Result<CgiResponse::Path> FindResourcePath() const;
 		Result<CgiResponse::Path> GetAccessiblePath(const CgiResponse::Path &path) const;

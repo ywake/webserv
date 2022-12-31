@@ -36,17 +36,27 @@ namespace cgi
 		  pid_(-1)
 	{
 		log(COL_BOLD "=== Cgi Response Constructor ===" COL_END);
-		resource_path_ = GetResourcePath();
-		log("resource_path: ", resource_path_);
-		int fds[2];
-		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
+		if (CreateUds(parent_fd_, child_fd_).IsErr()) {
 			throw http::InternalServerErrorException();
 		}
-		parent_fd_   = ManagedFd(fds[0]);
-		child_fd_    = ManagedFd(fds[1]);
-		body_writer_ = server::BodyWriter(request.GetBody());
+		body_writer_   = server::BodyWriter(request.GetBody());
+		cgi_receiver_  = server::Reciever(parent_fd_.GetFd());
+		resource_path_ = GetResourcePath();
+		log("resource_path: ", resource_path_);
 		ExecCgi();
-		cgi_receiver_ = server::Reciever(parent_fd_.GetFd());
+	}
+
+	Result<void> CgiResponse::CreateUds(ManagedFd &parent_fd, ManagedFd &child_fd)
+	{
+		int fds[2];
+		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
+			return Error();
+		}
+		parent_fd = ManagedFd(fds[0]);
+		child_fd  = ManagedFd(fds[1]);
+		return Result<void>();
+	}
+
 	}
 
 	CgiResponse::Path CgiResponse::GetResourcePath() const
