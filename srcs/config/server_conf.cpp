@@ -8,6 +8,9 @@
 
 namespace conf
 {
+	bool IsInRange(const ThinString &str, std::size_t min, std::size_t max);
+	bool IsValidListenPort(ThinString str);
+
 	const ServerConf::ServerName        ServerConf::kDefaultServerName = ServerConf::ServerName();
 	const ServerConf::ErrorPages        ServerConf::kDefaultErrorPages = ServerConf::ErrorPages();
 	const ServerConf::ClientMaxBodySize ServerConf::kDefaultClientMaxBodySize = 1 << 20;
@@ -80,15 +83,36 @@ namespace conf
 	 * Add Params
 	 */
 
+	// 1~65535までならOK
 	void ServerConf::AddListenPort(const std::vector<ThinString> &tokens)
 	{
 		for (size_t i = 1; i < tokens.size(); i++) {
-			if (ABNF::IsDigitOnly(tokens[i])) {
+			if (IsValidListenPort(tokens[i])) {
 				listen_port_.push_back(tokens[i].ToString());
 			} else {
 				throw ConfigException("Invalid listen port");
 			}
 		}
+	}
+
+	bool IsValidListenPort(ThinString str)
+	{
+		if (!ABNF::IsDigitOnly(str)) {
+			return false;
+		}
+		if (IsInRange(str, 1, 65535)) {
+			return true;
+		}
+		return false;
+	}
+
+	bool IsInRange(const ThinString &str, std::size_t min, std::size_t max)
+	{
+		Result<std::size_t> port = utils::StrToUnsignedLong(str.ToString());
+		if (port.IsErr()) {
+			return false;
+		}
+		return min <= port.Val() && port.Val() <= max;
 	}
 
 	void ServerConf::AddServerName(const std::vector<ThinString> &tokens)
