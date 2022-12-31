@@ -21,7 +21,12 @@ namespace response
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, status_code);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
-
+		if (status_code == http::StatusCode::kMethodNotAllowed ||
+			status_code == http::StatusCode::kNotImplemented) {
+			const conf::LocationConf &location = config_.FindMatchingLocationConf(request.Path());
+			const conf::LocationConf::AllowMethods &methods = location.GetAllowMethods();
+			MetaDataStorage::StoreHeader("Allow", methods.begin(), methods.end());
+		}
 		if (OpenErrorPage(status_code).IsErr()) {
 			std::string page = utils::CreateDefaultPage(status_code);
 			MetaDataStorage::StoreHeader("Content-Type", "text/html");
