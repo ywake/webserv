@@ -1,3 +1,6 @@
+#ifndef CGI_RESPONSE_HPP
+#define CGI_RESPONSE_HPP
+
 #include <unistd.h>
 
 #include "a_response.hpp"
@@ -86,3 +89,5 @@ namespace cgi
 	};
 
 } // namespace cgi
+
+#endif
