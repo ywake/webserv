@@ -13,8 +13,6 @@ namespace cgi
 {
 	const std::string CgiResponse::kCgiVersion = "1.1";
 
-	static bool IsEndWithSlash(const std::string &str);
-
 	// copy constructor
 	// CgiResponse::CgiResponse(const CgiResponse &other)
 	// 	: AResponse(other),
@@ -31,7 +29,7 @@ namespace cgi
 	CgiResponse::CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf)
 		: AResponse(request),
 		  location_conf_(location_conf),
-		  resource_path_(),
+		  script_name_(),
 		  state_(kHeader),
 		  pid_(-1)
 	{
@@ -49,7 +47,6 @@ namespace cgi
             location_conf_.GetRoot(), real_path, location_conf_.GetIndexFiles()
         );
 		log("script_name: ", script_name_);
-		resource_path_ = GetResourcePath();
 		ExecCgi();
 	}
 
@@ -103,77 +100,10 @@ namespace cgi
 		return resolved.Val();
 	}
 
-	CgiResponse::Path CgiResponse::GetResourcePath() const
-	{
-		Result<CgiResponse::Path> resource_path = FindResourcePath();
-		if (resource_path.IsErr()) {
-			log(COL_RED "resource_path is err" COL_END);
-			throw http::NotFoundException();
-		}
-		result::Result<Stat> stat = Stat::FromPath(resource_path.Val());
-		if (stat.IsErr()) {
-			log(COL_RED "stat error" COL_END);
-			throw http::InternalServerErrorException();
-		} else if (!stat.Val().IsRegularFile()) {
-			log(COL_RED "Is not a regular file." COL_END);
-			throw http::ForbiddenException();
-		}
-		return resource_path.Val();
-	}
-
-	Result<CgiResponse::Path> CgiResponse::FindResourcePath() const
-	{
-		CgiResponse::Path base_path = utils::JoinPath(location_conf_.GetRoot(), request_.Path());
-		log("base_path: ", base_path);
-		if (IsEndWithSlash(base_path)) {
-			std::vector<CgiResponse::Path> candidates = CombineIndexFiles(base_path);
-			return FindAccessiblePathFromArray(candidates);
-		} else {
-			return GetAccessiblePath(base_path);
-		}
-	}
-
-	std::vector<CgiResponse::Path> CgiResponse::CombineIndexFiles(const CgiResponse::Path &base_path
-	) const
-	{
-		std::vector<CgiResponse::Path> path_array;
-		std::vector<CgiResponse::Path> index_files = location_conf_.GetIndexFiles();
-		for (size_t i = 0; i < index_files.size(); ++i) {
-			CgiResponse::Path combined_path = utils::JoinPath(base_path, index_files[i]);
-			path_array.push_back(combined_path);
-		}
-		return path_array;
-	}
-
-	Result<CgiResponse::Path>
-	CgiResponse::FindAccessiblePathFromArray(const std::vector<Path> &candidates) const
-	{
-		for (size_t i = 0; i < candidates.size(); ++i) {
-			Result<CgiResponse::Path> accessible_path = GetAccessiblePath(candidates[i]);
-			if (accessible_path.IsOk()) {
-				return accessible_path;
-			}
-		}
-		return Error("No accessible path");
-	}
-
-	Result<CgiResponse::Path> CgiResponse::GetAccessiblePath(const CgiResponse::Path &path) const
-	{
-		Result<CgiResponse::Path> normalized_path = utils::NormalizePath(path);
-		if (normalized_path.IsErr()) {
-			log(COL_RED "Normalize path failed" COL_END);
-			return Error("Normalize path failed");
-		}
-		if (access(normalized_path.Val().c_str(), R_OK) < 0) {
-			log(COL_RED "access failed" COL_END);
-			return Error("Access failed");
-		}
-		return normalized_path;
-	}
-
 	void CgiResponse::ExecCgi()
 	{
-		log("cgi execute", location_conf_.GetCgiPath().Value() + " " + resource_path_);
+		log("cgi execute",
+			location_conf_.GetCgiPath().Value() + " " + location_conf_.GetRoot() + script_name_);
 		pid_ = fork();
 		switch (pid_) {
 		case -1:
@@ -221,9 +151,4 @@ namespace cgi
 	// 	q_buffer::QueuingReader::operator=(other);
 	// 	return *this;
 	// }
-
-	static bool IsEndWithSlash(const std::string &str)
-	{
-		return !str.empty() && utils::GetLastChar(str) == '/';
-	}
 } // namespace cgi

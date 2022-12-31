@@ -33,7 +33,6 @@ namespace cgi
 
 	  private:
 		const conf::LocationConf &location_conf_;
-		Path                      resource_path_;
 		std::string               script_name_;
 		ManagedFd                 parent_fd_;
 		ManagedFd                 child_fd_;
@@ -60,25 +59,19 @@ namespace cgi
 			const response::PartialPath          &request_path,
 			const conf::LocationConf::IndexFiles &index_files
 		);
-		CgiResponse::Path         GetResourcePath() const;
-		Result<CgiResponse::Path> FindResourcePath() const;
-		Result<CgiResponse::Path> GetAccessiblePath(const CgiResponse::Path &path) const;
-		std::vector<Path>         CombineIndexFiles(const Path &base_path) const;
-		Result<CgiResponse::Path> FindAccessiblePathFromArray(const std::vector<Path> &candidates
-		) const;
-		Result<http::StatusCode>  ParseStatusCode(const http::FieldSection::Values &values);
-		Result<void>              PushMetaDataToSendBody(const http::FieldSection &field_section);
-		void                      PushMetaDataForClientRedirect(const std::string &uri);
-		void                      ThrowLocalRedirect(const http::FieldSection &field_section);
+		Result<http::StatusCode> ParseStatusCode(const http::FieldSection::Values &values);
+		Result<void>             PushMetaDataToSendBody(const http::FieldSection &field_section);
+		void                     PushMetaDataForClientRedirect(const std::string &uri);
+		void                     ThrowLocalRedirect(const http::FieldSection &field_section);
 
-		void                               OnWriteReady();
-		void                               ExecCgi();
-		void                               ChildProcess();
-		void                               ParentProcess(pid_t pid);
-		std::vector<const char *>          CreateArgs();
-		Result<std::vector<const char *> > CreateEnvs();
-		void                               SetMetaEnv(std::vector<const char *> &envs);
-		void StoreHeadersToSendBody(const http::FieldSection &field_section);
+		void                     OnWriteReady();
+		void                     ExecCgi();
+		void                     ChildProcess();
+		void                     ParentProcess(pid_t pid);
+		std::vector<std::string> CreateArgs();
+		std::vector<std::string> CreateEnvs();
+		void                     SetMetaEnv(std::vector<const char *> &envs);
+		void                     StoreHeadersToSendBody(const http::FieldSection &field_section);
 
 		bool IsLocalRedirect(const http::FieldSection &field_section) const;
 		bool IsClientRedirect(const http::FieldSection &field_section) const;

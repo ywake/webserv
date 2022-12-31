@@ -1,53 +1,71 @@
+#include <cerrno>
+#include <cstdio>
+
 #include "cgi_response.hpp"
 #include "debug.hpp"
 #include "meta_env.hpp"
 
 extern char **environ;
 
+namespace
+{
+	inline std::vector<const char *> ConvertToCstrVector(const std::vector<std::string> &strings)
+	{
+		std::vector<const char *> ptrs;
+		for (std::vector<std::string>::const_iterator it = strings.begin(); it != strings.end();
+			 ++it) {
+			ptrs.push_back(it->c_str());
+		}
+		ptrs.push_back(NULL);
+		return ptrs;
+	}
+} // namespace
+
 namespace cgi
 {
-	static Result<void> Dup2(int old_fd, int new_fd);
 
 	void CgiResponse::ChildProcess()
 	{
-		std::vector<const char *>          args = CreateArgs();
-		Result<std::vector<const char *> > envs = CreateEnvs();
-		if (envs.IsErr()) {
-			exit(1);
+		try {
+			parent_fd_.Close();
+			if (dup2(child_fd_.GetFd(), STDIN_FILENO) == -1 ||
+				dup2(child_fd_.GetFd(), STDOUT_FILENO) == -1) {
+				perror("dup2");
+				exit(1);
+			}
+			std::vector<std::string>  args = CreateArgs();
+			std::vector<std::string>  envs = CreateEnvs();
+			std::vector<const char *> argv = ConvertToCstrVector(args);
+			std::vector<const char *> envp = ConvertToCstrVector(envs);
+			execve(
+				location_conf_.GetCgiPath().Value().c_str(),
+				const_cast<char *const *>(argv.data()),
+				const_cast<char *const *>(envp.data())
+			);
+		} catch (std::exception &e) {
+			e.what();
+		} catch (...) {
+			log("unknown exceptionin cgi child");
 		}
-		parent_fd_.Close();
-		if (Dup2(child_fd_.GetFd(), STDIN_FILENO).IsErr()) {
-			exit(1);
-		}
-		if (Dup2(child_fd_.GetFd(), STDOUT_FILENO).IsErr()) {
-			exit(1);
-		}
-		execve(
-			location_conf_.GetCgiPath().Value().c_str(),
-			const_cast<char *const *>(args.Val().data()),
-			const_cast<char *const *>(envs.Val().data())
-		);
 		exit(1);
 	}
 
-	std::vector<const char *> CgiResponse::CreateArgs()
+	std::vector<std::string> CgiResponse::CreateArgs()
 	{
 		const Emptiable<std::string> &cgi_path = location_conf_.GetCgiPath();
-		std::vector<const char *>     args;
-		args.push_back(cgi_path.Value().c_str());
-		args.push_back(resource_path_.c_str());
-		args.push_back(NULL);
+		std::vector<std::string>      args;
+		args.push_back(cgi_path.Value());
+		args.push_back(utils::JoinPath(location_conf_.GetRoot(), script_name_));
 		return args;
 	}
 
-	Result<std::vector<const char *> > CgiResponse::CreateEnvs()
+	std::vector<std::string> CgiResponse::CreateEnvs()
 	{
-		std::vector<const char *> envs;
+		std::vector<std::string> envs;
 		for (size_t i = 0; environ[i] != NULL; ++i) {
 			envs.push_back(environ[i]);
 		}
-		SetMetaEnv(envs);
-		envs.push_back(NULL);
+		// SetMetaEnv(envs);
 		return envs;
 	}
 
@@ -58,14 +76,4 @@ namespace cgi
 		SetContentType(envs, request_);
 	}
 
-	static Result<void> Dup2(int old_fd, int new_fd)
-	{
-		if (old_fd == new_fd) {
-			return Result<void>();
-		}
-		if (dup2(old_fd, new_fd) != new_fd) {
-			return Error("dup2 error");
-		}
-		return Result<void>();
-	}
 } // namespace cgi
