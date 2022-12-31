@@ -38,9 +38,11 @@ namespace response
 		std::string TryCreateAutoIndex(const FullPath &root, const PartialPath &request_path) const;
 		int         TryOpen(const FullPath &filename) const;
 		Stat        TryStat(const FullPath &path) const;
-		PartialPath ResolveIndexFilePath(const PartialPath &request_path) const;
-		Result<PartialPath> FindReadableIndexFile(const PartialPath &base_path) const;
-		void TryValidateRequestPath(const FullPath &root, const PartialPath &request_path);
+		PartialPath TryResolveIndexFilePath(
+			const FullPath                       &root,
+			const PartialPath                    &request_path,
+			const conf::LocationConf::IndexFiles &index_files
+		);
 	};
 } // namespace response
 
