@@ -13,18 +13,6 @@ namespace cgi
 {
 	const std::string CgiResponse::kCgiVersion = "1.1";
 
-	// copy constructor
-	// CgiResponse::CgiResponse(const CgiResponse &other)
-	// 	: AResponse(other),
-	// 	  location_conf_(other.location_conf_),
-	// 	  resource_path_(other.resource_path_),
-	// 	  parent_fd_(other.parent_fd_),
-	// 	  child_fd_(other.child_fd_),
-	// 	  body_writer_(other.body_writer_),
-	// 	  cgi_receiver_(),
-	// 	  field_parser_()
-	// {}
-
 	// main constructor
 	CgiResponse::CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf)
 		: AResponse(request),
@@ -58,6 +46,7 @@ namespace cgi
 		}
 		parent_fd = ManagedFd(fds[0]);
 		child_fd  = ManagedFd(fds[1]);
+		// TODO NON_BLOCKING
 		return Result<void>();
 	}
 
@@ -132,23 +121,6 @@ namespace cgi
 			kill(pid_, SIGKILL);
 			waitpid(pid_, NULL, 0);
 		}
-		// TODO Kill
 	}
 
-	// CgiResponse &CgiResponse::operator=(const CgiResponse &other)
-	// {
-	// 	if (this == &other) {
-	// 		return *this;
-	// 	}
-	// 	request_       = other.request_;
-	// 	location_conf_ = other.location_conf_;
-	// 	resource_path_ = other.resource_path_;
-	// 	parent_fd_     = other.parent_fd_;
-	// 	child_fd_      = other.child_fd_;
-	// 	is_finished_   = other.is_finished_;
-	// 	body_writer_   = other.body_writer_;
-	// 	q_buffer::QueuingWriter::operator=(other);
-	// 	q_buffer::QueuingReader::operator=(other);
-	// 	return *this;
-	// }
 } // namespace cgi

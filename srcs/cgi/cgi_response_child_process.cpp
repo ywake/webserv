@@ -23,6 +23,7 @@ namespace cgi
 				std::cerr << res.Err() << std::endl;
 				exit(1);
 			}
+			// TODO chdir;
 			if (dup2(child_fd_.GetFd(), STDIN_FILENO) == -1 ||
 				dup2(child_fd_.GetFd(), STDOUT_FILENO) == -1) {
 				perror("dup2");
