@@ -10,6 +10,7 @@ namespace conf
 {
 	bool IsInRange(const ThinString &str, std::size_t min, std::size_t max);
 	bool IsValidListenPort(ThinString str);
+	bool IsValidErrorPage(ThinString key, ThinString value);
 
 	const ServerConf::ServerName        ServerConf::kDefaultServerName = ServerConf::ServerName();
 	const ServerConf::ErrorPages        ServerConf::kDefaultErrorPages = ServerConf::ErrorPages();
@@ -127,11 +128,22 @@ namespace conf
 		if (tokens.size() != 3) {
 			throw ConfigException("Invalid error_page");
 		}
-		if (tokens[1].size() == 3 && ABNF::IsDigitOnly(tokens[1])) {
+		if (IsValidErrorPage(tokens[1], tokens[2])) {
 			error_pages_[tokens[1].ToString()] = tokens[2].ToString();
 		} else {
 			throw ConfigException("Invalid error_page");
 		}
+	}
+
+	bool IsValidErrorPage(ThinString key, ThinString value)
+	{
+		if (key.size() != 3 || !ABNF::IsDigitOnly(key) || !IsInRange(key, 300, 599)) {
+			return false;
+		}
+		if (value.empty() || value.at(0) != '/') {
+			return false;
+		}
+		return true;
 	}
 
 	std::pair<ThinString, char> GetNumberAndUnit(ThinString str)
