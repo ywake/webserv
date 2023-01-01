@@ -55,6 +55,15 @@ namespace cgi
 		envs[cgi::kContentType] = vals.front().GetValue();
 	}
 
+	// [RFC3875 4.1.4]
+	// The GATEWAY_INTERFACE variable MUST be set to the dialect of CGI being used by the server to
+	// communicate with the script.
+	// GATEWAY_INTERFACE = "CGI" "/" 1*digit "." 1*digit
+	void SetGatewayInterface(MetaEnvs &envs)
+	{
+		envs[cgi::kGatewayInterface] = "CGI/" + CgiResponse::kCgiVersion;
+	}
+
 	/**
 	 * 変数 GATEWAY_INTERFACE は、 鯖がスクリプトと通信するのに使用する CGI
 	 * の種類を設定しなければ**なりません**。

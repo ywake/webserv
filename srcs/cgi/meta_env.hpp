@@ -24,4 +24,5 @@ namespace cgi
 
 	void SetContentLength(MetaEnvs &envs, const server::IRequest &request);
 	void SetContentType(MetaEnvs &envs, const server::IRequest &request);
+	void SetGatewayInterface(MetaEnvs &envs);
 } // namespace cgi
