@@ -84,8 +84,8 @@ namespace cgi
 	void CgiResponse::SetMetaEnv(std::vector<const char *> &envs)
 	{
 		(void)envs;
-		SetContentLength(envs, request_);
-		SetContentType(envs, request_);
+		// SetContentLength(envs, request_);
+		// SetContentType(envs, request_);
 	}
 
 } // namespace cgi
