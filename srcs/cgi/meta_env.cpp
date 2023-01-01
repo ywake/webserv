@@ -45,19 +45,14 @@ namespace cgi
 	 * media-type = type "/" subtype *( ";" parameter )
 	 * parameter = attribute "=" value
 	 */
-	void SetContentType(std::vector<const char *> &envs, const server::IRequest &request)
+	void SetContentType(MetaEnvs &envs, const server::IRequest &request)
 	{
-		HeaderSection::Values vals = request.Headers()["Content-Type"];
+		const HeaderSection::Values &vals = request.Headers()["Content-Type"];
 		if (vals.empty()) {
 			return;
 		}
 		// list(#表記)が許可されてないので先頭のみ処理
-		std::string val = vals.front().GetValue();
-		if (val.empty()) {
-			return;
-		}
-		std::string content_type_str = "CONTENT_TYPE=" + val;
-		envs.push_back(content_type_str.c_str());
+		envs[cgi::kContentType] = vals.front().GetValue();
 	}
 
 	/**
