@@ -84,4 +84,16 @@ namespace cgi
 		envs[cgi::kPathTranslated] = utils::JoinPath(root, envs[cgi::kPathInfo]);
 	}
 
+	// [RFC3875 4.1.7. QUERY_STRING]
+	// The server MUST set this variable;
+	//
+	// [RFC3875 4.1. Request Meta-Variables]
+	// a script cannot distinguish between the two requests
+	// http://host/script and http://host/script?
+	// as in both cases the QUERY_STRING meta-variable would be NULL.
+	void SetQueryString(MetaEnvs &envs, const server::IRequest &request)
+	{
+		envs[cgi::kQueryString] = request.Query();
+	}
+
 } // namespace cgi
