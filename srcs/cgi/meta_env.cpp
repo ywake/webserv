@@ -17,7 +17,7 @@ namespace cgi
 	const std::string kRemoteAddr       = "REMOTE_ADDR";
 	const std::string kRequestMethod    = "REQUEST_METHOD";
 	const std::string kScriptName       = "SCRIPT_NAME";
-	const std::string kServerAddr       = "SERVER_ADDR";
+	const std::string kServerName       = "SERVER_NAME";
 	const std::string kServerPort       = "SERVER_PORT";
 	const std::string kServerProtocol   = "SERVER_PROTOCOL";
 	const std::string kServerSoftware   = "SERVER_SOFTWARE";
@@ -102,6 +102,14 @@ namespace cgi
 	void SetRequestMethod(MetaEnvs &envs, const server::IRequest &request)
 	{
 		envs[cgi::kRequestMethod] = request.Method();
+	}
+
+	// [RFC3875 4.1.14. SERVER_NAME]
+	// he SERVER_NAME variable MUST be set to the name of the server host
+	// to which the client request is directed.
+	void SetServerName(MetaEnvs &envs, const server::IRequest &request)
+	{
+		envs[cgi::kServerName] = request.Host();
 	}
 
 } // namespace cgi
