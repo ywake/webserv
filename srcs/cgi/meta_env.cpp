@@ -1,3 +1,4 @@
+#include "meta_env.hpp"
 #include "cgi_response.hpp"
 #include "i_request.hpp"
 #include "webserv_utils.hpp"
@@ -6,6 +7,20 @@
 
 namespace cgi
 {
+	const std::string kContentLength    = "CONTENT_LENGTH";
+	const std::string kContentType      = "CONTENT_TYPE";
+	const std::string kGatewayInterface = "GATEWAY_INTERFACE";
+	const std::string kPathInfo         = "PATH_INFO";
+	const std::string kPathTranslated   = "PATH_TRANSLATED";
+	const std::string kQueryString      = "QUERY_STRING";
+	const std::string kRemoteAddr       = "REMOTE_ADDR";
+	const std::string kRequestMethod    = "REQUEST_METHOD";
+	const std::string kScriptName       = "SCRIPT_NAME";
+	const std::string kServerAddr       = "SERVER_ADDR";
+	const std::string kServerPort       = "SERVER_PORT";
+	const std::string kServerProtocol   = "SERVER_PROTOCOL";
+	const std::string kServerSoftware   = "SERVER_SOFTWARE";
+
 	/**
 	 * Authorization = credentials
 	 * credentials = auth-scheme [ 1*SP ( token68 / #auth-param ) ]
