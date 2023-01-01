@@ -57,6 +57,7 @@ namespace cgi
 			const response::PartialPath          &request_path,
 			const conf::LocationConf::IndexFiles &index_files
 		);
+		Stat                     TryStat(const std::string &path) const;
 		Result<http::StatusCode> ParseStatusCode(const http::FieldSection::Values &values);
 		Result<void>             PushMetaDataToSendBody(const http::FieldSection &field_section);
 		void                     PushMetaDataForClientRedirect(const std::string &uri);
@@ -69,6 +70,9 @@ namespace cgi
 		std::vector<std::string> CreateArgs(
 			const std::string &cgi_path, const std::string &script_name, const std::string &query
 		);
+		void        ExecuteDirectoryRedirect(const std::string &request_path);
+		std::string CreateLocationUrl(const std::string &path) const;
+
 		std::vector<std::string> CreateEnvs();
 		void                     SetMetaEnv(std::vector<const char *> &envs);
 		void                     StoreHeadersToSendBody(const http::FieldSection &field_section);

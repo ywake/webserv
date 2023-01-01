@@ -32,8 +32,19 @@ namespace cgi
 			location_conf_.GetRoot(), real_path, location_conf_.GetIndexFiles()
 		);
 		log("script_name: ", script_name);
-		if (ExecCgi(script_name, child_fd).IsErr()) {
-			throw http::InternalServerErrorException();
+		if (utils::EndWith(script_name, "/")) {
+			throw http::ForbiddenException();
+		}
+		const std::string script_path = utils::JoinPath(location_conf_.GetRoot(), script_name);
+		Stat              st          = TryStat(script_path);
+		if (st.IsDirectory()) {
+			ExecuteDirectoryRedirect(script_name + "/");
+		} else if (st.IsRegularFile()) {
+			if (ExecCgi(script_name, child_fd).IsErr()) {
+				throw http::InternalServerErrorException();
+			}
+		} else {
+			throw http::NotFoundException();
 		}
 	}
 
@@ -103,6 +114,42 @@ namespace cgi
 			child_fd.Close();
 			return Result<void>();
 		}
+	}
+
+	void CgiResponse::ExecuteDirectoryRedirect(const std::string &request_path)
+	{
+		log("no slash dir redirect", request_path);
+		std::string page = utils::CreateDefaultPage(http::StatusCode::kMovedPermanently);
+		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kMovedPermanently);
+		MetaDataStorage::StoreHeader("Server", http::kServerName);
+		MetaDataStorage::StoreHeader("Content-Type", "text/html");
+		MetaDataStorage::StoreHeader("Content-Length", utils::ToString(page.size()));
+		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Location", CreateLocationUrl(request_path));
+		MetaDataStorage::PushWithCrLf();
+		push_back(page);
+		is_finished_ = true;
+	}
+
+	std::string CgiResponse::CreateLocationUrl(const std::string &path) const
+	{
+		return "http://" + utils::JoinPath(request_.Authority(), path);
+	}
+
+	Stat CgiResponse::TryStat(const std::string &path) const
+	{
+		result::Result<Stat> st = Stat::FromPath(path);
+		if (st.IsErr()) {
+			result::ErrCode err = st.Err();
+			if (err == Stat::kEAcces || err == Stat::kELoop) {
+				throw http::ForbiddenException();
+			} else if (err == Stat::kENotDir || err == Stat::kNoEnt || err == Stat::kENameTooLong) {
+				throw http::NotFoundException();
+			} else {
+				throw http::InternalServerErrorException();
+			}
+		}
+		return st.Val();
 	}
 
 	CgiResponse::~CgiResponse()
