@@ -75,8 +75,9 @@ namespace cgi
 	std::vector<std::string> CgiResponse::CreateEnvs(const MetaEnvs &envs)
 	{
 		std::vector<std::string> envp;
-		for (size_t i = 0; environ[i] != NULL; ++i) {
-			envp.push_back(environ[i]);
+		const char              *path = getenv("PATH");
+		if (path != NULL) {
+			envp.push_back(path);
 		}
 		for (MetaEnvs::const_iterator it = envs.begin(); it != envs.end(); ++it) {
 			const std::string &key = it->first;
