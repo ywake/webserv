@@ -13,7 +13,7 @@ echo "Content-type: text/html"
 
 echo ""
 echo $0 $1 $2 $A
-env
+export
 # echo "<html><head><title>CGI Test</title></head>"
 # echo "<body><h1>CGI Test</h1>"
 # echo "<p>CGI is working!</p>"
