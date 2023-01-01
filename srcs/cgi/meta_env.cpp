@@ -120,4 +120,13 @@ namespace cgi
 		envs[cgi::kServerProtocol] = http::kHttpVersion;
 	}
 
+	// [RFC3875 4.1.17. SERVER_SOFTWARE]
+	// The SERVER_SOFTWARE meta-variable MUST be set to the name
+	// and version of the information server software making the CGI request
+	// (and running the gateway).
+	void SetServerSoftware(MetaEnvs &envs, const server::IRequest &request)
+	{
+		envs[cgi::kServerSoftware] = http::kServerName;
+	}
+
 } // namespace cgi
