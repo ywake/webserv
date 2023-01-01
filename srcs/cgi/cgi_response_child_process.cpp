@@ -83,7 +83,7 @@ namespace cgi
 
 	void CgiResponse::SetMetaEnv(std::vector<const char *> &envs)
 	{
-		SetAuthType(envs, request_);
+		(void)envs;
 		SetContentLength(envs, request_);
 		SetContentType(envs, request_);
 	}

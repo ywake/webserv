@@ -22,33 +22,6 @@ namespace cgi
 	const std::string kServerSoftware   = "SERVER_SOFTWARE";
 
 	/**
-	 * Authorization = credentials
-	 * credentials = auth-scheme [ 1*SP ( token68 / #auth-param ) ]
-	 * auth-scheme = token
-	 * auth-type = "Basic" / "Digest" / token
-	 *
-	 * auth-schemeから設定
-	 * case insensitive
-	 */
-	void SetAuthType(std::vector<const char *> &envs, const server::IRequest &request)
-	{
-		HeaderSection::Values vals = request.Headers()["Authorization"];
-		if (vals.empty()) {
-			return;
-		}
-		std::string val = vals.front().GetValue();
-		if (val.empty()) {
-			return;
-		}
-		std::string auth_type = utils::DivideBy(val, ' ').first;
-		if (auth_type.empty()) {
-			return;
-		}
-		std::string auth_type_str = "AUTH_TYPE=" + auth_type;
-		envs.push_back(auth_type_str.c_str());
-	}
-
-	/**
 	 * message-bodyの大きさをオクテット単位で10進数で設定。なければ未設定
 	 * 転送符号化や内容符号化を除去した後の長さ
 	 */
