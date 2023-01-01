@@ -15,7 +15,11 @@ namespace cgi
 
 	// main constructor
 	CgiResponse::CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf)
-		: AResponse(request), location_conf_(location_conf), state_(kHeader), pid_(-1)
+		: AResponse(request),
+		  location_conf_(location_conf),
+		  body_writer_(request.GetBody()),
+		  state_(kHeader),
+		  pid_(-1)
 	{
 		log(COL_BOLD "=== Cgi Response Constructor ===" COL_END);
 		if (location_conf_.GetCgiPath().empty()) {
@@ -25,7 +29,6 @@ namespace cgi
 		if (CreateUds(parent_fd_, child_fd).IsErr()) {
 			throw http::InternalServerErrorException();
 		}
-		body_writer_                  = server::BodyWriter(request.GetBody());
 		cgi_receiver_                 = server::Reciever(parent_fd_.GetFd());
 		const std::string real_path   = TrimPathInfo(request_.Path());
 		const std::string script_name = TryResolveIndexFilePath(
