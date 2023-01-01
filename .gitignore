@@ -33,6 +33,7 @@ destructor.c
 !test/cgi-bin/**
 !*.conf
 !*.php
+!Dockerfile
 
 ## google test
 gtest/googletest

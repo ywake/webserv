@@ -12,7 +12,7 @@ echo "Content-type: text/html"
 # echo "Location: ../" #local redirect (directory) # 404 script not found or unable to stat: /usr/local/apache2/cgi-bin/cgi.py
 
 echo ""
-echo $0 $1 $2 $A
+echo $0 $@
 export
 # echo "<html><head><title>CGI Test</title></head>"
 # echo "<body><h1>CGI Test</h1>"
