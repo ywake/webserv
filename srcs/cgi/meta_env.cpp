@@ -112,4 +112,12 @@ namespace cgi
 		envs[cgi::kServerName] = request.Host();
 	}
 
+	// [RFC3875 4.1.16. SERVER_PROTOCOL]
+	// he SERVER_PROTOCOL variable MUST be set to the name
+	// and version of the application protocol used for this CGI request.
+	void SetServerProtocol(MetaEnvs &envs)
+	{
+		envs[cgi::kServerProtocol] = http::kHttpVersion;
+	}
+
 } // namespace cgi

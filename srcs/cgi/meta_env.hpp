@@ -34,4 +34,5 @@ namespace cgi
 	void SetQueryString(MetaEnvs &envs, const server::IRequest &request);
 	void SetRequestMethod(MetaEnvs &envs, const server::IRequest &request);
 	void SetServerName(MetaEnvs &envs, const server::IRequest &request);
+	void SetServerProtocol(MetaEnvs &envs);
 } // namespace cgi
