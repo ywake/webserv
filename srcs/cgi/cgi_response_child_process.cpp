@@ -32,7 +32,6 @@ namespace cgi
 				log("cgi", res.Err());
 				exit(1);
 			}
-			// TODO chdir;
 			if (dup2(child_fd.GetFd(), STDIN_FILENO) == -1 ||
 				dup2(child_fd.GetFd(), STDOUT_FILENO) == -1) {
 				perror("dup2");
