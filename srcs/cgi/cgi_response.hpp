@@ -33,9 +33,7 @@ namespace cgi
 
 	  private:
 		const conf::LocationConf &location_conf_;
-		std::string               script_name_;
 		ManagedFd                 parent_fd_;
-		ManagedFd                 child_fd_;
 		server::BodyWriter        body_writer_;
 		server::Reciever          cgi_receiver_;
 		cgi::CgiParser            field_parser_;
@@ -65,10 +63,12 @@ namespace cgi
 		void                     ThrowLocalRedirect(const http::FieldSection &field_section);
 
 		void                     OnWriteReady();
-		void                     ExecCgi();
-		void                     ChildProcess();
-		void                     ParentProcess(pid_t pid);
-		std::vector<std::string> CreateArgs();
+		Result<void>             ExecCgi(const std::string &script_name, ManagedFd &child_fd);
+		void                     ExecChild(const std::string &script_name, ManagedFd &child_fd);
+		void                     ExecParent(pid_t pid);
+		std::vector<std::string> CreateArgs(
+			const std::string &cgi_path, const std::string &script_name, const std::string &query
+		);
 		std::vector<std::string> CreateEnvs();
 		void                     SetMetaEnv(std::vector<const char *> &envs);
 		void                     StoreHeadersToSendBody(const http::FieldSection &field_section);

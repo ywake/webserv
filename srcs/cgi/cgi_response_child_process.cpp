@@ -11,24 +11,28 @@ extern char **environ;
 
 namespace cgi
 {
-
-	void CgiResponse::ChildProcess()
+	void CgiResponse::ExecChild(const std::string &script_name, ManagedFd &child_fd)
 	{
 		try {
+			log("child process");
 			parent_fd_.Close();
-			StringArray  args = CreateArgs();
-			StringArray  envs = CreateEnvs();
-			Result<void> res  = utils::SetSignalHandler(SIGPIPE, SIG_IGN, 0);
+			Result<void> res = utils::SetSignalHandler(SIGPIPE, SIG_IGN, 0);
 			if (res.IsErr()) {
-				std::cerr << res.Err() << std::endl;
+				log("cgi", res.Err());
 				exit(1);
 			}
 			// TODO chdir;
-			if (dup2(child_fd_.GetFd(), STDIN_FILENO) == -1 ||
-				dup2(child_fd_.GetFd(), STDOUT_FILENO) == -1) {
+			if (dup2(child_fd.GetFd(), STDIN_FILENO) == -1 ||
+				dup2(child_fd.GetFd(), STDOUT_FILENO) == -1) {
 				perror("dup2");
 				exit(1);
 			}
+			StringArray args = CreateArgs(
+				location_conf_.GetCgiPath().Value(),
+				script_name,
+				request_.GetRequestLine().GetRequestTarget().GetRequestFormData().query_
+			);
+			StringArray envs = CreateEnvs();
 			execve(
 				location_conf_.GetCgiPath().Value().c_str(),
 				const_cast<char *const *>(args.CArray()),
@@ -42,12 +46,15 @@ namespace cgi
 		exit(1);
 	}
 
-	std::vector<std::string> CgiResponse::CreateArgs()
+	std::vector<std::string> CgiResponse::CreateArgs(
+		const std::string &cgi_path, const std::string &script_name, const std::string &query
+	)
 	{
-		const Emptiable<std::string> &cgi_path = location_conf_.GetCgiPath();
-		std::vector<std::string>      args;
-		args.push_back(cgi_path.Value());
-		args.push_back(utils::JoinPath(location_conf_.GetRoot(), script_name_));
+		std::vector<std::string> args;
+
+		args.push_back(cgi_path);
+		args.push_back(utils::JoinPath(location_conf_.GetRoot(), script_name));
+		(void)query; // TODO query
 		return args;
 	}
 

@@ -15,27 +15,26 @@ namespace cgi
 
 	// main constructor
 	CgiResponse::CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf)
-		: AResponse(request),
-		  location_conf_(location_conf),
-		  script_name_(),
-		  state_(kHeader),
-		  pid_(-1)
+		: AResponse(request), location_conf_(location_conf), state_(kHeader), pid_(-1)
 	{
 		log(COL_BOLD "=== Cgi Response Constructor ===" COL_END);
 		if (location_conf_.GetCgiPath().empty()) {
 			throw std::logic_error("cgi path empty");
 		}
-		if (CreateUds(parent_fd_, child_fd_).IsErr()) {
+		ManagedFd child_fd;
+		if (CreateUds(parent_fd_, child_fd).IsErr()) {
 			throw http::InternalServerErrorException();
 		}
-		body_writer_                = server::BodyWriter(request.GetBody());
-		cgi_receiver_               = server::Reciever(parent_fd_.GetFd());
-		const std::string real_path = TrimPathInfo(request_.Path());
-		script_name_                = TryResolveIndexFilePath(
-            location_conf_.GetRoot(), real_path, location_conf_.GetIndexFiles()
-        );
-		log("script_name: ", script_name_);
-		ExecCgi();
+		body_writer_                  = server::BodyWriter(request.GetBody());
+		cgi_receiver_                 = server::Reciever(parent_fd_.GetFd());
+		const std::string real_path   = TrimPathInfo(request_.Path());
+		const std::string script_name = TryResolveIndexFilePath(
+			location_conf_.GetRoot(), real_path, location_conf_.GetIndexFiles()
+		);
+		log("script_name: ", script_name);
+		if (ExecCgi(script_name, child_fd).IsErr()) {
+			throw http::InternalServerErrorException();
+		}
 	}
 
 	Result<void> CgiResponse::CreateUds(ManagedFd &parent_fd, ManagedFd &child_fd)
@@ -89,29 +88,21 @@ namespace cgi
 		return resolved.Val();
 	}
 
-	void CgiResponse::ExecCgi()
+	Result<void> CgiResponse::ExecCgi(const std::string &script_name, ManagedFd &child_fd)
 	{
 		log("cgi execute",
-			location_conf_.GetCgiPath().Value() + " " + location_conf_.GetRoot() + script_name_);
+			location_conf_.GetCgiPath().Value() + " " + location_conf_.GetRoot() + script_name);
 		pid_ = fork();
 		switch (pid_) {
 		case -1:
-			throw http::InternalServerErrorException();
-			break;
+			return Error();
 		case 0:
-			log("child process");
-			ChildProcess();
-			break;
+			ExecChild(script_name, child_fd);
+			exit(0); // not reach,
 		default:
-			ParentProcess(pid_);
-			break;
+			child_fd.Close();
+			return Result<void>();
 		}
-	}
-
-	void CgiResponse::ParentProcess(pid_t pid)
-	{
-		(void)pid;
-		child_fd_.Close();
 	}
 
 	CgiResponse::~CgiResponse()
