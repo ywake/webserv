@@ -25,7 +25,7 @@ namespace server
 		void
 		StoreHeader(const std::string &name, const Iterator &value_begin, const Iterator &value_end)
 		{
-			meta_data_ += name + ":";
+			meta_data_ += name + ": ";
 			for (Iterator it = value_begin; it != value_end; ++it) {
 				meta_data_ += *it + ", ";
 			}
