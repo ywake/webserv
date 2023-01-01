@@ -44,11 +44,8 @@ namespace cgi
 				log("cgi", cd_res.Err());
 				exit(1);
 			}
-			StringArray args = CreateArgs(
-				location_conf_.GetCgiPath().Value(),
-				script_name,
-				request_.GetRequestLine().GetRequestTarget().GetRequestFormData().query_
-			);
+			StringArray args =
+				CreateArgs(location_conf_.GetCgiPath().Value(), script_path, request_.Query());
 			StringArray envs = CreateEnvs();
 			execve(
 				location_conf_.GetCgiPath().Value().c_str(),
@@ -64,13 +61,13 @@ namespace cgi
 	}
 
 	std::vector<std::string> CgiResponse::CreateArgs(
-		const std::string &cgi_path, const std::string &script_name, const std::string &query
+		const std::string &cgi_path, const std::string &script_path, const std::string &query
 	)
 	{
 		std::vector<std::string> args;
 
 		args.push_back(cgi_path);
-		args.push_back(utils::JoinPath(location_conf_.GetRoot(), script_name));
+		args.push_back(script_path);
 		(void)query; // TODO query
 		return args;
 	}
