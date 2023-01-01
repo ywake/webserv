@@ -25,4 +25,10 @@ namespace cgi
 	void SetContentLength(MetaEnvs &envs, const server::IRequest &request);
 	void SetContentType(MetaEnvs &envs, const server::IRequest &request);
 	void SetGatewayInterface(MetaEnvs &envs);
+	void SetPathEnvs(
+		MetaEnvs               &envs,
+		const server::IRequest &request,
+		const std::string      &root,
+		const std::string      &script_name
+	);
 } // namespace cgi

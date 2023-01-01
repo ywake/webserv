@@ -64,13 +64,24 @@ namespace cgi
 		envs[cgi::kGatewayInterface] = "CGI/" + CgiResponse::kCgiVersion;
 	}
 
-	/**
-	 * 変数 GATEWAY_INTERFACE は、 鯖がスクリプトと通信するのに使用する CGI
-	 * の種類を設定しなければ**なりません**。
-	 */
-	void SetGatewayInterface(std::vector<const char *> &envs)
+	// [RFC3875 4.1.5. PATH_INFO] script_nameの後ろ
+	// [RFC3875 4.1.6. PATH_TRANSLATED] ROOT/PATH_INFO
+	// value is derived in this way irrespective of whether it maps to a valid repository location.
+	// [RFC3875 4.1.13. SCRIPT_NAME] The SCRIPT_NAME variable MUST be set to a URI path
+	// (not URL-encoded) which could identify the CGI script (rather than the script's output).
+	void SetPathEnvs(
+		MetaEnvs               &envs,
+		const server::IRequest &request,
+		const std::string      &root,
+		const std::string      &script_name
+	)
 	{
-		std::string str = "GATEWAY_INTERFACE=CGI/" + CgiResponse::kCgiVersion;
-		envs.push_back((str.c_str()));
+		envs[cgi::kScriptName] = script_name;
+		if (script_name.size() >= request.Path().size()) {
+			return;
+		}
+		envs[cgi::kPathInfo]       = request.Path().substr(script_name.size());
+		envs[cgi::kPathTranslated] = utils::JoinPath(root, envs[cgi::kPathInfo]);
 	}
+
 } // namespace cgi
