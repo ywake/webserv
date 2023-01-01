@@ -64,8 +64,8 @@ namespace cgi
 		void                     ThrowLocalRedirect(const http::FieldSection &field_section);
 
 		void                     OnWriteReady();
-		Result<void>             ExecCgi(const std::string &script_name, ManagedFd &child_fd);
-		void                     ExecChild(const std::string &script_name, ManagedFd &child_fd);
+		Result<void>             ExecCgi(const std::string &script_path, ManagedFd &child_fd);
+		void                     ExecChild(const std::string &script_path, ManagedFd &child_fd);
 		void                     ExecParent(pid_t pid);
 		std::vector<std::string> CreateArgs(
 			const std::string &cgi_path, const std::string &script_name, const std::string &query

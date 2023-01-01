@@ -43,7 +43,7 @@ namespace cgi
 		if (st.IsDirectory()) {
 			ExecuteDirectoryRedirect(script_name + "/");
 		} else if (st.IsRegularFile()) {
-			if (ExecCgi(script_name, child_fd).IsErr()) {
+			if (ExecCgi(script_path, child_fd).IsErr()) {
 				throw http::InternalServerErrorException();
 			}
 		} else {
@@ -102,16 +102,15 @@ namespace cgi
 		return resolved.Val();
 	}
 
-	Result<void> CgiResponse::ExecCgi(const std::string &script_name, ManagedFd &child_fd)
+	Result<void> CgiResponse::ExecCgi(const std::string &script_path, ManagedFd &child_fd)
 	{
-		log("cgi execute",
-			location_conf_.GetCgiPath().Value() + " " + location_conf_.GetRoot() + script_name);
+		log("cgi execute", location_conf_.GetCgiPath().Value() + " " + script_path);
 		pid_ = fork();
 		switch (pid_) {
 		case -1:
 			return Error();
 		case 0:
-			ExecChild(script_name, child_fd);
+			ExecChild(script_path, child_fd);
 			exit(0); // not reach,
 		default:
 			child_fd.Close();
