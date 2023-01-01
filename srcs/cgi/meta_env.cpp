@@ -26,15 +26,12 @@ namespace cgi
 	 * message-bodyの大きさをオクテット単位で10進数で設定。なければ未設定
 	 * 転送符号化や内容符号化を除去した後の長さ
 	 */
-	void SetContentLength(std::vector<const char *> &envs, const server::IRequest &request)
+	void SetContentLength(MetaEnvs &envs, const server::IRequest &request)
 	{
-		const std::vector<char> *body = request.GetBody();
 		if (!request.HasMessageBody()) {
 			return;
 		}
-		std::stringstream ss;
-		ss << "CONTENT_LENGTH=" << body->size();
-		envs.push_back(ss.str().c_str());
+		envs[cgi::kContentLength] = request.Headers()[http::kContentLength].front().GetValue();
 	}
 
 	/**
