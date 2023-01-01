@@ -9,6 +9,17 @@
 
 extern char **environ;
 
+namespace
+{
+	Result<void> ChangeDir(const std::string &path)
+	{
+		if (chdir(path.c_str()) == -1) {
+			return Error("chdir: " + std::string(strerror(errno)));
+		}
+		return Result<void>();
+	}
+} // namespace
+
 namespace cgi
 {
 	void CgiResponse::ExecChild(const std::string &script_name, ManagedFd &child_fd)
@@ -25,6 +36,12 @@ namespace cgi
 			if (dup2(child_fd.GetFd(), STDIN_FILENO) == -1 ||
 				dup2(child_fd.GetFd(), STDOUT_FILENO) == -1) {
 				perror("dup2");
+				exit(1);
+			}
+			const std::string script_path = utils::JoinPath(location_conf_.GetRoot(), script_name);
+			Result<void>      cd_res      = ChangeDir(utils::GetDirName(script_path));
+			if (cd_res.IsErr()) {
+				log("cgi", cd_res.Err());
 				exit(1);
 			}
 			StringArray args = CreateArgs(
