@@ -1,8 +1,13 @@
 #include "i_request.hpp"
+
+#include <map>
+#include <string>
 #include <vector>
 
 namespace cgi
 {
+	typedef std::map<std::string, std::string> MetaEnvs;
+
 	extern const std::string kContentLength;
 	extern const std::string kContentType;
 	extern const std::string kGatewayInterface;
@@ -17,7 +22,6 @@ namespace cgi
 	extern const std::string kServerProtocol;
 	extern const std::string kServerSoftware;
 
-	void SetAuthType(std::vector<const char *> &envs, const server::IRequest &request);
-	void SetContentLength(std::vector<const char *> &envs, const server::IRequest &request);
-	void SetContentType(std::vector<const char *> &envs, const server::IRequest &request);
+	void SetContentLength(MetaEnvs &envs, const server::IRequest &request);
+	void SetContentType(MetaEnvs &envs, const server::IRequest &request);
 } // namespace cgi
