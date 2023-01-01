@@ -6,12 +6,12 @@
 #include "location_conf.hpp"
 #include "result.hpp"
 
-// Statクラスのエラーコードが返る
 namespace response
 {
 	typedef std::string PartialPath;
 	typedef std::string FullPath;
 
+	// Statクラスのエラーコードが返る
 	result::Result<PartialPath> ResolveIndexFilePath(
 		const FullPath                       &root,
 		const PartialPath                    &request_path,
