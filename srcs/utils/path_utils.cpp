@@ -85,4 +85,13 @@ namespace utils
 	{
 		return access(path.c_str(), R_OK) == 0;
 	}
+
+	std::string GetDirName(const std::string &path)
+	{
+		std::size_t pos = path.rfind("/");
+		if (pos == std::string::npos) {
+			return ".";
+		}
+		return path.substr(0, pos);
+	}
 } // namespace utils
