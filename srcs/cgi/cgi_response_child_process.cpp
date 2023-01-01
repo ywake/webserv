@@ -37,17 +37,17 @@ namespace cgi
 				perror("dup2");
 				exit(1);
 			}
-			const std::string script_path = utils::JoinPath(location_conf_.GetRoot(), script_name);
-			Result<void>      cd_res      = ChangeDir(utils::GetDirName(script_path));
+			const std::string &cgi_path    = location_conf_.GetCgiPath().Value();
+			const std::string  script_path = utils::JoinPath(location_conf_.GetRoot(), script_name);
+			StringArray        args        = CreateArgs(cgi_path, script_path, request_.Query());
+			StringArray        envs        = CreateEnvs();
+			Result<void>       cd_res      = ChangeDir(utils::GetDirName(script_path));
 			if (cd_res.IsErr()) {
 				log("cgi", cd_res.Err());
 				exit(1);
 			}
-			StringArray args =
-				CreateArgs(location_conf_.GetCgiPath().Value(), script_path, request_.Query());
-			StringArray envs = CreateEnvs();
 			execve(
-				location_conf_.GetCgiPath().Value().c_str(),
+				cgi_path.c_str(),
 				const_cast<char *const *>(args.CArray()),
 				const_cast<char *const *>(envs.CArray())
 			);
