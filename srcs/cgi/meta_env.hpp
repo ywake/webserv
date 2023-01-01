@@ -32,5 +32,6 @@ namespace cgi
 		const std::string      &script_name
 	);
 	void SetQueryString(MetaEnvs &envs, const server::IRequest &request);
+	void SetRequestMethod(MetaEnvs &envs, const server::IRequest &request);
 
 } // namespace cgi

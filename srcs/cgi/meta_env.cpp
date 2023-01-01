@@ -96,4 +96,12 @@ namespace cgi
 		envs[cgi::kQueryString] = request.Query();
 	}
 
+
+	// [RFC3875 4.1.12. REQUEST_METHOD]
+	// The REQUEST_METHOD meta-variable MUST be set to the method
+	void SetRequestMethod(MetaEnvs &envs, const server::IRequest &request)
+	{
+		envs[cgi::kRequestMethod] = request.Method();
+	}
+
 } // namespace cgi
