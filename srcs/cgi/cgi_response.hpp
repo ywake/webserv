@@ -10,6 +10,7 @@
 #include "i_response.hpp"
 #include "location_conf.hpp"
 #include "managed_fd.hpp"
+#include "meta_env.hpp"
 #include "receiver.hpp"
 #include "resolve_index_file.hpp"
 #include "stat.hpp"
@@ -63,18 +64,19 @@ namespace cgi
 		void                     PushMetaDataForClientRedirect(const std::string &uri);
 		void                     ThrowLocalRedirect(const http::FieldSection &field_section);
 
-		void                     OnWriteReady();
-		Result<void>             ExecCgi(const std::string &script_path, ManagedFd &child_fd);
-		void                     ExecChild(const std::string &script_path, ManagedFd &child_fd);
-		void                     ExecParent(pid_t pid);
+		void OnWriteReady();
+		Result<void>
+			 ExecCgi(const std::string &script_path, ManagedFd &child_fd, const MetaEnvs &envs);
+		void ExecChild(const std::string &script_path, ManagedFd &child_fd, const MetaEnvs &envs);
+		void ExecParent(pid_t pid);
 		std::vector<std::string> CreateArgs(
 			const std::string &cgi_path, const std::string &script_name, const std::string &query
 		);
 		void        ExecuteDirectoryRedirect(const std::string &request_path);
 		std::string CreateLocationUrl(const std::string &path) const;
 
-		std::vector<std::string> CreateEnvs();
-		void                     SetMetaEnv(std::vector<const char *> &envs);
+		std::vector<std::string> CreateEnvs(const MetaEnvs &envs);
+		MetaEnvs                 SetMetaVariables(const std::string &script_name);
 		void                     StoreHeadersToSendBody(const http::FieldSection &field_section);
 
 		bool IsLocalRedirect(const http::FieldSection &field_section) const;

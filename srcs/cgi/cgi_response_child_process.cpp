@@ -22,7 +22,9 @@ namespace
 
 namespace cgi
 {
-	void CgiResponse::ExecChild(const std::string &script_path, ManagedFd &child_fd)
+	void CgiResponse::ExecChild(
+		const std::string &script_path, ManagedFd &child_fd, const MetaEnvs &envs
+	)
 	{
 		try {
 			log("child process");
@@ -38,8 +40,8 @@ namespace cgi
 				exit(1);
 			}
 			const std::string &cgi_path = location_conf_.GetCgiPath().Value();
-			StringArray        args     = CreateArgs(cgi_path, script_path, request_.Query());
-			StringArray        envs     = CreateEnvs();
+			StringArray        argv     = CreateArgs(cgi_path, script_path, request_.Query());
+			StringArray        envp     = CreateEnvs(envs);
 			Result<void>       cd_res   = ChangeDir(utils::GetDirName(script_path));
 			if (cd_res.IsErr()) {
 				log("cgi", cd_res.Err());
@@ -47,8 +49,8 @@ namespace cgi
 			}
 			execve(
 				cgi_path.c_str(),
-				const_cast<char *const *>(args.CArray()),
-				const_cast<char *const *>(envs.CArray())
+				const_cast<char *const *>(argv.CArray()),
+				const_cast<char *const *>(envp.CArray())
 			);
 		} catch (std::exception &e) {
 			e.what();
@@ -70,21 +72,18 @@ namespace cgi
 		return args;
 	}
 
-	std::vector<std::string> CgiResponse::CreateEnvs()
+	std::vector<std::string> CgiResponse::CreateEnvs(const MetaEnvs &envs)
 	{
-		std::vector<std::string> envs;
+		std::vector<std::string> envp;
 		for (size_t i = 0; environ[i] != NULL; ++i) {
-			envs.push_back(environ[i]);
+			envp.push_back(environ[i]);
 		}
-		// SetMetaEnv(envs);
-		return envs;
-	}
-
-	void CgiResponse::SetMetaEnv(std::vector<const char *> &envs)
-	{
-		(void)envs;
-		// SetContentLength(envs, request_);
-		// SetContentType(envs, request_);
+		for (MetaEnvs::const_iterator it = envs.begin(); it != envs.end(); ++it) {
+			const std::string &key = it->first;
+			const std::string &val = it->second;
+			envp.push_back(key + "=" + val);
+		}
+		return envp;
 	}
 
 } // namespace cgi

@@ -43,7 +43,8 @@ namespace cgi
 		if (st.IsDirectory()) {
 			ExecuteDirectoryRedirect(script_name + "/");
 		} else if (st.IsRegularFile()) {
-			if (ExecCgi(script_path, child_fd).IsErr()) {
+			MetaEnvs envs = SetMetaVariables(script_name);
+			if (ExecCgi(script_path, child_fd, envs).IsErr()) {
 				throw http::InternalServerErrorException();
 			}
 		} else {
@@ -102,7 +103,24 @@ namespace cgi
 		return resolved.Val();
 	}
 
-	Result<void> CgiResponse::ExecCgi(const std::string &script_path, ManagedFd &child_fd)
+	MetaEnvs CgiResponse::SetMetaVariables(const std::string &script_name)
+	{
+		MetaEnvs envs;
+
+		SetContentLength(envs, request_);
+		SetContentType(envs, request_);
+		SetGatewayInterface(envs);
+		SetPathEnvs(envs, request_, location_conf_.GetRoot(), script_name);
+		SetQueryString(envs, request_);
+		SetRequestMethod(envs, request_);
+		SetServerName(envs, request_);
+		SetServerProtocol(envs);
+		SetServerSoftware(envs);
+		return envs;
+	}
+
+	Result<void>
+	CgiResponse::ExecCgi(const std::string &script_path, ManagedFd &child_fd, const MetaEnvs &envs)
 	{
 		log("cgi execute", location_conf_.GetCgiPath().Value() + " " + script_path);
 		pid_ = fork();
@@ -110,7 +128,7 @@ namespace cgi
 		case -1:
 			return Error();
 		case 0:
-			ExecChild(script_path, child_fd);
+			ExecChild(script_path, child_fd, envs);
 			exit(0); // not reach,
 		default:
 			child_fd.Close();
