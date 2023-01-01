@@ -68,7 +68,6 @@ namespace cgi
 		Result<void>
 			 ExecCgi(const std::string &script_path, ManagedFd &child_fd, const MetaEnvs &envs);
 		void ExecChild(const std::string &script_path, ManagedFd &child_fd, const MetaEnvs &envs);
-		void ExecParent(pid_t pid);
 		std::vector<std::string> CreateArgs(
 			const std::string &cgi_path, const std::string &script_name, const std::string &query
 		);
