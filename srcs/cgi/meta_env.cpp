@@ -137,7 +137,7 @@ namespace cgi
 	// The SERVER_SOFTWARE meta-variable MUST be set to the name
 	// and version of the information server software making the CGI request
 	// (and running the gateway).
-	void SetServerSoftware(MetaEnvs &envs, const server::IRequest &request)
+	void SetServerSoftware(MetaEnvs &envs)
 	{
 		envs[cgi::kServerSoftware] = http::kServerName;
 	}
