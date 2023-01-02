@@ -29,7 +29,7 @@ namespace response
 		virtual void           Perform(const event::Event &event) = 0;
 		virtual bool           HasFd() const                      = 0;
 		virtual Emptiable<int> GetFd() const                      = 0;
-		virtual Result<void>   Send(int fd);
+		Result<void>           Send(int fd);
 		bool                   HasReadyData() const;
 		bool                   IsFinished() const;
 		bool                   NeedToClose() const;
