@@ -248,9 +248,8 @@ namespace server
 		}
 		if (!response->HasReadyData() && response->IsFinished()) {
 			log("finish", response->GetFd().Value());
-			IRequest *request = in_progress_.front().request;
-			need_to_close_    = request->NeedToClose();
-			Instructions i    = FinishFrontResponse();
+			need_to_close_ = response->NeedToClose();
+			Instructions i = FinishFrontResponse();
 			insts.splice(insts.end(), i);
 			// ここでqueueに残ってれば開始したいけど今max queue size() 1だからやってない
 		}

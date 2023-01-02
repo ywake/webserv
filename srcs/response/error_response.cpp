@@ -18,9 +18,10 @@ namespace response
 		: AResponse(request), config_(conf)
 	{
 		log("error res construct", status_code.GetCode());
+		need_to_close_ = status_code == http::StatusCode::kBadRequest;
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, status_code);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		if (status_code == http::StatusCode::kMethodNotAllowed ||
 			status_code == http::StatusCode::kNotImplemented) {
 			const conf::LocationConf &location = config_.FindMatchingLocationConf(request.Path());

@@ -69,7 +69,7 @@ namespace response
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Content-Type", "text/html");
 		MetaDataStorage::StoreHeader("Content-Length", utils::ToString(page.size()));
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::StoreHeader("Location", CreateLocationUrl(request_path));
 		MetaDataStorage::PushWithCrLf();
 		push_back(page);
@@ -88,7 +88,7 @@ namespace response
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Content-Type", http::MimeType::GetMimeType(path));
 		MetaDataStorage::StoreHeader("Content-Length", utils::ToString(file_size));
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 	}
 
@@ -100,7 +100,7 @@ namespace response
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Content-Type", "text/html");
 		MetaDataStorage::StoreHeader("Content-Length", utils::ToString(autoindex.size()));
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 		push_back(autoindex);
 		is_finished_ = true;

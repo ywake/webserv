@@ -30,7 +30,7 @@ namespace response
 		managed_fd_                  = TryOpen(filename_);
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kCreated);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::StoreHeader("Location", CreateLocationUrl(uniq_path));
 		// TODO other headers 何必要か分からん
 	}

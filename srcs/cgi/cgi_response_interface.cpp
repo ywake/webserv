@@ -118,6 +118,7 @@ namespace cgi
 		} else {
 			code = http::StatusCode(http::StatusCode::kOK);
 		}
+		need_to_close_ = code == http::StatusCode::kBadRequest;
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, code);
 		StoreHeadersToSendBody(field_section);
 		MetaDataStorage::PushWithCrLf();
@@ -129,6 +130,7 @@ namespace cgi
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kFound);
 		MetaDataStorage::StoreHeader(http::kServer, http::kServerName);
 		MetaDataStorage::StoreHeader("location", uri);
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 	}
 
@@ -203,6 +205,7 @@ namespace cgi
 	void CgiResponse::StoreHeadersToSendBody(const http::FieldSection &field_section)
 	{
 		MetaDataStorage::StoreHeader(http::kServer, http::kServerName);
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		if (!field_section.Contains(http::kTransferEncoding)) {
 			MetaDataStorage::StoreHeader(http::kTransferEncoding, http::kChunked);
 		}
