@@ -14,7 +14,12 @@ namespace cgi
 	const std::string CgiResponse::kCgiVersion = "1.1";
 
 	// main constructor
-	CgiResponse::CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf)
+	CgiResponse::CgiResponse(
+		server::IRequest              &request,
+		const conf::LocationConf      &location_conf,
+		const struct sockaddr_storage *server,
+		const struct sockaddr_storage *client
+	)
 		: AResponse(request),
 		  location_conf_(location_conf),
 		  body_writer_(request.GetBody()),
@@ -22,7 +27,7 @@ namespace cgi
 		  pid_(-1)
 	{
 		log(COL_BOLD "=== Cgi Response Constructor ===" COL_END);
-		if (location_conf_.GetCgiPath().empty()) {
+		if (location_conf_.GetCgiPath().empty() || server == NULL || client == NULL) {
 			throw std::logic_error("cgi path empty");
 		}
 		ManagedFd child_fd;

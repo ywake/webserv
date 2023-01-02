@@ -116,7 +116,7 @@ namespace server
 	{
 		log("AddNewCgiResponse");
 		Instructions insts;
-		task->response = new cgi::CgiResponse(*task->request, location);
+		task->response = new cgi::CgiResponse(*task->request, location, server_, client_);
 		if (task->response->HasFd()) {
 			insts.push_back(Instruction(
 				Instruction::kRegister,

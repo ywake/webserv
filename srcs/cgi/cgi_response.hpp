@@ -1,6 +1,7 @@
 #ifndef CGI_RESPONSE_HPP
 #define CGI_RESPONSE_HPP
 
+#include <netinet/in.h>
 #include <unistd.h>
 
 #include "a_response.hpp"
@@ -46,7 +47,12 @@ namespace cgi
 		CgiResponse &operator=(const CgiResponse &other);
 
 	  public:
-		CgiResponse(server::IRequest &request, const conf::LocationConf &location_conf);
+		CgiResponse(
+			server::IRequest              &request,
+			const conf::LocationConf      &location_conf,
+			const struct sockaddr_storage *server,
+			const struct sockaddr_storage *client
+		);
 		~CgiResponse();
 
 		// Methods
