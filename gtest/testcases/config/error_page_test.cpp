@@ -89,4 +89,44 @@ TEST(config, error_page)
 							  "}"),
 		conf::ConfigException
 	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "root /var/www;"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page 404  ;"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "root /var/www;"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page 299 /404.html;"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "root /var/www;"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page 600 /404.html;"
+							  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "root /var/www;"
+							  "listen 80;"
+							  "server_name localhost;"
+							  "error_page 404 404.html;"
+							  "}"),
+		conf::ConfigException
+	);
 }
