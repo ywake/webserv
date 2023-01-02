@@ -19,9 +19,8 @@ namespace
 
 namespace cgi
 {
-	void CgiResponse::ExecChild(
-		const std::string &script_path, ManagedFd &child_fd, const StringArray &envs
-	)
+	void
+	CgiResponse::ExecChild(ManagedFd &child_fd, const StringArray &args, const StringArray &envs)
 	{
 		try {
 			log("child process");
@@ -36,16 +35,15 @@ namespace cgi
 				perror("dup2");
 				exit(1);
 			}
-			const std::string &cgi_path = location_conf_.GetCgiPath().Value();
-			StringArray        argv     = CreateArgs(cgi_path, script_path, request_.Query());
-			Result<void>       cd_res   = ChangeDir(utils::GetDirName(script_path));
+			const std::string &script_path = args.Strings()[1];
+			Result<void>       cd_res      = ChangeDir(utils::GetDirName(script_path));
 			if (cd_res.IsErr()) {
 				log("cgi", cd_res.Err());
 				exit(1);
 			}
 			execve(
-				cgi_path.c_str(),
-				const_cast<char *const *>(argv.CArray()),
+				args.CArray()[0],
+				const_cast<char *const *>(args.CArray()),
 				const_cast<char *const *>(envs.CArray())
 			);
 		} catch (std::exception &e) {
@@ -54,18 +52,6 @@ namespace cgi
 			log("unknown exceptionin cgi child");
 		}
 		exit(1);
-	}
-
-	std::vector<std::string> CgiResponse::CreateArgs(
-		const std::string &cgi_path, const std::string &script_path, const std::string &query
-	)
-	{
-		std::vector<std::string> args;
-
-		args.push_back(cgi_path);
-		args.push_back(script_path);
-		(void)query; // TODO query
-		return args;
 	}
 
 } // namespace cgi

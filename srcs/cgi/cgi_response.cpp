@@ -78,11 +78,13 @@ namespace cgi
 			if (querys.IsErr()) {
 				throw http::BadRequestException();
 			}
-			Result<StringArray> envs = CreateEnvVariables(script_name, server, client);
+			const std::string  &cgi_path = location_conf_.GetCgiPath().Value();
+			StringArray         cgi_args = CreateCgiArgs(cgi_path, script_path, querys.Val());
+			Result<StringArray> envs     = CreateEnvVariables(script_name, server, client);
 			if (envs.IsErr()) {
 				throw http::InternalServerErrorException();
 			}
-			if (ExecCgi(script_path, child_fd, envs.Val()).IsErr()) {
+			if (ExecCgi(child_fd, cgi_args, envs.Val()).IsErr()) {
 				throw http::InternalServerErrorException();
 			}
 		} else {
@@ -162,6 +164,20 @@ namespace cgi
 		return querys;
 	}
 
+	std::vector<std::string> CgiResponse::CreateCgiArgs(
+		const std::string              &cgi_path,
+		const std::string              &script_path,
+		const std::vector<std::string> &querys
+	)
+	{
+		std::vector<std::string> args;
+
+		args.push_back(cgi_path);
+		args.push_back(script_path);
+		args.insert(args.end(), querys.begin(), querys.end());
+		return args;
+	}
+
 	Result<StringArray> CgiResponse::CreateEnvVariables(
 		const std::string             &script_name,
 		const struct sockaddr_storage *server,
@@ -193,17 +209,16 @@ namespace cgi
 		return StringArray(envs);
 	}
 
-	Result<void> CgiResponse::ExecCgi(
-		const std::string &script_path, ManagedFd &child_fd, const StringArray &envs
-	)
+	Result<void>
+	CgiResponse::ExecCgi(ManagedFd &child_fd, const StringArray &args, const StringArray &envs)
 	{
-		log("cgi execute", location_conf_.GetCgiPath().Value() + " " + script_path);
+		log("cgi execute", location_conf_.GetCgiPath().Value() + " " + args.Strings()[1]);
 		pid_ = fork();
 		switch (pid_) {
 		case -1:
 			return Error();
 		case 0:
-			ExecChild(script_path, child_fd, envs);
+			ExecChild(child_fd, args, envs);
 			exit(0); // not reach,
 		default:
 			child_fd.Close();

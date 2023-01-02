@@ -71,23 +71,23 @@ namespace cgi
 		Result<void> PushMetaDataToSendBody(const http::FieldSection &field_section);
 		void         PushMetaDataForClientRedirect(const std::string &uri);
 		void         ThrowLocalRedirect(const http::FieldSection &field_section);
+		void         OnWriteReady();
+		void         ExecuteDirectoryRedirect(const std::string &request_path);
 
-		void OnWriteReady();
-		Result<void>
-		ExecCgi(const std::string &script_path, ManagedFd &child_fd, const StringArray &envs);
-		void
-		ExecChild(const std::string &script_path, ManagedFd &child_fd, const StringArray &envs);
-		std::vector<std::string> CreateArgs(
-			const std::string &cgi_path, const std::string &script_name, const std::string &query
+		std::string              CreateLocationUrl(const std::string &path) const;
+		std::vector<std::string> CreateCgiArgs(
+			const std::string              &cgi_path,
+			const std::string              &script_path,
+			const std::vector<std::string> &querys
 		);
-		void        ExecuteDirectoryRedirect(const std::string &request_path);
-		std::string CreateLocationUrl(const std::string &path) const;
-
 		Result<StringArray> CreateEnvVariables(
 			const std::string             &script_name,
 			const struct sockaddr_storage *server,
 			const struct sockaddr_storage *client
 		);
+		Result<void> ExecCgi(ManagedFd &child_fd, const StringArray &args, const StringArray &envs);
+		void ExecChild(ManagedFd &child_fd, const StringArray &args, const StringArray &envs);
+
 		void StoreHeadersToSendBody(const http::FieldSection &field_section);
 
 		bool IsLocalRedirect(const http::FieldSection &field_section) const;
