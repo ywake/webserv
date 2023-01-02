@@ -11,6 +11,7 @@ class StringArray
 	std::vector<const char *> c_strings_;
 
   public:
+	StringArray();
 	StringArray(const std::vector<std::string> &strings);
 	StringArray(const StringArray &rhs);
 	StringArray                    &operator=(const StringArray &other);

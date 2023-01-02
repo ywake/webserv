@@ -22,16 +22,23 @@ namespace cgi
 	const std::string kServerProtocol   = "SERVER_PROTOCOL";
 	const std::string kServerSoftware   = "SERVER_SOFTWARE";
 
+	void SetEnv(std::vector<std::string> &envs, const std::string &key, const std::string value)
+	{
+		envs.push_back(key + "=" + value);
+	}
+
 	/**
 	 * message-bodyの大きさをオクテット単位で10進数で設定。なければ未設定
 	 * 転送符号化や内容符号化を除去した後の長さ
 	 */
-	void SetContentLength(MetaEnvs &envs, const server::IRequest &request)
+	void SetContentLength(std::vector<std::string> &envs, const server::IRequest &request)
 	{
 		if (!request.HasMessageBody()) {
 			return;
 		}
-		envs[cgi::kContentLength] = request.Headers()[http::kContentLength].front().GetValue();
+		SetEnv(
+			envs, cgi::kContentLength, request.Headers()[http::kContentLength].front().GetValue()
+		);
 	}
 
 	/**
@@ -45,23 +52,23 @@ namespace cgi
 	 * media-type = type "/" subtype *( ";" parameter )
 	 * parameter = attribute "=" value
 	 */
-	void SetContentType(MetaEnvs &envs, const server::IRequest &request)
+	void SetContentType(std::vector<std::string> &envs, const server::IRequest &request)
 	{
 		const HeaderSection::Values &vals = request.Headers()["Content-Type"];
 		if (vals.empty()) {
 			return;
 		}
 		// list(#表記)が許可されてないので先頭のみ処理
-		envs[cgi::kContentType] = vals.front().GetValue();
+		SetEnv(envs, cgi::kContentType, vals.front().GetValue());
 	}
 
 	// [RFC3875 4.1.4]
 	// The GATEWAY_INTERFACE variable MUST be set to the dialect of CGI being used by the server to
 	// communicate with the script.
 	// GATEWAY_INTERFACE = "CGI" "/" 1*digit "." 1*digit
-	void SetGatewayInterface(MetaEnvs &envs)
+	void SetGatewayInterface(std::vector<std::string> &envs)
 	{
-		envs[cgi::kGatewayInterface] = "CGI/" + CgiResponse::kCgiVersion;
+		SetEnv(envs, cgi::kGatewayInterface, "CGI/" + CgiResponse::kCgiVersion);
 	}
 
 	// [RFC3875 4.1.5. PATH_INFO] script_nameの後ろ
@@ -70,18 +77,19 @@ namespace cgi
 	// [RFC3875 4.1.13. SCRIPT_NAME] The SCRIPT_NAME variable MUST be set to a URI path
 	// (not URL-encoded) which could identify the CGI script (rather than the script's output).
 	void SetPathEnvs(
-		MetaEnvs               &envs,
-		const server::IRequest &request,
-		const std::string      &root,
-		const std::string      &script_name
+		std::vector<std::string> &envs,
+		const server::IRequest   &request,
+		const std::string        &root,
+		const std::string        &script_name
 	)
 	{
-		envs[cgi::kScriptName] = script_name;
+		SetEnv(envs, cgi::kScriptName, script_name);
 		if (script_name.size() >= request.Path().size()) {
 			return;
 		}
-		envs[cgi::kPathInfo]       = request.Path().substr(script_name.size());
-		envs[cgi::kPathTranslated] = utils::JoinPath(root, envs[cgi::kPathInfo]);
+		std::string path_info = request.Path().substr(script_name.size());
+		SetEnv(envs, cgi::kPathInfo, path_info);
+		SetEnv(envs, cgi::kPathTranslated, utils::JoinPath(root, path_info));
 	}
 
 	// [RFC3875 4.1.7. QUERY_STRING]
@@ -91,53 +99,53 @@ namespace cgi
 	// a script cannot distinguish between the two requests
 	// http://host/script and http://host/script?
 	// as in both cases the QUERY_STRING meta-variable would be NULL.
-	void SetQueryString(MetaEnvs &envs, const server::IRequest &request)
+	void SetQueryString(std::vector<std::string> &envs, const server::IRequest &request)
 	{
-		envs[cgi::kQueryString] = request.Query();
+		SetEnv(envs, cgi::kQueryString, request.Query());
 	}
 
 	// [RFC3875 4.1.8. REMOTE_ADDR]
-	void SetRemoteAddr(MetaEnvs &envs, const std::string &ip)
+	void SetRemoteAddr(std::vector<std::string> &envs, const std::string &ip)
 	{
-		envs[cgi::kRemoteAddr] = ip;
+		SetEnv(envs, cgi::kRemoteAddr, ip);
 	}
 
 	// [RFC3875 4.1.12. REQUEST_METHOD]
 	// The REQUEST_METHOD meta-variable MUST be set to the method
-	void SetRequestMethod(MetaEnvs &envs, const server::IRequest &request)
+	void SetRequestMethod(std::vector<std::string> &envs, const server::IRequest &request)
 	{
-		envs[cgi::kRequestMethod] = request.Method();
+		SetEnv(envs, cgi::kRequestMethod, request.Method());
 	}
 
 	// [RFC3875 4.1.14. SERVER_NAME]
 	// he SERVER_NAME variable MUST be set to the name of the server host
 	// to which the client request is directed.
-	void SetServerName(MetaEnvs &envs, const server::IRequest &request)
+	void SetServerName(std::vector<std::string> &envs, const server::IRequest &request)
 	{
-		envs[cgi::kServerName] = request.Host();
+		SetEnv(envs, cgi::kServerName, request.Host());
 	}
 
 	// [RFC3875 4.1.15. SERVER_PORT]
-	void SetServerPort(MetaEnvs &envs, const std::string &port)
+	void SetServerPort(std::vector<std::string> &envs, const std::string &port)
 	{
-		envs[cgi::kServerPort] = port;
+		SetEnv(envs, cgi::kServerPort, port);
 	}
 
 	// [RFC3875 4.1.16. SERVER_PROTOCOL]
 	// he SERVER_PROTOCOL variable MUST be set to the name
 	// and version of the application protocol used for this CGI request.
-	void SetServerProtocol(MetaEnvs &envs)
+	void SetServerProtocol(std::vector<std::string> &envs)
 	{
-		envs[cgi::kServerProtocol] = http::kHttpVersion;
+		SetEnv(envs, cgi::kServerProtocol, http::kHttpVersion);
 	}
 
 	// [RFC3875 4.1.17. SERVER_SOFTWARE]
 	// The SERVER_SOFTWARE meta-variable MUST be set to the name
 	// and version of the information server software making the CGI request
 	// (and running the gateway).
-	void SetServerSoftware(MetaEnvs &envs)
+	void SetServerSoftware(std::vector<std::string> &envs)
 	{
-		envs[cgi::kServerSoftware] = http::kServerName;
+		SetEnv(envs, cgi::kServerSoftware, http::kServerName);
 	}
 
 } // namespace cgi

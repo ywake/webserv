@@ -1,5 +1,7 @@
 #include "string_array.hpp"
 
+StringArray::StringArray() : strings_(), c_strings_() {}
+
 StringArray::StringArray(const std::vector<std::string> &strings) : strings_(strings)
 {
 	InitCstrings(strings_);

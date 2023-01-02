@@ -6,8 +6,6 @@
 
 namespace cgi
 {
-	typedef std::map<std::string, std::string> MetaEnvs;
-
 	extern const std::string kContentLength;
 	extern const std::string kContentType;
 	extern const std::string kGatewayInterface;
@@ -22,20 +20,20 @@ namespace cgi
 	extern const std::string kServerProtocol;
 	extern const std::string kServerSoftware;
 
-	void SetContentLength(MetaEnvs &envs, const server::IRequest &request);
-	void SetContentType(MetaEnvs &envs, const server::IRequest &request);
-	void SetGatewayInterface(MetaEnvs &envs);
+	void SetContentLength(std::vector<std::string> &envs, const server::IRequest &request);
+	void SetContentType(std::vector<std::string> &envs, const server::IRequest &request);
+	void SetGatewayInterface(std::vector<std::string> &envs);
 	void SetPathEnvs(
-		MetaEnvs               &envs,
-		const server::IRequest &request,
-		const std::string      &root,
-		const std::string      &script_name
+		std::vector<std::string> &envs,
+		const server::IRequest   &request,
+		const std::string        &root,
+		const std::string        &script_name
 	);
-	void SetQueryString(MetaEnvs &envs, const server::IRequest &request);
-	void SetRemoteAddr(MetaEnvs &envs, const std::string &ip);
-	void SetRequestMethod(MetaEnvs &envs, const server::IRequest &request);
-	void SetServerName(MetaEnvs &envs, const server::IRequest &request);
-	void SetServerPort(MetaEnvs &envs, const std::string &port);
-	void SetServerProtocol(MetaEnvs &envs);
-	void SetServerSoftware(MetaEnvs &envs);
+	void SetQueryString(std::vector<std::string> &envs, const server::IRequest &request);
+	void SetRemoteAddr(std::vector<std::string> &envs, const std::string &ip);
+	void SetRequestMethod(std::vector<std::string> &envs, const server::IRequest &request);
+	void SetServerName(std::vector<std::string> &envs, const server::IRequest &request);
+	void SetServerPort(std::vector<std::string> &envs, const std::string &port);
+	void SetServerProtocol(std::vector<std::string> &envs);
+	void SetServerSoftware(std::vector<std::string> &envs);
 } // namespace cgi

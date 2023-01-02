@@ -4,10 +4,7 @@
 #include "cgi_response.hpp"
 #include "debug.hpp"
 #include "meta_env.hpp"
-#include "string_array.hpp"
 #include "webserv_utils.hpp"
-
-extern char **environ;
 
 namespace
 {
@@ -23,7 +20,7 @@ namespace
 namespace cgi
 {
 	void CgiResponse::ExecChild(
-		const std::string &script_path, ManagedFd &child_fd, const MetaEnvs &envs
+		const std::string &script_path, ManagedFd &child_fd, const StringArray &envs
 	)
 	{
 		try {
@@ -41,7 +38,6 @@ namespace cgi
 			}
 			const std::string &cgi_path = location_conf_.GetCgiPath().Value();
 			StringArray        argv     = CreateArgs(cgi_path, script_path, request_.Query());
-			StringArray        envp     = CreateEnvs(envs);
 			Result<void>       cd_res   = ChangeDir(utils::GetDirName(script_path));
 			if (cd_res.IsErr()) {
 				log("cgi", cd_res.Err());
@@ -50,7 +46,7 @@ namespace cgi
 			execve(
 				cgi_path.c_str(),
 				const_cast<char *const *>(argv.CArray()),
-				const_cast<char *const *>(envp.CArray())
+				const_cast<char *const *>(envs.CArray())
 			);
 		} catch (std::exception &e) {
 			e.what();
@@ -70,21 +66,6 @@ namespace cgi
 		args.push_back(script_path);
 		(void)query; // TODO query
 		return args;
-	}
-
-	std::vector<std::string> CgiResponse::CreateEnvs(const MetaEnvs &envs)
-	{
-		std::vector<std::string> envp;
-		const char              *path = getenv("PATH");
-		if (path != NULL) {
-			envp.push_back(path);
-		}
-		for (MetaEnvs::const_iterator it = envs.begin(); it != envs.end(); ++it) {
-			const std::string &key = it->first;
-			const std::string &val = it->second;
-			envp.push_back(key + "=" + val);
-		}
-		return envp;
 	}
 
 } // namespace cgi

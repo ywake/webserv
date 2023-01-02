@@ -15,6 +15,7 @@
 #include "receiver.hpp"
 #include "resolve_index_file.hpp"
 #include "stat.hpp"
+#include "string_array.hpp"
 
 namespace cgi
 {
@@ -72,20 +73,20 @@ namespace cgi
 
 		void OnWriteReady();
 		Result<void>
-			 ExecCgi(const std::string &script_path, ManagedFd &child_fd, const MetaEnvs &envs);
-		void ExecChild(const std::string &script_path, ManagedFd &child_fd, const MetaEnvs &envs);
+		ExecCgi(const std::string &script_path, ManagedFd &child_fd, const StringArray &envs);
+		void
+		ExecChild(const std::string &script_path, ManagedFd &child_fd, const StringArray &envs);
 		std::vector<std::string> CreateArgs(
 			const std::string &cgi_path, const std::string &script_name, const std::string &query
 		);
 		void        ExecuteDirectoryRedirect(const std::string &request_path);
 		std::string CreateLocationUrl(const std::string &path) const;
 
-		std::vector<std::string> CreateEnvs(const MetaEnvs &envs);
-		Result<MetaEnvs>         SetMetaVariables(
-					const std::string             &script_name,
-					const struct sockaddr_storage *server,
-					const struct sockaddr_storage *client
-				);
+		Result<StringArray> CreateEnvVariables(
+			const std::string             &script_name,
+			const struct sockaddr_storage *server,
+			const struct sockaddr_storage *client
+		);
 		void StoreHeadersToSendBody(const http::FieldSection &field_section);
 
 		bool IsLocalRedirect(const http::FieldSection &field_section) const;

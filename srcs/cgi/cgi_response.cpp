@@ -73,7 +73,7 @@ namespace cgi
 		if (st.IsDirectory()) {
 			ExecuteDirectoryRedirect(script_name + "/");
 		} else if (st.IsRegularFile()) {
-			Result<MetaEnvs> envs = SetMetaVariables(script_name, server, client);
+			Result<StringArray> envs = CreateEnvVariables(script_name, server, client);
 			if (envs.IsErr()) {
 				throw http::InternalServerErrorException();
 			}
@@ -136,18 +136,22 @@ namespace cgi
 		return resolved.Val();
 	}
 
-	Result<MetaEnvs> CgiResponse::SetMetaVariables(
+	Result<StringArray> CgiResponse::CreateEnvVariables(
 		const std::string             &script_name,
 		const struct sockaddr_storage *server,
 		const struct sockaddr_storage *client
 	)
 	{
-		MetaEnvs                                     envs;
+		std::vector<std::string>                     envs;
 		Result<std::pair<std::string, std::string> > sv_ip_port = GetSocketAddress(server);
 		Result<std::pair<std::string, std::string> > cl_ip_port = GetSocketAddress(client);
 
 		if (sv_ip_port.IsErr() || cl_ip_port.IsErr()) {
 			return Error();
+		}
+		const char *path = getenv("PATH");
+		if (path != NULL) {
+			envs.push_back(path);
 		}
 		SetContentLength(envs, request_);
 		SetContentType(envs, request_);
@@ -160,11 +164,12 @@ namespace cgi
 		SetServerPort(envs, sv_ip_port.Val().second);
 		SetServerProtocol(envs);
 		SetServerSoftware(envs);
-		return envs;
+		return StringArray(envs);
 	}
 
-	Result<void>
-	CgiResponse::ExecCgi(const std::string &script_path, ManagedFd &child_fd, const MetaEnvs &envs)
+	Result<void> CgiResponse::ExecCgi(
+		const std::string &script_path, ManagedFd &child_fd, const StringArray &envs
+	)
 	{
 		log("cgi execute", location_conf_.GetCgiPath().Value() + " " + script_path);
 		pid_ = fork();
