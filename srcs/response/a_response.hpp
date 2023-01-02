@@ -16,6 +16,7 @@ namespace response
 	  protected:
 		const server::IRequest &request_;
 		bool                    is_finished_;
+		bool                    need_to_close_;
 
 	  private:
 		AResponse();
@@ -31,6 +32,7 @@ namespace response
 		virtual Result<void>   Send(int fd);
 		bool                   HasReadyData() const;
 		bool                   IsFinished() const;
+		bool                   NeedToClose() const;
 		std::size_t            size() const;
 	};
 } // namespace response
