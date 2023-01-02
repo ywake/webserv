@@ -32,8 +32,10 @@ namespace cgi
 		const std::string      &script_name
 	);
 	void SetQueryString(MetaEnvs &envs, const server::IRequest &request);
+	void SetRemoteAddr(MetaEnvs &envs, const std::string &ip);
 	void SetRequestMethod(MetaEnvs &envs, const server::IRequest &request);
 	void SetServerName(MetaEnvs &envs, const server::IRequest &request);
+	void SetServerPort(MetaEnvs &envs, const std::string &port);
 	void SetServerProtocol(MetaEnvs &envs);
 	void SetServerSoftware(MetaEnvs &envs);
 } // namespace cgi

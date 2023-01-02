@@ -96,12 +96,11 @@ namespace cgi
 		envs[cgi::kQueryString] = request.Query();
 	}
 
-	// TODO
 	// [RFC3875 4.1.8. REMOTE_ADDR]
-	// void SetRemoteAddr(MetaEnvs &envs, const server::IRequest &request)
-	// {
-	// 	envs[cgi::kRemoteAddr] = ;
-	// }
+	void SetRemoteAddr(MetaEnvs &envs, const std::string &ip)
+	{
+		envs[cgi::kRemoteAddr] = ip;
+	}
 
 	// [RFC3875 4.1.12. REQUEST_METHOD]
 	// The REQUEST_METHOD meta-variable MUST be set to the method
@@ -118,12 +117,11 @@ namespace cgi
 		envs[cgi::kServerName] = request.Host();
 	}
 
-	// TODO
 	// [RFC3875 4.1.15. SERVER_PORT]
-	// void SetServerPort(MetaEnvs &envs, const server::IRequest &request)
-	// {
-	// 	envs[cgi::kServerPort] = ;
-	// }
+	void SetServerPort(MetaEnvs &envs, const std::string &port)
+	{
+		envs[cgi::kServerPort] = port;
+	}
 
 	// [RFC3875 4.1.16. SERVER_PROTOCOL]
 	// he SERVER_PROTOCOL variable MUST be set to the name
