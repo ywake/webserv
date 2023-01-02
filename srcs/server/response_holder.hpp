@@ -5,8 +5,8 @@
 #include <netinet/in.h>
 #include <utility>
 
+#include "a_response.hpp"
 #include "i_request.hpp"
-#include "i_response.hpp"
 #include "instruction.hpp"
 #include "result.hpp"
 #include "status_code.hpp"
@@ -20,9 +20,9 @@ namespace server
 	  private:
 		typedef void (*RequestDelFunc)(IRequest *&);
 		typedef struct Task {
-			IRequest   *request;
-			IResponse  *response;
-			std::size_t local_redir_count;
+			IRequest            *request;
+			response::AResponse *response;
+			std::size_t          local_redir_count;
 		} Task;
 
 	  private:
@@ -66,7 +66,7 @@ namespace server
 		event::Instructions AddNewErrorResponse(
 			Task *task, const http::StatusCode &status_code, const conf::ServerConf &sv_conf
 		);
-		event::Instructions            CreateInstructionsForError(const IResponse &response);
+		event::Instructions CreateInstructionsForError(const response::AResponse &response);
 		inline const conf::ServerConf &GetServerConf(const IRequest &request);
 	};
 } // namespace server

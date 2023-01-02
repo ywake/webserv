@@ -168,7 +168,7 @@ namespace server
 		return CreateInstructionsForError(*task->response);
 	}
 
-	Instructions ResponseHolder::CreateInstructionsForError(const IResponse &response)
+	Instructions ResponseHolder::CreateInstructionsForError(const response::AResponse &response)
 	{
 		Instructions insts;
 
@@ -187,9 +187,9 @@ namespace server
 	{
 		Instructions insts;
 
-		Task      &task     = in_progress_.front(); // ほんとはmap[fd][task]から探す
-		IRequest  *request  = task.request;
-		IResponse *response = task.response; // ほんとはmap[fd][task]から探す
+		Task                &task = in_progress_.front(); // ほんとはmap[fd][task]から探す
+		IRequest            *request  = task.request;
+		response::AResponse *response = task.response; // ほんとはmap[fd][task]から探す
 		try {
 			response->Perform(event);
 			if (response->size() > kMaxBufSize) {
@@ -232,8 +232,8 @@ namespace server
 	{
 		Instructions insts;
 
-		IResponse   *response    = in_progress_.front().response;
-		Result<void> send_result = response->Send(conn_fd_);
+		response::AResponse *response    = in_progress_.front().response;
+		Result<void>         send_result = response->Send(conn_fd_);
 		if (send_result.IsErr()) {
 			need_to_close_ = true;
 			return send_result.Err();
@@ -269,8 +269,8 @@ namespace server
 		if (in_progress_.empty()) {
 			return insts;
 		}
-		IRequest  *request  = in_progress_.front().request;
-		IResponse *response = in_progress_.front().response;
+		IRequest            *request  = in_progress_.front().request;
+		response::AResponse *response = in_progress_.front().response;
 		request_del_(request);
 		delete (response);
 		in_progress_.pop_front();
@@ -296,8 +296,8 @@ namespace server
 	ResponseHolder::~ResponseHolder()
 	{
 		for (; !in_progress_.empty();) {
-			IRequest  *request  = in_progress_.front().request;
-			IResponse *response = in_progress_.front().response;
+			IRequest            *request  = in_progress_.front().request;
+			response::AResponse *response = in_progress_.front().response;
 			request_del_(request);
 			delete (response);
 			in_progress_.pop_front();

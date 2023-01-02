@@ -1,16 +1,15 @@
 #ifndef A_RESPONSE_HPP
 #define A_RESPONSE_HPP
 
+#include "event.hpp"
 #include "i_request.hpp"
-#include "i_response.hpp"
 #include "meta_data_storage.hpp"
 #include "queuing_reader.hpp"
 #include "queuing_writer.hpp"
 
 namespace response
 {
-	class AResponse : public server::IResponse,
-					  public q_buffer::QueuingReader,
+	class AResponse : public q_buffer::QueuingReader,
 					  public q_buffer::QueuingWriter,
 					  public server::MetaDataStorage
 	{

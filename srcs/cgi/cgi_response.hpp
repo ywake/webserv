@@ -8,7 +8,6 @@
 #include "body_writer.hpp"
 #include "cgi_parser.hpp"
 #include "i_request.hpp"
-#include "i_response.hpp"
 #include "location_conf.hpp"
 #include "managed_fd.hpp"
 #include "meta_env.hpp"
