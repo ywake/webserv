@@ -81,8 +81,12 @@ namespace cgi
 		std::string CreateLocationUrl(const std::string &path) const;
 
 		std::vector<std::string> CreateEnvs(const MetaEnvs &envs);
-		MetaEnvs                 SetMetaVariables(const std::string &script_name);
-		void                     StoreHeadersToSendBody(const http::FieldSection &field_section);
+		Result<MetaEnvs>         SetMetaVariables(
+					const std::string             &script_name,
+					const struct sockaddr_storage *server,
+					const struct sockaddr_storage *client
+				);
+		void StoreHeadersToSendBody(const http::FieldSection &field_section);
 
 		bool IsLocalRedirect(const http::FieldSection &field_section) const;
 		bool IsClientRedirect(const http::FieldSection &field_section) const;

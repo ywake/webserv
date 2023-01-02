@@ -1,13 +1,38 @@
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <utility>
+#include <vector>
+
 #include "cgi_response.hpp"
 #include "debug.hpp"
 #include "http_exceptions.hpp"
 #include "stat.hpp"
 #include "webserv_utils.hpp"
-#include <sys/socket.h>
-#include <sys/wait.h>
-#include <unistd.h>
+namespace
+{
+	Result<std::pair<std::string, std::string> >
+	GetSocketAddress(const struct sockaddr_storage *addr)
+	{
+		socklen_t socklen   = sizeof(addr);
+		char      ip[256]   = {};
+		char      port[256] = {};
 
-#include <vector>
+		if (getnameinfo(
+				(struct sockaddr *)addr,
+				socklen,
+				ip,
+				sizeof(ip),
+				port,
+				sizeof(port),
+				NI_NUMERICHOST | NI_NUMERICSERV
+			) != 0) {
+			return Error("getnameinfo error");
+		}
+		return std::pair<std::string, std::string>(ip, port);
+	}
+} // namespace
 
 namespace cgi
 {
@@ -48,8 +73,11 @@ namespace cgi
 		if (st.IsDirectory()) {
 			ExecuteDirectoryRedirect(script_name + "/");
 		} else if (st.IsRegularFile()) {
-			MetaEnvs envs = SetMetaVariables(script_name);
-			if (ExecCgi(script_path, child_fd, envs).IsErr()) {
+			Result<MetaEnvs> envs = SetMetaVariables(script_name, server, client);
+			if (envs.IsErr()) {
+				throw http::InternalServerErrorException();
+			}
+			if (ExecCgi(script_path, child_fd, envs.Val()).IsErr()) {
 				throw http::InternalServerErrorException();
 			}
 		} else {
@@ -108,17 +136,28 @@ namespace cgi
 		return resolved.Val();
 	}
 
-	MetaEnvs CgiResponse::SetMetaVariables(const std::string &script_name)
+	Result<MetaEnvs> CgiResponse::SetMetaVariables(
+		const std::string             &script_name,
+		const struct sockaddr_storage *server,
+		const struct sockaddr_storage *client
+	)
 	{
-		MetaEnvs envs;
+		MetaEnvs                                     envs;
+		Result<std::pair<std::string, std::string> > sv_ip_port = GetSocketAddress(server);
+		Result<std::pair<std::string, std::string> > cl_ip_port = GetSocketAddress(client);
 
+		if (sv_ip_port.IsErr() || cl_ip_port.IsErr()) {
+			return Error();
+		}
 		SetContentLength(envs, request_);
 		SetContentType(envs, request_);
 		SetGatewayInterface(envs);
 		SetPathEnvs(envs, request_, location_conf_.GetRoot(), script_name);
 		SetQueryString(envs, request_);
+		SetRemoteAddr(envs, cl_ip_port.Val().first);
 		SetRequestMethod(envs, request_);
 		SetServerName(envs, request_);
+		SetServerPort(envs, sv_ip_port.Val().second);
 		SetServerProtocol(envs);
 		SetServerSoftware(envs);
 		return envs;
