@@ -1,3 +1,5 @@
+#include <cerrno>
+#include <fcntl.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
@@ -33,6 +35,18 @@ namespace
 			return Error(gai_strerror(res));
 		}
 		return std::pair<std::string, std::string>(ip, port);
+	}
+
+	Result<void> SetNonBlocking(int fd)
+	{
+		int flag = fcntl(fd, F_GETFL, 0);
+		if (flag == -1) {
+			return Error("fcntl: " + std::string(strerror(errno)));
+		}
+		if (fcntl(fd, F_SETFL, flag | O_NONBLOCK) == -1) {
+			return Error("fcntl: " + std::string(strerror(errno)));
+		}
+		return Result<void>();
 	}
 } // namespace
 
@@ -101,9 +115,16 @@ namespace cgi
 		if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) == -1) {
 			return Error();
 		}
-		parent_fd = ManagedFd(fds[0]);
-		child_fd  = ManagedFd(fds[1]);
-		// TODO NON_BLOCKING
+		parent_fd          = ManagedFd(fds[0]);
+		child_fd           = ManagedFd(fds[1]);
+		Result<void> p_res = SetNonBlocking(parent_fd.GetFd());
+		if (p_res.IsErr()) {
+			return p_res.Err();
+		}
+		Result<void> c_res = SetNonBlocking(child_fd.GetFd());
+		if (c_res.IsErr()) {
+			return c_res.Err();
+		}
 		return Result<void>();
 	}
 
