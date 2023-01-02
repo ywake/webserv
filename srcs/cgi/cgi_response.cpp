@@ -16,20 +16,21 @@ namespace
 	Result<std::pair<std::string, std::string> >
 	GetSocketAddress(const struct sockaddr_storage *addr)
 	{
-		socklen_t socklen   = sizeof(addr);
+		socklen_t socklen   = sizeof(*addr);
 		char      ip[256]   = {};
 		char      port[256] = {};
 
-		if (getnameinfo(
-				(struct sockaddr *)addr,
-				socklen,
-				ip,
-				sizeof(ip),
-				port,
-				sizeof(port),
-				NI_NUMERICHOST | NI_NUMERICSERV
-			) != 0) {
-			return Error("getnameinfo error");
+		int res = getnameinfo(
+			(struct sockaddr *)addr,
+			socklen,
+			ip,
+			sizeof(ip),
+			port,
+			sizeof(port),
+			NI_NUMERICHOST | NI_NUMERICSERV
+		);
+		if (res != 0) {
+			return Error(gai_strerror(res));
 		}
 		return std::pair<std::string, std::string>(ip, port);
 	}
@@ -82,9 +83,11 @@ namespace cgi
 			StringArray         cgi_args = CreateCgiArgs(cgi_path, script_path, querys.Val());
 			Result<StringArray> envs     = CreateEnvVariables(script_name, server, client);
 			if (envs.IsErr()) {
+				DBG_INFO;
 				throw http::InternalServerErrorException();
 			}
 			if (ExecCgi(child_fd, cgi_args, envs.Val()).IsErr()) {
+				DBG_INFO;
 				throw http::InternalServerErrorException();
 			}
 		} else {
@@ -189,6 +192,8 @@ namespace cgi
 		Result<std::pair<std::string, std::string> > cl_ip_port = GetSocketAddress(client);
 
 		if (sv_ip_port.IsErr() || cl_ip_port.IsErr()) {
+			log("sererv", sv_ip_port.Err());
+			log("client", cl_ip_port.Err());
 			return Error();
 		}
 		const char *path = getenv("PATH");
