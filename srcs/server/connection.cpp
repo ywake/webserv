@@ -15,9 +15,12 @@ namespace server
 	const std::size_t Connection::kMaxRequestQueueSize = 3;
 
 	Connection::Connection(
-		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
+		int                             fd,
+		const conf::VirtualServerConfs &configs,
+		const SockAddrStorage          &addr,
+		const SockAddrStorage          &client
 	)
-		: Socket(fd),
+		: Socket(fd, addr),
 		  configs_(configs),
 		  client_(client),
 		  receiver_(fd),

@@ -23,8 +23,6 @@
 // TODO fd
 namespace server
 {
-	typedef struct sockaddr_storage SockAddrStorage;
-
 	class Connection : public Socket
 	{
 	  public:
@@ -47,7 +45,10 @@ namespace server
 
 	  public:
 		Connection(
-			int managed_fd, const conf::VirtualServerConfs &conf, const SockAddrStorage &client
+			int                             managed_fd,
+			const conf::VirtualServerConfs &conf,
+			const SockAddrStorage          &addr,
+			const SockAddrStorage          &client
 		);
 		~Connection();
 		bool                operator<(const Connection &other) const;
