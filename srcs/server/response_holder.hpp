@@ -2,6 +2,7 @@
 #define RESPONSE_HOLDER_HPP
 
 #include <deque>
+#include <netinet/in.h>
 #include <utility>
 
 #include "i_request.hpp"
@@ -28,6 +29,8 @@ namespace server
 		static const std::size_t kMaxBufSize;
 
 		int                             conn_fd_;
+		const struct sockaddr_storage  *server_;
+		const struct sockaddr_storage  *client_;
 		const conf::VirtualServerConfs *config_;
 		std::deque<Task>                in_progress_;
 		RequestDelFunc                  request_del_;
@@ -39,7 +42,13 @@ namespace server
 		ResponseHolder &operator=(const ResponseHolder &rhs);
 
 	  public:
-		ResponseHolder(int conn_fd, const conf::VirtualServerConfs *conf, RequestDelFunc del);
+		ResponseHolder(
+			int                             conn_fd,
+			const conf::VirtualServerConfs *conf,
+			const struct sockaddr_storage  *server,
+			const struct sockaddr_storage  *client,
+			RequestDelFunc                  del
+		);
 		~ResponseHolder();
 		event::Instructions         StartNewResponse(IRequest *request);
 		event::Instructions         Perform(const event::Event &event);

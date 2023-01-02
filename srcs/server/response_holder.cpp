@@ -31,15 +31,30 @@ namespace server
 	}
 
 	ResponseHolder::ResponseHolder()
-		: conn_fd_(-1), config_(NULL), in_progress_(), request_del_(NULL), need_to_close_(false)
+		: conn_fd_(-1),
+		  client_(),
+		  config_(NULL),
+		  in_progress_(),
+		  request_del_(NULL),
+		  need_to_close_(false)
 	{}
 
 	ResponseHolder::ResponseHolder(
-		int conn_fd, const conf::VirtualServerConfs *conf, RequestDelFunc del
+		int                             conn_fd,
+		const conf::VirtualServerConfs *conf,
+		const struct sockaddr_storage  *server,
+		const struct sockaddr_storage  *client,
+		RequestDelFunc                  del
 	)
-		: conn_fd_(conn_fd), config_(conf), in_progress_(), request_del_(del), need_to_close_(false)
+		: conn_fd_(conn_fd),
+		  server_(server),
+		  client_(client),
+		  config_(conf),
+		  in_progress_(),
+		  request_del_(del),
+		  need_to_close_(false)
 	{
-		if (config_ == NULL || del == NULL) {
+		if (config_ == NULL || server_ == NULL || client_ == NULL || del == NULL) {
 			DBG_INFO;
 			throw std::logic_error("ResponseHolder logic error");
 		}

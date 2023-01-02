@@ -25,7 +25,7 @@ namespace server
 		  client_(client),
 		  receiver_(fd),
 		  request_holder_(&configs),
-		  response_holder_(fd, &configs, RequestHolder::DestroyRequest),
+		  response_holder_(fd, &configs, &addr_, &client_, RequestHolder::DestroyRequest),
 		  is_finished_(false),
 		  time_()
 	{
