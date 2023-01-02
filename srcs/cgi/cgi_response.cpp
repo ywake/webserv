@@ -8,6 +8,7 @@
 #include "cgi_response.hpp"
 #include "debug.hpp"
 #include "http_exceptions.hpp"
+#include "percent_encode.hpp"
 #include "stat.hpp"
 #include "webserv_utils.hpp"
 namespace
@@ -73,6 +74,10 @@ namespace cgi
 		if (st.IsDirectory()) {
 			ExecuteDirectoryRedirect(script_name + "/");
 		} else if (st.IsRegularFile()) {
+			Result<std::vector<std::string> > querys = ParseQuery(request_.Query());
+			if (querys.IsErr()) {
+				throw http::BadRequestException();
+			}
 			Result<StringArray> envs = CreateEnvVariables(script_name, server, client);
 			if (envs.IsErr()) {
 				throw http::InternalServerErrorException();
@@ -134,6 +139,27 @@ namespace cgi
 			}
 		}
 		return resolved.Val();
+	}
+
+	Result<std::vector<std::string> > CgiResponse::ParseQuery(const std::string &query)
+	{
+		if ((request_.Method() != http::methods::kGet && request_.Method() != http::methods::kHead
+			) ||
+			query.find("=") != std::string::npos) {
+			return std::vector<std::string>();
+		}
+		std::vector<ThinString>  search_words = utils::TrimEmpty(Split(query, "+"));
+		std::vector<std::string> querys;
+		for (std::vector<ThinString>::const_iterator it = search_words.begin();
+			 it != search_words.end();
+			 ++it) {
+			Result<std::string> word = uri::PercentDecode(*it);
+			if (word.IsErr()) {
+				return Error();
+			}
+			querys.push_back(word.Val());
+		}
+		return querys;
 	}
 
 	Result<StringArray> CgiResponse::CreateEnvVariables(

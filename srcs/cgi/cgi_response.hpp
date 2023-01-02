@@ -65,11 +65,12 @@ namespace cgi
 			const response::PartialPath          &request_path,
 			const conf::LocationConf::IndexFiles &index_files
 		);
-		Stat                     TryStat(const std::string &path) const;
-		Result<http::StatusCode> ParseStatusCode(const http::FieldSection::Values &values);
-		Result<void>             PushMetaDataToSendBody(const http::FieldSection &field_section);
-		void                     PushMetaDataForClientRedirect(const std::string &uri);
-		void                     ThrowLocalRedirect(const http::FieldSection &field_section);
+		Stat                              TryStat(const std::string &path) const;
+		Result<std::vector<std::string> > ParseQuery(const std::string &query);
+		Result<http::StatusCode>          ParseStatusCode(const http::FieldSection::Values &values);
+		Result<void> PushMetaDataToSendBody(const http::FieldSection &field_section);
+		void         PushMetaDataForClientRedirect(const std::string &uri);
+		void         ThrowLocalRedirect(const http::FieldSection &field_section);
 
 		void OnWriteReady();
 		Result<void>
