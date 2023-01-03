@@ -25,7 +25,7 @@ namespace response
 		is_finished_ = true;
 	}
 
-	void Redirect::Perform(const event::Event &event)
+	AResponse::FinEventType Redirect::Perform(const event::Event &event)
 	{
 		throw std::logic_error("redirect perform");
 		(void)event;

@@ -20,7 +20,7 @@ namespace response
 
 	  public:
 		Redirect(const server::IRequest &request, const conf::LocationConf &location);
-		void           Perform(const event::Event &event);
+		FinEventType   Perform(const event::Event &event);
 		bool           HasFd() const;
 		Emptiable<int> GetFd() const;
 	};
