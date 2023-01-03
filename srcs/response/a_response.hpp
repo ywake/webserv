@@ -13,6 +13,9 @@ namespace response
 					  public q_buffer::QueuingWriter,
 					  public server::MetaDataStorage
 	{
+	  public:
+		typedef int FinEventType;
+
 	  protected:
 		const server::IRequest &request_;
 		bool                    is_finished_;
@@ -26,7 +29,7 @@ namespace response
 	  public:
 		AResponse(const server::IRequest &request);
 		virtual ~AResponse();
-		virtual void           Perform(const event::Event &event) = 0;
+		virtual FinEventType   Perform(const event::Event &event) = 0;
 		virtual bool           HasFd() const                      = 0;
 		virtual Emptiable<int> GetFd() const                      = 0;
 		Result<void>           Send(int fd);
