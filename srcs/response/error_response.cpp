@@ -28,7 +28,7 @@ namespace response
 			const conf::LocationConf::AllowMethods &methods = location.GetAllowMethods();
 			MetaDataStorage::StoreHeader("Allow", methods.begin(), methods.end());
 		}
-		if (OpenErrorPage(status_code).IsErr()) {
+		if (UseConfiguredErrorPage(status_code).IsErr()) {
 			std::string page = utils::CreateDefaultPage(status_code);
 			MetaDataStorage::StoreHeader("Content-Type", "text/html");
 			MetaDataStorage::StoreHeader("Content-Length", utils::ToString(page.size()));
@@ -38,11 +38,13 @@ namespace response
 		}
 	}
 
-	Result<void> ErrorResponse::OpenErrorPage(const http::StatusCode &code)
+	Result<void> ErrorResponse::UseConfiguredErrorPage(const http::StatusCode &code)
 	{
-		const conf::ServerConf::ErrorPages::const_iterator &it =
-			config_.GetErrorPages().find(code.GetCodeStr());
-		if (it == config_.GetErrorPages().end()) {
+		typedef conf::ServerConf::ErrorPages ErrorPages;
+
+		const ErrorPages                &pages = config_.GetErrorPages();
+		const ErrorPages::const_iterator it    = pages.find(code.GetCodeStr());
+		if (it == pages.end()) {
 			return Error();
 		}
 		const char          *path = it->second.c_str();

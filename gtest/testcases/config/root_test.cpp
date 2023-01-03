@@ -23,7 +23,19 @@ TEST(config, root)
 	);
 	EXPECT_THROW(
 		conf::ParseConfigFile("server {"
+							  "root ;"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
 							  "root /var/www /var/www;"
+							  "}"),
+		conf::ConfigException
+	);
+	EXPECT_THROW(
+		conf::ParseConfigFile("server {"
+							  "root var/www;"
 							  "}"),
 		conf::ConfigException
 	);

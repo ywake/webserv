@@ -8,6 +8,10 @@
 
 namespace conf
 {
+	bool IsInRange(const ThinString &str, std::size_t min, std::size_t max);
+	bool IsValidListenPort(ThinString str);
+	bool IsValidErrorPage(ThinString key, ThinString value);
+
 	const ServerConf::ServerName        ServerConf::kDefaultServerName = ServerConf::ServerName();
 	const ServerConf::ErrorPages        ServerConf::kDefaultErrorPages = ServerConf::ErrorPages();
 	const ServerConf::ClientMaxBodySize ServerConf::kDefaultClientMaxBodySize = 1 << 20;
@@ -80,15 +84,36 @@ namespace conf
 	 * Add Params
 	 */
 
+	// 1~65535までならOK
 	void ServerConf::AddListenPort(const std::vector<ThinString> &tokens)
 	{
 		for (size_t i = 1; i < tokens.size(); i++) {
-			if (ABNF::IsDigitOnly(tokens[i])) {
+			if (IsValidListenPort(tokens[i])) {
 				listen_port_.push_back(tokens[i].ToString());
 			} else {
 				throw ConfigException("Invalid listen port");
 			}
 		}
+	}
+
+	bool IsValidListenPort(ThinString str)
+	{
+		if (!ABNF::IsDigitOnly(str)) {
+			return false;
+		}
+		if (IsInRange(str, 1, 65535)) {
+			return true;
+		}
+		return false;
+	}
+
+	bool IsInRange(const ThinString &str, std::size_t min, std::size_t max)
+	{
+		Result<std::size_t> port = utils::StrToUnsignedLong(str.ToString());
+		if (port.IsErr()) {
+			return false;
+		}
+		return min <= port.Val() && port.Val() <= max;
 	}
 
 	void ServerConf::AddServerName(const std::vector<ThinString> &tokens)
@@ -103,11 +128,22 @@ namespace conf
 		if (tokens.size() != 3) {
 			throw ConfigException("Invalid error_page");
 		}
-		if (tokens[1].size() == 3 && ABNF::IsDigitOnly(tokens[1])) {
+		if (IsValidErrorPage(tokens[1], tokens[2])) {
 			error_pages_[tokens[1].ToString()] = tokens[2].ToString();
 		} else {
 			throw ConfigException("Invalid error_page");
 		}
+	}
+
+	bool IsValidErrorPage(ThinString key, ThinString value)
+	{
+		if (key.size() != 3 || !ABNF::IsDigitOnly(key) || !IsInRange(key, 300, 599)) {
+			return false;
+		}
+		if (value.empty() || value.at(0) != '/') {
+			return false;
+		}
+		return true;
 	}
 
 	std::pair<ThinString, char> GetNumberAndUnit(ThinString str)
@@ -222,6 +258,9 @@ namespace conf
 			throw ConfigException("Invalid root");
 		}
 		default_root_ = tokens[1].ToString();
+		if (!default_root_.Value().empty() && default_root_.Value()[0] != '/') {
+			throw ConfigException("Invalid root");
+		}
 	}
 
 	/**
