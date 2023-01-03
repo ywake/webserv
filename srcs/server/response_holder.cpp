@@ -198,7 +198,7 @@ namespace server
 			log("finish", response->GetFd().Value());
 			need_to_close_ = response->NeedToClose();
 			PopFrontResponse();
-			insts.push_back(Instruction(Instruction::kRegister, conn_fd_, Event::kRead));
+			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kRead));
 			// ここでqueueに残ってれば開始したいけど今max queue size() 1だからやってない
 		}
 		return insts;
