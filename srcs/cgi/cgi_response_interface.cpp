@@ -13,47 +13,48 @@ namespace cgi
 	/**
 	 * IResponse
 	 */
-	void CgiResponse::Perform(const event::Event &event)
+	response::AResponse::FinEventType CgiResponse::Perform(const event::Event &event)
 	{
+		FinEventType fin = event::Event::kEmpty;
+
 		if (event.event_type & event::Event::kWrite) {
 			log("cgi write ready");
-			OnWriteReady();
+			fin |= OnWriteReady();
 		}
 		if (event.event_type & event::Event::kRead) {
 			log("cgi read ready");
-			OnReadReady();
+			fin |= OnReadReady();
 		}
+		return fin;
 	}
 
-	void CgiResponse::OnWriteReady()
+	response::AResponse::FinEventType CgiResponse::OnWriteReady()
 	{
-		if (parent_fd_.GetFd() == ManagedFd::kNofd) {
-			log("nofd");
-			return;
-		}
 		if (body_writer_.IsFinished()) {
 			log("write to cgi is finished");
 			if (shutdown(parent_fd_.GetFd(), SHUT_WR) < 0) {
 				log("shutdown failed");
 				throw http::InternalServerErrorException();
 			}
-			return;
+			return event::Event::kWrite;
 		}
 		log("write body to cgi");
 		if (body_writer_.Write(parent_fd_.GetFd()).IsErr()) {
-			shutdown(parent_fd_.GetFd(), SHUT_WR);
+			if (shutdown(parent_fd_.GetFd(), SHUT_WR) < 0) {
+				log("shutdown failed");
+				throw http::InternalServerErrorException();
+			}
+			return event::Event::kWrite;
 		}
+		return event::Event::kEmpty;
 	}
 
-	void CgiResponse::OnReadReady()
+	response::AResponse::FinEventType CgiResponse::OnReadReady()
 	{
 		log("read from cgi");
-		if (!HasFd()) {
-			throw std::logic_error("logci error: nofd perfrom in cgi");
-		}
 		if (cgi_receiver_.IsEof() || is_finished_) {
 			log("cgi read fired on finished");
-			return;
+			return event::Event::kRead;
 		}
 		Result<void> res = cgi_receiver_.Recv();
 		if (res.IsErr()) {
@@ -75,6 +76,7 @@ namespace cgi
 			throw std::logic_error("cgi read logic error");
 			break;
 		}
+		return is_finished_ ? event::Event::kRead : event::Event::kEmpty;
 	}
 
 	void CgiResponse::OnHeader()

@@ -70,7 +70,6 @@ namespace cgi
 		Result<void> PushMetaDataToSendBody(const http::FieldSection &field_section);
 		void         PushMetaDataForClientRedirect(const std::string &uri);
 		void         ThrowLocalRedirect(const http::FieldSection &field_section);
-		void         OnWriteReady();
 		void         ExecuteDirectoryRedirect(const std::string &request_path);
 
 		std::string              CreateLocationUrl(const std::string &path) const;
@@ -92,14 +91,14 @@ namespace cgi
 		bool IsLocalRedirect(const http::FieldSection &field_section) const;
 		bool IsClientRedirect(const http::FieldSection &field_section) const;
 
-		void OnHeader();
-		void OnBody();
-
-		void OnReadReady();
+		response::AResponse::FinEventType OnWriteReady();
+		response::AResponse::FinEventType OnReadReady();
+		void                              OnHeader();
+		void                              OnBody();
 
 		// IResponse
 	  public:
-		void           Perform(const event::Event &event);
+		FinEventType   Perform(const event::Event &event);
 		bool           HasFd() const;
 		Emptiable<int> GetFd() const;
 
