@@ -121,10 +121,6 @@ namespace cgi
 		if (p_res.IsErr()) {
 			return p_res.Err();
 		}
-		Result<void> c_res = SetNonBlocking(child_fd.GetFd());
-		if (c_res.IsErr()) {
-			return c_res.Err();
-		}
 		return Result<void>();
 	}
 
