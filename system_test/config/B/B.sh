@@ -26,14 +26,21 @@ fi
 # Test 3-1: 構文の誤っているserverディレクティブ
 $BIN "b3.conf"
 if [ $? -ne 1 ]; then
-	echo "Test 3: Failed"
+	echo "Test 3-1: Failed"
 	exit 1
 fi
 
 # Test 3-2: serverディレクティブの中にserverディレクティブがある
 $BIN "b3-server-in-server.conf"
 if [ $? -ne 1 ]; then
-	echo "Test 3: Failed"
+	echo "Test 3-2: Failed"
+	exit 1
+fi
+
+# Test 3-3: locationディレクティブの中にserverディレクティブがある
+$BIN "b3-server-in-location.conf"
+if [ $? -ne 1 ]; then
+	echo "Test 3-3: Failed"
 	exit 1
 fi
 
