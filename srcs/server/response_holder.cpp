@@ -134,11 +134,16 @@ namespace server
 		IRequest            *request  = task.request;
 		response::AResponse *response = task.response; // ほんとはmap[fd][task]から探す
 		try {
-			response->Perform(event);
+			response::AResponse::FinEventType fin = response->Perform(event);
 			if (response->size() > kMaxBufSize) {
 				insts.push_back(Instruction(
 					Instruction::kTrimEventType, response->GetFd().Value(), Event::kRead
 				));
+			}
+			if (fin != event::Event::kEmpty) {
+				insts.push_back(
+					Instruction(Instruction::kTrimEventType, response->GetFd().Value(), fin)
+				);
 			}
 			if (response->HasReadyData()) { // ほんとはfrontのときだけ
 				insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite)
