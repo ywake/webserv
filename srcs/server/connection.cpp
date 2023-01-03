@@ -107,22 +107,16 @@ namespace server
 			log("con eof");
 			return OnEof();
 		}
-		bool is_receiver_full = receiver_.size() >= kMaxRecverBufSize;
-		bool is_holder_full   = request_holder_.size() >= kMaxRequestQueueSize;
-		if (is_receiver_full && is_holder_full) {
+		if (request_holder_.size() >= kMaxRequestQueueSize) {
 			insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
 			return insts;
 		}
-		if (!is_receiver_full) {
-			Result<void> res = receiver_.Recv();
-			if (res.IsErr()) {
-				std::cerr << res.Err() << std::endl;
-				// TDDO 500 専用のappend taskみたいのをholderに作る
-			}
+		Result<void> res = receiver_.Recv();
+		if (res.IsErr()) {
+			std::cerr << res.Err() << std::endl;
+			// TDDO 500 専用のappend taskみたいのをholderに作る
 		}
-		if (!is_holder_full) {
-			request_holder_.Parse(receiver_);
-		}
+		request_holder_.Parse(receiver_);
 		if (CanStartNewTask()) { // TODO fix tmp とか
 			Instructions tmp = StartResponse();
 			insts.splice(insts.end(), tmp);
