@@ -199,6 +199,7 @@ namespace server
 			need_to_close_ = response->NeedToClose();
 			Instructions i = FinishFrontResponse();
 			insts.splice(insts.end(), i);
+			insts.push_back(Instruction(Instruction::kRegister, conn_fd_, Event::kRead));
 			// ここでqueueに残ってれば開始したいけど今max queue size() 1だからやってない
 		}
 		return insts;
