@@ -35,7 +35,7 @@ namespace response
 		is_finished_ = true;
 	}
 
-	void DeleteMethod::Perform(const event::Event &event)
+	AResponse::FinEventType DeleteMethod::Perform(const event::Event &event)
 	{
 		throw std::logic_error("delete perform");
 		(void)event;
