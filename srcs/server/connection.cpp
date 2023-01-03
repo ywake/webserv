@@ -10,19 +10,20 @@ namespace server
 	using namespace event;
 
 	const time_t      Connection::kTimeoutDuration     = 60;
-	const std::size_t Connection::kMaxRecverBufSize    = 8196;
-	const std::size_t Connection::kMaxSenderBufSize    = 8196;
 	const std::size_t Connection::kMaxRequestQueueSize = 3;
 
 	Connection::Connection(
-		int fd, const conf::VirtualServerConfs &configs, const SockAddrStorage &client
+		int                             fd,
+		const conf::VirtualServerConfs &configs,
+		const SockAddrStorage          &addr,
+		const SockAddrStorage          &client
 	)
-		: Socket(fd),
+		: Socket(fd, addr),
 		  configs_(configs),
 		  client_(client),
 		  receiver_(fd),
 		  request_holder_(&configs),
-		  response_holder_(fd, &configs, RequestHolder::DestroyRequest),
+		  response_holder_(fd, &configs, &addr_, &client_, RequestHolder::DestroyRequest),
 		  is_finished_(false),
 		  time_()
 	{
@@ -104,22 +105,16 @@ namespace server
 			log("con eof");
 			return OnEof();
 		}
-		bool is_receiver_full = receiver_.size() >= kMaxRecverBufSize;
-		bool is_holder_full   = request_holder_.size() >= kMaxRequestQueueSize;
-		if (is_receiver_full && is_holder_full) {
+		if (request_holder_.size() >= kMaxRequestQueueSize) {
 			insts.push_back(Instruction(Instruction::kTrimEventType, GetFd(), Event::kRead));
 			return insts;
 		}
-		if (!is_receiver_full) {
-			Result<void> res = receiver_.Recv();
-			if (res.IsErr()) {
-				std::cerr << res.Err() << std::endl;
-				// TDDO 500 専用のappend taskみたいのをholderに作る
-			}
+		Result<void> res = receiver_.Recv();
+		if (res.IsErr()) {
+			std::cerr << res.Err() << std::endl;
+			// TDDO 500 専用のappend taskみたいのをholderに作る
 		}
-		if (!is_holder_full) {
-			request_holder_.Parse(receiver_);
-		}
+		request_holder_.Parse(receiver_);
 		if (CanStartNewTask()) { // TODO fix tmp とか
 			Instructions tmp = StartResponse();
 			insts.splice(insts.end(), tmp);

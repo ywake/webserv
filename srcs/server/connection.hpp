@@ -23,14 +23,10 @@
 // TODO fd
 namespace server
 {
-	typedef struct sockaddr_storage SockAddrStorage;
-
 	class Connection : public Socket
 	{
 	  public:
 		static const time_t      kTimeoutDuration;
-		static const std::size_t kMaxRecverBufSize;
-		static const std::size_t kMaxSenderBufSize;
 		static const std::size_t kMaxRequestQueueSize;
 
 	  private:
@@ -47,7 +43,10 @@ namespace server
 
 	  public:
 		Connection(
-			int managed_fd, const conf::VirtualServerConfs &conf, const SockAddrStorage &client
+			int                             managed_fd,
+			const conf::VirtualServerConfs &conf,
+			const SockAddrStorage          &addr,
+			const SockAddrStorage          &client
 		);
 		~Connection();
 		bool                operator<(const Connection &other) const;

@@ -30,12 +30,12 @@ namespace response
 		// TODO headers
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kOK);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 		is_finished_ = true;
 	}
 
-	void DeleteMethod::Perform(const event::Event &event)
+	AResponse::FinEventType DeleteMethod::Perform(const event::Event &event)
 	{
 		throw std::logic_error("delete perform");
 		(void)event;

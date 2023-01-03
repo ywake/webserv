@@ -18,10 +18,16 @@ namespace response
 		: AResponse(request), config_(conf)
 	{
 		log("error res construct", status_code.GetCode());
+		need_to_close_ = status_code == http::StatusCode::kBadRequest;
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, status_code);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
-
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
+		if (status_code == http::StatusCode::kMethodNotAllowed ||
+			status_code == http::StatusCode::kNotImplemented) {
+			const conf::LocationConf &location = config_.FindMatchingLocationConf(request.Path());
+			const conf::LocationConf::AllowMethods &methods = location.GetAllowMethods();
+			MetaDataStorage::StoreHeader("Allow", methods.begin(), methods.end());
+		}
 		if (OpenErrorPage(status_code).IsErr()) {
 			std::string page = utils::CreateDefaultPage(status_code);
 			MetaDataStorage::StoreHeader("Content-Type", "text/html");
@@ -55,16 +61,22 @@ namespace response
 		return Result<void>();
 	}
 
-	void ErrorResponse::Perform(const event::Event &event)
+	AResponse::FinEventType ErrorResponse::Perform(const event::Event &event)
 	{
-		(void)event;
+		FinEventType fin = event.event_type & event::Event::kWrite;
+
+		if (!(event.event_type & event::Event::kRead)) {
+			return fin;
+		}
 		ssize_t read_size = Read(managed_fd_.GetFd());
 		if (read_size < 0) {
 			throw http::InternalServerErrorException();
 		}
 		if (read_size == 0) {
+			fin |= event::Event::kRead;
 			is_finished_ = true;
 		}
+		return fin;
 	}
 
 	bool ErrorResponse::HasFd() const

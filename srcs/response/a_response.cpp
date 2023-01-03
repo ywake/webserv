@@ -2,7 +2,9 @@
 
 namespace response
 {
-	AResponse::AResponse(const server::IRequest &request) : request_(request), is_finished_() {}
+	AResponse::AResponse(const server::IRequest &request)
+		: request_(request), is_finished_(false), need_to_close_(false)
+	{}
 
 	Result<void> AResponse::Send(int fd)
 	{
@@ -17,6 +19,11 @@ namespace response
 	bool AResponse::IsFinished() const
 	{
 		return is_finished_;
+	}
+
+	bool AResponse::NeedToClose() const
+	{
+		return request_.NeedToClose() || need_to_close_;
 	}
 
 	std::size_t AResponse::size() const

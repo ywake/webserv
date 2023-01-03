@@ -9,6 +9,7 @@
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
 #include "mime_type.hpp"
+#include "resolve_index_file.hpp"
 #include "stat.hpp"
 #include "webserv_utils.hpp"
 
@@ -19,8 +20,8 @@ namespace response
 	{
 		log("GET", request.Path());
 		const FullPath &root = location_.GetRoot();
-		TryValidateRequestPath(root, request_.Path());
-		const PartialPath resolved = ResolveIndexFilePath(request_.Path());
+		PartialPath     resolved =
+			TryResolveIndexFilePath(root, request_.Path(), location_.GetIndexFiles());
 		if (utils::EndWith(resolved, "/")) {
 			if (location_.GetAutoindex().empty() || !location_.GetAutoindex().Value()) {
 				throw http::ForbiddenException();
@@ -39,46 +40,25 @@ namespace response
 		}
 	}
 
-	void GetMethod::TryValidateRequestPath(const FullPath &root, const PartialPath &request_path)
+	PartialPath GetMethod::TryResolveIndexFilePath(
+		const FullPath                       &root,
+		const PartialPath                    &request_path,
+		const conf::LocationConf::IndexFiles &index_files
+	)
 	{
-		TryStat(utils::JoinPath(root, request_path));
-	}
-
-	GetMethod::PartialPath GetMethod::ResolveIndexFilePath(const PartialPath &request_path) const
-	{
-		PartialPath path = request_path;
-
-		log("found index file", path);
-		while (utils::EndWith(path, "/")) {
-			Result<PartialPath> index_file_path = FindReadableIndexFile(path);
-			if (index_file_path.IsErr()) {
-				break;
+		result::Result<PartialPath> resolved =
+			ResolveIndexFilePath(root, request_path, index_files);
+		if (resolved.IsErr()) {
+			result::ErrCode err = resolved.Err();
+			if (err == Stat::kEAcces || err == Stat::kELoop) {
+				throw http::ForbiddenException();
+			} else if (err == Stat::kENotDir || err == Stat::kNoEnt || err == Stat::kENameTooLong) {
+				throw http::NotFoundException();
+			} else {
+				throw http::InternalServerErrorException();
 			}
-			path = index_file_path.Val();
-			log("found index file", path);
 		}
-		return path;
-	}
-
-	Result<GetMethod::PartialPath> GetMethod::FindReadableIndexFile(const PartialPath &base_path
-	) const
-	{
-		typedef conf::LocationConf::IndexFiles IndexFiles;
-
-		const IndexFiles &index_files = location_.GetIndexFiles();
-		for (IndexFiles::const_iterator it = index_files.begin(); it != index_files.end(); ++it) {
-			const PartialPath index_path = utils::JoinPath(base_path, *it);
-			const FullPath    abs_path   = utils::JoinPath(location_.GetRoot(), index_path);
-			if (Stat::FromPath(abs_path).IsErr() || !utils::IsReadablePath(abs_path)) {
-				continue;
-			}
-			Result<PartialPath> normalized = utils::NormalizePath(index_path);
-			if (normalized.IsErr()) {
-				continue;
-			}
-			return normalized.Val();
-		}
-		return Error();
+		return resolved.Val();
 	}
 
 	void GetMethod::ExecuteDirectoryRedirect(const PartialPath &request_path)
@@ -89,7 +69,7 @@ namespace response
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Content-Type", "text/html");
 		MetaDataStorage::StoreHeader("Content-Length", utils::ToString(page.size()));
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::StoreHeader("Location", CreateLocationUrl(request_path));
 		MetaDataStorage::PushWithCrLf();
 		push_back(page);
@@ -108,7 +88,7 @@ namespace response
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Content-Type", http::MimeType::GetMimeType(path));
 		MetaDataStorage::StoreHeader("Content-Length", utils::ToString(file_size));
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 	}
 
@@ -120,7 +100,7 @@ namespace response
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Content-Type", "text/html");
 		MetaDataStorage::StoreHeader("Content-Length", utils::ToString(autoindex.size()));
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::PushWithCrLf();
 		push_back(autoindex);
 		is_finished_ = true;
@@ -179,16 +159,22 @@ namespace response
 		return fd;
 	}
 
-	void GetMethod::Perform(const event::Event &event)
+	AResponse::FinEventType GetMethod::Perform(const event::Event &event)
 	{
-		(void)event;
+		FinEventType fin = event.event_type & event::Event::kWrite;
+
+		if (!(event.event_type & event::Event::kRead)) {
+			return fin;
+		}
 		ssize_t read_size = Read(managed_fd_.GetFd());
 		if (read_size < 0) {
 			throw http::InternalServerErrorException();
 		}
 		if (read_size == 0) {
+			fin |= event::Event::kRead;
 			is_finished_ = true;
 		}
+		return fin;
 	}
 
 	bool GetMethod::HasFd() const

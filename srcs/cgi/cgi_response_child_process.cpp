@@ -1,78 +1,57 @@
+#include <cerrno>
+#include <cstdio>
+
 #include "cgi_response.hpp"
 #include "debug.hpp"
 #include "meta_env.hpp"
+#include "webserv_utils.hpp"
 
-extern char **environ;
-
-namespace cgi
+namespace
 {
-	static Result<void> Dup2(int old_fd, int new_fd);
-
-	void CgiResponse::ChildProcess()
+	Result<void> ChangeDir(const std::string &path)
 	{
-		Result<std::vector<const char *> > args = CreateArgs();
-		if (args.IsErr()) {
-			exit(1);
-		}
-		Result<std::vector<const char *> > envs = CreateEnvs();
-		if (envs.IsErr()) {
-			exit(1);
-		}
-		parent_fd_.Close();
-		if (Dup2(child_fd_.GetFd(), STDIN_FILENO).IsErr()) {
-			exit(1);
-		}
-		if (Dup2(child_fd_.GetFd(), STDOUT_FILENO).IsErr()) {
-			exit(1);
-		}
-		execve(
-			location_conf_.GetCgiPath().Value().c_str(),
-			const_cast<char *const *>(args.Val().data()),
-			const_cast<char *const *>(envs.Val().data())
-		);
-		exit(1);
-	}
-
-	Result<std::vector<const char *> > CgiResponse::CreateArgs()
-	{
-		const Emptiable<std::string> &cgi_path = location_conf_.GetCgiPath();
-		if (cgi_path.empty()) {
-			// cgi_pathがemptyでない時コンストラクトされるので、ありえないはず
-			return Error("cgi_path is empty");
-		}
-		std::vector<const char *> args;
-		args.push_back(cgi_path.Value().c_str());
-		args.push_back(resource_path_.c_str());
-		args.push_back(NULL);
-		return args;
-	}
-
-	Result<std::vector<const char *> > CgiResponse::CreateEnvs()
-	{
-		std::vector<const char *> envs;
-		for (size_t i = 0; environ[i] != NULL; ++i) {
-			envs.push_back(environ[i]);
-		}
-		SetMetaEnv(envs);
-		envs.push_back(NULL);
-		return envs;
-	}
-
-	void CgiResponse::SetMetaEnv(std::vector<const char *> &envs)
-	{
-		SetAuthType(envs, request_);
-		SetContentLength(envs, request_);
-		SetContentType(envs, request_);
-	}
-
-	static Result<void> Dup2(int old_fd, int new_fd)
-	{
-		if (old_fd == new_fd) {
-			return Result<void>();
-		}
-		if (dup2(old_fd, new_fd) != new_fd) {
-			return Error("dup2 error");
+		if (chdir(path.c_str()) == -1) {
+			return Error("chdir: " + std::string(strerror(errno)));
 		}
 		return Result<void>();
 	}
+} // namespace
+
+namespace cgi
+{
+	void
+	CgiResponse::ExecChild(ManagedFd &child_fd, const StringArray &args, const StringArray &envs)
+	{
+		try {
+			log("child process");
+			parent_fd_.Close();
+			Result<void> res = utils::SetSignalHandler(SIGPIPE, SIG_IGN, 0);
+			if (res.IsErr()) {
+				log("cgi", res.Err());
+				exit(1);
+			}
+			if (dup2(child_fd.GetFd(), STDIN_FILENO) == -1 ||
+				dup2(child_fd.GetFd(), STDOUT_FILENO) == -1) {
+				perror("dup2");
+				exit(1);
+			}
+			const std::string &script_path = args.Strings()[1];
+			Result<void>       cd_res      = ChangeDir(utils::GetDirName(script_path));
+			if (cd_res.IsErr()) {
+				log("cgi", cd_res.Err());
+				exit(1);
+			}
+			execve(
+				args.CArray()[0],
+				const_cast<char *const *>(args.CArray()),
+				const_cast<char *const *>(envs.CArray())
+			);
+		} catch (std::exception &e) {
+			e.what();
+		} catch (...) {
+			log("unknown exceptionin cgi child");
+		}
+		exit(1);
+	}
+
 } // namespace cgi

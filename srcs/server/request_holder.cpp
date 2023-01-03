@@ -23,11 +23,12 @@ namespace server
 
 	void RequestHolder::Parse(q_buffer::QueuingBuffer &received)
 	{
-		Emptiable<IRequest *> req = parser_.Parse(received);
-		if (req.empty()) {
-			return;
+		while (!received.empty()) {
+			Emptiable<IRequest *> req = parser_.Parse(received);
+			if (!req.empty()) {
+				request_queue_.push_back(req.Value());
+			}
 		}
-		request_queue_.push_back(req.Value());
 	}
 
 	Emptiable<IRequest *> RequestHolder::PopFront()

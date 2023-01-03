@@ -88,6 +88,11 @@ namespace server
 		return request_line_.GetRequestTarget().GetRequestFormData().path_;
 	}
 
+	const std::string &RequestParser::Request::Query() const
+	{
+		return request_line_.GetRequestTarget().GetRequestFormData().query_;
+	}
+
 	const std::string &RequestParser::Request::Host() const
 	{
 		return request_line_.GetRequestTarget().GetRequestFormData().host_;

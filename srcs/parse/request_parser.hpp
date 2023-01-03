@@ -52,6 +52,7 @@ namespace server
 
 			const std::string        &Method() const;
 			const std::string        &Path() const;
+			const std::string        &Query() const;
 			const std::string        &Host() const;
 			const std::string        &Port() const;
 			std::string               Authority() const;

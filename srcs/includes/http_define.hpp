@@ -23,6 +23,7 @@ namespace http
 		extern const std::string kGet;
 		extern const std::string kDelete;
 		extern const std::string kPost;
+		extern const std::string kHead;
 	} // namespace methods
 } // namespace http
 
