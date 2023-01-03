@@ -49,13 +49,13 @@ namespace server
 		return ctx_.state != kStandBy;
 	}
 
-	Emptiable<RequestLine> RequestLineParser::Parse(q_buffer::QueuingBuffer &recieved)
+	Emptiable<RequestLine> RequestLineParser::Parse(q_buffer::QueuingBuffer &received)
 	{
-		if (recieved.empty()) {
+		if (received.empty()) {
 			return Emptiable<RequestLine>();
 		}
 		try {
-			if (CreateRequestLine(recieved) == kDone) {
+			if (CreateRequestLine(received) == kDone) {
 				RequestLine req = ctx_.request_line;
 				InitParseContext();
 				return req;
@@ -68,10 +68,10 @@ namespace server
 	}
 
 	RequestLineParser::ParseResult
-	RequestLineParser::CreateRequestLine(q_buffer::QueuingBuffer &recieved)
+	RequestLineParser::CreateRequestLine(q_buffer::QueuingBuffer &received)
 	{
-		while (!recieved.empty()) {
-			switch (ParseEachPhase(recieved)) {
+		while (!received.empty()) {
+			switch (ParseEachPhase(received)) {
 			case kInProgress:
 				return kInProgress;
 			case kDone:
@@ -86,33 +86,33 @@ namespace server
 	}
 
 	RequestLineParser::ParseResult
-	RequestLineParser::ParseEachPhase(q_buffer::QueuingBuffer &recieved)
+	RequestLineParser::ParseEachPhase(q_buffer::QueuingBuffer &received)
 	{
 		switch (ctx_.state) {
 		case kStandBy:
 			return kDone;
 		case kMethod:
 			log("method");
-			return ParseMethod(recieved);
+			return ParseMethod(received);
 		case kTarget:
 			log("uri");
-			return ParseRequestTarget(recieved);
+			return ParseRequestTarget(received);
 		case kVersion:
 			log("version");
-			return ParseHttpVersion(recieved);
+			return ParseHttpVersion(received);
 		}
 		return kInProgress;
 	}
 
 	RequestLineParser::LoadResult RequestLineParser::TryLoadBytesUntilSpace(
-		q_buffer::QueuingBuffer &recieved, std::size_t max_bytes
+		q_buffer::QueuingBuffer &received, std::size_t max_bytes
 	)
 	{
 		for (;;) {
-			if (recieved.empty()) {
+			if (received.empty()) {
 				return kNonParsable;
 			}
-			Emptiable<char> c = recieved.PopChar();
+			Emptiable<char> c = received.PopChar();
 			loaded_bytes_ += c.Value();
 			if (loaded_bytes_.size() > max_bytes) {
 				return kOverMaxSize;
@@ -126,11 +126,11 @@ namespace server
 		}
 	}
 
-	RequestLineParser::ParseResult RequestLineParser::ParseMethod(q_buffer::QueuingBuffer &recieved)
+	RequestLineParser::ParseResult RequestLineParser::ParseMethod(q_buffer::QueuingBuffer &received)
 	{
 		const std::size_t max_length = http::ImplementedMethods::kMaxLength + http::kSp.size();
 
-		switch (TryLoadBytesUntilSpace(recieved, max_length)) {
+		switch (TryLoadBytesUntilSpace(received, max_length)) {
 		case kOverMaxSize:
 			throw http::NotImplementedException();
 		case kParsable:
@@ -150,9 +150,9 @@ namespace server
 	}
 
 	RequestLineParser::ParseResult
-	RequestLineParser::ParseRequestTarget(q_buffer::QueuingBuffer &recieved)
+	RequestLineParser::ParseRequestTarget(q_buffer::QueuingBuffer &received)
 	{
-		switch (TryLoadBytesUntilSpace(recieved, kMaxRequestTargetSize)) {
+		switch (TryLoadBytesUntilSpace(received, kMaxRequestTargetSize)) {
 		case kOverMaxSize:
 			throw http::UriTooLongException();
 		case kParsable:
@@ -166,10 +166,10 @@ namespace server
 	}
 
 	RequestLineParser::ParseResult
-	RequestLineParser::ParseHttpVersion(q_buffer::QueuingBuffer &recieved)
+	RequestLineParser::ParseHttpVersion(q_buffer::QueuingBuffer &received)
 	{
 		const std::size_t max_length = http::kHttpVersion.size() + http::kCrLf.size();
-		switch (LoadBytesWithDelim(recieved, http::kCrLf, max_length)) {
+		switch (LoadBytesWithDelim(received, http::kCrLf, max_length)) {
 		case kOverMaxSize:
 			throw http::BadRequestException();
 		case kParsable:

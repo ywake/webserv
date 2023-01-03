@@ -30,8 +30,10 @@ destructor.c
 !test/volume
 !test/volume/*.html
 !test/request/**
+!test/cgi-bin/**
 !*.conf
 !*.php
+!Dockerfile
 
 ## google test
 gtest/googletest

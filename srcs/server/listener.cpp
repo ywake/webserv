@@ -36,6 +36,10 @@ namespace server
 		if (sock.IsErr()) {
 			throw ListenException(sock.ErrMsg());
 		}
+		socklen_t len = sizeof(addr_);
+		if (getsockname(sock.Val(), (struct sockaddr *)&addr_, &len) == -1) {
+			throw ListenException("getsockname: " + std::string(strerror(errno)));
+		}
 		managed_fd_ = sock.Val();
 	}
 
@@ -81,7 +85,7 @@ namespace server
 			return Error("accept: " + std::string(strerror(errno)));
 		}
 		log("accept", conn_fd);
-		return new Connection(conn_fd, configs_, client);
+		return new Connection(conn_fd, configs_, addr_, client);
 	}
 
 } // namespace server

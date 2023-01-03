@@ -30,7 +30,7 @@ namespace response
 		managed_fd_                  = TryOpen(filename_);
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, http::StatusCode::kCreated);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::StoreHeader("Location", CreateLocationUrl(uniq_path));
 		// TODO other headers 何必要か分からん
 	}
@@ -60,13 +60,18 @@ namespace response
 		return "http://" + utils::JoinPath(request_.Authority(), path);
 	}
 
-	void PostMethod::Perform(const event::Event &event)
+	AResponse::FinEventType PostMethod::Perform(const event::Event &event)
 	{
-		(void)event;
+		FinEventType fin = event.event_type & event::Event::kRead;
+
+		if (!(event.event_type & event::Event::kWrite)) {
+			return fin;
+		}
 		if (body_writer_.IsFinished()) {
 			is_finished_ = true;
+			fin |= event::Event::kWrite;
 			MetaDataStorage::PushWithCrLf();
-			return;
+			return fin;
 		}
 		Result<void> res = body_writer_.Write(managed_fd_.GetFd());
 		if (res.IsErr()) {
@@ -74,6 +79,7 @@ namespace response
 			remove(filename_.c_str());
 			throw http::InternalServerErrorException();
 		}
+		return fin;
 	}
 
 	bool PostMethod::HasFd() const

@@ -13,7 +13,7 @@
 #include "config/virtual_server_confs.hpp"
 #include "instruction.hpp"
 #include "managed_fd.hpp"
-#include "reciever.hpp"
+#include "receiver.hpp"
 #include "request_holder.hpp"
 #include "request_message.hpp"
 #include "response_holder.hpp"
@@ -23,20 +23,16 @@
 // TODO fd
 namespace server
 {
-	typedef struct sockaddr_storage SockAddrStorage;
-
 	class Connection : public Socket
 	{
 	  public:
 		static const time_t      kTimeoutDuration;
-		static const std::size_t kMaxRecverBufSize;
-		static const std::size_t kMaxSenderBufSize;
 		static const std::size_t kMaxRequestQueueSize;
 
 	  private:
 		const conf::VirtualServerConfs &configs_;
 		const SockAddrStorage           client_;
-		Reciever                        reciever_;
+		Reciever                        receiver_;
 		RequestHolder                   request_holder_;
 		ResponseHolder                  response_holder_;
 		bool                            is_finished_;
@@ -47,7 +43,10 @@ namespace server
 
 	  public:
 		Connection(
-			int managed_fd, const conf::VirtualServerConfs &conf, const SockAddrStorage &client
+			int                             managed_fd,
+			const conf::VirtualServerConfs &conf,
+			const SockAddrStorage          &addr,
+			const SockAddrStorage          &client
 		);
 		~Connection();
 		bool                operator<(const Connection &other) const;

@@ -309,8 +309,7 @@ namespace conf
 		if (matched_location.IsErr()) {
 			return default_root_.Value();
 		}
-		Emptiable<Path> location_root = matched_location.Val().GetRoot();
-		return location_root.empty() ? default_root_.Value() : location_root.Value();
+		return matched_location.Val().GetRoot();
 	}
 
 	const ServerConf::Root &ServerConf::GetDefaultRoot() const

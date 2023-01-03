@@ -39,6 +39,12 @@ int ManagedFd::GetFd() const
 	return fd_;
 }
 
+void ManagedFd::Close()
+{
+	CountDown(fd_);
+	fd_ = kNofd;
+}
+
 void ManagedFd::CountUp(int fd)
 {
 	if (fd < 0) {

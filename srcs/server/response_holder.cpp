@@ -1,12 +1,19 @@
 #include "response_holder.hpp"
+#include "cgi_response.hpp"
 #include "debug.hpp"
 #include "delete_method.hpp"
 #include "error_response.hpp"
 #include "get_method.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
+#include "local_redirect_exception.hpp"
 #include "post_method.hpp"
 #include "redirect.hpp"
+
+namespace cgi
+{
+	static const std::size_t kMaxLocalRedirects = 10;
+}
 
 namespace server
 {
@@ -24,15 +31,30 @@ namespace server
 	}
 
 	ResponseHolder::ResponseHolder()
-		: conn_fd_(-1), config_(NULL), in_progress_(), request_del_(NULL), need_to_close_(false)
+		: conn_fd_(-1),
+		  client_(),
+		  config_(NULL),
+		  in_progress_(),
+		  request_del_(NULL),
+		  need_to_close_(false)
 	{}
 
 	ResponseHolder::ResponseHolder(
-		int conn_fd, const conf::VirtualServerConfs *conf, RequestDelFunc del
+		int                             conn_fd,
+		const conf::VirtualServerConfs *conf,
+		const struct sockaddr_storage  *server,
+		const struct sockaddr_storage  *client,
+		RequestDelFunc                  del
 	)
-		: conn_fd_(conn_fd), config_(conf), in_progress_(), request_del_(del), need_to_close_(false)
+		: conn_fd_(conn_fd),
+		  server_(server),
+		  client_(client),
+		  config_(conf),
+		  in_progress_(),
+		  request_del_(del),
+		  need_to_close_(false)
 	{
-		if (config_ == NULL || del == NULL) {
+		if (config_ == NULL || server_ == NULL || client_ == NULL || del == NULL) {
 			DBG_INFO;
 			throw std::logic_error("ResponseHolder logic error");
 		}
@@ -41,13 +63,13 @@ namespace server
 	Instructions ResponseHolder::StartNewResponse(IRequest *request)
 	{
 		Instructions insts;
-		Task         task = {request, NULL};
+		Task         task = {request, NULL, 0};
 
 		if (request->IsErr()) {
 			task.response = new response::ErrorResponse(
 				*request, task.request->GetErrStatusCode(), GetServerConf(*task.request)
 			);
-			insts = CreateInstructionsForError(*task.response);
+			insts = CreateInitialInstructions(*task.response);
 		} else {
 			insts = AddNewResponse(&task);
 		}
@@ -57,99 +79,46 @@ namespace server
 
 	Instructions ResponseHolder::AddNewResponse(Task *task)
 	{
-		const conf::ServerConf   &vs_conf = GetServerConf(*task->request);
-		const conf::LocationConf &location =
-			vs_conf.FindMatchingLocationConf(task->request->Path());
-		bool is_cgi = !location.GetCgiPath().empty();
+		IRequest                 &request     = *task->request;
+		const conf::ServerConf   &sv_conf     = GetServerConf(request);
+		const conf::LocationConf &location    = sv_conf.FindMatchingLocationConf(request.Path());
+		bool                      is_redirect = !location.GetRedirect().empty();
+		bool                      is_cgi      = !location.GetCgiPath().empty();
 		try {
-			if (!location.GetRedirect().empty()) {
-				return AddNewRedirectResponse(task, location);
+			if (task->local_redir_count > cgi::kMaxLocalRedirects) {
+				throw http::InternalServerErrorException();
+			} else if (!location.IsAllowedMethod(request.Method())) {
+				throw http::MethodNotAllowedException();
+			} else if (is_redirect) {
+				task->response = new response::Redirect(*task->request, location);
 			} else if (is_cgi) {
-				return AddNewCgiResponse(task, location);
+				task->response = new cgi::CgiResponse(*task->request, location, server_, client_);
+			} else if (request.Method() == http::methods::kGet) {
+				task->response = new response::GetMethod(*task->request, location);
+			} else if (request.Method() == http::methods::kPost) {
+				task->response = new response::PostMethod(*task->request, location);
+			} else if (request.Method() == http::methods::kDelete) {
+				task->response = new response::DeleteMethod(*task->request, location);
 			} else {
-				return AddNewStaticResponse(task, location);
+				DBG_INFO;
+				throw std::logic_error("invalid method");
 			}
 		} catch (http::HttpException &e) {
 			delete task->response;
-			return AddNewErrorResponse(task, e.GetStatusCode(), vs_conf);
+			task->response =
+				new response::ErrorResponse(*task->request, e.GetStatusCode(), sv_conf);
 		}
+		return CreateInitialInstructions(*task->response);
 	}
 
-	Instructions
-	ResponseHolder::AddNewRedirectResponse(Task *task, const conf::LocationConf &location)
-	{
-		Instructions insts;
-
-		task->response = new response::Redirect(*task->request, location);
-		insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
-		return insts;
-	}
-
-	Instructions ResponseHolder::AddNewCgiResponse(Task *task, const conf::LocationConf &location)
-	{
-		(void)location;
-		Instructions insts;
-		task->response = NULL;
-
-		if (task->response->HasFd()) {
-			insts.push_back(Instruction(
-				Instruction::kRegister,
-				task->response->GetFd().Value(),
-				Event::kRead | Event::kWrite
-			));
-		}
-		if (task->response->HasReadyData()) { // ほんとはfrontのときだけ
-			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
-		}
-		return insts;
-	}
-
-	Instructions
-	ResponseHolder::AddNewStaticResponse(Task *task, const conf::LocationConf &location)
-	{
-		Instructions insts;
-		uint32_t     event_type = 0;
-
-		// TODO 405 not allowed
-		if (task->request->Method() == http::methods::kGet) {
-			task->response = new response::GetMethod(*task->request, location);
-			event_type     = Event::kRead;
-		} else if (task->request->Method() == http::methods::kPost) {
-			task->response = new response::PostMethod(*task->request, location);
-			event_type     = Event::kWrite;
-		} else if (task->request->Method() == http::methods::kDelete) {
-			task->response = new response::DeleteMethod(*task->request, location);
-		} else {
-			DBG_INFO;
-			throw std::logic_error("invalid method");
-		}
-		if (task->response->HasFd()) {
-			insts.push_back(
-				Instruction(Instruction::kRegister, task->response->GetFd().Value(), event_type)
-			);
-		}
-		if (task->response->HasReadyData()) { // ほんとはfrontのときだけ
-			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
-		}
-		return insts;
-	}
-
-	Instructions ResponseHolder::AddNewErrorResponse(
-		Task *task, const http::StatusCode &status_code, const conf::ServerConf &sv_conf
-	)
-	{
-		task->response = new response::ErrorResponse(*task->request, status_code, sv_conf);
-		return CreateInstructionsForError(*task->response);
-	}
-
-	Instructions ResponseHolder::CreateInstructionsForError(const IResponse &response)
+	Instructions ResponseHolder::CreateInitialInstructions(const response::AResponse &response)
 	{
 		Instructions insts;
 
 		if (response.HasFd()) {
-			insts.push_back(
-				Instruction(Instruction::kRegister, response.GetFd().Value(), Event::kRead)
-			);
+			insts.push_back(Instruction(
+				Instruction::kRegister, response.GetFd().Value(), Event::kRead | Event::kWrite
+			));
 		}
 		if (response.HasReadyData()) { // ほんとはfrontのときだけ
 			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite));
@@ -161,27 +130,39 @@ namespace server
 	{
 		Instructions insts;
 
-		Task      &task     = in_progress_.front(); // ほんとはmap[fd][task]から探す
-		IRequest  *request  = task.request;
-		IResponse *response = task.response; // ほんとはmap[fd][task]から探す
+		Task                &task = in_progress_.front(); // ほんとはmap[fd][task]から探す
+		IRequest            *request  = task.request;
+		response::AResponse *response = task.response; // ほんとはmap[fd][task]から探す
 		try {
-			response->Perform(event);
+			response::AResponse::FinEventType fin = response->Perform(event);
 			if (response->size() > kMaxBufSize) {
 				insts.push_back(Instruction(
 					Instruction::kTrimEventType, response->GetFd().Value(), Event::kRead
 				));
+			}
+			if (fin != event::Event::kEmpty) {
+				insts.push_back(
+					Instruction(Instruction::kTrimEventType, response->GetFd().Value(), fin)
+				);
 			}
 			if (response->HasReadyData()) { // ほんとはfrontのときだけ
 				insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kWrite)
 				);
 			}
 			if (response->IsFinished()) {
-				insts.push_back(Instruction(
-					Instruction::kTrimEventType,
-					response->GetFd().Value(),
-					Event::kRead | Event::kWrite
-				));
+				insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
 			}
+			return insts;
+		} catch (cgi::LocalRedirectException &e) {
+			log("local redirect");
+			insts = Instructions();
+			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
+			utils::DeleteSafe(task.response);
+			request->SetPath(e.Path());
+			request->SetQuery(e.Query());
+			task.local_redir_count++;
+			Instructions add_insts = AddNewResponse(&task);
+			insts.splice(insts.end(), add_insts);
 			return insts;
 		} catch (http::HttpException &e) {
 			insts = Instructions();
@@ -189,18 +170,18 @@ namespace server
 			delete response;
 			task.response =
 				new response::ErrorResponse(*request, e.GetStatusCode(), GetServerConf(*request));
-			Instructions i = CreateInstructionsForError(*in_progress_.front().response);
+			Instructions i = CreateInitialInstructions(*in_progress_.front().response);
 			insts.splice(insts.end(), i);
 			return insts;
-		} // TODO local redir
+		}
 	}
 
 	Result<Instructions> ResponseHolder::Send()
 	{
 		Instructions insts;
 
-		IResponse   *response    = in_progress_.front().response;
-		Result<void> send_result = response->Send(conn_fd_);
+		response::AResponse *response    = in_progress_.front().response;
+		Result<void>         send_result = response->Send(conn_fd_);
 		if (send_result.IsErr()) {
 			need_to_close_ = true;
 			return send_result.Err();
@@ -214,10 +195,10 @@ namespace server
 			insts.push_back(Instruction(Instruction::kTrimEventType, conn_fd_, Event::kWrite));
 		}
 		if (!response->HasReadyData() && response->IsFinished()) {
-			IRequest *request = in_progress_.front().request;
-			need_to_close_    = request->NeedToClose();
-			Instructions i    = FinishFrontResponse();
-			insts.splice(insts.end(), i);
+			log("finish", response->GetFd().Value());
+			need_to_close_ = response->NeedToClose();
+			PopFrontResponse();
+			insts.push_back(Instruction(Instruction::kAppendEventType, conn_fd_, Event::kRead));
 			// ここでqueueに残ってれば開始したいけど今max queue size() 1だからやってない
 		}
 		return insts;
@@ -228,22 +209,16 @@ namespace server
 		return in_progress_.size();
 	}
 
-	Instructions ResponseHolder::FinishFrontResponse()
+	void ResponseHolder::PopFrontResponse()
 	{
-		Instructions insts;
-
 		if (in_progress_.empty()) {
-			return insts;
+			return;
 		}
-		IRequest  *request  = in_progress_.front().request;
-		IResponse *response = in_progress_.front().response;
-		if (response->HasFd()) {
-			insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
-		}
+		IRequest            *request  = in_progress_.front().request;
+		response::AResponse *response = in_progress_.front().response;
 		request_del_(request);
 		delete (response);
 		in_progress_.pop_front();
-		return insts;
 	}
 
 	Instructions ResponseHolder::UnregisterAll()
@@ -251,8 +226,11 @@ namespace server
 		Instructions insts;
 
 		for (; !in_progress_.empty();) {
-			Instructions i = FinishFrontResponse();
-			insts.splice(insts.end(), i);
+			response::AResponse *response = in_progress_.front().response;
+			if (response->HasFd()) {
+				insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
+			}
+			PopFrontResponse();
 		}
 		return insts;
 	}
@@ -265,8 +243,8 @@ namespace server
 	ResponseHolder::~ResponseHolder()
 	{
 		for (; !in_progress_.empty();) {
-			IRequest  *request  = in_progress_.front().request;
-			IResponse *response = in_progress_.front().response;
+			IRequest            *request  = in_progress_.front().request;
+			response::AResponse *response = in_progress_.front().response;
 			request_del_(request);
 			delete (response);
 			in_progress_.pop_front();

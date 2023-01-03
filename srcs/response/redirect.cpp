@@ -18,14 +18,14 @@ namespace response
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Content-Type", "text/html");
 		MetaDataStorage::StoreHeader("Content-Length", utils::ToString(page.size()));
-		MetaDataStorage::StoreHeader("Connection", request_.NeedToClose() ? "close" : "keep-alive");
+		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
 		MetaDataStorage::StoreHeader("Location", url);
 		MetaDataStorage::PushWithCrLf();
 		push_back(page);
 		is_finished_ = true;
 	}
 
-	void Redirect::Perform(const event::Event &event)
+	AResponse::FinEventType Redirect::Perform(const event::Event &event)
 	{
 		throw std::logic_error("redirect perform");
 		(void)event;

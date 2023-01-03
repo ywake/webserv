@@ -28,14 +28,14 @@ namespace server
 		FieldParser(const FieldParser &other);
 		~FieldParser();
 		FieldParser                    &operator=(const FieldParser &rhs);
-		Emptiable<http::FieldSection *> Parse(q_buffer::QueuingBuffer &recieved);
+		Emptiable<http::FieldSection *> Parse(q_buffer::QueuingBuffer &received);
 		static void                     DestroyFieldSection(const http::FieldSection *fields);
 		static http::FieldSection      *CopyFieldSection(const http::FieldSection *src);
 
 	  private:
 		void        InitParseContext();
-		ParseResult CreateFieldSection(q_buffer::QueuingBuffer &recieved);
-		LoadResult  LoadFieldLine(q_buffer::QueuingBuffer &recieved, std::size_t max_bytes);
+		ParseResult CreateFieldSection(q_buffer::QueuingBuffer &received);
+		LoadResult  LoadFieldLine(q_buffer::QueuingBuffer &received, std::size_t max_bytes);
 
 	  protected:
 		void DestroyParseContext();

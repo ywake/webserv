@@ -9,6 +9,8 @@ namespace http
 		const std::string kGet    = "GET";
 		const std::string kDelete = "DELETE";
 		const std::string kPost   = "POST";
+		const std::string kHead   = "HEAD";
+
 	} // namespace methods
 
 	// C++98ではコンテナのリスト初期化が使えないので

@@ -88,6 +88,11 @@ namespace server
 		return request_line_.GetRequestTarget().GetRequestFormData().path_;
 	}
 
+	const std::string &RequestParser::Request::Query() const
+	{
+		return request_line_.GetRequestTarget().GetRequestFormData().query_;
+	}
+
 	const std::string &RequestParser::Request::Host() const
 	{
 		return request_line_.GetRequestTarget().GetRequestFormData().host_;
@@ -142,6 +147,16 @@ namespace server
 	const std::vector<char> *RequestParser::Request::GetBody() const
 	{
 		return body_;
+	}
+
+	void RequestParser::Request::SetPath(const std::string &path)
+	{
+		request_line_.SetPath(path);
+	}
+
+	void RequestParser::Request::SetQuery(const std::string &query)
+	{
+		request_line_.SetQuery(query);
 	}
 
 	bool RequestParser::Request::NeedToClose() const

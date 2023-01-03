@@ -45,7 +45,7 @@ namespace server
 	}
 
 	Emptiable<std::vector<char> *>
-	BodyParser::Parse(q_buffer::QueuingBuffer &recieved, http::FieldSection &headers)
+	BodyParser::Parse(q_buffer::QueuingBuffer &received, http::FieldSection &headers)
 	{
 		try {
 			if (ctx_.state == kStandby) {
@@ -53,7 +53,7 @@ namespace server
 				InitMaxSize(headers);
 				InitMode(headers);
 			}
-			Emptiable<std::vector<char> *> body = CreateBody(recieved, headers);
+			Emptiable<std::vector<char> *> body = CreateBody(received, headers);
 			if (body.empty()) {
 				return Emptiable<std::vector<char> *>();
 			}
@@ -66,13 +66,13 @@ namespace server
 	}
 
 	Emptiable<std::vector<char> *>
-	BodyParser::CreateBody(q_buffer::QueuingBuffer &recieved, http::FieldSection &headers)
+	BodyParser::CreateBody(q_buffer::QueuingBuffer &received, http::FieldSection &headers)
 	{
 		switch (ctx_.mode) {
 		case kContentLength:
-			return ctx_.bytes_loader.Parse(recieved);
+			return ctx_.bytes_loader.Parse(received);
 		case kChunked: {
-			Emptiable<std::vector<char> *> body = ctx_.chunked_parser.Parse(recieved);
+			Emptiable<std::vector<char> *> body = ctx_.chunked_parser.Parse(received);
 			if (!body.empty()) {
 				headers[http::kTransferEncoding].pop_back();
 				headers[http::kContentLength].push_back(utils::ToString(body.Value()->size()));

@@ -24,3 +24,12 @@ services:
       - "8082:80"
     volumes:
       - "./volume:/usr/local/apache2/htdocs/"
+      - "./httpd.conf:/usr/local/apache2/conf/httpd.conf"
+      - "./cgi-bin:/usr/local/apache2/cgi-bin"
+  
+  # apache2:
+  #   image: httpd22
+  #   build: ./dockerfile
+  #   container_name: apache22
+  #   ports:
+  #     - "8083:80"

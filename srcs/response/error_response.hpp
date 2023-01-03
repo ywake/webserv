@@ -21,7 +21,7 @@ namespace response
 			const http::StatusCode &status_code,
 			const conf::ServerConf &conf
 		);
-		void           Perform(const event::Event &event);
+		FinEventType   Perform(const event::Event &event);
 		bool           HasFd() const;
 		Emptiable<int> GetFd() const;
 

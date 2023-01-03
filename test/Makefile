@@ -16,3 +16,6 @@ exec:
 
 retest:
 	docker-compose -f $(DIR)/docker-compose.yml restart $(CONTAINER)
+
+logs:
+	docker-compose -f $(DIR)/docker-compose.yml logs -f $(CONTAINER)
