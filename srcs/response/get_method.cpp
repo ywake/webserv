@@ -159,16 +159,22 @@ namespace response
 		return fd;
 	}
 
-	void GetMethod::Perform(const event::Event &event)
+	AResponse::FinEventType GetMethod::Perform(const event::Event &event)
 	{
-		(void)event;
+		FinEventType fin = event.event_type & event::Event::kWrite;
+
+		if (!(event.event_type & event::Event::kRead)) {
+			return fin;
+		}
 		ssize_t read_size = Read(managed_fd_.GetFd());
 		if (read_size < 0) {
 			throw http::InternalServerErrorException();
 		}
 		if (read_size == 0) {
+			fin |= event::Event::kRead;
 			is_finished_ = true;
 		}
+		return fin;
 	}
 
 	bool GetMethod::HasFd() const
