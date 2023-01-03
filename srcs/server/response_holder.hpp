@@ -60,13 +60,7 @@ namespace server
 	  private:
 		event::Instructions FinishFrontResponse();
 		event::Instructions AddNewResponse(Task *task);
-		event::Instructions AddNewRedirectResponse(Task *task, const conf::LocationConf &location);
-		event::Instructions AddNewCgiResponse(Task *task, const conf::LocationConf &location);
-		event::Instructions AddNewStaticResponse(Task *task, const conf::LocationConf &location);
-		event::Instructions AddNewErrorResponse(
-			Task *task, const http::StatusCode &status_code, const conf::ServerConf &sv_conf
-		);
-		event::Instructions CreateInstructionsForError(const response::AResponse &response);
+		event::Instructions CreateInitialInstructions(const response::AResponse &response);
 		inline const conf::ServerConf &GetServerConf(const IRequest &request);
 	};
 } // namespace server
