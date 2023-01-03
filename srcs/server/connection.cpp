@@ -10,8 +10,6 @@ namespace server
 	using namespace event;
 
 	const time_t      Connection::kTimeoutDuration     = 60;
-	const std::size_t Connection::kMaxRecverBufSize    = 8196;
-	const std::size_t Connection::kMaxSenderBufSize    = 8196;
 	const std::size_t Connection::kMaxRequestQueueSize = 3;
 
 	Connection::Connection(

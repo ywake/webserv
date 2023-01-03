@@ -27,8 +27,6 @@ namespace server
 	{
 	  public:
 		static const time_t      kTimeoutDuration;
-		static const std::size_t kMaxRecverBufSize;
-		static const std::size_t kMaxSenderBufSize;
 		static const std::size_t kMaxRequestQueueSize;
 
 	  private:
