@@ -58,7 +58,7 @@ namespace server
 		bool                        NeedToClose();
 
 	  private:
-		event::Instructions FinishFrontResponse();
+		void                PopFrontResponse();
 		event::Instructions AddNewResponse(Task *task);
 		event::Instructions CreateInitialInstructions(const response::AResponse &response);
 		inline const conf::ServerConf &GetServerConf(const IRequest &request);

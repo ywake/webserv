@@ -197,8 +197,7 @@ namespace server
 		if (!response->HasReadyData() && response->IsFinished()) {
 			log("finish", response->GetFd().Value());
 			need_to_close_ = response->NeedToClose();
-			Instructions i = FinishFrontResponse();
-			insts.splice(insts.end(), i);
+			PopFrontResponse();
 			insts.push_back(Instruction(Instruction::kRegister, conn_fd_, Event::kRead));
 			// ここでqueueに残ってれば開始したいけど今max queue size() 1だからやってない
 		}
@@ -210,19 +209,16 @@ namespace server
 		return in_progress_.size();
 	}
 
-	Instructions ResponseHolder::FinishFrontResponse()
+	void ResponseHolder::PopFrontResponse()
 	{
-		Instructions insts;
-
 		if (in_progress_.empty()) {
-			return insts;
+			return;
 		}
 		IRequest            *request  = in_progress_.front().request;
 		response::AResponse *response = in_progress_.front().response;
 		request_del_(request);
 		delete (response);
 		in_progress_.pop_front();
-		return insts;
 	}
 
 	Instructions ResponseHolder::UnregisterAll()
@@ -230,8 +226,11 @@ namespace server
 		Instructions insts;
 
 		for (; !in_progress_.empty();) {
-			Instructions i = FinishFrontResponse();
-			insts.splice(insts.end(), i);
+			response::AResponse *response = in_progress_.front().response;
+			if (response->HasFd()) {
+				insts.push_back(Instruction(Instruction::kUnregister, response->GetFd().Value()));
+			}
+			PopFrontResponse();
 		}
 		return insts;
 	}
