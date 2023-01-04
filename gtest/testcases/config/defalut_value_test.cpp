@@ -7,7 +7,7 @@ TEST(config, default_server_conf)
 {
 	conf::ServerConf server_conf;
 	EXPECT_EQ(server_conf.GetListenPort(), conf::ServerConf::ListenPort({"80"}));
-	EXPECT_EQ(server_conf.GetServerName(), conf::ServerConf::ServerName());
+	EXPECT_EQ(server_conf.GetServerName(), conf::ServerConf::ServerName({""}));
 	EXPECT_EQ(server_conf.GetErrorPages(), conf::ServerConf::ErrorPages());
 	EXPECT_EQ(server_conf.GetClientMaxBodySize(), 1 << 20);
 	EXPECT_EQ(server_conf.GetLocationConfs(), conf::ServerConf::LocationConfs());

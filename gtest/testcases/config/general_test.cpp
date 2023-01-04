@@ -8,8 +8,8 @@ TEST(config, get_virtual_servers_list)
 {
 
 	EXPECT_EQ(conf::ParseConfigFile(""), std::vector<conf::ServerConf>({}));
-	EXPECT_EQ(conf::ParseConfigFile("\n"), std::vector<conf::ServerConf>({}));
-	EXPECT_EQ(conf::ParseConfigFile("   "), std::vector<conf::ServerConf>({}));
+	EXPECT_THROW(conf::ParseConfigFile("\n"), conf::ConfigException);
+	EXPECT_THROW(conf::ParseConfigFile("   "), conf::ConfigException);
 
 	EXPECT_EQ(
 		conf::ParseConfigFile("server {"
@@ -128,14 +128,11 @@ TEST(config, get_virtual_servers_list)
 		})
 	);
 
-	EXPECT_EQ(
+	EXPECT_THROW(
 		conf::ParseConfigFile("server{root /var/www;}server {\n"
 							  "root /var/www;"
 							  "}\n"),
-		std::vector<conf::ServerConf>({
-			conf::ServerConf(conf::ServerConf::Root("/var/www")),
-			conf::ServerConf(conf::ServerConf::Root("/var/www")),
-		})
+		conf::ConfigException
 	);
 
 	EXPECT_THROW(
