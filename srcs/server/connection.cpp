@@ -9,7 +9,7 @@ namespace server
 {
 	using namespace event;
 
-	const time_t      Connection::kTimeoutDuration     = 60;
+	const time_t      Connection::kLifeTimeSec         = 60;
 	const std::size_t Connection::kMaxRequestQueueSize = 3;
 
 	Connection::Connection(
@@ -177,7 +177,7 @@ namespace server
 			log("istimeout clock_gettime", strerror(errno));
 		}
 		log("time duration", now.tv_sec - time_.tv_sec);
-		return now.tv_sec - time_.tv_sec >= kTimeoutDuration;
+		return now.tv_sec - time_.tv_sec >= kLifeTimeSec;
 	}
 
 } // namespace server

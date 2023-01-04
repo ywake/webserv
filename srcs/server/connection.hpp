@@ -26,7 +26,7 @@ namespace server
 	class Connection : public Socket
 	{
 	  public:
-		static const time_t      kTimeoutDuration;
+		static const time_t      kLifeTimeSec;
 		static const std::size_t kMaxRequestQueueSize;
 
 	  private:
