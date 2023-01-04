@@ -13,7 +13,7 @@
 #include "managed_fd.hpp"
 #include "result.hpp"
 
-namespace io_multiplexer
+namespace io_mux
 {
 	typedef struct ::epoll_event                         EpollEvent;
 	typedef std::list<Result<const event::Instruction> > ErrEvents;
@@ -49,7 +49,7 @@ namespace io_multiplexer
 		EpollEvent          ConvertToEpollEvent(const event::Event &event);
 		event::Events       ConvertToEvents(const EpollEvents &epoll_events);
 	};
-} // namespace io_multiplexer
+} // namespace io_mux
 
 #endif
 

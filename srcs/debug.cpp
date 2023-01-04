@@ -9,10 +9,10 @@ void loge(const Error &err)
 	std::cerr << err << std::endl;
 }
 
-void log(const io_multiplexer::ErrEvents &err)
+void log(const io_mux::ErrEvents &err)
 {
 	std::cerr << "=== err events ===" << std::endl;
-	for (io_multiplexer::ErrEvents::const_iterator it = err.begin(); it != err.end(); ++it) {
+	for (io_mux::ErrEvents::const_iterator it = err.begin(); it != err.end(); ++it) {
 		std::cerr << it->Val() << std::endl;
 		std::cerr << it->Err() << std::endl << std::endl;
 	}

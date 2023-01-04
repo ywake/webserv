@@ -47,7 +47,7 @@ namespace server
 			Instructions instructions            = RunEvents(events.Val());
 			Instructions unregister_instructions = CloseFinishedConnections();
 			instructions.splice(instructions.end(), unregister_instructions);
-			io_multiplexer::ErrEvents err = io_monitor_.InstructMulti(instructions);
+			io_mux::ErrEvents err = io_monitor_.InstructMulti(instructions);
 			if (!err.empty()) {
 				log(err);
 			}
