@@ -10,7 +10,7 @@
 #include "webserv_utils.hpp"
 
 // TODO 何もテストしてない
-namespace io_multiplexer
+namespace io_mux
 {
 	Epoll::Epoll(int timeout) : timeout_(timeout), blocking_pool_()
 	{
@@ -248,6 +248,6 @@ namespace io_multiplexer
 		return events;
 	}
 
-} // namespace io_multiplexer
+} // namespace io_mux
 
 #endif

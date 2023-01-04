@@ -38,6 +38,6 @@ void log(const T &title, const U &contents, const std::string &delim = "")
 
 void log(const std::string &title);
 void loge(const Error &err);
-void log(const io_multiplexer::ErrEvents &err);
+void log(const io_mux::ErrEvents &err);
 #endif
 #endif

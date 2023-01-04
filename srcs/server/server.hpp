@@ -18,11 +18,11 @@ namespace server
 		typedef std::set<Connection *> Connections;
 
 	  private:
-		static const int      kEpollTimeout;
-		Connections           connections_;
-		Listeners             listeners_;
-		conf::ServerConfs     configs_;
-		io_multiplexer::Epoll io_monitor_;
+		static const int  kEpollTimeout;
+		Connections       connections_;
+		Listeners         listeners_;
+		conf::ServerConfs configs_;
+		io_mux::Epoll     io_monitor_;
 		Server();
 
 	  public:
