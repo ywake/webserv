@@ -47,6 +47,9 @@ namespace server
 		return ctx_.state != kStandBy || !loaded_bytes_.empty();
 	}
 
+	// [RFC9112 8]
+	// 不完全な要請メッセージを受信したサーバは、
+	// 接続をcloseするに先立って，エラー応答を送信してもよい
 	Emptiable<IRequest *> RequestParser::OnEof()
 	{
 		if (HasInCompleteData()) {
