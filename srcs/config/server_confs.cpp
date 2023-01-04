@@ -144,7 +144,7 @@ namespace conf
 			}
 			start = i + 1;
 		}
-		if (!parse_stack.empty()) {
+		if (!parse_stack.empty() || start != file.size()) {
 			throw ConfigException("Invalid config file");
 		}
 
