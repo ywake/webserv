@@ -31,7 +31,7 @@ namespace cgi
 			kHeader,
 			kBody
 		};
-		static const int kMaxLoadSize = 8192;
+		static const time_t kLifeTimeSec;
 
 	  private:
 		const conf::LocationConf &location_conf_;
@@ -41,6 +41,7 @@ namespace cgi
 		cgi::CgiParser            field_parser_;
 		State                     state_;
 		pid_t                     pid_;
+		struct ::timespec         time_;
 
 	  private:
 		CgiResponse(const CgiResponse &other);

@@ -28,6 +28,7 @@ class ManagedFd
 	// tmp
 	int  GetFd() const;
 	void Close();
+	void CloseOther();
 
   private:
 	void CountUp(int fd);

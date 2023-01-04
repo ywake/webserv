@@ -1,5 +1,8 @@
+#include <cerrno>
+#include <cstdio>
 #include <sstream>
 #include <sys/socket.h>
+#include <time.h>
 
 #include "cgi_response.hpp"
 #include "debug.hpp"
@@ -7,6 +10,20 @@
 #include "local_redirect_exception.hpp"
 #include "parse_abnf_core_rules.hpp"
 #include "request_target.hpp"
+
+namespace
+{
+	bool IsTimeOut(const struct timespec &start, time_t lifetime_sec)
+	{
+		struct timespec now;
+		if (clock_gettime(CLOCK_MONOTONIC_RAW, &now) == -1) {
+			DBG_INFO;
+			log("istimeout clock_gettime", strerror(errno));
+		}
+		log("time duration", now.tv_sec - start.tv_sec);
+		return now.tv_sec - start.tv_sec >= lifetime_sec;
+	}
+} // namespace
 
 namespace cgi
 {
@@ -249,7 +266,7 @@ namespace cgi
 			}
 			chunk += http::kCrLf;
 		}
-		if (cgi_receiver_.IsEof()) {
+		if (cgi_receiver_.IsEof() || IsTimeOut(time_, kLifeTimeSec)) {
 			chunk += kLastChunk;
 			is_finished_ = true;
 		}

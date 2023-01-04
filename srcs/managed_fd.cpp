@@ -68,3 +68,13 @@ void ManagedFd::CountDown(int fd)
 	fd_count_.erase(fd);
 	utils::Close(fd);
 }
+
+void ManagedFd::CloseOther()
+{
+	for (FdCounter::iterator it = fd_count_.begin(); it != fd_count_.end(); ++it) {
+		int fd = it->first;
+		if (fd != fd_) {
+			utils::Close(fd);
+		}
+	}
+}

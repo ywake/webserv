@@ -24,7 +24,7 @@ namespace cgi
 	{
 		try {
 			log("child process");
-			parent_fd_.Close();
+			child_fd.CloseOther();
 			Result<void> res = utils::SetSignalHandler(SIGPIPE, SIG_IGN, 0);
 			if (res.IsErr()) {
 				log("cgi", res.Err());
