@@ -23,7 +23,6 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 	try {
-		std::cerr << "XXXXXXXXXXXXXXXXXXX" << std::endl;
 		Result<std::string> res = utils::ReadFile(argv[1]);
 		if (res.IsErr()) {
 			std::cerr << res.ErrMsg() << std::endl;
