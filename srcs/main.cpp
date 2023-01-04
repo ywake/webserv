@@ -26,6 +26,7 @@ int main(int argc, char **argv)
 		Result<std::string> res = utils::ReadFile(argv[1]);
 		if (res.IsErr()) {
 			std::cerr << res.ErrMsg() << std::endl;
+			return EXIT_FAILURE;
 		}
 		std::string       config_file_content = res.Val();
 		conf::ServerConfs config(config_file_content);
