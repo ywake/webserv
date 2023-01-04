@@ -165,6 +165,7 @@ namespace server
 		log("disconnect", GetFd());
 		Instructions insts = response_holder_.UnregisterAll();
 		int          fd    = managed_fd_.GetFd();
+		shutdown(fd, SHUT_WR);
 		insts.push_back(Instruction(Instruction::kUnregister, fd));
 		return insts;
 	}
