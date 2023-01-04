@@ -2,6 +2,7 @@
 #include "debug.hpp"
 #include "http_define.hpp"
 #include "http_exceptions.hpp"
+#include "http_version.hpp"
 #include "implemented_methods.hpp"
 #include "validate_request_line.hpp"
 #include "webserv_utils.hpp"
@@ -172,13 +173,15 @@ namespace server
 		switch (LoadBytesWithDelim(received, http::kCrLf, max_length)) {
 		case kOverMaxSize:
 			throw http::BadRequestException();
-		case kParsable:
+		case kParsable: {
 			loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
-			if (!http::abnf::IsHttpVersion(loaded_bytes_)) {
+			Result<http::HttpVersion> version = http::ParseHtttpVersion(loaded_bytes_);
+			if (version.IsErr() || version.Val().major != 1 || version.Val().minor < 1) {
 				throw http::BadRequestException();
 			}
 			ctx_.request_line.SetHttpVersion(loaded_bytes_);
 			return kDone;
+		}
 		case kNonParsable:
 			return kInProgress;
 		}

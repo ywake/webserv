@@ -232,8 +232,11 @@ namespace cgi
 		for (http::FieldSection::FieldLines::const_iterator it = fl.begin(); it != fl.end(); ++it) {
 			const std::string         &key    = it->first;
 			http::FieldSection::Values values = it->second;
+			// [RFC3875 6.3.4.]
+			// SHOULD resolve any conflicts between header fields returned by the script ~
 			// Serverは無視して上書き, ContentLengthは無視
-			if (key == http::kServer || key == http::kContentLength || key == "status") {
+			if (key == http::kServer || key == http::kContentLength || key == "status" ||
+				key == http::kConnection) {
 				continue;
 			}
 			// TransferEncodingは最終符号化法が"chunked"であればそのまま、ほかはchunkedを末尾に追加

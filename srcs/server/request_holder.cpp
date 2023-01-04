@@ -25,8 +25,12 @@ namespace server
 	{
 		while (!received.empty()) {
 			Emptiable<IRequest *> req = parser_.Parse(received);
-			if (!req.empty()) {
-				request_queue_.push_back(req.Value());
+			if (req.empty()) {
+				break;
+			}
+			request_queue_.push_back(req.Value());
+			if (req.Value()->IsErr()) {
+				break;
 			}
 		}
 	}
