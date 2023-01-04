@@ -3,6 +3,7 @@
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 #include <utility>
 #include <vector>
@@ -52,7 +53,8 @@ namespace
 
 namespace cgi
 {
-	const std::string CgiResponse::kCgiVersion = "1.1";
+	const std::string CgiResponse::kCgiVersion  = "1.1";
+	const time_t      CgiResponse::kLifeTimeSec = 10;
 
 	// main constructor
 	CgiResponse::CgiResponse(
@@ -65,12 +67,14 @@ namespace cgi
 		  location_conf_(location_conf),
 		  body_writer_(request.GetBody()),
 		  state_(kHeader),
-		  pid_(-1)
+		  pid_(-1),
+		  time_()
 	{
 		log(COL_BOLD "=== Cgi Response Constructor ===" COL_END);
 		if (location_conf_.GetCgiPath().empty() || server == NULL || client == NULL) {
 			throw std::logic_error("cgi path empty");
 		}
+		clock_gettime(CLOCK_MONOTONIC_RAW, &time_);
 		ManagedFd child_fd;
 		if (CreateUds(parent_fd_, child_fd).IsErr()) {
 			throw http::InternalServerErrorException();
