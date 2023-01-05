@@ -17,6 +17,9 @@ namespace server
 			Listener                        listener = Listener(port, conf);
 			listeners_.push_back(listener);
 		}
+		if (listeners_.empty()) {
+			throw std::runtime_error("no listener");
+		}
 	}
 
 	Result<void> Server::Listen()
