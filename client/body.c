@@ -9,6 +9,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#define DEFAULT_BODY_LEN 1024 * 1024
+
 int open_clientfd(char *hostname, char *port)
 {
 	int             clientfd, rc;
@@ -40,13 +42,27 @@ int open_clientfd(char *hostname, char *port)
 	else
 		return clientfd;
 }
+
+void print_response(int clientfd)
+{
+	while (1) {
+		char    res[1000000] = {};
+		ssize_t size         = read(clientfd, res, sizeof(res));
+		if (size == 0) {
+			break;
+		}
+		printf("%s\n", res);
+	}
+}
+
 int main(int argc, char **argv)
 {
-	int   clientfd;
-	char *host, *port;
+	int    clientfd;
+	char  *host, *port, *path;
+	size_t body_len;
 
-	if (argc != 4) {
-		fprintf(stderr, "usage: %s <host> <port> <body-size>\n", argv[0]);
+	if (argc < 4) {
+		fprintf(stderr, "usage: %s <host> <port> <cgi-path> <body-size>\n", argv[0]);
 		exit(0);
 	}
 	if (signal(SIGPIPE, SIG_IGN) < 0) {
@@ -56,35 +72,30 @@ int main(int argc, char **argv)
 
 	host     = argv[1];
 	port     = argv[2];
+	path     = argv[3];
+	body_len = argv[4] ? atol(argv[4]) : DEFAULT_BODY_LEN;
 	clientfd = open_clientfd(host, port);
 	if (clientfd == -1) {
 		exit(1);
 	}
-	char   req[1000000] = {};
-	size_t body_len     = atol(argv[3]);
+	char req[1000000] = {};
 	sprintf(
 		req,
-		"GET /cat.cgi HTTP/1.1\r\n"
+		"GET %s HTTP/1.1\r\n"
 		"host:a\r\n"
 		"content-length: %zu\r\n"
 		"\r\n",
+		path,
 		body_len
 	);
 	write(clientfd, req, strlen(req));
-	for (size_t i = 0; i < body_len; i++) {
-		if (write(clientfd, &"0123456789"[i % 10], 1) < 0) {
+	for (size_t size = 0; size < body_len;) {
+		ssize_t write_size = write(clientfd, "0123456789", 10);
+		if (write_size < 0) {
 			break;
 		}
+		size += write_size;
 	}
-	while (1) {
-		char    res[1000000] = {};
-		ssize_t size         = read(clientfd, res, sizeof(res));
-		if (size == 0) {
-			break;
-		}
-		(void)res;
-		printf("%s\n", res);
-	}
+	print_response(clientfd);
 	close(clientfd);
-	exit(0);
 }
