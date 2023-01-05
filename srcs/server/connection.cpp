@@ -94,6 +94,7 @@ namespace server
 			Instructions tmp = StartResponse();
 			insts.splice(insts.end(), tmp);
 		}
+		is_finished_ |= request_holder_.size() == 0 && response_holder_.size() == 0;
 		return insts;
 	}
 
