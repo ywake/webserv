@@ -144,7 +144,7 @@ namespace conf
 			}
 			start = i + 1;
 		}
-		if (!parse_stack.empty() || start != file.size()) {
+		if (!parse_stack.empty() || !TrimWSLF(file.substr(start)).empty()) {
 			throw ConfigException("Invalid config file");
 		}
 
