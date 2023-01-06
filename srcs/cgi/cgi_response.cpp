@@ -54,7 +54,7 @@ namespace
 namespace cgi
 {
 	const std::string CgiResponse::kCgiVersion  = "1.1";
-	const time_t      CgiResponse::kLifeTimeSec = 10;
+	const time_t      CgiResponse::kLifeTimeSec = 30;
 
 	// main constructor
 	CgiResponse::CgiResponse(
