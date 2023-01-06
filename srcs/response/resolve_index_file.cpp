@@ -7,6 +7,8 @@ namespace response
 {
 	typedef conf::LocationConf::IndexFiles IndexFiles;
 
+	result::ErrCode kForbidden = new Error("not readable");
+
 	static Result<PartialPath> FindReadableIndexFile(
 		const FullPath &root, const PartialPath &base_path, const IndexFiles &index_files
 	);
@@ -29,7 +31,11 @@ namespace response
 			log("found index file", path);
 		}
 		log("index file result", path);
-		return path;
+		if (utils::IsReadablePath(utils::JoinPath(root, path))) {
+			return path;
+		} else {
+			return kForbidden;
+		}
 	}
 
 	static Result<PartialPath> FindReadableIndexFile(

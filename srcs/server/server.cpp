@@ -1,5 +1,6 @@
 #include "server.hpp"
 #include "debug.hpp"
+#include "listen_exception.hpp"
 #include "listener.hpp"
 
 namespace server
@@ -16,6 +17,9 @@ namespace server
 			const conf::VirtualServerConfs &conf     = it->second;
 			Listener                        listener = Listener(port, conf);
 			listeners_.push_back(listener);
+		}
+		if (listeners_.empty()) {
+			throw ListenException("no listener");
 		}
 	}
 

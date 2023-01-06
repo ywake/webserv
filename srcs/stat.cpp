@@ -55,7 +55,7 @@ result::Result<Stat> Stat::FromPath(const std::string &path)
 
 	res = stat(path.c_str(), &stat_buf);
 	if (res == -1) {
-		perror(COL_RED "stat" COL_END);
+		log(COL_RED "stat: " COL_END + path + " success" + strerror(errno));
 		return GetErrCode(errno);
 	}
 	log("stat: " + path + " success");

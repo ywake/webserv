@@ -54,7 +54,7 @@ namespace
 namespace cgi
 {
 	const std::string CgiResponse::kCgiVersion  = "1.1";
-	const time_t      CgiResponse::kLifeTimeSec = 10;
+	const time_t      CgiResponse::kLifeTimeSec = 30;
 
 	// main constructor
 	CgiResponse::CgiResponse(
@@ -156,7 +156,7 @@ namespace cgi
 			response::ResolveIndexFilePath(root, request_path, index_files);
 		if (resolved.IsErr()) {
 			result::ErrCode err = resolved.Err();
-			if (err == Stat::kEAcces || err == Stat::kELoop) {
+			if (err == Stat::kEAcces || err == Stat::kELoop || err == response::kForbidden) {
 				throw http::ForbiddenException();
 			} else if (err == Stat::kENotDir || err == Stat::kNoEnt || err == Stat::kENameTooLong) {
 				throw http::NotFoundException();

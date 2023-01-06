@@ -147,14 +147,20 @@ namespace server
 
 	StatefulParser::ParseResult ChunkedParser::ParseChunkSize(q_buffer::QueuingBuffer &received)
 	{
-		switch (LoadBytesWithDelim(received, http::kCrLf, max_size_)) {
+		static const std::size_t kSizeMax  = ~static_cast<std::size_t>(0);
+		static const std::size_t kMaxDigit = utils::ToString(kSizeMax).size();
+
+		switch (LoadBytesWithDelim(received, http::kCrLf, kMaxDigit + http::kCrLf.size())) {
 		case kOverMaxSize:
-			throw http::ContentTooLargeException();
+			throw http::BadRequestException();
 		case kParsable: {
 			loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
 			Result<std::size_t> size = http::ParseChunkSize(loaded_bytes_);
-			if (size.IsErr() || size.Val() > max_size_) {
+			if (size.IsErr()) {
 				throw http::BadRequestException();
+			}
+			if (ctx_.body->size() > max_size_ || size.Val() > max_size_ - ctx_.body->size()) {
+				throw http::ContentTooLargeException();
 			}
 			ctx_.chunk_size = size.Val();
 			return kDone;
@@ -185,9 +191,6 @@ namespace server
 		}
 		loaded_bytes_.erase(loaded_bytes_.size() - http::kCrLf.size());
 		ctx_.body->insert(ctx_.body->end(), loaded_bytes_.begin(), loaded_bytes_.end());
-		if (ctx_.body->size() > max_size_) {
-			throw http::BadRequestException();
-		}
 		return kDone;
 	}
 

@@ -39,6 +39,9 @@ namespace server
 			DestroyParseContext();
 			delete headers.Value();
 			throw e;
+		} catch (std::exception &e) {
+			delete headers.Value();
+			throw e;
 		}
 		return headers.Value();
 	}
