@@ -1,5 +1,6 @@
 #include "server.hpp"
 #include "debug.hpp"
+#include "listen_exception.hpp"
 #include "listener.hpp"
 
 namespace server
@@ -18,7 +19,7 @@ namespace server
 			listeners_.push_back(listener);
 		}
 		if (listeners_.empty()) {
-			throw std::runtime_error("no listener");
+			throw ListenException("no listener");
 		}
 	}
 
