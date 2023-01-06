@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "debug.hpp"
 #include "exception/config_exceptions.hpp"
 #include "listen_exception.hpp"
 #include "server.hpp"
@@ -50,22 +51,24 @@ Result<conf::ServerConfs> OpenConfig(std::string filepath)
 
 Result<void> Run(const conf::ServerConfs &config)
 {
-	// while (true) {
-	try {
-		server::Server server(config);
-		Result<void>   listen_res = server.Listen();
-		if (listen_res.IsErr()) {
-			return listen_res.Err();
+	while (true) {
+		try {
+			server::Server server(config);
+			Result<void>   listen_res = server.Listen();
+			if (listen_res.IsErr()) {
+				return listen_res.Err();
+			}
+			server.Run();
+		} catch (const ListenException &e) {
+			return Error(e.what());
+		} catch (const std::logic_error &e) {
+			log("logic error exception");
+			return Error(e.what());
+		} catch (const std::exception &e) {
+			std::cerr << e.what() << std::endl;
+			std::cerr << "server auto restart" << std::endl;
+			continue;
 		}
-		server.Run();
-	} catch (const ListenException &e) {
-		return Error(e.what());
 	}
-	// try {
-	// 	server.Run();
-	// } catch (const std::exception &e) {
-	// 	continue;
-	// }
-	// }
 	return Result<void>();
 }
