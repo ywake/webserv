@@ -12,7 +12,11 @@ namespace conf
 	bool IsValidListenPort(ThinString str);
 	bool IsValidErrorPage(ThinString key, ThinString value);
 
-	const ServerConf::ServerName        ServerConf::kDefaultServerName = ServerConf::ServerName();
+	static const char           *kDefaultListenServerNameArray[] = {""};
+	const ServerConf::ServerName ServerConf::kDefaultServerName  = ServerConf::ServerName(
+        kDefaultListenServerNameArray,
+        kDefaultListenServerNameArray + ARRAY_SIZE(kDefaultListenServerNameArray)
+    );
 	const ServerConf::ErrorPages        ServerConf::kDefaultErrorPages = ServerConf::ErrorPages();
 	const ServerConf::ClientMaxBodySize ServerConf::kDefaultClientMaxBodySize = 1 << 20;
 	// ListenPort({"80"})がC++98で出来ないので
