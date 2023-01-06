@@ -23,35 +23,30 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	try {
-		Result<std::string> res = utils::ReadFile(argv[1]);
-		if (res.IsErr()) {
-			std::cerr << res.ErrMsg() << std::endl;
+		Result<conf::ServerConfs> config = OpenConfig(argv[1]);
+		if (config.IsErr()) {
+			std::cerr << config.ErrMsg() << std::endl;
 			exit(EXIT_FAILURE);
 		}
-		std::string       config_file_content = res.Val();
-		conf::ServerConfs config(config_file_content);
-		Result<void>      run_result = Run(config);
+		Result<void> run_result = Run(config.Val());
 		if (run_result.IsErr()) {
 			std::cerr << run_result.Err() << std::endl;
 			exit(EXIT_FAILURE);
 		}
-	} catch (const conf::ConfigException &e) {
-		std::cerr << e.what() << std::endl;
-		exit(EXIT_FAILURE);
 	} catch (const std::exception &e) {
 		std::cerr << e.what() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 }
 
-// Result<conf::ServerConfs> OpenConfig(std::string filepath)
-// {
-// 	try {
-// 		return conf::ServerConfs::FromFilePath(filepath);
-// 	} catch (const conf::ConfigException &e) {
-// 		return Error(e.what());
-// 	}
-// }
+Result<conf::ServerConfs> OpenConfig(std::string filepath)
+{
+	try {
+		return conf::ServerConfs::FromFilePath(filepath);
+	} catch (const conf::ConfigException &e) {
+		return Error(e.what());
+	}
+}
 
 Result<void> Run(const conf::ServerConfs &config)
 {
