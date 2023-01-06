@@ -75,8 +75,7 @@ namespace cgi
 		}
 		Result<void> res = cgi_receiver_.Recv();
 		if (res.IsErr()) {
-			log("cgi read failed");
-			throw http::InternalServerErrorException();
+			log("cgi read failed"); // eofとして扱う
 		}
 		switch (state_) {
 		case kHeader:
