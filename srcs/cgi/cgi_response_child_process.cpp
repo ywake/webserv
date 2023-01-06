@@ -23,7 +23,7 @@ namespace cgi
 	CgiResponse::ExecChild(ManagedFd &child_fd, const StringArray &args, const StringArray &envs)
 	{
 		try {
-			log("child process");
+			log(COL_RED "child process" COL_END);
 			child_fd.CloseOther();
 			Result<void> res = utils::SetSignalHandler(SIGPIPE, SIG_IGN, 0);
 			if (res.IsErr()) {
