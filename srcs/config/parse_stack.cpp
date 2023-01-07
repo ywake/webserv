@@ -41,7 +41,7 @@ namespace conf
 		if (state_.HasContent()) {
 			content_stack.top().push_back(content);
 		} else {
-			throw conf::ConfigException("Invalid config: AddContent");
+			throw conf::ConfigException("Invalid config");
 		}
 	}
 } // namespace conf
