@@ -14,17 +14,17 @@ namespace conf
 		switch (layer_) {
 		case kOutSide:
 			if (directive != "server") {
-				throw conf::ConfigException("Invalid config: push(kOutSide)");
+				throw conf::ConfigException("Invalid config");
 			}
 			break;
 		case kServer:
 			if (!directive.StartWith("location ")) {
-				throw conf::ConfigException("Invalid config: push(kServer)");
+				throw conf::ConfigException("Invalid config");
 			}
 			break;
 		case kLocation:
 		default:
-			throw conf::ConfigException("Invalid config: Increment");
+			throw conf::ConfigException("Invalid config");
 		}
 		++layer_;
 	}
@@ -37,7 +37,7 @@ namespace conf
 			break;
 		case kOutSide:
 		default:
-			throw conf::ConfigException("Invalid config: Decrement");
+			throw conf::ConfigException("Invalid config");
 		}
 		--layer_;
 	}
