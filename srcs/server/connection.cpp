@@ -113,6 +113,8 @@ namespace server
 		Result<void> res = receiver_.Recv();
 		if (res.IsErr()) {
 			std::cerr << res.Err() << std::endl;
+			is_finished_ = true;
+			return insts;
 			// TDDO 500 専用のappend taskみたいのをholderに作る
 		}
 		request_holder_.Parse(receiver_);
