@@ -12,7 +12,7 @@ SRCS	:= $(shell find $(SRCDIR) -name "*.cpp" -type f)
 INCLUDES := $(addprefix -I,$(SRCDIRS))
 
 CXX		:= c++
-CXXFLAGS:= -Wall -Werror -Wextra -std=c++98 -pedantic -O2
+CXXFLAGS:= -Wall -Werror -Wextra -std=c++98 -pedantic -O2 -D NDEBUG
 BUILDDIR:= build/
 OBJDIR	:= $(BUILDDIR)release/
 OBJDIRS := $(SRCDIRS:$(SRCDIR)%=$(OBJDIR)%)
