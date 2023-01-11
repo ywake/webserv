@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -27,8 +28,12 @@ namespace conf
 		typedef Emptiable<Path>            Root;
 
 	  private:
+		typedef std::set<std::string> UniqNames;
+
+	  private:
 		ListenPort        listen_port_;
 		ServerName        server_name_;
+		UniqNames         uniq_names_;
 		ErrorPages        error_pages_;
 		ClientMaxBodySize client_max_body_size_;
 		LocationConfs     location_confs_;

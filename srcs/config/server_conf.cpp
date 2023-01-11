@@ -123,7 +123,11 @@ namespace conf
 	void ServerConf::AddServerName(const std::vector<ThinString> &tokens)
 	{
 		for (size_t i = 1; i < tokens.size(); i++) {
-			server_name_.push_back(tokens[i].ToString());
+			std::string name             = tokens[i].ToString();
+			bool        has_no_duplicate = uniq_names_.insert(name).second;
+			if (has_no_duplicate) {
+				server_name_.push_back(tokens[i].ToString());
+			}
 		}
 	}
 
