@@ -180,7 +180,9 @@ namespace conf
 		if (confs_map_it == confs_map_.end()) {
 			confs_map_.insert(std::pair<Port, VirtualServerConfs>(port, VirtualServerConfs(host)));
 		}
-		confs_map_[port].Add(host, conf);
+		if (!confs_map_[port].Add(host, conf)) {
+			throw ConfigException("conflicting server name \"" + host + "\" on " + port);
+		}
 	}
 
 	ServerConfs::ConfsMap::const_iterator ServerConfs::begin() const
