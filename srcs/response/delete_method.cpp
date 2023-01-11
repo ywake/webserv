@@ -5,6 +5,7 @@
 #include "delete_method.hpp"
 #include "http_exceptions.hpp"
 #include "stat.hpp"
+#include "webserv_utils.hpp"
 
 namespace
 {
@@ -23,6 +24,13 @@ namespace
 		}
 		return st.Val();
 	}
+
+	bool HasWritePermissionDir(const std::string &path)
+	{
+		std::string dir = utils::GetDirName(path);
+		return utils::IsWritablePath(dir);
+	}
+
 } // namespace
 
 namespace response
@@ -34,7 +42,7 @@ namespace response
 		const std::string &root = location_.GetRoot();
 		const std::string  path = utils::JoinPath(root, request_.Path());
 		Stat               st   = TryStat(path);
-		if (st.IsDirectory()) {
+		if (st.IsDirectory() || !HasWritePermissionDir(path)) {
 			throw http::ForbiddenException();
 		} else if (!st.IsRegularFile()) {
 			throw http::NotFoundException();
