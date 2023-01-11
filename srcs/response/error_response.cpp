@@ -22,8 +22,7 @@ namespace response
 		MetaDataStorage::StoreStatusLine(http::kHttpVersion, status_code);
 		MetaDataStorage::StoreHeader("Server", http::kServerName);
 		MetaDataStorage::StoreHeader("Connection", NeedToClose() ? "close" : "keep-alive");
-		if (status_code == http::StatusCode::kMethodNotAllowed ||
-			status_code == http::StatusCode::kNotImplemented) {
+		if (status_code == http::StatusCode::kMethodNotAllowed) {
 			const conf::LocationConf &location = config_.FindMatchingLocationConf(request.Path());
 			const conf::LocationConf::AllowMethods &methods = location.GetAllowMethods();
 			MetaDataStorage::StoreHeader("Allow", methods.begin(), methods.end());
