@@ -4,7 +4,7 @@ LOG=post.log
 OUTPUT=""
 
 teardown() {
-  name=$(printf "======CASE %03d======" "$BATS_TEST_NUMBER")
+  name=$(printf "======CASE %03d======" "$BATS_SUITE_TEST_NUMBER")
   echo -e "$name\n" >> "$LOG"
   echo -e "$OUTPUT" >> "$LOG"
   echo -e "\n====================\n" >> "$LOG"
