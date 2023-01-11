@@ -30,7 +30,22 @@ TEST(config, server_name)
 			conf::ServerConf(
 				conf::ServerConf::Root("/var/www"),
 				conf::ServerConf::ListenPort({"80"}),
-				conf::ServerConf::ServerName({"localhost", "localhost"})
+				conf::ServerConf::ServerName({"localhost"})
+			),
+		})
+	);
+	EXPECT_EQ(
+		conf::ParseConfigFile("server {"
+							  "root /var/www;"
+							  "listen 80;"
+							  "server_name localhost localhost;"
+							  "server_name localhost localhost;"
+							  "}"),
+		std::vector<conf::ServerConf>({
+			conf::ServerConf(
+				conf::ServerConf::Root("/var/www"),
+				conf::ServerConf::ListenPort({"80"}),
+				conf::ServerConf::ServerName({"localhost"})
 			),
 		})
 	);

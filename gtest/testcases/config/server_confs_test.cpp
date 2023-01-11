@@ -102,5 +102,57 @@ TEST(config, server_confs)
 		)
 	);
 
+	EXPECT_THROW(
+		conf::ServerConfs("server {"
+						  "root /var/www;"
+						  "listen 80;"
+						  "server_name localhost;"
+						  "location / {"
+						  "}"
+						  "}"
+						  "server {"
+						  "root /var/www2;"
+						  "listen 80;"
+						  "server_name localhost;"
+						  "location / {"
+						  "autoindex off;"
+						  "}"
+						  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_THROW(
+		conf::ServerConfs("server {"
+						  "root /var/www;"
+						  "listen 80;"
+						  "location / {"
+						  "}"
+						  "}"
+						  "server {"
+						  "root /var/www2;"
+						  "listen 80;"
+						  "location / {"
+						  "autoindex off;"
+						  "}"
+						  "}"),
+		conf::ConfigException
+	);
+
+	EXPECT_NO_THROW(conf::ServerConfs("server {"
+									  "root /var/www;"
+									  "listen 80;"
+									  "server_name localhost;"
+									  "location / {"
+									  "}"
+									  "}"
+									  "server {"
+									  "root /var/www2;"
+									  "listen 80;"
+									  "server_name localhost2;"
+									  "location / {"
+									  "autoindex off;"
+									  "}"
+									  "}"));
+
 	EXPECT_THROW(conf::ServerConfs(""), conf::ConfigException);
 }
