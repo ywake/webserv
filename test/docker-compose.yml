@@ -45,6 +45,15 @@ services:
     networks:
       - test
 
+  test:
+    image: test
+    container_name: test
+    build: ./dockerfile/test
+    volumes:
+      - ../system_test:/test
+    networks:
+      - test
+
 networks:
   test:
     driver: bridge
