@@ -44,7 +44,6 @@ services:
       - "4243:4243"
     networks:
       - test
-    init: true
 
   test:
     image: test
