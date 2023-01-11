@@ -44,15 +44,18 @@ services:
       - "4243:4243"
     networks:
       - test
+    init: true
 
   test:
     image: test
     container_name: test
     build: ./dockerfile/test
     volumes:
-      - ../system_test:/test
+      - ../system_test/http:/test
     networks:
       - test
+    init: true
+
 
 networks:
   test:
