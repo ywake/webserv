@@ -42,7 +42,7 @@ namespace conf
 		const ServerConf &operator[](const Host &host) const;
 
 		const ServerConf &GetDefaultServerConf() const;
-		void              Add(const Host &host, const ServerConf &server_conf);
+		bool              Add(const Host &host, const ServerConf &server_conf);
 		void              Print(std::ostream &os) const;
 	};
 

@@ -68,9 +68,9 @@ namespace conf
 		return *server_confs_.at(default_host_); // 例外は出ないはず
 	}
 
-	void VirtualServerConfs::Add(const Host &host, const ServerConf &server_conf)
+	bool VirtualServerConfs::Add(const Host &host, const ServerConf &server_conf)
 	{
-		server_confs_.insert(std::pair<Host, const ServerConf *>(host, &server_conf));
+		return server_confs_.insert(std::pair<Host, const ServerConf *>(host, &server_conf)).second;
 	}
 
 	void VirtualServerConfs::Print(std::ostream &os) const
