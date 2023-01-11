@@ -1,9 +1,7 @@
-FROM alpine:latest
+FROM bats/bats:latest
 
 WORKDIR /test/
 
-RUN apk add --no-cache --update npm curl bash
+RUN apk add --no-cache --update curl
 
-RUN npm install -g bats
-
-CMD [ "tail", "-f" ]
+ENTRYPOINT ["/tini", "--", "tail", "-f"]
