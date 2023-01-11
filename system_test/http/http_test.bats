@@ -1,32 +1,37 @@
 # 予めbasic.confでサーバーを起動しておくこと
 
+LOG=http.log
+
 teardown() {
-	echo -e "\t$output" >&3
+  name=$(printf "======CASE %03d======" "$BATS_TEST_NUMBER")
+  echo -e "$name\n" >> "$LOG"
+	echo -e "$output" >> "$LOG" 
+  echo -e "\n====================" >> "$LOG"
 }
 
 # GET
 @test "「http://webserv:4242/」のStatusCodeは200" {
-  run curl -s -o /dev/null -w "%{http_code}" http://webserv:4242/
+  run curl -v -s -o /dev/null -w "%{http_code}" http://webserv:4242/
   [ "$status" -eq 0 ]
-  [ "$output" -eq "200" ]
+  [ "${lines[-1]}" -eq "200" ]
 }
 
 @test "「http://localhost:4242/」のHTTP Versionは1.1" {
-  run curl -s -o /dev/null -w "%{http_version}" http://localhost:4242/
+  run curl -v -s -o /dev/null -w "%{http_version}" http://webserv:4242/
   [ "$status" -eq 0 ]
-  [ "$output" = "1.1" ]
+  [ "${lines[-1]}" == "1.1" ]
 }
 
 @test "「http://localhost:4242/」のContent-Typeはtext/html" {
-  run curl -s -o /dev/null -w "%{content_type}" http://localhost:4242/
+  run curl -v -s -o /dev/null -w "%{content_type}" http://webserv:4242/
   [ "$status" -eq 0 ]
-  [ "$output" = "text/html" ]
+  [ "${lines[-1]}" == "text/html" ]
 }
 
 @test "「http://localhost:4242/」のHeader比較" {
-  run curl -s -o /dev/null -w "%header{content-length}" http://localhost:4242/
+  run curl -v -s -o /dev/null -w "%header{content-length}" http://webserv:4242/
   [ "$status" -eq 0 ]
-  [ "$output" -eq "13" ]
+  [ "${lines[-1]}" -eq "13" ]
 }
 
 ## Exist
