@@ -4,6 +4,7 @@ DIR	:= test
 test:
 	@docker-compose -f $(DIR)/docker-compose.yml up -d
 	@sh $(DIR)/test.sh
+	docker exec test sh -c "rm -f *.log"
 	docker exec test bats .
 
 .PHONY: down
