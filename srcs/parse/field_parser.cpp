@@ -87,6 +87,7 @@ namespace server
 					log("field secton done. total len: ", ctx_.total_length);
 					return kDone;
 				}
+				loaded_bytes_ = http::abnf::TrimObsFold(loaded_bytes_);
 				if (ctx_.total_length + loaded_bytes_.size() > kMaxTotalSize) {
 					throw http::BadRequestException();
 				}
