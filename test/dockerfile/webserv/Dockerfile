@@ -10,11 +10,20 @@ RUN make
 
 RUN mkfifo test/volume/fifo && \
 	mkfifo test/volume/fifo333 && \
+	echo "no read perm file body" > test/volume/file333 && \
 	chmod 333 test/volume/fifo333 && \
-	echo "noperm file body" > test/volume/file333 && \
-	chmod 333 test/volume/file333
+	chmod 333 test/volume/file333 &&\ 
+	mkdir test/volume/dir555 && \
+	mkfifo test/volume/dir555/fifo && \
+	touch test/volume/dir555/file && \
+	chmod 555 test/volume/dir555
 
 EXPOSE 4242 4243
 
+RUN adduser webserv -D && \
+	chown -R webserv .
+
+USER webserv
+
 ENTRYPOINT ["tini", "-vv", "--"]
-CMD [ "./webserv", "config_files/basic.conf" ]
+CMD ["./webserv", "config_files/basic.conf" ]
