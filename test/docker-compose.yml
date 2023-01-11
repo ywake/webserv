@@ -53,8 +53,6 @@ services:
       - ../system_test/http:/test
     networks:
       - test
-    init: true
-
 
 networks:
   test:
