@@ -56,6 +56,12 @@ teardown() {
   [ "${lines[-1]}" -eq "501" ]
 }
 
+@test "method not allowed" {
+  run curl -v -s -o /dev/null -X "POST" -w "%{http_code}\n%header{allow}" "http://webserv:4243/"
+  [ "$status" -eq 0 ]
+  [ "${lines[-2]}" -eq "405" ]
+}
+
 ## Exist
 # GET
 # AutoIndex
