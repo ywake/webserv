@@ -5,6 +5,7 @@
 
 #include "debug.hpp"
 #include "http_exceptions.hpp"
+#include "percent_encode.hpp"
 #include "post_method.hpp"
 
 namespace response
@@ -57,7 +58,7 @@ namespace response
 
 	std::string PostMethod::CreateLocationUrl(const std::string &path)
 	{
-		return "http://" + utils::JoinPath(request_.Authority(), path);
+		return "http://" + utils::JoinPath(request_.Authority(), uri::PercentEncode(path));
 	}
 
 	AResponse::FinEventType PostMethod::Perform(const event::Event &event)
