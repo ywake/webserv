@@ -18,6 +18,10 @@ RUN mkfifo test/volume/fifo && \
 	touch test/volume/dir555/file && \
 	chmod 555 test/volume/dir555
 
+RUN mkdir test/volume/dir333 && \
+	touch test/volume/dir333/file && \
+	chmod 333 test/volume/dir333/file
+
 EXPOSE 4242 4243
 
 RUN adduser webserv -D && \
