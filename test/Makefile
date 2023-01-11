@@ -4,7 +4,7 @@ DIR	:= test
 test:
 	@docker-compose -f $(DIR)/docker-compose.yml up -d
 	@sh $(DIR)/test.sh
-	docker exec test bats test
+	docker exec test bats .
 
 .PHONY: down
 down:
