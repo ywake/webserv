@@ -25,6 +25,76 @@ teardown() {
   curl -s -o /dev/null -X DELETE -H "connection: close" -w "%{http_code}" "${location}"
 }
 
+@test "post content-length-0" {
+  conlen=$(echo -n 'content-length:0')
+  run curl -v -s -o /dev/null -X POST -H "$conlen" -H "connection: close" -w "%{http_code}\n%header{location}" http://webserv:4242/a
+  OUTPUT=$output
+  code=${lines[-2]}
+  location=${lines[-1]}
+  [ "$status" -eq 0 ]
+  [ "$code" -eq "201" ]
+  grep http://webserv:4242 <<<"$location"
+
+  file="body_$BATS_SUITE_TEST_NUMBER"
+  run curl -o $file -s "${location}"
+  diff "$file" <(echo -n "")
+  rm "$file"
+  curl -s -o /dev/null -X DELETE -H "connection: close" -w "%{http_code}" "${location}"
+}
+
+@test "post chunked-0" {
+  trae=$(echo -n $'transfer-encoding:chunked')
+  run curl -v -s -o /dev/null -X POST -H "$trae" -H "connection: close" -w "%{http_code}\n%header{location}" http://webserv:4242/a -d ""
+  OUTPUT=$output
+  code=${lines[-2]}
+  location=${lines[-1]}
+  [ "$status" -eq 0 ]
+  [ "$code" -eq "201" ]
+  grep http://webserv:4242 <<<"$location"
+
+  file="body_$BATS_SUITE_TEST_NUMBER"
+  run curl -o $file -s "${location}"
+  diff "$file" <(echo -n "")
+  rm "$file"
+  curl -s -o /dev/null -X DELETE -H "connection: close" -w "%{http_code}" "${location}"
+}
+
+@test "post content-length-rand" {
+  str=`cat /dev/urandom | tr -dc 'a-zA-Z' | fold -w 1000 | head -n 1`
+  conlen=$(echo -n "content-length:${#str}")
+  run curl -v -s -o /dev/null -X POST -H "$conlen" -H "connection: close" -w "%{http_code}\n%header{location}" http://webserv:4242/a -d "$str"
+  OUTPUT=$output
+  code=${lines[-2]}
+  location=${lines[-1]}
+  [ "$status" -eq 0 ]
+  [ "$code" -eq "201" ]
+  grep http://webserv:4242 <<<"$location"
+
+  file="body_$BATS_SUITE_TEST_NUMBER"
+  run curl -o $file -s "${location}"
+  diff "$file" <(echo -n "$str")
+  rm "$file"
+  curl -s -o /dev/null -X DELETE -H "connection: close" -w "%{http_code}" "${location}"
+}
+
+@test "post chunked" {
+  str=`cat /dev/urandom | tr -dc 'a-zA-Z' | fold -w 1000 | head -n 1`
+  trae=$(echo -n $'transfer-encoding:chunked')
+  run curl -v -s -o /dev/null -X POST -H "$trae" -H "connection: close" -w "%{http_code}\n%header{location}" http://webserv:4242/a -d "$str"
+  OUTPUT=$output
+  code=${lines[-2]}
+  location=${lines[-1]}
+  [ "$status" -eq 0 ]
+  [ "$code" -eq "201" ]
+  grep http://webserv:4242 <<<"$location"
+
+  file="body_$BATS_SUITE_TEST_NUMBER"
+  run curl -o $file -s "${location}"
+  diff "$file" <(echo -n "$str")
+  rm "$file"
+  curl -s -o /dev/null -X DELETE -H "connection: close" -w "%{http_code}" "${location}"
+}
+
 @test "post pct-encode" {
   run curl -v -s -o /dev/null -X POST -H "connection: close" -w "%{http_code}\n%header{location}" http://webserv:4242/%E3%81%82
   OUTPUT=$output

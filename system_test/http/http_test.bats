@@ -36,6 +36,41 @@ teardown() {
   [ "${lines[-1]}" -eq "13" ]
 }
 
+@test "get content-length-0" {
+  conlen=$(echo -n $'content-length:0')
+  run curl -v -s -o /dev/null -X GET -H "$conlen" -H "connection: close" -w "\n%{http_code}" "http://webserv:4242/"
+  [ "$status" -eq 0 ]
+  [ "${lines[-1]}" -eq "200" ]
+}
+
+@test "get chunked-0" {
+  trae=$(echo -n $'transfer-encoding:chunked')
+  run curl -v -s -o /dev/null -X GET -H "$trae" -H "connection: close" -w "\n%{http_code}" "http://webserv:4242/" -d ""
+  [ "$status" -eq 0 ]
+  [ "${lines[-1]}" -eq "200" ]
+}
+
+@test "get obs-fold" {
+  host=$(echo -n $'host:\x0d\x0a a')
+  run curl -v -s -o /dev/null -X GET -H "$host" -H "connection: close" -w "\n%{http_code}" "http://webserv:4242/"
+  [ "$status" -eq 0 ]
+  [ "${lines[-1]}" -eq "200" ]
+}
+
+@test "get obs-fold content-length-0" {
+  conlen=$(echo -n $'content-length:\x0d\x0a 0')
+  run curl -v -s -o /dev/null -X GET -H "$conlen" -H "connection: close" -w "\n%{http_code}" "http://webserv:4242/"
+  [ "$status" -eq 0 ]
+  [ "${lines[-1]}" -eq "200" ]
+}
+
+@test "get obs-fold chunked-0" {
+  trae=$(echo -n $'transfer-encoding:\x0d\x0a chunked')
+  run curl -v -s -o /dev/null -X GET -H "$trae" -H "connection: close" -w "\n%{http_code}" "http://webserv:4242/" -d ""
+  [ "$status" -eq 0 ]
+  [ "${lines[-1]}" -eq "200" ]
+}
+
 @test "http/1.0" {
   run curl -v -s -o /dev/null -w "%{http_code}" --http1.0 http://webserv:4242/
   [ "$status" -eq 0 ]
