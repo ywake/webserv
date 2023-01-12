@@ -37,11 +37,7 @@ TEST(field_parser, general)
 	EXPECT_EQ(
 		*res.Value(),
 		FieldSection(FieldSection::FieldLines(
-			{{"key", {HeaderValue("value")}},
-			 {"key2",
-			  {HeaderValue("value2\r\n"
-						   " value2\r\n"
-						   "\tvalue2")}}}
+			{{"key", {HeaderValue("value")}}, {"key2", {HeaderValue("value2 value2 value2")}}}
 		))
 	);
 
@@ -57,11 +53,7 @@ TEST(field_parser, general)
 	EXPECT_EQ(
 		*res.Value(),
 		FieldSection(FieldSection::FieldLines(
-			{{"key", {HeaderValue("value")}},
-			 {"key2",
-			  {HeaderValue("value2\r\n"
-						   " value2\r\n"
-						   "\tvalue2")}}}
+			{{"key", {HeaderValue("value")}}, {"key2", {HeaderValue("value2 value2 value2")}}}
 		))
 	);
 
@@ -88,21 +80,14 @@ TEST(field_parser, general)
 		  " \r\n"
 		  "\t\r\n\r\n");
 	EXPECT_EQ(
-		*res.Value(),
-		FieldSection(FieldSection::FieldLines(
-			{{"key",
-			  {HeaderValue("value\r\n"
-						   " \r\n"
-						   "\t")}}}
-		))
+		*res.Value(), FieldSection(FieldSection::FieldLines({{"key", {HeaderValue("value")}}}))
 	);
 
 	Parse("key: value\r\n"
 		  " \r\n"
 		  "\t\r\n\r\n");
 	EXPECT_EQ(
-		*res.Value(),
-		FieldSection(FieldSection::FieldLines({{"key", {HeaderValue("value\r\n \r\n\t")}}}))
+		*res.Value(), FieldSection(FieldSection::FieldLines({{"key", {HeaderValue("value")}}}))
 	);
 
 	Parse("key: value\r\n"
