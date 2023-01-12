@@ -34,7 +34,9 @@ destructor.c
 !*.conf
 !*.php
 !Dockerfile
+!*.Dockerfile
 !client/**
+!*.bats
 
 ## google test
 gtest/googletest
