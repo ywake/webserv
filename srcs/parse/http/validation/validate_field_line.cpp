@@ -102,5 +102,34 @@ namespace http
 			return 0x80 <= c;
 		}
 
+		static void TrimRightOws(std::string &s)
+		{
+			for (; !s.empty() && kWhiteSpaces.find(*s.rbegin()) != std::string::npos;) {
+				s.erase(s.size() - 1);
+			}
+		}
+
+		std::string TrimObsFold(const ThinString s)
+		{
+			std::string trimed;
+
+			std::size_t i = 0;
+			for (; i < s.size() && s.at(i) != ':'; i++) {
+				trimed += s.at(i);
+			}
+			for (; i < s.size();) {
+				if (StartWithObsFold(s.substr(i, kObsFoldMinSize))) {
+					TrimRightOws(trimed);
+					trimed += " ";
+					i += kObsFoldMinSize;
+					for (; i < s.size() && IsRws(s.at(i)); i++)
+						;
+				} else {
+					trimed += s.at(i);
+					i++;
+				}
+			}
+			return trimed;
+		}
 	} // namespace abnf
 } // namespace http

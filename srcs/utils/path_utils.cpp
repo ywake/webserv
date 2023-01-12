@@ -86,6 +86,11 @@ namespace utils
 		return access(path.c_str(), R_OK) == 0;
 	}
 
+	bool IsWritablePath(const std::string &path)
+	{
+		return access(path.c_str(), W_OK) == 0;
+	}
+
 	std::string GetDirName(const std::string &path)
 	{
 		std::size_t pos = path.rfind("/");

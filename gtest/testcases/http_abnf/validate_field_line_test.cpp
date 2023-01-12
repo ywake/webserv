@@ -130,3 +130,73 @@ TEST(field_line, end_with_obsFold_false)
 	EXPECT_FALSE(http::abnf::EndWithObsFold(" \t \r\n	aaaa"));
 	EXPECT_FALSE(http::abnf::EndWithObsFold("\t  \t\r\n	aaaa"));
 }
+
+TEST(field_line, trim_obs_fold_sp)
+{
+	// EXPECT_EQ(http::abnf::TrimObsFold(""), "");
+	// EXPECT_EQ(http::abnf::TrimObsFold(" "), " ");
+	// EXPECT_EQ(http::abnf::TrimObsFold("\r\n"), "\r\n");
+	// EXPECT_EQ(http::abnf::TrimObsFold(" \r\n "), " ");
+	// EXPECT_EQ(http::abnf::TrimObsFold("	\r\n "), " ");
+	// std::cerr << http::abnf::TrimObsFold("	\r\n ").size() << std::endl;
+	// exit(0);
+	// EXPECT_EQ(http::abnf::TrimObsFold("\t\r\n\t"), " ");
+	// EXPECT_EQ(http::abnf::TrimObsFold("\t \r\n\t "), " ");
+	// EXPECT_EQ(http::abnf::TrimObsFold(" \t \r\n\t "), " ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n b"), "host:a b");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n "), "host:a ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n  "), "host:a ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n b\r\n c"), "host:a b c");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n b\r\n c\r\n "), "host:a b c ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n b\r\n c \r\n "), "host:a b c ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\r\n a"), "host: a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host: \r\n a"), "host: a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\r\na"), "host:\r\na");
+	EXPECT_EQ(http::abnf::TrimObsFold("host: \r\na"), "host: \r\na");
+	EXPECT_EQ(http::abnf::TrimObsFold("host\r\n:a"), "host\r\n:a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host\r\n :a"), "host\r\n :a");
+	EXPECT_EQ(http::abnf::TrimObsFold("\r\n host:a"), "\r\n host:a");
+
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a \r\n b"), "host:a b");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a \r\n "), "host:a ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a \r\n  "), "host:a ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a \r\n b  \r\n c"), "host:a b c");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a \r\n b  \r\n c		\r\n "), "host:a b c ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a \r\n b 	\r\n 	c  	 \r\n "), "host:a b c ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\r\n a"), "host: a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:	\r\n a"), "host: a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\r\na"), "host:\r\na");
+	EXPECT_EQ(http::abnf::TrimObsFold("host: \r\na"), "host: \r\na");
+	EXPECT_EQ(http::abnf::TrimObsFold("host\r\n:a"), "host\r\n:a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host\r\n :a"), "host\r\n :a");
+	EXPECT_EQ(http::abnf::TrimObsFold("\r\n host:a"), "\r\n host:a");
+}
+
+TEST(field_line, trim_obs_fold_tab)
+{
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\tb"), "host:a b");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\t"), "host:a ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\t "), "host:a ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\tb\r\n\tc"), "host:a b c");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\tb\r\n\tc\r\n\t"), "host:a b c ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\tb\r\n\tc \r\n\t"), "host:a b c ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\r\n\ta"), "host: a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\r\n\ta"), "host: a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\r\na"), "host:\r\na");
+	EXPECT_EQ(http::abnf::TrimObsFold("host: \r\na"), "host: \r\na");
+	EXPECT_EQ(http::abnf::TrimObsFold("host\r\n:a"), "host\r\n:a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host\r\n\t:a"), "host\r\n\t:a");
+
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\tb"), "host:a b");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\t"), "host:a ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\t "), "host:a ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\tb\r\n\tc"), "host:a b c");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\tb\r\n\tc\r\n\t"), "host:a b c ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:a\r\n\tb\r\n\tc \r\n\t"), "host:a b c ");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\t\r\n\ta"), "host: a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\t\r\n\ta"), "host: a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\t\r\na"), "host:\t\r\na");
+	EXPECT_EQ(http::abnf::TrimObsFold("host:\t \r\na"), "host:\t \r\na");
+	EXPECT_EQ(http::abnf::TrimObsFold("host\r\n:a"), "host\r\n:a");
+	EXPECT_EQ(http::abnf::TrimObsFold("host\r\n\t:a"), "host\r\n\t:a");
+}

@@ -6,15 +6,16 @@ namespace http
 {
 	namespace abnf
 	{
-		bool IsOws(const ThinString &str);
-		bool IsRws(const ThinString &str);
-		bool IsRws(char c);
-		bool StartWithObsFold(const ThinString &str);
-		bool EndWithObsFold(const ThinString &str);
-		bool IsFieldName(const ThinString &str);
-		bool IsFieldValue(const ThinString &str);
-		bool IsFieldVchar(unsigned char c);
-		bool IsObsText(unsigned char c);
+		bool        IsOws(const ThinString &str);
+		bool        IsRws(const ThinString &str);
+		bool        IsRws(char c);
+		bool        StartWithObsFold(const ThinString &str);
+		bool        EndWithObsFold(const ThinString &str);
+		std::string TrimObsFold(const ThinString s);
+		bool        IsFieldName(const ThinString &str);
+		bool        IsFieldValue(const ThinString &str);
+		bool        IsFieldVchar(unsigned char c);
+		bool        IsObsText(unsigned char c);
 	} // namespace abnf
 } // namespace http
 

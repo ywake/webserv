@@ -45,6 +45,7 @@ namespace utils
 	Result<std::string>     NormalizePath(const ThinString &path);
 	std::string             JoinPath(const std::string &parent, const std::string &child);
 	bool                    IsReadablePath(const std::string &path);
+	bool                    IsWritablePath(const std::string &path);
 	std::string             GetDirName(const std::string &path);
 
 	std::string CreateDefaultPage(const http::StatusCode &code);

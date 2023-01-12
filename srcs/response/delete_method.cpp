@@ -4,6 +4,34 @@
 #include "debug.hpp"
 #include "delete_method.hpp"
 #include "http_exceptions.hpp"
+#include "stat.hpp"
+#include "webserv_utils.hpp"
+
+namespace
+{
+	Stat TryStat(const std::string &path)
+	{
+		result::Result<Stat> st = Stat::FromPath(path);
+		if (st.IsErr()) {
+			result::ErrCode err = st.Err();
+			if (err == Stat::kEAcces || err == Stat::kELoop) {
+				throw http::ForbiddenException();
+			} else if (err == Stat::kENotDir || err == Stat::kNoEnt || err == Stat::kENameTooLong) {
+				throw http::NotFoundException();
+			} else {
+				throw http::InternalServerErrorException();
+			}
+		}
+		return st.Val();
+	}
+
+	bool HasWritePermissionDir(const std::string &path)
+	{
+		std::string dir = utils::GetDirName(path);
+		return utils::IsWritablePath(dir);
+	}
+
+} // namespace
 
 namespace response
 {
@@ -13,7 +41,12 @@ namespace response
 		log("DELETE", request.Path());
 		const std::string &root = location_.GetRoot();
 		const std::string  path = utils::JoinPath(root, request_.Path());
-		if (unlink(path.c_str()) == -1) {
+		Stat               st   = TryStat(path);
+		if (st.IsDirectory() || !HasWritePermissionDir(path)) {
+			throw http::ForbiddenException();
+		} else if (!st.IsRegularFile()) {
+			throw http::NotFoundException();
+		} else if (unlink(path.c_str()) == -1) {
 			switch (errno) {
 			case EACCES:
 			case EPERM:
