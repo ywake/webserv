@@ -71,23 +71,30 @@ CURL_FORMAT="\n%{http_version}\n"\
 
 ## local redirect
 @test "cgi local redirect" {
-  run curl -s -w $CURL_FORMAT http://webserv:4242/localredirect.cgi -H "Host:cgi"
-  [ "$status" -eq 0 ]
-  [ "${lines[0]}" = "1hello world!" ]
-  [ "${lines[1]}" = "1.1" ]
-  [ "${lines[2]}" = "200" ]
-  [ "${lines[3]}" = "text/html" ]
-  [ "${lines[4]}" = "webserv/1.0" ]
-}
-
-## client redirect
-@test "cgi client redirect" {
-  run curl -s -w $CURL_FORMAT http://webserv:4242/clientredirect.cgi -H "Host:cgi"
+  run curl -s -o /dev/null -w $CURL_FORMAT http://webserv:4242/localredirect.cgi -H "Host:cgi"
   [ "$status" -eq 0 ]
   [ "${lines[0]}" = "1.1" ]
-  [ "${lines[1]}" = "302" ]
+  [ "${lines[1]}" = "200" ]
   [ "${lines[2]}" = "text/html" ]
   [ "${lines[3]}" = "webserv/1.0" ]
 }
 
+## client redirect
+@test "cgi client redirect" {
+  run curl -s -w $CURL_FORMAT http://webserv:4242/clientredirect.cgi -H "Host:cgi" -H "connection: close"
+  [ "$status" -eq 0 ]
+  [ "${lines[0]}" = "1.1" ]
+  [ "${lines[1]}" = "302" ]
+  [ "${lines[2]}" = "webserv/1.0" ]
+}
+
 ## client redirect with doc
+@test "cgi client redirect with doc" {
+  run curl -s -w $CURL_FORMAT http://webserv:4242/crwd.cgi -H "Host:cgi" -H "connection: close"
+  [ "$status" -eq 0 ]
+  [ "${lines[0]}" = "hello world!" ]
+  [ "${lines[1]}" = "1.1" ]
+  [ "${lines[2]}" = "302" ]
+  [ "${lines[3]}" = "text/html" ]
+  [ "${lines[4]}" = "webserv/1.0" ]
+}
