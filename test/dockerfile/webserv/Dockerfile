@@ -22,6 +22,12 @@ RUN mkdir test/volume/dir333 && \
 	touch test/volume/dir333/file && \
 	chmod 333 test/volume/dir333/file
 
+RUN touch test/cgi-bin/file333.cgi && \
+	mkdir test/cgi-bin/dir777.cgi && \
+	mkfifo test/cgi-bin/fifo.cgi && \
+	chmod 333 test/cgi-bin/file333.cgi && \
+	chmod 777 test/cgi-bin/dir777.cgi
+
 EXPOSE 4242 4243
 
 RUN adduser webserv -D && \
