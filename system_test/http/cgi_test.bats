@@ -11,7 +11,8 @@ teardown() {
 CURL_FORMAT="\n%{http_version}\n"\
 "%{http_code}\n"\
 "%{content_type}\n"\
-"%header{server}\n"
+"%header{server}\n"\
+"%header{location}\n"
 
 ## Document Response
 # Exist
@@ -86,6 +87,7 @@ CURL_FORMAT="\n%{http_version}\n"\
   [ "${lines[0]}" = "1.1" ]
   [ "${lines[1]}" = "302" ]
   [ "${lines[2]}" = "webserv/1.0" ]
+  [ "${lines[3]}" = "http://www.google.com" ]
 }
 
 ## client redirect with doc
@@ -97,4 +99,5 @@ CURL_FORMAT="\n%{http_version}\n"\
   [ "${lines[2]}" = "302" ]
   [ "${lines[3]}" = "text/html" ]
   [ "${lines[4]}" = "webserv/1.0" ]
+  [ "${lines[5]}" = "http://www.google.com" ]
 }
