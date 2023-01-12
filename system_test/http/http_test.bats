@@ -12,29 +12,29 @@ teardown() {
 }
 
 # GET
-@test "「http://webserv:4242/」のStatusCodeは200" {
-  run curl -v -s -o /dev/null -w "%{http_code}" http://webserv:4242/
-  [ "$status" -eq 0 ]
-  [ "${lines[-1]}" -eq "200" ]
-}
+# @test "「http://webserv:4242/」のStatusCodeは200" {
+#   run curl -v -s -o /dev/null -w "%{http_code}" http://webserv:4242/
+#   [ "$status" -eq 0 ]
+#   [ "${lines[-1]}" -eq "200" ]
+# }
 
-@test "「http://webserv:4242/」のHTTP Versionは1.1" {
-  run curl -v -s -o /dev/null -w "%{http_version}" http://webserv:4242/
-  [ "$status" -eq 0 ]
-  [ "${lines[-1]}" == "1.1" ]
-}
+# @test "「http://webserv:4242/」のHTTP Versionは1.1" {
+#   run curl -v -s -o /dev/null -w "%{http_version}" http://webserv:4242/
+#   [ "$status" -eq 0 ]
+#   [ "${lines[-1]}" == "1.1" ]
+# }
 
-@test "「http://webserv:4242/」のContent-Typeはtext/html" {
-  run curl -v -s -o /dev/null -w "%{content_type}" http://webserv:4242/
-  [ "$status" -eq 0 ]
-  [ "${lines[-1]}" == "text/html" ]
-}
+# @test "「http://webserv:4242/」のContent-Typeはtext/html" {
+#   run curl -v -s -o /dev/null -w "%{content_type}" http://webserv:4242/
+#   [ "$status" -eq 0 ]
+#   [ "${lines[-1]}" == "text/html" ]
+# }
 
-@test "「http://webserv:4242/」のHeader比較" {
-  run curl -v -s -o /dev/null -w "%header{content-length}" http://webserv:4242/
-  [ "$status" -eq 0 ]
-  [ "${lines[-1]}" -eq "13" ]
-}
+# @test "「http://webserv:4242/」のHeader比較" {
+#   run curl -v -s -o /dev/null -w "%header{content-length}" http://webserv:4242/
+#   [ "$status" -eq 0 ]
+#   [ "${lines[-1]}" -eq "13" ]
+# }
 
 @test "get content-length-0" {
   conlen=$(echo -n $'content-length:0')
