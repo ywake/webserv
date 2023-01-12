@@ -3,7 +3,7 @@
 LOG=delete.log
 
 teardown() {
-  name=$(printf "======CASE %03d======" "$BATS_TEST_NUMBER")
+  name=$(printf "======CASE %03d======" "$BATS_SUITE_TEST_NUMBER")
   echo -e "$name\n" >> "$LOG"
 	echo -e "$output" >> "$LOG" 
   echo -e "\n====================" >> "$LOG"
