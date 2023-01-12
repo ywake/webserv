@@ -14,6 +14,9 @@ CURL_FORMAT="\n%{http_version}\n"\
 "%header{content-length}\n"\
 "%header{server}\n"
 
+REDIR_FMT="$CURL_FORMAT"\
+"%header{location}\n"
+
 ## Exist
 @test "get basic" {
   run curl -s -w $CURL_FORMAT http://webserv:4242/
@@ -77,4 +80,15 @@ CURL_FORMAT="\n%{http_version}\n"\
   [ "${lines[2]}" = "text/html" ]
   # [ "${lines[3]}" = "190" ]
   [ "${lines[4]}" = "webserv/1.0" ]
+}
+
+@test "get redirect" {
+  run curl -s -o /dev/null -w "$REDIR_FMT" http://webserv:4242/redirect
+  [ "$status" -eq 0 ]
+  [ "${lines[0]}" = "1.1" ]
+  [ "${lines[1]}" = "301" ]
+  [ "${lines[2]}" = "text/html" ]
+  [ "${lines[4]}" = "webserv/1.0" ]
+  grep :// <<<"${lines[5]}"
+  curl -v -s "${lines[5]}"
 }
