@@ -62,7 +62,17 @@ REDIR_FMT="$CURL_FORMAT"\
 }
 
 ## No Regular
-@test "get dir" {
+@test "get dir noindex" {
+  run curl -s -o /dev/null -w $CURL_FORMAT http://webserv:4242/b/
+  [ "$status" -eq 0 ]
+  [ "${lines[0]}" = "1.1" ]
+  [ "${lines[1]}" = "403" ]
+  [ "${lines[2]}" = "text/html" ]
+  # [ "${lines[3]}" = "190" ]
+  [ "${lines[4]}" = "webserv/1.0" ]
+}
+
+@test "get directory redirect" {
   run curl -s -o /dev/null -w $CURL_FORMAT http://webserv:4242/b
   [ "$status" -eq 0 ]
   [ "${lines[0]}" = "1.1" ]
@@ -70,6 +80,19 @@ REDIR_FMT="$CURL_FORMAT"\
   [ "${lines[2]}" = "text/html" ]
   # [ "${lines[3]}" = "190" ]
   [ "${lines[4]}" = "webserv/1.0" ]
+}
+
+@test "get autoindex" {
+  file="body_$BATS_SUITE_TEST_NUMBER"
+  run curl -s -o $file -w $CURL_FORMAT http://webserv:4243/
+  [ "$status" -eq 0 ]
+  [ "${lines[0]}" = "1.1" ]
+  [ "${lines[1]}" = "200" ]
+  [ "${lines[2]}" = "text/html" ]
+  # [ "${lines[3]}" = "190" ]
+  [ "${lines[4]}" = "webserv/1.0" ]
+  output+=$(cat "$file")
+  rm $file
 }
 
 @test "get fifo" {
